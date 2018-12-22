@@ -1,0 +1,28 @@
+#pragma once
+
+AminoAcidPolymer.h
+  -rw-r--r-- 1 gabriel users  1785 Dec 21 15:58 ChemicalFormulaFragment.h
+  -rw-r--r-- 1 gabriel users  2318 Dec 21 15:58 ChemicalFormulaModification.h
+  -rw-r--r-- 1 gabriel users  1612 Dec 21 15:58 ChemicalFormulaTerminus.h
+  -rw-r--r-- 1 gabriel users  1730 Dec 21 15:58 DatabaseReference.h
+  -rw-r--r-- 1 gabriel users   542 Dec 21 15:58 DigestionPoint.h
+  -rw-r--r-- 1 gabriel users  1458 Dec 21 15:58 DisulfideBond.h
+  -rw-r--r-- 1 gabriel users  2455 Dec 21 15:58 Fragment.h
+  -rw-r--r-- 1 gabriel users  2265 Dec 21 15:58 FragmentTypes.h
+  -rw-r--r-- 1 gabriel users  2692 Dec 21 15:58 ModificationCollection.h
+  -rw-r--r-- 1 gabriel users   687 Dec 21 15:58 Modification.h
+  -rw-r--r-- 1 gabriel users  1048 Dec 21 15:58 ModificationMotif.h
+  -rw-r--r-- 1 gabriel users  2217 Dec 21 15:58 ModificationSites.h
+  -rw-r--r-- 1 gabriel users  1727 Dec 21 15:58 ModificationWithLocation.h
+  -rw-r--r-- 1 gabriel users  1485 Dec 21 15:58 ModificationWithMassAndCf.h
+  -rw-r--r-- 1 gabriel users  1735 Dec 21 15:58 ModificationWithMass.h
+  -rw-r--r-- 1 gabriel users  3074 Dec 21 15:58 OldSchoolModification.h
+  -rw-r--r-- 1 gabriel users  2380 Dec 21 15:58 OldSchoolModificationWithMultiplePossibilities.h
+  -rw-r--r-- 1 gabriel users  3477 Dec 21 15:58 Peptide.h
+  -rw-r--r-- 1 gabriel users  3255 Dec 21 15:58 Protein.h
+  -rw-r--r-- 1 gabriel users   882 Dec 21 15:58 ProteolysisProduct.h
+  -rw-r--r-- 1 gabriel users     0 Dec 21 16:31 Proteomics.h
+  -rw-r--r-- 1 gabriel users  3925 Dec 21 15:58 Residue.h
+  -rw-r--r-- 1 gabriel users  2845 Dec 21 15:58 SequenceVariation.h
+  -rw-r--r-- 1 gabriel users  1380 Dec 21 15:58 Terminus.h
+  -rw-r--r-- 1 gabriel users   947 Dec 21 15:58 TerminusLocalization.h

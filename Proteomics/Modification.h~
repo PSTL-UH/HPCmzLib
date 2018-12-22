@@ -1,0 +1,34 @@
+﻿#pragma once
+
+#include <string>
+#include <any>
+#include "stringbuilder.h"
+
+
+namespace Proteomics {
+    class Modification {
+//        #region Public Fields
+
+    public:
+        const std::wstring id;
+        const std::wstring modificationType;
+
+//        #endregion Public Fields
+
+//        #region Public Constructors
+
+        Modification(const std::wstring &id, const std::wstring &modificationType);
+
+//        #endregion Public Constructors
+
+//        #region Public Methods
+
+        std::wstring ToString() override;
+
+        bool Equals(std::any o) override;
+
+        int GetHashCode() override;
+
+//        #endregion Public Methods
+    };
+}
