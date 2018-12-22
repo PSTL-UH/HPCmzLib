@@ -25,6 +25,7 @@ namespace Chemistry { class Isotope; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with Chemistry Library. If not, see <http://www.gnu.org/licenses/>.
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Chemistry {
@@ -118,19 +119,22 @@ namespace Chemistry {
         /// </summary>
         /// <param name="atomicNumber"></param>
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
-        static operator Element*(int atomicNumber);
+//        static operator Element*(int atomicNumber);
+        operator Element*(int atomicNumber);
 
         /// <summary>
         /// Can use the atomic symbol instead of an element anytime you like
         /// </summary>
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
-        static operator Element*(const std::wstring &atomicSymbol);
+//      static  operator Element*(const std::wstring &atomicSymbol);
+        operator Element*(const std::wstring &atomicSymbol);
 
         /// <summary>
         /// Returns the atomic symbol
         /// </summary>
         /// <returns>The atomic symbol</returns>
-        std::wstring ToString() override;
+//        std::wstring ToString() override;
+        std::wstring ToString();
 
         /// <summary>
         /// Add an isotope to this element

@@ -3,25 +3,28 @@
 #include "PeriodicTable.h"
 #include "../MzLibUtil/MzLibException.h"
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Chemistry {
 
     Element::Element(const std::wstring &symbol, int atomicNumber, double averageMass) {
-        AtomicSymbol = symbol;
-        AtomicNumber = atomicNumber;
-        AverageMass = averageMass;
+        privateAtomicSymbol = symbol;
+        ptivateAtomicNumber = atomicNumber;
+        privateAverageMass = averageMass;
     }
 
     std::vector<Isotope*> Element::getIsotopes() const {
         for (auto i : IsotopesInOrderTheyWereAdded) {
             if (i != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return i;
+//                yield return i;
+                return i;
             }
             else {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield break;
+//                yield break;
+                break;
             }
         }
     }

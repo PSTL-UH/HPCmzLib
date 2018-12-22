@@ -76,7 +76,8 @@ namespace MzLibUtil {
 
 //        #region Public Methods
 
-        std::wstring ToString() override;
+//        std::wstring ToString() override;
+        std::wstring ToString();
 
         virtual std::wstring ToString(const std::wstring &format);
 

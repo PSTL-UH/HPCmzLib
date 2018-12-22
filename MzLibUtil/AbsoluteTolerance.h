@@ -46,7 +46,8 @@ namespace MzLibUtil {
 
 //        #region Public Methods
 
-        std::wstring ToString() override;
+//        std::wstring ToString() override;
+        std::wstring ToString();
 
         DoubleRange *GetRange(double mean) override;
 

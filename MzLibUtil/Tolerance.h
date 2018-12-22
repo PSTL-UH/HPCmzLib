@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cmath>
+#include <regex>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace MzLibUtil { class DoubleRange; }
@@ -41,7 +42,7 @@ namespace MzLibUtil {
         /// i.e., "10 PPM", "-+10 PPM", "5 Absolute", etc...
         /// </para>
         /// </summary>
-        static Regex *const StringRegex;
+        static std::regex *const StringRegex;
 
 //        #endregion Private Fields
 
