@@ -26,6 +26,7 @@ namespace Chemistry { class ChemicalFormula; }
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Chemistry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
