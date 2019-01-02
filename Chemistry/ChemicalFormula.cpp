@@ -6,6 +6,7 @@
 #include "PeriodicTable.h"
 #include "Constants.h"
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Chemistry {

@@ -32,6 +32,7 @@ namespace Chemistry { class IHasChemicalFormula; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with Chemistry Library. If not, see <http://www.gnu.org/licenses/>.
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Chemistry {
@@ -48,7 +49,6 @@ namespace Chemistry {
 
         // Main data stores, the isotopes and elements
 
-//        #region Private Fields
 
         /// <summary>
         /// A regular expression for matching chemical formulas such as: C2C{13}3H5NO5
@@ -68,18 +68,11 @@ namespace Chemistry {
 
         std::wstring formulaString;
 
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         ChemicalFormula();
 
         ChemicalFormula(const ChemicalFormula &capFormula);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// Gets the average mass of this chemical formula
@@ -119,18 +112,10 @@ namespace Chemistry {
         /// <returns></returns>
         double getHydrogenCarbonRatio() const;
 
-//        #endregion Public Properties
-
-//        #region Internal Properties
-
         std::unordered_map<Isotope*, int> getIsotopes() const;
         void setIsotopes(const std::unordered_map<Isotope*, int> &value);
         std::unordered_map<Element*, int> getElements() const;
         void setElements(const std::unordered_map<Element*, int> &value);
-
-//        #endregion Internal Properties
-
-//        #region Public Methods
 
         static ChemicalFormula *Combine(std::vector<IHasChemicalFormula*> &formulas);
 
@@ -276,16 +261,10 @@ namespace Chemistry {
 
         bool Equals(ChemicalFormula *other) override;
 
-//        #endregion Public Methods
-
-//        #region Private Methods
-
         /// <summary>
         /// Produces the Hill Notation of the chemical formula
         /// </summary>
     private:
         std::wstring GetHillNotation();
-
-//        #endregion Private Methods
     };
 }

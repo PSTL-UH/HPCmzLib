@@ -1,0 +1,28 @@
+#
+# Copyright (c) 2018      University of Houston. All rights reserved.
+# $COPYRIGHT$
+#
+# Additional copyrights may follow
+#
+# $HEADER$
+#
+
+# Generated automatically from Makefile.in by configure.
+
+MZLIB_DIR      = /home/gabriel/MetaMorpheus/mzlib-master
+MZLIB_LIB      = libmzlib.a
+
+
+#Set some Flags
+AR	    = ar
+AR_FLAGS    = clr
+
+
+CC          = gcc
+CFLAGS      = -g -O0
+LDFLAGS     = 
+
+
+CXX         = g++
+CXXFLAGS    = -I$(MZLIB_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
+

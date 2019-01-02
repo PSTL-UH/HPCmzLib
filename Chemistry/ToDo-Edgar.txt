@@ -6,3 +6,5 @@
    strucutre, the element number, and the element string as synonyms. This
    does not work in C++. Currently, these methods are commented out, but will
    have to be revisited.
+3. C# IEquatable can be used to override Equals operations for comparison.
+   There is no C++ equivalent of this.
