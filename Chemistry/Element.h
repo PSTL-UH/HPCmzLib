@@ -120,14 +120,14 @@ namespace Chemistry {
         /// <param name="atomicNumber"></param>
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
 //        static operator Element*(int atomicNumber);
-        operator Element*(int atomicNumber);
+//        operator Element*(int atomicNumber);
 
         /// <summary>
         /// Can use the atomic symbol instead of an element anytime you like
         /// </summary>
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
 //      static  operator Element*(const std::wstring &atomicSymbol);
-        operator Element*(const std::wstring &atomicSymbol);
+//        operator Element*(const std::wstring &atomicSymbol);
 
         /// <summary>
         /// Returns the atomic symbol

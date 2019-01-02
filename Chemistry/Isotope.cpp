@@ -6,9 +6,9 @@ namespace Chemistry {
 
     Isotope::Isotope(Chemistry::Element *parentElement, int massNumber, double atomicMass, double abundance) {
         Element = parentElement;
-        MassNumber = massNumber;
-        AtomicMass = atomicMass;
-        RelativeAbundance = abundance;
+        privateMassNumber = massNumber;
+        privateAtomicMass = atomicMass;
+        privateRelativeAbundance = abundance;
     }
 
     int Isotope::getAtomicNumber() const {

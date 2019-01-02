@@ -10,16 +10,17 @@ namespace Chemistry {
 
     Element::Element(const std::wstring &symbol, int atomicNumber, double averageMass) {
         privateAtomicSymbol = symbol;
-        ptivateAtomicNumber = atomicNumber;
+        privateAtomicNumber = atomicNumber;
         privateAverageMass = averageMass;
     }
 
     std::vector<Isotope*> Element::getIsotopes() const {
+        std::vector<Isotope*> tmpvector;
         for (auto i : IsotopesInOrderTheyWereAdded) {
             if (i != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
 //                yield return i;
-                return i;
+                tmpvector.push_back(i);
             }
             else {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
@@ -27,6 +28,7 @@ namespace Chemistry {
                 break;
             }
         }
+        return tmpvector;
     }
 
     int Element::getAtomicNumber() const {
@@ -58,14 +60,14 @@ namespace Chemistry {
     }
 
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
-    Element::operator Element*(int atomicNumber) {
-        return PeriodicTable::GetElement(atomicNumber);
-    }
+//    Element::operator Element*(int atomicNumber) {
+//        return PeriodicTable::GetElement(atomicNumber);
+//    }
 
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
-    Element::operator Element*(const std::wstring &atomicSymbol) {
-        return PeriodicTable::GetElement(atomicSymbol);
-    }
+//    Element::operator Element*(const std::wstring &atomicSymbol) {
+//        return PeriodicTable::GetElement(atomicSymbol);
+//    }
 
     std::wstring Element::ToString() {
         return getAtomicSymbol();
