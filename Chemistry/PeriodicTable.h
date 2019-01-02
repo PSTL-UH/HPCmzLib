@@ -32,24 +32,21 @@ namespace Chemistry {
     /// A static store of elements accessible by anyone
     /// </summary>
     class PeriodicTable final {
-        // Two datastores storing same elements! Need both for efficient access by both symbol and atomic number
-
-//        #region Private Fields
+        // Two datastores storing same elements! Need both for efficient access by both
+        // symbol and atomic number
 
         /// <summary>
         /// The internal dictionary housing elements, keyed by their unique atomic symbol
         /// </summary>
     private:
-        static const std::unordered_map<std::wstring, Element*> _elements;
+//        static const std::unordered_map<std::wstring, Element*> _elements;
+        static std::unordered_map<std::wstring, Element*> _elements;
 
         /// <summary>
         /// The internal dictionary housing elements, keyed by their unique atomic number
         /// </summary>
-        static std::vector<Element*> const _elementsArray;
-
-//        #endregion Private Fields
-
-//        #region Public Methods
+//        static std::vector<Element*> const _elementsArray;
+        static std::vector<Element*> _elementsArray;
 
         /// <summary>
         /// Populate the periodic table by calling this method
@@ -77,6 +74,5 @@ namespace Chemistry {
         /// </summary>
         static bool ValidateAverageMasses(double epsilon);
 
-//        #endregion Public Methods
     };
 }

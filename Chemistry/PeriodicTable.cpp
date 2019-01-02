@@ -1,11 +1,14 @@
 ﻿#include "PeriodicTable.h"
 #include "Element.h"
-
+#include <any>
 
 namespace Chemistry {
 
-const std::unordered_map<std::wstring, Element*> PeriodicTable::_elements = std::unordered_map<std::wstring, Element*>();
-std::vector<Element*> const PeriodicTable::_elementsArray = std::vector<Element*>(Constants::MaximumNumberOfElementsAllowed);
+//const std::unordered_map<std::wstring, Element*> PeriodicTable::_elements = std::unordered_map<std::wstring, Element*>();
+std::unordered_map<std::wstring, Element*> PeriodicTable::_elements = std::unordered_map<std::wstring, Element*>();
+
+//std::vector<Element*> const PeriodicTable::_elementsArray = std::vector<Element*>(Constants::MaximumNumberOfElementsAllowed);
+std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Constants::MaximumNumberOfElementsAllowed);
 
     void PeriodicTable::Add(Element *element) {
         if (_elements.find(element->getAtomicSymbol()) == _elements.end()) {
