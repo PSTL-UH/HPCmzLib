@@ -26,16 +26,15 @@ namespace Chemistry { class IHasMass; }
 
 namespace Chemistry {
     class ClassExtensions final {
-//        #region Public Methods
 
         /// <summary>
-        /// Calculates m/z value for a given mass assuming charge comes from losing or gaining protons
+        /// Calculates m/z value for a given mass assuming charge comes from losing or gaining prot
         /// </summary>
     public:
         static double ToMz(IHasMass *objectWithMass, int charge);
 
         /// <summary>
-        /// Calculates m/z value for a given mass assuming charge comes from losing or gaining protons
+        /// Calculates m/z value for a given mass assuming charge comes from losing or gaining prot
         /// </summary>
         static double ToMz(double mass, int charge);
 
@@ -44,6 +43,5 @@ namespace Chemistry {
         /// </summary>
         static double ToMass(double massToChargeRatio, int charge);
 
-//        #endregion Public Methods
     };
 }
