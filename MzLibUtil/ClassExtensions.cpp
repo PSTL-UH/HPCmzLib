@@ -1,6 +1,4 @@
 ﻿#include "ClassExtensions.h"
-#include <any>
-
 
 namespace MzLibUtil {
 
@@ -53,8 +51,15 @@ template<typename T>
                 return false;
             }
         }
-        return cnt.Values->All([&] (std::any c) {
-            return c == 0;
-        });
+//        return cnt.Values->All([&] (std::any c) {
+//                return (c == 0);
+//        });
+        for (std::pair<T, int> element : cnt)
+        {
+            if ( element.second != 0 ) {
+                return false;
+            }
+        }
+        return true;        
     }
 }

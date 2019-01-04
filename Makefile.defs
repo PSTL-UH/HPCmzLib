@@ -10,6 +10,7 @@
 # Generated automatically from Makefile.in by configure.
 
 MZLIB_DIR      = /home/gabriel/MetaMorpheus/mzlib-master
+MZLIB_LIB_DIR  = $(MZLIB_DIR)/lib
 MZLIB_LIB      = libmzlib.a
 
 
@@ -24,5 +25,6 @@ LDFLAGS     =
 
 
 CXX         = g++
+CXXFLAGS    = -g -O0
 CXXFLAGS    = -I$(MZLIB_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
 

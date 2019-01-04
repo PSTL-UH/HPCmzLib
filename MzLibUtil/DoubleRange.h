@@ -27,8 +27,6 @@ namespace MzLibUtil {
         double privateMaximum = 0;
         double privateMinimum = 0;
 
-//        #region Public Constructors
-
         /// <summary>
         /// Creates a range from the minimum to maximum values
         /// </summary>
@@ -43,10 +41,6 @@ namespace MzLibUtil {
         /// </summary>
         /// <param name="range">The other range to copy</param>
         DoubleRange(const DoubleRange &range);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// The maximum value of the range
@@ -72,14 +66,10 @@ namespace MzLibUtil {
         /// </summary>
         double getWidth() const;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
 //        std::wstring ToString() override;
-        std::wstring ToString();
+        std::string ToString();
 
-        virtual std::wstring ToString(const std::wstring &format);
+        virtual std::string ToString(const std::string &format);
 
         int CompareTo(double item);
 
@@ -111,6 +101,5 @@ namespace MzLibUtil {
         /// <returns>True if the item is within the range (inclusive), false otherwise</returns>
         bool Contains(double item);
 
-//        #endregion Public Methods
     };
 }

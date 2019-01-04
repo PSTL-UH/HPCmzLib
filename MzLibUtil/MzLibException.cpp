@@ -3,6 +3,6 @@
 
 namespace MzLibUtil {
 
-    MzLibException::MzLibException(const std::wstring &message) : Exception(message) {
+    MzLibException::MzLibException(const std::string &message) : std::runtime_error(message) {
     }
 }

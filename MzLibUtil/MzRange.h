@@ -24,17 +24,11 @@
 
 namespace MzLibUtil {
     class MzRange : public DoubleRange {
-//        #region Public Constructors
 
     public:
         MzRange(double minMZ, double maxMZ);
 
-//        #endregion Public Constructors
+        std::string ToString(const std::string &format) override;
 
-//        #region Public Methods
-
-        std::wstring ToString(const std::wstring &format) override;
-
-//        #endregion Public Methods
     };
 }

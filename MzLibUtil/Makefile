@@ -14,8 +14,9 @@ HEADER = AbsoluteTolerance.h              \
 	MzLibException.h                  \
 	MzRange.h                         \
 	PpmTolerance.h                    \
-	SystemInfo.h                      \
 	Tolerance.h
+
+#SystemInfo.h
 
 
 OBJ = 	AbsoluteTolerance.o               \
@@ -24,8 +25,10 @@ OBJ = 	AbsoluteTolerance.o               \
 	MzLibException.o                  \
 	MzRange.o                         \
 	PpmTolerance.o                    \
-	SystemInfo.o                      \
 	Tolerance.o
+
+#	SystemInfo.o                      \
+
 
 .SUFFIXES: .o.cpp
 
@@ -34,7 +37,7 @@ all:
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
-	$(AR) $(AR_FLAGS) $(ADCL_LIB_DIR)/$(ADCL_LIB) $(OBJ)
+	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
 
 $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
