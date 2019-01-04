@@ -12,14 +12,14 @@
 class StringBuilder
 {
 private:
-	std::wstring privateString;
+	std::string privateString;
 
 public:
 	StringBuilder()
 	{
 	}
 
-	StringBuilder(const std::wstring &initialString)
+	StringBuilder(const std::string &initialString)
 	{
 		privateString = initialString;
 	}
@@ -29,18 +29,18 @@ public:
 		ensureCapacity(capacity);
 	}
 
-	StringBuilder(const std::wstring &initialString, std::size_t capacity)
+	StringBuilder(const std::string &initialString, std::size_t capacity)
 	{
 		privateString = initialString;
 		ensureCapacity(capacity);
 	}
 
-	wchar_t operator [](std::size_t index)
+	char operator [](std::size_t index)
 	{
 		return privateString[index];
 	}
 
-	StringBuilder *append(const std::wstring &toAppend)
+	StringBuilder *append(const std::string &toAppend)
 	{
 		privateString += toAppend;
 		return this;
@@ -59,13 +59,13 @@ public:
 		return this;
 	}
 
-	StringBuilder *appendLine(const std::wstring &toAppend)
+	StringBuilder *appendLine(const std::string &toAppend)
 	{
 		privateString += toAppend + L"\r\n";
 		return this;
 	}
 
-	StringBuilder *insert(std::size_t position, const std::wstring &toInsert)
+	StringBuilder *insert(std::size_t position, const std::string &toInsert)
 	{
 		privateString.insert(position, toInsert);
 		return this;
@@ -78,12 +78,12 @@ public:
 		return this;
 	}
 
-	std::wstring toString()
+	std::string toString()
 	{
 		return privateString;
 	}
 
-	std::wstring toString(std::size_t start, std::size_t length)
+	std::string toString(std::size_t start, std::size_t length)
 	{
 		return privateString.substr(start, length);
 	}
@@ -124,10 +124,10 @@ public:
 		return this;
 	}
 
-	StringBuilder *replace(const std::wstring &oldString, const std::wstring &newString)
+	StringBuilder *replace(const std::string &oldString, const std::string &newString)
 	{
 		std::size_t pos = 0;
-		while ((pos = privateString.find(oldString, pos)) != std::wstring::npos)
+		while ((pos = privateString.find(oldString, pos)) != std::string::npos)
 		{
 			privateString.replace(pos, oldString.length(), newString);
 			pos += newString.length();
@@ -137,7 +137,7 @@ public:
 
 private:
 	template<typename T>
-	static std::wstring toString(const T &subject)
+	static std::string toString(const T &subject)
 	{
 		std::wostringstream ss;
 		ss << subject;

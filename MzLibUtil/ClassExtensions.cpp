@@ -1,4 +1,5 @@
 ﻿#include "ClassExtensions.h"
+#include <any>
 
 
 namespace MzLibUtil {
@@ -28,7 +29,8 @@ namespace MzLibUtil {
 template<typename T>
     std::vector<T> ClassExtensions::SubArray(std::vector<T> &data, int index, int length) {
         std::vector<T> result(length);
-        Array::Copy(data, index, result, 0, length);
+//        Array::Copy(data, index, result, 0, length);
+        std::copy(data.at(index), data.at(index+length), result.begin()) ;
         return result;
     }
 

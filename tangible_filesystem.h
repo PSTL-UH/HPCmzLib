@@ -13,68 +13,68 @@
 class FileSystem
 {
 public:
-	static void createDirectory(const std::wstring &path)
+	static void createDirectory(const std::string &path)
 	{
 		std::experimental::filesystem::create_directory(pathFromString(path));
 	}
 
-	static bool fileExists(const std::wstring &path)
+	static bool fileExists(const std::string &path)
 	{
 		return std::experimental::filesystem::is_regular_file(pathFromString(path));
 	}
 
-	static bool directoryExists(const std::wstring &path)
+	static bool directoryExists(const std::string &path)
 	{
 		return std::experimental::filesystem::is_directory(pathFromString(path));
 	}
 
-	static std::wstring combine(const std::wstring &path1, const std::wstring &path2)
+	static std::string combine(const std::string &path1, const std::string &path2)
 	{
-		return (pathFromString(path1) / pathFromString(path2)).generic_wstring();
+		return (pathFromString(path1) / pathFromString(path2)).generic_string();
 	}
 
-	static bool isPathRooted(const std::wstring &path)
+	static bool isPathRooted(const std::string &path)
 	{
 		return pathFromString(path).has_root_path();
 	}
 
-	static std::wstring getFullPath(const std::wstring &path)
+	static std::string getFullPath(const std::string &path)
 	{
-		return std::experimental::filesystem::absolute(pathFromString(path)).generic_wstring();
+		return std::experimental::filesystem::absolute(pathFromString(path)).generic_string();
 	}
 
-	static std::wstring getFileName(const std::wstring &path)
+	static std::string getFileName(const std::string &path)
 	{
-		return std::experimental::filesystem::path(pathFromString(path)).filename().generic_wstring();
+		return std::experimental::filesystem::path(pathFromString(path)).filename().generic_string();
 	}
 
-	static std::wstring getDirectoryName(const std::wstring &path)
+	static std::string getDirectoryName(const std::string &path)
 	{
-		return std::experimental::filesystem::path(pathFromString(path)).parent_path().generic_wstring();
+		return std::experimental::filesystem::path(pathFromString(path)).parent_path().generic_string();
 	}
 
-	static std::wstring getCurrentDirectory()
+	static std::string getCurrentDirectory()
 	{
-		return std::experimental::filesystem::current_path().generic_wstring();
+		return std::experimental::filesystem::current_path().generic_string();
 	}
 
-	static void copyFile(const std::wstring &path1, const std::wstring &path2)
+	static void copyFile(const std::string &path1, const std::string &path2)
 	{
 		std::experimental::filesystem::copy_file(pathFromString(path1), pathFromString(path2));
 	}
 
-	static void renamePath(const std::wstring &path1, const std::wstring &path2)
+	static void renamePath(const std::string &path1, const std::string &path2)
 	{
 		std::experimental::filesystem::rename(pathFromString(path1), pathFromString(path2));
 	}
 
-	static wchar_t preferredSeparator()
+	static char preferredSeparator()
 	{
 		return std::experimental::filesystem::path::preferred_separator;
 	}
 
 private:
-	static std::experimental::filesystem::path pathFromString(const std::wstring &path)
+	static std::experimental::filesystem::path pathFromString(const std::string &path)
 	{
 		return std::experimental::filesystem::path(&path[0]);
 	}

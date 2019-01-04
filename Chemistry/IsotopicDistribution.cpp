@@ -1,7 +1,7 @@
 ﻿#include "IsotopicDistribution.h"
 #include "ChemicalFormula.h"
 #include "Isotope.h"
-
+#include <any>
 
 namespace Chemistry {
 

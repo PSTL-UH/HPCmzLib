@@ -5,14 +5,16 @@
 #include "../MzLibUtil/MzLibException.h"
 #include "PeriodicTable.h"
 #include "Constants.h"
+#include <any>
+#include <regex>
 
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Chemistry {
 
-Regex *const ChemicalFormula::FormulaRegex = new Regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
-Regex *const ChemicalFormula::ValidateFormulaRegex = new Regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
+regex *const ChemicalFormula::FormulaRegex = new regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
+regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
 
     ChemicalFormula::ChemicalFormula() {
         setIsotopes(std::unordered_map<Isotope*, int>());

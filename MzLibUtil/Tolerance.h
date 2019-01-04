@@ -34,19 +34,12 @@ namespace MzLibUtil {
     private:
         double privateValue = 0;
 
-//        #region Private Fields
-
         /// <summary>
         /// A regex for parsing a string representation of a tolerance
         /// <para>
         /// i.e., "10 PPM", "-+10 PPM", "5 Absolute", etc...
         /// </para>
         /// </summary>
-        static std::regex *const StringRegex;
-
-//        #endregion Private Fields
-
-//        #region Protected Constructors
 
         /// <summary>
         /// Creates a new tolerance given a unit, value, and whether the tolerance is ±
@@ -56,19 +49,11 @@ namespace MzLibUtil {
     protected:
         Tolerance(double value);
 
-//        #endregion Protected Constructors
-
-//        #region Public Properties
-
         /// <summary>
         /// The value of the tolerance
         /// </summary>
     public:
         double getValue() const;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         /// <summary>
         /// Calculates a tolerance from the string representation
@@ -77,7 +62,7 @@ namespace MzLibUtil {
         /// </para>
         /// </summary>
         /// <param name="s"></param>
-        static Tolerance *ParseToleranceString(const std::wstring &s);
+        static Tolerance *ParseToleranceString(const std::string &s);
 
         /// <summary>
         /// Gets the range of values encompassed by this tolerance
@@ -108,6 +93,5 @@ namespace MzLibUtil {
         /// <returns>Returns true if the value is within this tolerance  </returns>
         virtual bool Within(double experimental, double theoretical) = 0;
 
-//        #endregion Public Methods
     };
 }

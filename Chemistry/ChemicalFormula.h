@@ -59,12 +59,12 @@ namespace Chemistry {
         /// The fourth group is optional and represents the number of isotopes or elements to add, if not present it assumes 1: H2O means 2 Hydrogen and 1 Oxygen
         /// Modified from: http://stackoverflow.com/questions/4116786/parsing-a-chemical-formula-from-a-string-in-c
         /// </summary>
-        static Regex *const FormulaRegex;
+        static regex *const FormulaRegex;
 
         /// <summary>
         /// A wrapper for the formula regex that validates if a string is in the correct chemical formula format or not
         /// </summary>
-        static Regex *const ValidateFormulaRegex;
+        static regex *const ValidateFormulaRegex;
 
         std::wstring formulaString;
 

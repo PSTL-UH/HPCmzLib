@@ -7,9 +7,10 @@ namespace MzLibUtil {
     AbsoluteTolerance::AbsoluteTolerance(double value) : Tolerance(value) {
     }
 
-    std::wstring AbsoluteTolerance::ToString() {
+    std::string AbsoluteTolerance::ToString() {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        return StringHelper::formatSimple(L"{0}{1} Absolute", L"±", getValue().ToString(L"f4", System::Globalization::CultureInfo::InvariantCulture));
+//        return StringHelper::formatSimple(L"{0}{1} Absolute", "±", getValue().ToString("f4", System::Globalization::CultureInfo::InvariantCulture));
+        return StringHelper::formatSimple("{0}{1} Absolute", "±", getValue());
     }
 
     DoubleRange *AbsoluteTolerance::GetRange(double mean) {

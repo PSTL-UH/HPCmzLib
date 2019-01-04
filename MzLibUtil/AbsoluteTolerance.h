@@ -32,7 +32,6 @@ namespace MzLibUtil {
     /// The tolerance, or error, of two points
     /// </summary>
     class AbsoluteTolerance : public Tolerance {
-//        #region Public Constructors
 
         /// <summary>
         /// Creates a new tolerance given a unit, value, and whether the tolerance is ±
@@ -42,12 +41,8 @@ namespace MzLibUtil {
     public:
         AbsoluteTolerance(double value);
 
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
 //        std::wstring ToString() override;
-        std::wstring ToString();
+        std::string ToString();
 
         DoubleRange *GetRange(double mean) override;
 
@@ -57,6 +52,5 @@ namespace MzLibUtil {
 
         bool Within(double experimental, double theoretical) override;
 
-//        #endregion Public Methods
     };
 }
