@@ -37,27 +37,21 @@ namespace Chemistry {
     class Element {
     private:
         int privateAtomicNumber = 0;
-        std::wstring privateAtomicSymbol;
+        std::string privateAtomicSymbol;
         double privateAverageMass = 0;
         Isotope *privatePrincipalIsotope;
 
         // Two data stores for isotopes! An array for fast access and a list for enumeration!
 
-//        #region Private Fields
-
         /// <summary>
         /// The element's isotopes stored based on their mass number
         /// </summary>
-        std::vector<Isotope*> const IsotopesByMassNumber = std::vector<Isotope*>(Constants::MaximumMassNumberPossible + 1);
+        std::vector<Isotope*> IsotopesByMassNumber = std::vector<Isotope*>(Constants::MaximumMassNumberPossible + 1);
 
         /// <summary>
         /// The element's isotopes stored in order they were added
         /// </summary>
-        std::vector<Isotope*> const IsotopesInOrderTheyWereAdded = std::vector<Isotope*>(Constants::MaximumMassNumberPossible + 1);
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
+        std::vector<Isotope*> IsotopesInOrderTheyWereAdded = std::vector<Isotope*>(Constants::MaximumMassNumberPossible + 1);
 
         /// <summary>
         /// Create a new element
@@ -66,11 +60,7 @@ namespace Chemistry {
         /// <param name="atomicNumber">The atomic number of the element</param>
         /// <param name="averageMass">The averageMass of the element</param>
     public:
-        Element(const std::wstring &symbol, int atomicNumber, double averageMass);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        Element(const std::string &symbol, int atomicNumber, double averageMass);
 
         /// <summary>
         /// Gets all isotopes of an element
@@ -85,7 +75,7 @@ namespace Chemistry {
         /// <summary>
         /// The atomic symbol of this element
         /// </summary>
-        std::wstring getAtomicSymbol() const;
+        std::string getAtomicSymbol() const;
 
         /// <summary>
         /// The average mass of all this element's isotopes weighted by their
@@ -101,18 +91,10 @@ namespace Chemistry {
 
         int getProtons() const;
 
-//        #endregion Public Properties
-
-//        #region Public Indexers
-
         /// <summary>
         /// Gets an isotope of this element based on its mass number
         /// </summary>
         Isotope *operator [](int massNumber);
-
-//        #endregion Public Indexers
-
-//        #region Public Methods
 
         /// <summary>
         /// Can use an integer instead of an element anytime you like
@@ -127,14 +109,14 @@ namespace Chemistry {
         /// </summary>
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
 //      static  operator Element*(const std::wstring &atomicSymbol);
-//        operator Element*(const std::wstring &atomicSymbol);
+//        operator Element*(const std::string &atomicSymbol);
 
         /// <summary>
         /// Returns the atomic symbol
         /// </summary>
         /// <returns>The atomic symbol</returns>
 //        std::wstring ToString() override;
-        std::wstring ToString();
+        std::string ToString();
 
         /// <summary>
         /// Add an isotope to this element
@@ -145,6 +127,5 @@ namespace Chemistry {
         /// <returns>The created isotopes that is added to this element</returns>
         void AddIsotope(int massNumber, double atomicMass, double abundance);
 
-//        #endregion Public Methods
     };
 }

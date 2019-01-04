@@ -5,7 +5,7 @@
 namespace Chemistry {
 
     Isotope::Isotope(Chemistry::Element *parentElement, int massNumber, double atomicMass, double abundance) {
-        Element = parentElement;
+        privateElement = parentElement;
         privateMassNumber = massNumber;
         privateAtomicMass = atomicMass;
         privateRelativeAbundance = abundance;
@@ -39,7 +39,7 @@ namespace Chemistry {
         return privateRelativeAbundance;
     }
 
-    std::wstring Isotope::ToString() {
-        return std::wstring::Format(CultureInfo::InvariantCulture, L"{0}{{{1}}}", getElement()->getAtomicSymbol(), getMassNumber());
+    std::string Isotope::ToString() {
+        return StringHelper::formatSimple("{0}{{{1}}}", getElement()->getAtomicSymbol(), getMassNumber());
     }
 }

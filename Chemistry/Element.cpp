@@ -8,7 +8,7 @@ using namespace MzLibUtil;
 
 namespace Chemistry {
 
-    Element::Element(const std::wstring &symbol, int atomicNumber, double averageMass) {
+    Element::Element(const std::string &symbol, int atomicNumber, double averageMass) {
         privateAtomicSymbol = symbol;
         privateAtomicNumber = atomicNumber;
         privateAverageMass = averageMass;
@@ -35,7 +35,7 @@ namespace Chemistry {
         return privateAtomicNumber;
     }
 
-    std::wstring Element::getAtomicSymbol() const {
+    std::string Element::getAtomicSymbol() const {
         return privateAtomicSymbol;
     }
 
@@ -65,17 +65,17 @@ namespace Chemistry {
 //    }
 
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
-//    Element::operator Element*(const std::wstring &atomicSymbol) {
+//    Element::operator Element*(const std::string &atomicSymbol) {
 //        return PeriodicTable::GetElement(atomicSymbol);
 //    }
 
-    std::wstring Element::ToString() {
+    std::string Element::ToString() {
         return getAtomicSymbol();
     }
 
     void Element::AddIsotope(int massNumber, double atomicMass, double abundance) {
         if (IsotopesByMassNumber[massNumber] != nullptr) {
-            throw MzLibException(L"Isotope with mass number " + std::to_wstring(massNumber) + L" already exists!");
+            throw MzLibException("Isotope with mass number " + std::to_string(massNumber) + " already exists!");
         }
         auto isotope = new Isotope(this, massNumber, atomicMass, abundance);
         IsotopesByMassNumber[massNumber] = isotope;

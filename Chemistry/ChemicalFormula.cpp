@@ -13,8 +13,8 @@ using namespace MzLibUtil;
 
 namespace Chemistry {
 
-regex *const ChemicalFormula::FormulaRegex = new regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
-regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
+//regex *const ChemicalFormula::FormulaRegex = new regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
+//regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
 
     ChemicalFormula::ChemicalFormula() {
         setIsotopes(std::unordered_map<Isotope*, int>());
@@ -22,8 +22,8 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
     }
 
     ChemicalFormula::ChemicalFormula(const ChemicalFormula &capFormula) {
-        setIsotopes(std::unordered_map<Isotope*, int>(capFormula->getIsotopes()));
-        setElements(std::unordered_map<Element*, int>(capFormula->getElements()));
+        setIsotopes(std::unordered_map<Isotope*, int>(capFormula.getIsotopes()));
+        setElements(std::unordered_map<Element*, int>(capFormula.getElements()));
     }
 
     double ChemicalFormula::getAverageMass() const {
@@ -65,8 +65,8 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
         return getIsotopes().size();
     }
 
-    std::wstring ChemicalFormula::getFormula() const {
-        if (formulaString == L"") {
+    std::string ChemicalFormula::getFormula() const {
+        if (formulaString == "") {
             formulaString = GetHillNotation();
         }
         return formulaString;
@@ -81,8 +81,8 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
     }
 
     double ChemicalFormula::getHydrogenCarbonRatio() const {
-        int carbonCount = CountWithIsotopes(L"C");
-        int hydrogenCount = CountWithIsotopes(L"H");
+        int carbonCount = CountWithIsotopes("C");
+        int hydrogenCount = CountWithIsotopes("H");
         return hydrogenCount / static_cast<double>(carbonCount);
     }
 
@@ -112,26 +112,39 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
         return returnFormula;
     }
 
-    ChemicalFormula *ChemicalFormula::ParseFormula(const std::wstring &formula) {
+    ChemicalFormula *ChemicalFormula::ParseFormula(const std::string &formula) {
         ChemicalFormula *f = new ChemicalFormula();
 
+//regex *const ChemicalFormula::FormulaRegex = new regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
+//regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
+        std::regex FormulaRegex("(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)");
+        std::regex ValidateFormulaRegex("^((\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*))+$");
+#if ORIG        
         if (!ValidateFormulaRegex->IsMatch(formula)) {
+#endif
+            if ( !std::regex_match(formula, ValidateFormulaRegex) ){
             delete f;
-            throw MzLibException(L"Input string for chemical formula was in an incorrect format: " + formula);
+            throw MzLibException("Input string for chemical formula was in an incorrect format: " + formula);
         }
 
+        std::smatch match;
+#if ORIG
         for (auto match : FormulaRegex->Matches(formula)) {
-            std::wstring chemsym = match->Groups[1]->Value; // Group 1: Chemical Symbol
+#endif
+        std::regex_search(formula, match, FormulaRegex);
+//EG TODO: will need to loop over the individual elements. For now,
+//        just doing the first one.
+           std::string chemsym = match[1]; // Group 1: Chemical Symbol
 
             Element *element = PeriodicTable::GetElement(chemsym);
 
-            int sign = match->Groups[3].Success ? -1 : 1;
+            int sign = match[3] ? -1 : 1;
 
-            int numofelem = match->Groups[4].Success ? std::stoi(match->Groups[4]->Value, CultureInfo::InvariantCulture) : 1;
+            int numofelem = match[4] ? std::stoi(match[4]) : 1;
 
-            if (match->Groups[2].Success) { // Group 2 (optional): Isotope Mass Number
+            if (match[2]) { // Group 2 (optional): Isotope Mass Number
                 // Adding isotope!
-                f->Add(element[std::stoi(match->Groups[2]->Value, CultureInfo::InvariantCulture)], sign * numofelem);
+                f->Add(element[std::stoi(match[2]], sign * numofelem);
             }
             else {
                 // Adding element!
@@ -145,7 +158,7 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
 
     int ChemicalFormula::NeutronCount() {
         if (getElements().size() > 0) {
-            throw MzLibException(L"Cannot know for sure what the number of neutrons is!");
+            throw MzLibException("Cannot know for sure what the number of neutrons is!");
         }
         return getIsotopes().Sum([&] (std::any b) {
             return b::Key->Neutrons * b->Value;
@@ -199,7 +212,7 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
                 getElements().erase(element);
             }
         }
-        formulaString = L"";
+        formulaString = "";
     }
 
     void ChemicalFormula::Add(Isotope *isotope, int count) {
@@ -215,7 +228,7 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
                 getIsotopes().erase(isotope);
             }
         }
-        formulaString = L"";
+        formulaString = "";
     }
 
     void ChemicalFormula::Remove(IHasChemicalFormula *item) {
@@ -259,7 +272,7 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
     void ChemicalFormula::Clear() {
         setIsotopes(std::unordered_map<Isotope*, int>());
         setElements(std::unordered_map<Element*, int>());
-        formulaString = L"";
+        formulaString = "";
     }
 
     bool ChemicalFormula::ContainsIsotopesOf(Element *element) {
@@ -338,52 +351,52 @@ regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRe
         return true;
     }
 
-    std::wstring ChemicalFormula::GetHillNotation() {
+    std::string ChemicalFormula::GetHillNotation() {
         StringBuilder *s = new StringBuilder();
 
         // Find carbons
         if (getElements().find(PeriodicTable::GetElement(Constants::CarbonAtomicNumber)) != getElements().end()) {
-            s->append(L"C" + (getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)] == 1 ? L"" : L"" + std::to_wstring(getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)])));
+            s->append("C" + (getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)] == 1 ? "" : "" + std::to_string(getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)])));
         }
 
         // Find carbon isotopes
         for (auto i : PeriodicTable::GetElement(Constants::CarbonAtomicNumber)->getIsotopes()) {
             if (getIsotopes().find(i) != getIsotopes().end()) {
-                s->append(L"C{" + std::to_wstring(i->getMassNumber()) + L"}" + (getIsotopes()[i] == 1 ? L"" : L"" + std::to_wstring(getIsotopes()[i])));
+                s->append("C{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" + std::to_string(getIsotopes()[i])));
             }
         }
 
         // Find hydrogens
         if (getElements().find(PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) != getElements().end()) {
-            s->append(L"H" + (getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)] == 1 ? L"" : L"" + std::to_wstring(getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)])));
+            s->append("H" + (getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)] == 1 ? "" : "" + std::to_string(getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)])));
         }
 
         // Find hydrogen isotopes
         for (auto i : PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)->getIsotopes()) {
             if (getIsotopes().find(i) != getIsotopes().end()) {
-                s->append(L"H{" + std::to_wstring(i->getMassNumber()) + L"}" + (getIsotopes()[i] == 1 ? L"" : L"" + std::to_wstring(getIsotopes()[i])));
+                s->append("H{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" + std::to_string(getIsotopes()[i])));
             }
         }
 
-        std::vector<std::wstring> otherParts;
+        std::vector<std::string> otherParts;
 
         // Find other elements
         for (auto i : getElements()) {
             if (i.Key != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.Key != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.Key->AtomicSymbol + (i.Value == 1 ? L"" : L"" + i.Value));
+                otherParts.push_back(i.Key->AtomicSymbol + (i.Value == 1 ? "" : "" + i.Value));
             }
         }
 
         // Find other isotopes
         for (auto i : getIsotopes()) {
             if (i.Key->Element != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.Key->Element != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.Key->Element->AtomicSymbol + L"{" + i.Key->MassNumber + L"}" + (i.Value == 1 ? L"" : L"" + i.Value));
+                otherParts.push_back(i.Key->Element->AtomicSymbol + "{" + i.Key->MassNumber + "}" + (i.Value == 1 ? "" : "" + i.Value));
             }
         }
 
         std::sort(otherParts.begin(), otherParts.end());
 
         delete s;
-        return s + std::wstring::Join(L"", otherParts);
+        return s + std::string::Join("", otherParts);
     }
 }

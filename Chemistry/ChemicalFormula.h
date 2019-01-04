@@ -42,7 +42,8 @@ namespace Chemistry {
     /// </summary>
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
 //ORIGINAL LINE: [Serializable] public sealed class ChemicalFormula : IEquatable<ChemicalFormula>
-    class ChemicalFormula final : public IEquatable<ChemicalFormula*> {
+//    class ChemicalFormula final : public IEquatable<ChemicalFormula*> {
+    class ChemicalFormula final {
     private:
         std::unordered_map<Isotope*, int> privateIsotopes;
         std::unordered_map<Element*, int> privateElements;
@@ -58,15 +59,16 @@ namespace Chemistry {
         /// The third group is optional and indicates if we are adding or subtracting the elements form the formula, C-2C{13}5 would mean first subtract 2 carbons and then add 5 carbon-13
         /// The fourth group is optional and represents the number of isotopes or elements to add, if not present it assumes 1: H2O means 2 Hydrogen and 1 Oxygen
         /// Modified from: http://stackoverflow.com/questions/4116786/parsing-a-chemical-formula-from-a-string-in-c
+
         /// </summary>
-        static regex *const FormulaRegex;
+        // EG removed: static regex *const FormulaRegex;
 
         /// <summary>
         /// A wrapper for the formula regex that validates if a string is in the correct chemical formula format or not
         /// </summary>
-        static regex *const ValidateFormulaRegex;
+        // EG removed: static regex *const ValidateFormulaRegex;
 
-        std::wstring formulaString;
+        std::string formulaString;
 
 
     public:
@@ -102,7 +104,7 @@ namespace Chemistry {
         /// <summary>
         /// Gets the string representation (Hill Notation) of this chemical formula
         /// </summary>
-        std::wstring getFormula() const;
+        std::string getFormula() const;
 
         int getProtonCount() const;
 
@@ -124,7 +126,7 @@ namespace Chemistry {
         /// to this chemical formula
         /// </summary>
         /// <param name="formula">the Chemical Formula to parse</param>
-        static ChemicalFormula *ParseFormula(const std::wstring &formula);
+        static ChemicalFormula *ParseFormula(const std::string &formula);
 
         int NeutronCount();
 
@@ -257,14 +259,16 @@ namespace Chemistry {
 
         int CountSpecificIsotopes(Element *element, int massNumber);
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
-        bool Equals(ChemicalFormula *other) override;
+//        bool Equals(ChemicalFormula *other) override;
+        bool Equals(ChemicalFormula *other);
 
         /// <summary>
         /// Produces the Hill Notation of the chemical formula
         /// </summary>
     private:
-        std::wstring GetHillNotation();
+        std::string GetHillNotation();
     };
 }

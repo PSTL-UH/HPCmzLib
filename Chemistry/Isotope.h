@@ -36,8 +36,6 @@ namespace Chemistry {
         int privateMassNumber = 0;
         double privateRelativeAbundance = 0;
 
-//        #region Internal Constructors
-
         /// <summary>
         /// Create a new isotope
         /// </summary>
@@ -47,10 +45,6 @@ namespace Chemistry {
         /// <param name="abundance">The natural relative abundance of the isotope</param>
     public:
         Isotope(Chemistry::Element *parentElement, int massNumber, double atomicMass, double abundance);
-
-//        #endregion Internal Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// The atomic number of the isotope's parent element (also the number of protons)
@@ -87,17 +81,12 @@ namespace Chemistry {
         /// </summary>
         double getRelativeAbundance() const;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
         /// <summary>
         /// Returns a textual representation of this isotope in the following format: H{1} He{4} O{16}
         /// </summary>
         /// <returns>The atomic symbol and mass number combined</returns>
 //        std::wstring ToString() override;
-        std::wstring ToString();
+        std::string ToString();
 
-//        #endregion Public Methods
     };
 }
