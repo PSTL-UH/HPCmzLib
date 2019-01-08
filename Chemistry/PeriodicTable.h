@@ -40,7 +40,7 @@ namespace Chemistry {
         /// </summary>
     private:
 //        static const std::unordered_map<std::wstring, Element*> _elements;
-        static std::unordered_map<std::wstring, Element*> _elements;
+        static std::unordered_map<std::string, Element*> _elements;
 
         /// <summary>
         /// The internal dictionary housing elements, keyed by their unique atomic number
@@ -57,7 +57,7 @@ namespace Chemistry {
         /// <summary>
         /// Fast method for getting an element by its atomic symbol
         /// </summary>
-        static Element *GetElement(const std::wstring &atomicSymbol);
+        static Element *GetElement(const std::string &atomicSymbol);
 
         /// <summary>
         /// Fast method for getting an element by its atomic number

@@ -26,41 +26,25 @@ namespace Proteomics { class OldSchoolModification; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
     class ModificationWithMultiplePossibilitiesCollection : public OldSchoolModification, public std::vector<OldSchoolModification*> {
-//        #region Private Fields
 
     private:
         SortedList<double, OldSchoolModification*> *const _modifications;
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         virtual ~ModificationWithMultiplePossibilitiesCollection() {
             delete _modifications;
         }
 
-        ModificationWithMultiplePossibilitiesCollection(const std::wstring &name, ModificationSites sites);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites);
 
         int getCount() const;
 
-//        #endregion Public Properties
-
-//        #region Public Indexers
-
         OldSchoolModification *operator [](int index);
-
-//        #endregion Public Indexers
-
-//        #region Public Methods
 
         void AddModification(OldSchoolModification *modification);
 
@@ -70,6 +54,5 @@ namespace Proteomics {
 
         System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
 
-//        #endregion Public Methods
     };
 }

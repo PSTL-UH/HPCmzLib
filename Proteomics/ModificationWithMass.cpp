@@ -4,7 +4,7 @@
 
 namespace Proteomics {
 
-    ModificationWithMass::ModificationWithMass(const std::wstring &id, const std::wstring &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, double monoisotopicMass, std::unordered_map<std::wstring, std::vector<std::wstring>> &externalDatabaseReferences, std::vector<std::wstring> &keywords, std::vector<double> &neutralLosses, std::vector<double> &diagnosticIons) : ModificationWithLocation(id, modificationType, motif, terminusLocalization, externalDatabaseReferences, keywords), monoisotopicMass(monoisotopicMass), diagnosticIons(diagnosticIons ? diagnosticIons : std::vector<double>()), neutralLosses(neutralLosses ? neutralLosses : std::vector<double> {0}) {
+    ModificationWithMass::ModificationWithMass(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, double monoisotopicMass, std::unordered_map<std::string, std::vector<std::string>> &externalDatabaseReferences, std::vector<std::string> &keywords, std::vector<double> &neutralLosses, std::vector<double> &diagnosticIons) : ModificationWithLocation(id, modificationType, motif, terminusLocalization, externalDatabaseReferences, keywords), monoisotopicMass(monoisotopicMass), diagnosticIons(diagnosticIons ? diagnosticIons : std::vector<double>()), neutralLosses(neutralLosses ? neutralLosses : std::vector<double> {0}) {
 
         // Optional
 
@@ -16,17 +16,17 @@ namespace Proteomics {
         }).ToList();
     }
 
-    std::wstring ModificationWithMass::ToString() {
+    std::string ModificationWithMass::ToString() {
         StringBuilder *sb = new StringBuilder();
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         sb->appendLine(ModificationWithLocation::ToString());
         if (neutralLosses.size()() != 1 || neutralLosses.front() != 0) {
-            sb->appendLine(L"NL   " + std::wstring::Join(L" or ", neutralLosses.Select([&] (std::any b) {
+            sb->appendLine(L"NL   " + std::string::Join(L" or ", neutralLosses.Select([&] (std::any b) {
                 b.ToString(CultureInfo::InvariantCulture);
             })));
         }
         if (diagnosticIons.size()() > 0) {
-            sb->appendLine(L"DI   " + std::wstring::Join(L" or ", diagnosticIons.Select([&] (std::any b) {
+            sb->appendLine(L"DI   " + std::string::Join(L" or ", diagnosticIons.Select([&] (std::any b) {
                 b.ToString(CultureInfo::InvariantCulture);
             })));
         }

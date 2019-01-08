@@ -29,6 +29,7 @@ namespace Chemistry { class ChemicalFormula; }
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Chemistry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
@@ -36,20 +37,10 @@ namespace Proteomics {
     private:
         double privateMonoisotopicMass = 0;
 
-//        #region Private Fields
-
         const std::vector<IHasMass*> _modifications;
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         ModificationCollection(std::vector<IHasMass> &mods);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         double getMonoisotopicMass() const override;
         void setMonoisotopicMass(double value) override;
@@ -60,11 +51,7 @@ namespace Proteomics {
 
         ChemicalFormula *getThisChemicalFormula() const override;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
+        std::string ToString() override;
 
         void Add(IHasMass *item) override;
 
@@ -82,6 +69,5 @@ namespace Proteomics {
 
         System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
 
-//        #endregion Public Methods
     };
 }

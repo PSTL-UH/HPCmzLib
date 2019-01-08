@@ -8,7 +8,7 @@ namespace Proteomics {
     Peptide::Peptide() {
     }
 
-    Peptide::Peptide(const std::wstring &sequence) : AminoAcidPolymer(sequence) {
+    Peptide::Peptide(const std::string &sequence) : AminoAcidPolymer(sequence) {
     }
 
     Peptide::Peptide(AminoAcidPolymer *aminoAcidPolymer) : Peptide(aminoAcidPolymer, true) {

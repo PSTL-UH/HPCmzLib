@@ -33,22 +33,16 @@ namespace Proteomics {
     private:
         ChemicalFormula *privateThisChemicalFormula;
 
-//        #region Public Constructors
-
     public:
         OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula);
 
         OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, ModificationSites sites);
 
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::wstring &name);
+        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name);
 
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::wstring &name, ModificationSites sites);
+        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name, ModificationSites sites);
 
         OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// The Chemical Formula of this modifications
@@ -56,6 +50,5 @@ namespace Proteomics {
         ChemicalFormula *getThisChemicalFormula() const override;
         void setThisChemicalFormula(ChemicalFormula *value) override;
 
-//        #endregion Public Properties
     };
 }

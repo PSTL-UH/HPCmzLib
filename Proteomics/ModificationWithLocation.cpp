@@ -4,10 +4,10 @@
 
 namespace Proteomics {
 
-const std::unordered_map<std::wstring, TerminusLocalization> ModificationWithLocation::terminusLocalizationTypeCodes;
+const std::unordered_map<std::string, TerminusLocalization> ModificationWithLocation::terminusLocalizationTypeCodes;
 
     ModificationWithLocation::StaticConstructor::StaticConstructor() {
-        terminusLocalizationTypeCodes = std::unordered_map<std::wstring, TerminusLocalization> {
+        terminusLocalizationTypeCodes = std::unordered_map<std::string, TerminusLocalization> {
             {L"N-terminal.", TerminusLocalization::NProt}, {
             {L"Peptide N-terminal.", TerminusLocalization::NPep}, {
             {L"Anywhere.", TerminusLocalization::Any}, {
@@ -16,12 +16,12 @@ const std::unordered_map<std::wstring, TerminusLocalization> ModificationWithLoc
 
 ModificationWithLocation::StaticConstructor ModificationWithLocation::staticConstructor;
 
-    ModificationWithLocation::ModificationWithLocation(const std::wstring &id, const std::wstring &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, std::unordered_map<std::wstring, std::vector<std::wstring>> &linksToOtherDbs, std::vector<std::wstring> &keywords) : Modification(id, modificationType), linksToOtherDbs(linksToOtherDbs ? linksToOtherDbs : std::unordered_map<std::wstring, std::vector<std::wstring>>()), keywords(keywords ? keywords : std::vector<std::wstring>()), terminusLocalization(terminusLocalization), motif(motif) {
+    ModificationWithLocation::ModificationWithLocation(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs, std::vector<std::string> &keywords) : Modification(id, modificationType), linksToOtherDbs(linksToOtherDbs ? linksToOtherDbs : std::unordered_map<std::string, std::vector<std::string>>()), keywords(keywords ? keywords : std::vector<std::string>()), terminusLocalization(terminusLocalization), motif(motif) {
 
         // Optional
     }
 
-    std::wstring ModificationWithLocation::ToString() {
+    std::string ModificationWithLocation::ToString() {
         StringBuilder *sb = new StringBuilder();
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         sb->appendLine(Modification::ToString());

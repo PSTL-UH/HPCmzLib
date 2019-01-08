@@ -58,13 +58,11 @@ namespace Proteomics {
     };
 
     class ModificationSiteExtensions final {
-//        #region Public Methods
 
     public:
         static std::vector<ModificationSites> EnumerateActiveSites(ModificationSites sites);
 
         static bool ContainsSites(ModificationSites sites, ModificationSites otherSites);
 
-//        #endregion Public Methods
     };
 }

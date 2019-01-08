@@ -8,7 +8,7 @@
 
 namespace Proteomics {
 
-    Protein::Protein(const std::wstring &sequence, const std::wstring &accession, std::vector<std::tuple<std::wstring, std::wstring>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::wstring &name, const std::wstring &full_name, bool isDecoy, bool isContaminant, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::wstring &databaseFilePath) {
+    Protein::Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name, const std::string &full_name, bool isDecoy, bool isContaminant, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::string &databaseFilePath) {
         // Mandatory
         BaseSequence = sequence;
         Accession = accession;
@@ -19,7 +19,7 @@ namespace Proteomics {
         IsContaminant = isContaminant;
         DatabaseFilePath = databaseFilePath;
 
-        GeneNames = gene_names ? gene_names : std::vector<std::tuple<std::wstring, std::wstring>>();
+        GeneNames = gene_names ? gene_names : std::vector<std::tuple<std::string, std::string>>();
         ProteolysisProducts = proteolysisProducts ? proteolysisProducts : std::vector<ProteolysisProduct*>();
         SequenceVariations = sequenceVariations ? sequenceVariations : std::vector<SequenceVariation*>();
         OneBasedPossibleLocalizedModifications = oneBasedModifications ? oneBasedModifications : std::unordered_map<int, std::vector<Modification*>>();
@@ -31,15 +31,15 @@ namespace Proteomics {
         return privateOneBasedPossibleLocalizedModifications;
     }
 
-    std::vector<std::tuple<std::wstring, std::wstring>> Protein::getGeneNames() const {
+    std::vector<std::tuple<std::string, std::string>> Protein::getGeneNames() const {
         return privateGeneNames;
     }
 
-    std::wstring Protein::getAccession() const {
+    std::string Protein::getAccession() const {
         return privateAccession;
     }
 
-    std::wstring Protein::getBaseSequence() const {
+    std::string Protein::getBaseSequence() const {
         return privateBaseSequence;
     }
 
@@ -63,7 +63,7 @@ namespace Proteomics {
         return privateDatabaseReferences;
     }
 
-    std::wstring Protein::getDatabaseFilePath() const {
+    std::string Protein::getDatabaseFilePath() const {
         return privateDatabaseFilePath;
     }
 
@@ -71,15 +71,15 @@ namespace Proteomics {
         return getBaseSequence().length();
     }
 
-    std::wstring Protein::getFullDescription() const {
+    std::string Protein::getFullDescription() const {
         return getAccession() + L"|" + getName() + L"|" + getFullName();
     }
 
-    std::wstring Protein::getName() const {
+    std::string Protein::getName() const {
         return privateName;
     }
 
-    std::wstring Protein::getFullName() const {
+    std::string Protein::getFullName() const {
         return privateFullName;
     }
 
@@ -87,7 +87,7 @@ namespace Proteomics {
         return privateIsContaminant;
     }
 
-    wchar_t Protein::operator [](int zeroBasedIndex) {
+    char Protein::operator [](int zeroBasedIndex) {
         return getBaseSequence()[zeroBasedIndex];
     }
 }

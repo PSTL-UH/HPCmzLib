@@ -36,12 +36,11 @@ namespace Proteomics {
         Residue *privatePreviousResidue;
         Residue *privateNextResidue;
 
-//        #region Public Constructors
 
     public:
         Peptide();
 
-        Peptide(const std::wstring &sequence);
+        Peptide(const std::string &sequence);
 
         Peptide(AminoAcidPolymer *aminoAcidPolymer);
 
@@ -55,10 +54,6 @@ namespace Proteomics {
         Peptide(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length);
 
         Peptide(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length, bool includeModifications);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// The amino acid number this peptide is located in its parent
@@ -90,14 +85,9 @@ namespace Proteomics {
         Residue *getNextResidue() const;
         void setNextResidue(Residue *value);
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
         std::vector<Peptide*> GenerateAllModificationCombinations();
 
         Peptide *GetSubPeptide(int firstResidue, int length);
 
-//        #endregion Public Methods
     };
 }

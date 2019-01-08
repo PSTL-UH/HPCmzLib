@@ -2,7 +2,7 @@
 
 namespace Proteomics {
 
-    SequenceVariation::SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::wstring &OriginalSequence, const std::wstring &VariantSequence, const std::wstring &Description) {
+    SequenceVariation::SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description) {
         this->setOneBasedBeginPosition(OneBasedBeginPosition);
         this->setOneBasedEndPosition(OneBasedEndPosition);
         this->setOriginalSequence(OriginalSequence);
@@ -10,7 +10,7 @@ namespace Proteomics {
         this->setDescription(Description);
     }
 
-    SequenceVariation::SequenceVariation(int OneBasedPosition, const std::wstring &OriginalSequence, const std::wstring &VariantSequence, const std::wstring &Description) : SequenceVariation(OneBasedPosition, OneBasedPosition, OriginalSequence, VariantSequence, Description) {
+    SequenceVariation::SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description) : SequenceVariation(OneBasedPosition, OneBasedPosition, OriginalSequence, VariantSequence, Description) {
     }
 
     int SequenceVariation::getOneBasedBeginPosition() const {
@@ -29,27 +29,27 @@ namespace Proteomics {
         privateOneBasedEndPosition = value;
     }
 
-    std::wstring SequenceVariation::getOriginalSequence() const {
+    std::string SequenceVariation::getOriginalSequence() const {
         return privateOriginalSequence;
     }
 
-    void SequenceVariation::setOriginalSequence(const std::wstring &value) {
+    void SequenceVariation::setOriginalSequence(const std::string &value) {
         privateOriginalSequence = value;
     }
 
-    std::wstring SequenceVariation::getVariantSequence() const {
+    std::string SequenceVariation::getVariantSequence() const {
         return privateVariantSequence;
     }
 
-    void SequenceVariation::setVariantSequence(const std::wstring &value) {
+    void SequenceVariation::setVariantSequence(const std::string &value) {
         privateVariantSequence = value;
     }
 
-    std::wstring SequenceVariation::getDescription() const {
+    std::string SequenceVariation::getDescription() const {
         return privateDescription;
     }
 
-    void SequenceVariation::setDescription(const std::wstring &value) {
+    void SequenceVariation::setDescription(const std::string &value) {
         privateDescription = value;
     }
 

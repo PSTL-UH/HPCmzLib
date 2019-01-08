@@ -29,24 +29,22 @@ namespace Chemistry { class ChemicalFormula; }
 // Modified work copyright 2016 Stefan Solntsev
 //
 // This file (AminoAcidPolymer.cs) is part of Proteomics.
-//
-// Proteomics is free software: you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published
-// by the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Proteomics is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
-// License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
-using namespace Chemistry;
-
+/
+// Proteomics is free software: you can redistribute it and/or modify i
+// under the terms of the GNU Lesser General Public License as publishe
+// by the Free Software Foundation, either version 3 of the License, o
+// (at your option) any later version
+/
+// Proteomics is distributed in the hope that it will be useful, but WITHOU
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY o
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Publi
+// License for more details
+/
+// You should have received a copy of the GNU Lesser General Publi
+// License along with Proteomics. If not, see <http://www.gnu.org/licenses/>
+using namespace Chemistry
 #include "MzLibUtil.h"
-using namespace MzLibUtil;
-
+using namespace MzLibUtil
 namespace Proteomics {
     /// <summary>
     /// A linear polymer of amino acids
@@ -55,8 +53,6 @@ namespace Proteomics {
     private:
         int privateLength = 0;
         double privateMonoisotopicMass = 0;
-
-//        #region Private Fields
 
         /// <summary>
         /// The C-terminus chemical formula cap. This is different from the C-Terminus modification.
@@ -79,10 +75,6 @@ namespace Proteomics {
         /// </summary>
         std::vector<Residue*> residues;
 
-//        #endregion Private Fields
-
-//        #region Protected Constructors
-
     public:
         virtual ~AminoAcidPolymer() {
             delete _cTerminus;
@@ -92,17 +84,13 @@ namespace Proteomics {
     protected:
         AminoAcidPolymer();
 
-        AminoAcidPolymer(const std::wstring &sequence);
+        AminoAcidPolymer(const std::string &sequence);
 
-        AminoAcidPolymer(const std::wstring &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm);
+        AminoAcidPolymer(const std::string &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm);
 
         AminoAcidPolymer(AminoAcidPolymer *aminoAcidPolymer, bool includeModifications);
 
         AminoAcidPolymer(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length, bool includeModifications);
-
-//        #endregion Protected Constructors
-
-//        #region Public Properties
 
     public:
         ReadOnlyCollection<IHasMass*> *getModifications() const;
@@ -135,12 +123,12 @@ namespace Proteomics {
         /// Returns the amino acid sequence with all isoleucines (I) replaced with leucines (L);
         /// </summary>
         /// <returns>The amino acid sequence with all I's into L's</returns>
-        virtual std::wstring getBaseLeucineSequence() const;
+        virtual std::string getBaseLeucineSequence() const;
 
         /// <summary>
         /// Gets the base amino acid sequence
         /// </summary>
-        std::wstring getBaseSequence() const;
+        std::string getBaseSequence() const;
 
         /// <summary>
         /// Gets or sets the modification of the C terminus on this amino acid polymer
@@ -153,10 +141,6 @@ namespace Proteomics {
         /// </summary>
         IHasMass *getNTerminusModification() const;
         void setNTerminusModification(IHasMass *value);
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         /// <summary>
         /// Returns all fragments that are present in either fragmentation of A or B, but not in both
@@ -174,9 +158,9 @@ namespace Proteomics {
         /// <param name="methionineInitiator"></param>
         /// <param name="semiDigestion"></param>
         /// <returns>A collection of clevage points and the length of the cut (Item1 = index, Item2 = length)</returns>
-        static std::vector<DigestionPointAndLength*> GetDigestionPointsAndLengths(const std::wstring &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
+        static std::vector<DigestionPointAndLength*> GetDigestionPointsAndLengths(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
 
-        static std::vector<int> GetCleavageIndexes(const std::wstring &sequence, std::vector<IProtease*> &proteases);
+        static std::vector<int> GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases);
 
         /// <summary>
         /// Gets the location of all the possible cleavage points for a given sequence and set of proteases
@@ -185,13 +169,13 @@ namespace Proteomics {
         /// <param name="proteases">The proteases to cleave with</param>
         /// <param name="includeTermini">Include the N and C terminus (-1 and Length + 1)</param>
         /// <returns>A collection of all the sites where the proteases would cleave</returns>
-        static std::vector<int> GetCleavageIndexes(const std::wstring &sequence, std::vector<IProtease*> &proteases, bool includeTermini);
+        static std::vector<int> GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases, bool includeTermini);
 
-        static std::vector<std::wstring> Digest(const std::wstring &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
+        static std::vector<std::string> Digest(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
 
-        static std::vector<std::wstring> Digest(AminoAcidPolymer *sequence, IProtease *protease);
+        static std::vector<std::string> Digest(AminoAcidPolymer *sequence, IProtease *protease);
 
-        static std::vector<std::wstring> Digest(AminoAcidPolymer *polymer, IProtease *protease, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
+        static std::vector<std::string> Digest(AminoAcidPolymer *polymer, IProtease *protease, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion);
 
         Residue *GetResidue(int position);
 
@@ -200,7 +184,7 @@ namespace Proteomics {
         /// </summary>
         /// <param name="residue">The character code for the amino acid residue</param>
         /// <returns>True if any amino acid residue is the same as the specified character</returns>
-        bool Contains(wchar_t residue);
+        bool Contains(char residue);
 
         /// <summary>
         /// Checks if the amino acid residue is contained in this polymer
@@ -209,9 +193,9 @@ namespace Proteomics {
         /// <returns>True if the polymer contains the specified residue, False otherwise</returns>
         bool Contains(Residue *residue);
 
-        std::wstring GetSequenceWithModifications();
+        std::string GetSequenceWithModifications();
 
-        std::wstring GetSequenceWithModifications(bool leucineSequence);
+        std::string GetSequenceWithModifications(bool leucineSequence);
 
         /// <summary>
         /// Gets the total number of amino acid residues in this amino acid polymer
@@ -227,13 +211,13 @@ namespace Proteomics {
         /// </summary>
         /// <param name="residueLetter">The residue letter to search for</param>
         /// <returns>The number of amino acid residues that have the same letter in this polymer</returns>
-        int ResidueCount(wchar_t residueLetter);
+        int ResidueCount(char residueLetter);
 
-        int ResidueCount(wchar_t residueLetter, int index, int length);
+        int ResidueCount(char residueLetter, int index, int length);
 
         int ResidueCount(Residue *aminoAcid, int index, int length);
 
-        int ElementCountWithIsotopes(const std::wstring &element);
+        int ElementCountWithIsotopes(const std::string &element);
 
         int SpecificIsotopeCount(Isotope *isotope);
 
@@ -303,7 +287,7 @@ namespace Proteomics {
         /// <param name="modification">The modification to set</param>
         /// <param name="letter">The residue character to set the modification at</param>
         /// <returns>The number of modifications added to this amino acid polymer</returns>
-        virtual int SetModification(IHasMass *modification, wchar_t letter);
+        virtual int SetModification(IHasMass *modification, char letter);
 
         /// <summary>
         /// Sets the modification at specific sites on this amino acid polymer
@@ -388,7 +372,7 @@ namespace Proteomics {
         /// <returns></returns>
         ChemicalFormula *GetChemicalFormula();
 
-        std::wstring ToString() override;
+        std::string ToString() override;
 
         int GetHashCode() override;
 
@@ -396,9 +380,6 @@ namespace Proteomics {
 
         bool Equals(AminoAcidPolymer *other) override;
 
-//        #endregion Public Methods
-
-//        #region Private Methods
 
     private:
         void ReplaceTerminus(IHasChemicalFormula *&terminus, IHasChemicalFormula *value);
@@ -415,41 +396,22 @@ namespace Proteomics {
         /// </summary>
         /// <param name="sequence"></param>
         /// <returns></returns>
-        void ParseSequence(const std::wstring &sequence);
-
-//        #endregion Private Methods
-
-//        #region Private Classes
+        void ParseSequence(const std::string &sequence);
 
     private:
         class ModWithOnlyMass : public IHasMass {
-//            #region Private Fields
 
         private:
             const double mass;
 
-//            #endregion Private Fields
-
-//            #region Public Constructors
-
         public:
             ModWithOnlyMass(double mass);
 
-//            #endregion Public Constructors
-
-//            #region Public Properties
-
             double getMonoisotopicMass() const override;
 
-//            #endregion Public Properties
+            std::string ToString() override;
 
-//            #region Public Methods
-
-            std::wstring ToString() override;
-
-//            #endregion Public Methods
         };
 
-//        #endregion Private Classes
     };
 }

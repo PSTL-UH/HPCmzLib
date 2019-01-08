@@ -32,11 +32,9 @@ namespace Proteomics {
     /// </summary>
     class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
     private:
-        std::wstring privateName;
+        std::string privateName;
         double privateMonoisotopicMass = 0;
         ModificationSites privateSites = static_cast<ModificationSites>(0);
-
-//        #region Public Constructors
 
     public:
         OldSchoolModification(const OldSchoolModification &modification);
@@ -45,19 +43,15 @@ namespace Proteomics {
 
         OldSchoolModification(double monoMass);
 
-        OldSchoolModification(double monoMass, const std::wstring &name);
+        OldSchoolModification(double monoMass, const std::string &name);
 
-        OldSchoolModification(double monoMass, const std::wstring &name, ModificationSites sites);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        OldSchoolModification(double monoMass, const std::string &name, ModificationSites sites);
 
         /// <summary>
         /// The name of the modification
         /// </summary>
-        std::wstring getName() const;
-        void setName(const std::wstring &value);
+        std::string getName() const;
+        void setName(const std::string &value);
 
         /// <summary>
         /// The monoisotopic mass of the modification, commoningly known as the delta mass
@@ -74,13 +68,9 @@ namespace Proteomics {
         /// <summary>
         /// Displays the name of the mod and the sites it modified in a formated string
         /// </summary>
-        std::wstring getNameAndSites() const;
+        std::string getNameAndSites() const;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
+        std::string ToString() override;
 
         int GetHashCode() override;
 
@@ -88,6 +78,5 @@ namespace Proteomics {
 
         bool Equals(OldSchoolModification *other) override;
 
-//        #endregion Public Methods
     };
 }

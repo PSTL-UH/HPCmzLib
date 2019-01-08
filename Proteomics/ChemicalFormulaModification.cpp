@@ -12,10 +12,10 @@ namespace Proteomics {
         setName(getThisChemicalFormula()->getFormula());
     }
 
-    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::wstring &name) : OldSchoolChemicalFormulaModification(chemicalFormula, name, ModificationSites::Any) {
+    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name) : OldSchoolChemicalFormulaModification(chemicalFormula, name, ModificationSites::Any) {
     }
 
-    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::wstring &name, ModificationSites sites) : OldSchoolModification(chemicalFormula->getMonoisotopicMass(), name, sites) {
+    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name, ModificationSites sites) : OldSchoolModification(chemicalFormula->getMonoisotopicMass(), name, sites) {
         setThisChemicalFormula(chemicalFormula);
     }
 

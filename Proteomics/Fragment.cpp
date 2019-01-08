@@ -1,7 +1,6 @@
 ﻿#include "Fragment.h"
 #include "AminoAcidPolymer.h"
 #include "Terminus.h"
-
 #include "../MzLibUtil/MzLibUtil.h"
 
 using namespace Chemistry;
@@ -68,8 +67,8 @@ namespace Proteomics {
         }
     }
 
-    std::wstring Fragment::getSequence() const {
-        std::wstring parentSeq = getParent()->getBaseSequence();
+    std::string Fragment::getSequence() const {
+        std::string parentSeq = getParent()->getBaseSequence();
         if (getFragmentType()::GetTerminus() == Terminus::N) {
             return parentSeq.substr(0, getNumber());
         }
@@ -77,8 +76,8 @@ namespace Proteomics {
         return parentSeq.substr(parentSeq.length() - getNumber(), getNumber());
     }
 
-    std::wstring Fragment::ToString() {
-        return std::wstring::Format(CultureInfo::InvariantCulture, L"{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
+    std::string Fragment::ToString() {
+        return std::string::Format(CultureInfo::InvariantCulture, L"{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
     }
 
     int Fragment::GetHashCode() {

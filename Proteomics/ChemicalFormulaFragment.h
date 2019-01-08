@@ -33,18 +33,12 @@ namespace Proteomics {
     private:
         ChemicalFormula *privateThisChemicalFormula;
 
-//        #region Public Constructors
 
     public:
         ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
 
-//        #endregion Public Constructors
-
-//        #region Public Properties
-
         ChemicalFormula *getThisChemicalFormula() const override;
         void setThisChemicalFormula(ChemicalFormula *value) override;
 
-//        #endregion Public Properties
     };
 }

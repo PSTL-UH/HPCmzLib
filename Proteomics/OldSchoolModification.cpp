@@ -13,20 +13,20 @@ namespace Proteomics {
     OldSchoolModification::OldSchoolModification(double monoMass) : OldSchoolModification(monoMass, L"", ModificationSites::Any) {
     }
 
-    OldSchoolModification::OldSchoolModification(double monoMass, const std::wstring &name) : OldSchoolModification(monoMass, name, ModificationSites::Any) {
+    OldSchoolModification::OldSchoolModification(double monoMass, const std::string &name) : OldSchoolModification(monoMass, name, ModificationSites::Any) {
     }
 
-    OldSchoolModification::OldSchoolModification(double monoMass, const std::wstring &name, ModificationSites sites) {
+    OldSchoolModification::OldSchoolModification(double monoMass, const std::string &name, ModificationSites sites) {
         setMonoisotopicMass(monoMass);
         setName(name);
         setSites(sites);
     }
 
-    std::wstring OldSchoolModification::getName() const {
+    std::string OldSchoolModification::getName() const {
         return privateName;
     }
 
-    void OldSchoolModification::setName(const std::wstring &value) {
+    void OldSchoolModification::setName(const std::string &value) {
         privateName = value;
     }
 
@@ -46,11 +46,11 @@ namespace Proteomics {
         privateSites = value;
     }
 
-    std::wstring OldSchoolModification::getNameAndSites() const {
-        return std::wstring::Format(CultureInfo::InvariantCulture, L"{0} ({1})", getName(), getSites());
+    std::string OldSchoolModification::getNameAndSites() const {
+        return std::string::Format(CultureInfo::InvariantCulture, L"{0} ({1})", getName(), getSites());
     }
 
-    std::wstring OldSchoolModification::ToString() {
+    std::string OldSchoolModification::ToString() {
         return getName();
     }
 

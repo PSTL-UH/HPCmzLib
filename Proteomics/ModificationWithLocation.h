@@ -14,18 +14,13 @@ namespace Proteomics { class ModificationMotif; }
 
 namespace Proteomics {
     class ModificationWithLocation : public Modification {
-//        #region Public Fields
 
     public:
-        static const std::unordered_map<std::wstring, TerminusLocalization> terminusLocalizationTypeCodes;
-        const std::unordered_map<std::wstring, std::vector<std::wstring>> linksToOtherDbs;
-        const std::vector<std::wstring> keywords;
+        static const std::unordered_map<std::string, TerminusLocalization> terminusLocalizationTypeCodes;
+        const std::unordered_map<std::string, std::vector<std::string>> linksToOtherDbs;
+        const std::vector<std::string> keywords;
         const TerminusLocalization terminusLocalization;
         ModificationMotif *const motif;
-
-//        #endregion Public Fields
-
-//        #region Public Constructors
 
         virtual ~ModificationWithLocation() {
             delete motif;
@@ -42,18 +37,13 @@ namespace Proteomics {
 
 
     public:
-        ModificationWithLocation(const std::wstring &id, const std::wstring &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, std::unordered_map<std::wstring, std::vector<std::wstring>> &linksToOtherDbs = nullptr, std::vector<std::wstring> &keywords);
+        ModificationWithLocation(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs = nullptr, std::vector<std::string> &keywords);
 
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
+        std::string ToString() override;
 
         bool Equals(std::any o) override;
 
         int GetHashCode() override;
 
-//        #endregion Public Methods
     };
 }

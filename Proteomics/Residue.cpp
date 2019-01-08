@@ -6,11 +6,11 @@ using namespace Chemistry;
 namespace Proteomics {
 
 std::vector<double> const Residue::ResidueMonoisotopicMass;
-const std::unordered_map<std::wstring, Residue*> Residue::ResiduesDictionary;
+const std::unordered_map<std::string, Residue*> Residue::ResiduesDictionary;
 std::vector<Residue*> const Residue::ResiduesByLetter;
 
     Residue::StaticConstructor::StaticConstructor() {
-        ResiduesDictionary = std::unordered_map<std::wstring, Residue*> {
+        ResiduesDictionary = std::unordered_map<std::string, Residue*> {
             {L"Alanine", new Residue(L"Alanine", L'A', L"Ala",ChemicalFormula::ParseFormula(L"C3H5NO"), ModificationSites::A)}, {
             {L"Asparagine", new Residue(L"Asparagine", L'N', L"Asn",ChemicalFormula::ParseFormula(L"C4H6N2O2"), ModificationSites::N)}, {
             {L"Cysteine", new Residue(L"Cysteine", L'C', L"Cys",ChemicalFormula::ParseFormula(L"C3H5NOS"), ModificationSites::C)}, {
@@ -30,7 +30,7 @@ std::vector<Residue*> const Residue::ResiduesByLetter;
 
 Residue::StaticConstructor Residue::staticConstructor;
 
-    Residue::Residue(const std::wstring &name, wchar_t oneLetterAbbreviation, const std::wstring &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site) {
+    Residue::Residue(const std::string &name, char oneLetterAbbreviation, const std::string &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site) {
         setName(name);
         setLetter(oneLetterAbbreviation);
         setSymbol(threeLetterAbbreviation);
@@ -47,11 +47,11 @@ Residue::StaticConstructor Residue::staticConstructor;
         privateThisChemicalFormula = value;
     }
 
-    wchar_t Residue::getLetter() const {
+    char Residue::getLetter() const {
         return privateLetter;
     }
 
-    void Residue::setLetter(wchar_t value) {
+    void Residue::setLetter(char value) {
         privateLetter = value;
     }
 
@@ -71,37 +71,37 @@ Residue::StaticConstructor Residue::staticConstructor;
         privateMonoisotopicMass = value;
     }
 
-    std::wstring Residue::getName() const {
+    std::string Residue::getName() const {
         return privateName;
     }
 
-    void Residue::setName(const std::wstring &value) {
+    void Residue::setName(const std::string &value) {
         privateName = value;
     }
 
-    std::wstring Residue::getSymbol() const {
+    std::string Residue::getSymbol() const {
         return privateSymbol;
     }
 
-    void Residue::setSymbol(const std::wstring &value) {
+    void Residue::setSymbol(const std::string &value) {
         privateSymbol = value;
     }
 
-    Residue *Residue::GetResidue(const std::wstring &symbol) {
+    Residue *Residue::GetResidue(const std::string &symbol) {
         return symbol.length() == 1 ? ResiduesByLetter[symbol[0]] : ResiduesDictionary[symbol];
     }
 
-    Residue *Residue::GetResidue(wchar_t letter) {
+    Residue *Residue::GetResidue(char letter) {
         return ResiduesByLetter[letter];
     }
 
-    bool Residue::TryGetResidue(wchar_t letter, Residue *&residue) {
+    bool Residue::TryGetResidue(char letter, Residue *&residue) {
         residue = ResiduesByLetter[letter];
         return residue != nullptr;
     }
 
-    bool Residue::TryGetResidue(const std::wstring &name, Residue *&residue) {
-        std::unordered_map<std::wstring, Residue*>::const_iterator ResiduesDictionary_iterator = ResiduesDictionary.find(name);
+    bool Residue::TryGetResidue(const std::string &name, Residue *&residue) {
+        std::unordered_map<std::string, Residue*>::const_iterator ResiduesDictionary_iterator = ResiduesDictionary.find(name);
         return ResiduesDictionary_iterator != ResiduesDictionary.end();
         residue = ResiduesDictionary_iterator->second;
     }

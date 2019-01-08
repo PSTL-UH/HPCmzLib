@@ -8,29 +8,19 @@ namespace Proteomics {
     private:
         Nullable<int> privateOneBasedBeginPosition;
         Nullable<int> privateOneBasedEndPosition;
-        std::wstring privateType;
+        std::string privateType;
 
-//        #region Public Constructors
 
     public:
-        ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::wstring &type);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::string &type);
 
         Nullable<int> getOneBasedBeginPosition() const;
         Nullable<int> getOneBasedEndPosition() const;
-        std::wstring getType() const;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
+        std::string getType() const;
 
         bool Equals(std::any obj) override;
 
         int GetHashCode() override;
 
-//        #endregion Public Methods
     };
 }

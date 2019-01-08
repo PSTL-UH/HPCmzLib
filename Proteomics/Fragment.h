@@ -38,14 +38,9 @@ namespace Proteomics {
         AminoAcidPolymer *privateParent;
         FragmentTypes privateFragmentType = static_cast<FragmentTypes>(0);
 
-//        #region Public Constructors
 
     public:
         Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         double getMonoisotopicMass() const override;
         void setMonoisotopicMass(double value) override;
@@ -61,18 +56,13 @@ namespace Proteomics {
 
         std::vector<IHasMass*> getModifications() const;
 
-        std::wstring getSequence() const;
+        std::string getSequence() const;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
+        std::string ToString() override;
 
         int GetHashCode() override;
 
         bool Equals(Fragment *other) override;
 
-//        #endregion Public Methods
     };
 }

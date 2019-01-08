@@ -7,19 +7,13 @@ namespace Proteomics {
     private:
         int privateOneBasedBeginPosition = 0;
         int privateOneBasedEndPosition = 0;
-        std::wstring privateDescription;
-
-//        #region Public Constructors
+        std::string privateDescription;
 
     public:
-        DisulfideBond(int OneBasedBeginPosition, int OneBasedEndPosition, const std::wstring &Description);
+        DisulfideBond(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &Description);
 
         /// For interchain disulfide bonds, sets begin and end to the same position.
-        DisulfideBond(int OneBasedPosition, const std::wstring &Description);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        DisulfideBond(int OneBasedPosition, const std::string &Description);
 
         /// <summary>
         /// Beginning position of disulfide bond
@@ -36,17 +30,12 @@ namespace Proteomics {
         /// <summary>
         /// Description of this variation (optional)
         /// </summary>
-        std::wstring getDescription() const;
-        void setDescription(const std::wstring &value);
-
-//        #endregion Public Properties
-
-//        #region Public Methods
+        std::string getDescription() const;
+        void setDescription(const std::string &value);
 
         bool Equals(std::any obj) override;
 
         int GetHashCode() override;
 
-//        #endregion Public Methods
     };
 }

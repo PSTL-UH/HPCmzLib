@@ -6,10 +6,10 @@ using namespace Chemistry;
 
 namespace Proteomics {
 
-    ModificationWithMassAndCf::ModificationWithMassAndCf(const std::wstring &id, const std::wstring &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, ChemicalFormula *chemicalFormula, std::optional<double> &mm, std::unordered_map<std::wstring, std::vector<std::wstring>> &linksToOtherDbs, std::vector<std::wstring> &keywords, std::vector<double> &neutralLosses, std::vector<double> &diagnosticIons) : ModificationWithMass(id, modificationType, motif, terminusLocalization, mm ? mm : chemicalFormula->getMonoisotopicMass(), linksToOtherDbs, keywords, neutralLosses, diagnosticIons), chemicalFormula(chemicalFormula) {
+    ModificationWithMassAndCf::ModificationWithMassAndCf(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, ChemicalFormula *chemicalFormula, std::optional<double> &mm, std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs, std::vector<std::string> &keywords, std::vector<double> &neutralLosses, std::vector<double> &diagnosticIons) : ModificationWithMass(id, modificationType, motif, terminusLocalization, mm ? mm : chemicalFormula->getMonoisotopicMass(), linksToOtherDbs, keywords, neutralLosses, diagnosticIons), chemicalFormula(chemicalFormula) {
     }
 
-    std::wstring ModificationWithMassAndCf::ToString() {
+    std::string ModificationWithMassAndCf::ToString() {
         StringBuilder *sb = new StringBuilder();
 
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':

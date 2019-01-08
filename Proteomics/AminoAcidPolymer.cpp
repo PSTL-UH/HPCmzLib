@@ -14,6 +14,7 @@
 #include "ChemicalFormulaModification.h"
 
 using namespace Chemistry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
@@ -21,10 +22,10 @@ namespace Proteomics {
     AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula(L"H")) {
     }
 
-    AminoAcidPolymer::AminoAcidPolymer(const std::wstring &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula(L"H")) {
+    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula(L"H")) {
     }
 
-    AminoAcidPolymer::AminoAcidPolymer(const std::wstring &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm) {
+    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm) {
         setMonoisotopicMass(0);
         setLength(sequence.length());
         residues = std::vector<Residue*>(getLength());
@@ -123,12 +124,12 @@ namespace Proteomics {
         privateMonoisotopicMass = value;
     }
 
-    std::wstring AminoAcidPolymer::getBaseLeucineSequence() const {
+    std::string AminoAcidPolymer::getBaseLeucineSequence() const {
         return StringHelper::replace(getBaseSequence(), L'I', L'L');
     }
 
-    std::wstring AminoAcidPolymer::getBaseSequence() const {
-        return std::wstring(residues.Select([&] (std::any aa) {
+    std::string AminoAcidPolymer::getBaseSequence() const {
+        return std::string(residues.Select([&] (std::any aa) {
             aa::Letter;
         })->ToArray());
     }
@@ -155,7 +156,7 @@ namespace Proteomics {
         return aFrags;
     }
 
-    std::vector<DigestionPointAndLength*> AminoAcidPolymer::GetDigestionPointsAndLengths(const std::wstring &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
+    std::vector<DigestionPointAndLength*> AminoAcidPolymer::GetDigestionPointsAndLengths(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
         std::vector<int> indices = GetCleavageIndexes(sequence, proteases).ToArray();
 
         bool includeMethionineCut = methionineInitiator && sequence[0] == L'M';
@@ -207,11 +208,11 @@ namespace Proteomics {
         }
     }
 
-    std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::wstring &sequence, std::vector<IProtease*> &proteases) {
+    std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases) {
         return GetCleavageIndexes(sequence, proteases, true);
     }
 
-    std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::wstring &sequence, std::vector<IProtease*> &proteases, bool includeTermini) {
+    std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases, bool includeTermini) {
         // Combine all the proteases digestion sites
         std::set<int> locations;
         for (IProtease *protease : proteases.Where([&] (std::any protease) {
@@ -230,17 +231,17 @@ namespace Proteomics {
         return locations;
     }
 
-    std::vector<std::wstring> AminoAcidPolymer::Digest(const std::wstring &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
+    std::vector<std::string> AminoAcidPolymer::Digest(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
         return GetDigestionPointsAndLengths(sequence, proteases, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion).Select([&] (std::any points) {
             sequence.substr(points::Index, points->Length);
         });
     }
 
-    std::vector<std::wstring> AminoAcidPolymer::Digest(AminoAcidPolymer *sequence, IProtease *protease) {
+    std::vector<std::string> AminoAcidPolymer::Digest(AminoAcidPolymer *sequence, IProtease *protease) {
         return Digest(sequence, protease, 3, 1, std::numeric_limits<int>::max(), true, false);
     }
 
-    std::vector<std::wstring> AminoAcidPolymer::Digest(AminoAcidPolymer *polymer, IProtease *protease, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
+    std::vector<std::string> AminoAcidPolymer::Digest(AminoAcidPolymer *polymer, IProtease *protease, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
         return Digest(polymer->getBaseSequence(), {protease}, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion);
     }
 
@@ -251,7 +252,7 @@ namespace Proteomics {
         return residues[position];
     }
 
-    bool AminoAcidPolymer::Contains(wchar_t residue) {
+    bool AminoAcidPolymer::Contains(char residue) {
         return residues.Any([&] (std::any aa) {
             aa::Letter->Equals(residue);
         });
@@ -261,11 +262,11 @@ namespace Proteomics {
         return residues.Contains(residue);
     }
 
-    std::wstring AminoAcidPolymer::GetSequenceWithModifications() {
+    std::string AminoAcidPolymer::GetSequenceWithModifications() {
         return GetSequenceWithModifications(false);
     }
 
-    std::wstring AminoAcidPolymer::GetSequenceWithModifications(bool leucineSequence) {
+    std::string AminoAcidPolymer::GetSequenceWithModifications(bool leucineSequence) {
         if (_modifications.empty()) {
             return (leucineSequence) ? getBaseLeucineSequence() : getBaseSequence();
         }
@@ -319,13 +320,13 @@ namespace Proteomics {
         });
     }
 
-    int AminoAcidPolymer::ResidueCount(wchar_t residueLetter) {
+    int AminoAcidPolymer::ResidueCount(char residueLetter) {
         return residues.Count([&] (std::any aar) {
             aar::Letter->Equals(residueLetter);
         });
     }
 
-    int AminoAcidPolymer::ResidueCount(wchar_t residueLetter, int index, int length) {
+    int AminoAcidPolymer::ResidueCount(char residueLetter, int index, int length) {
         return residues.SubArray(index, length)->Count([&] (std::any aar) {
             aar::Letter->Equals(residueLetter);
         });
@@ -337,7 +338,7 @@ namespace Proteomics {
         });
     }
 
-    int AminoAcidPolymer::ElementCountWithIsotopes(const std::wstring &element) {
+    int AminoAcidPolymer::ElementCountWithIsotopes(const std::string &element) {
         // Residues count
         int count = residues.Sum([&] (std::any aar) {
             aar::ThisChemicalFormula::CountWithIsotopes(element);
@@ -546,7 +547,7 @@ template<typename T>
         return count;
     }
 
-    int AminoAcidPolymer::SetModification(IHasMass *modification, wchar_t letter) {
+    int AminoAcidPolymer::SetModification(IHasMass *modification, char letter) {
         int count = 0;
         for (int i = 0; i < getLength(); i++) {
             if (!letter.Equals(residues[i]->getLetter())) {
@@ -574,7 +575,7 @@ template<typename T>
 
     void AminoAcidPolymer::SetModification(IHasMass *modification, int residueNumber) {
         if (residueNumber > getLength() || residueNumber < 1) {
-            throw MzLibException(std::wstring::Format(CultureInfo::InvariantCulture, L"Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
+            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, L"Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
         }
 
         ReplaceMod(residueNumber, modification);
@@ -774,7 +775,7 @@ template<typename T>
         return formula;
     }
 
-    std::wstring AminoAcidPolymer::ToString() {
+    std::string AminoAcidPolymer::ToString() {
         return GetSequenceWithModifications();
     }
 
@@ -851,7 +852,7 @@ template<typename T>
         }
     }
 
-    void AminoAcidPolymer::ParseSequence(const std::wstring &sequence) {
+    void AminoAcidPolymer::ParseSequence(const std::string &sequence) {
         bool inMod = false;
         bool cterminalMod = false; // n or c terminal modification
         int index = 0;
@@ -864,7 +865,7 @@ template<typename T>
                 if (letter == L']') {
                     inMod = false; // end the modification phase
 
-                    std::wstring modString = modSb->toString();
+                    std::string modString = modSb->toString();
                     modSb->clear();
                     IHasMass *modification;
                     try {
@@ -923,7 +924,7 @@ template<typename T>
                         default:
 
                             delete modSb;
-                            throw MzLibException(std::wstring::Format(CultureInfo::InvariantCulture, L"Amino Acid Letter {0} does not exist in the Amino Acid Dictionary. {0} is also not a valid character", letter));
+                            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, L"Amino Acid Letter {0} does not exist in the Amino Acid Dictionary. {0} is also not a valid character", letter));
                     }
                 }
             }
@@ -951,7 +952,7 @@ template<typename T>
         return mass;
     }
 
-    std::wstring AminoAcidPolymer::ModWithOnlyMass::ToString() {
+    std::string AminoAcidPolymer::ModWithOnlyMass::ToString() {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         return mass.ToString(CultureInfo::InvariantCulture);
     }

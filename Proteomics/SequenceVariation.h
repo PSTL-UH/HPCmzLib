@@ -7,11 +7,9 @@ namespace Proteomics {
     private:
         int privateOneBasedBeginPosition = 0;
         int privateOneBasedEndPosition = 0;
-        std::wstring privateOriginalSequence;
-        std::wstring privateVariantSequence;
-        std::wstring privateDescription;
-
-//        #region Public Constructors
+        std::string privateOriginalSequence;
+        std::string privateVariantSequence;
+        std::string privateDescription;
 
         /// <summary>
         /// For longer sequence variations, where a range of sequence is replaced. Point mutations should be specified with the same begin and end positions.
@@ -21,7 +19,7 @@ namespace Proteomics {
         /// <param name="OriginalSequence"></param>
         /// <param name="VariantSequence"></param>
     public:
-        SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::wstring &OriginalSequence, const std::wstring &VariantSequence, const std::wstring &Description);
+        SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description);
 
         /// <summary>
         /// For point mutations. Sets begin and end to the same position.
@@ -30,11 +28,7 @@ namespace Proteomics {
         /// <param name="OriginalSequence"></param>
         /// <param name="VariantSequence"></param>
         /// <param name="Description"></param>
-        SequenceVariation(int OneBasedPosition, const std::wstring &OriginalSequence, const std::wstring &VariantSequence, const std::wstring &Description);
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description);
 
         /// <summary>
         /// Beginning position of original sequence to be replaced
@@ -51,29 +45,24 @@ namespace Proteomics {
         /// <summary>
         /// Original sequence information (optional)
         /// </summary>
-        std::wstring getOriginalSequence() const;
-        void setOriginalSequence(const std::wstring &value);
+        std::string getOriginalSequence() const;
+        void setOriginalSequence(const std::string &value);
 
         /// <summary>
         /// Variant sequence information (required)
         /// </summary>
-        std::wstring getVariantSequence() const;
-        void setVariantSequence(const std::wstring &value);
+        std::string getVariantSequence() const;
+        void setVariantSequence(const std::string &value);
 
         /// <summary>
         /// Description of this variation (optional)
         /// </summary>
-        std::wstring getDescription() const;
-        void setDescription(const std::wstring &value);
-
-//        #endregion Public Properties
-
-//        #region Public Methods
+        std::string getDescription() const;
+        void setDescription(const std::string &value);
 
         bool Equals(std::any obj) override;
 
         int GetHashCode() override;
 
-//        #endregion Public Methods
     };
 }

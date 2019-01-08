@@ -4,6 +4,7 @@
 #include "../MzLibUtil/ClassExtensions.h"
 
 using namespace Chemistry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
@@ -40,7 +41,7 @@ namespace Proteomics {
         return chemicalFormula;
     }
 
-    std::wstring ModificationCollection::ToString() {
+    std::string ModificationCollection::ToString() {
         StringBuilder *sb = new StringBuilder();
         for (auto mod : _modifications) {
             sb->append(mod);

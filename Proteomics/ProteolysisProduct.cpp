@@ -2,7 +2,7 @@
 
 namespace Proteomics {
 
-    ProteolysisProduct::ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::wstring &type) {
+    ProteolysisProduct::ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::string &type) {
         OneBasedBeginPosition = oneBasedBeginPosition;
         OneBasedEndPosition = oneBasedEndPosition;
         Type = type;
@@ -16,7 +16,7 @@ namespace Proteomics {
         return privateOneBasedEndPosition;
     }
 
-    std::wstring ProteolysisProduct::getType() const {
+    std::string ProteolysisProduct::getType() const {
         return privateType;
     }
 

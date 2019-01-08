@@ -34,28 +34,20 @@ namespace Proteomics {
     class Residue : public IHasChemicalFormula {
     private:
         ChemicalFormula *privateThisChemicalFormula;
-        wchar_t privateLetter = L'\0';
+        char privateLetter = L'\0';
         ModificationSites privateSite = static_cast<ModificationSites>(0);
         double privateMonoisotopicMass = 0;
-        std::wstring privateName;
-        std::wstring privateSymbol;
+        std::string privateName;
+        std::string privateSymbol;
 
-//        #region Public Fields
 
     public:
         static std::vector<double> const ResidueMonoisotopicMass;
 
-//        #endregion Public Fields
-
-//        #region Private Fields
-
     private:
-        static const std::unordered_map<std::wstring, Residue*> ResiduesDictionary;
+        static const std::unordered_map<std::string, Residue*> ResiduesDictionary;
         static std::vector<Residue*> const ResiduesByLetter;
 
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     private:
         class StaticConstructor {
@@ -67,22 +59,15 @@ namespace Proteomics {
         static Residue::StaticConstructor staticConstructor;
 
 
-//        #endregion Public Constructors
-
-//        #region Internal Constructors
-
     public:
-        Residue(const std::wstring &name, wchar_t oneLetterAbbreviation, const std::wstring &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site);
+        Residue(const std::string &name, char oneLetterAbbreviation, const std::string &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site);
 
-//        #endregion Internal Constructors
-
-//        #region Public Properties
 
         ChemicalFormula *getThisChemicalFormula() const override;
         void setThisChemicalFormula(ChemicalFormula *value) override;
 
-        wchar_t getLetter() const;
-        void setLetter(wchar_t value);
+        char getLetter() const;
+        void setLetter(char value);
 
         ModificationSites getSite() const;
         void setSite(ModificationSites value);
@@ -90,34 +75,29 @@ namespace Proteomics {
         double getMonoisotopicMass() const override;
         void setMonoisotopicMass(double value) override;
 
-        std::wstring getName() const;
-        void setName(const std::wstring &value);
+        std::string getName() const;
+        void setName(const std::string &value);
 
-        std::wstring getSymbol() const;
-        void setSymbol(const std::wstring &value);
-
-//        #endregion Public Properties
-
-//        #region Public Methods
+        std::string getSymbol() const;
+        void setSymbol(const std::string &value);
 
         /// <summary>
         /// Get the residue based on the residues's symbol
         /// </summary>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        static Residue *GetResidue(const std::wstring &symbol);
+        static Residue *GetResidue(const std::string &symbol);
 
         /// <summary>
         /// Gets the resdiue based on the residue's one-character symbol
         /// </summary>
         /// <param name="letter"></param>
         /// <returns></returns>
-        static Residue *GetResidue(wchar_t letter);
+        static Residue *GetResidue(char letter);
 
-        static bool TryGetResidue(wchar_t letter, Residue *&residue);
+        static bool TryGetResidue(char letter, Residue *&residue);
 
-        static bool TryGetResidue(const std::wstring &name, Residue *&residue);
+        static bool TryGetResidue(const std::string &name, Residue *&residue);
 
-//        #endregion Public Methods
     };
 }

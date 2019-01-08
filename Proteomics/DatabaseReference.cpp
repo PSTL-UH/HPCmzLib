@@ -3,21 +3,21 @@
 
 namespace Proteomics {
 
-    DatabaseReference::DatabaseReference(const std::wstring &type, const std::wstring &id, std::vector<std::tuple<std::wstring, std::wstring>> &properties) {
+    DatabaseReference::DatabaseReference(const std::string &type, const std::string &id, std::vector<std::tuple<std::string, std::string>> &properties) {
         Type = type;
         Id = id;
         Properties = properties;
     }
 
-    std::wstring DatabaseReference::getType() const {
+    std::string DatabaseReference::getType() const {
         return privateType;
     }
 
-    std::wstring DatabaseReference::getId() const {
+    std::string DatabaseReference::getId() const {
         return privateId;
     }
 
-    std::vector<std::tuple<std::wstring, std::wstring>> DatabaseReference::getProperties() const {
+    std::vector<std::tuple<std::string, std::string>> DatabaseReference::getProperties() const {
         return privateProperties;
     }
 

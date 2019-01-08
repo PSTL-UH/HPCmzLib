@@ -5,10 +5,10 @@ namespace Proteomics {
 
 Regex *const ModificationMotif::ModificationMotifRegex = new Regex(LR"(^[A-Za-z]+$)", RegexOptions::Compiled);
 
-    ModificationMotif::ModificationMotif(const std::wstring &motif) : motifString(motif) {
+    ModificationMotif::ModificationMotif(const std::string &motif) : motifString(motif) {
     }
 
-    bool ModificationMotif::TryGetMotif(const std::wstring &motifString, ModificationMotif *&motif) {
+    bool ModificationMotif::TryGetMotif(const std::string &motifString, ModificationMotif *&motif) {
         motif = nullptr;
         if (ModificationMotifRegex->IsMatch(motifString) && motifString.Count([&] (std::any b) {
             std::isupper(b);
@@ -28,7 +28,7 @@ Regex *const ModificationMotif::ModificationMotifRegex = new Regex(LR"(^[A-Za-z]
         return motifString.GetHashCode();
     }
 
-    std::wstring ModificationMotif::ToString() {
+    std::string ModificationMotif::ToString() {
         return motifString;
     }
 }

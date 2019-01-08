@@ -17,60 +17,50 @@ namespace Proteomics {
     class Protein {
     private:
         std::unordered_map<int, std::vector<Modification*>> privateOneBasedPossibleLocalizedModifications;
-        std::vector<std::tuple<std::wstring, std::wstring>> privateGeneNames;
-        std::wstring privateAccession;
-        std::wstring privateBaseSequence;
+        std::vector<std::tuple<std::string, std::string>> privateGeneNames;
+        std::string privateAccession;
+        std::string privateBaseSequence;
         bool privateIsDecoy = false;
         std::vector<SequenceVariation*> privateSequenceVariations;
         std::vector<DisulfideBond*> privateDisulfideBonds;
         std::vector<ProteolysisProduct*> privateProteolysisProducts;
         std::vector<DatabaseReference*> privateDatabaseReferences;
-        std::wstring privateDatabaseFilePath;
-        std::wstring privateName;
-        std::wstring privateFullName;
+        std::string privateDatabaseFilePath;
+        std::string privateName;
+        std::string privateFullName;
         bool privateIsContaminant = false;
 
-//        #region Public Constructors
-
     public:
-        Protein(const std::wstring &sequence, const std::wstring &accession, std::vector<std::tuple<std::wstring, std::wstring>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::wstring &name = L"", const std::wstring &full_name = L"", bool isDecoy = false, bool isContaminant = false, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::wstring &databaseFilePath = L"");
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
+        Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name = L"", const std::string &full_name = L"", bool isDecoy = false, bool isContaminant = false, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::string &databaseFilePath = L"");
 
         std::unordered_map<int, std::vector<Modification*>> getOneBasedPossibleLocalizedModifications() const;
 
         /// <summary>
         /// The list of gene names consists of tuples, where Item1 is the type of gene name, and Item2 is the name. There may be many genes and names of a certain type produced when reading an XML protein database.
         /// </summary>
-        std::vector<std::tuple<std::wstring, std::wstring>> getGeneNames() const;
+        std::vector<std::tuple<std::string, std::string>> getGeneNames() const;
 
-        std::wstring getAccession() const;
-        std::wstring getBaseSequence() const;
+        std::string getAccession() const;
+        std::string getBaseSequence() const;
         bool getIsDecoy() const;
         std::vector<SequenceVariation*> getSequenceVariations() const;
         std::vector<DisulfideBond*> getDisulfideBonds() const;
         std::vector<ProteolysisProduct*> getProteolysisProducts() const;
         std::vector<DatabaseReference*> getDatabaseReferences() const;
-        std::wstring getDatabaseFilePath() const;
+        std::string getDatabaseFilePath() const;
 
         int getLength() const;
 
-        std::wstring getFullDescription() const;
+        std::string getFullDescription() const;
 
-        std::wstring getName() const;
+        std::string getName() const;
 
-        std::wstring getFullName() const;
+        std::string getFullName() const;
 
         bool getIsContaminant() const;
 
-//        #endregion Public Properties
 
-//        #region Public Indexers
+        char operator [](int zeroBasedIndex);
 
-        wchar_t operator [](int zeroBasedIndex);
-
-//        #endregion Public Indexers
     };
 }

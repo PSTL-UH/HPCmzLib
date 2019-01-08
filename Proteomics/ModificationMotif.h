@@ -7,22 +7,15 @@
 
 namespace Proteomics {
     class ModificationMotif {
-//        #region Private Fields
 
     private:
         static Regex *const ModificationMotifRegex;
 
-        const std::wstring motifString;
+        const std::string motifString;
 
-//        #endregion Private Fields
 
-//        #region Private Constructors
+        ModificationMotif(const std::string &motif);
 
-        ModificationMotif(const std::wstring &motif);
-
-//        #endregion Private Constructors
-
-//        #region Public Methods
 
         /// <summary>
         /// Only upper and lower case letters allowed, must have a single upper case letter
@@ -31,14 +24,13 @@ namespace Proteomics {
         /// <param name="motif"></param>
         /// <returns></returns>
     public:
-        static bool TryGetMotif(const std::wstring &motifString, ModificationMotif *&motif);
+        static bool TryGetMotif(const std::string &motifString, ModificationMotif *&motif);
 
         bool Equals(std::any o) override;
 
         int GetHashCode() override;
 
-        std::wstring ToString() override;
+        std::string ToString() override;
 
-//        #endregion Public Methods
     };
 }

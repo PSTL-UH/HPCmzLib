@@ -3,10 +3,10 @@
 
 namespace Proteomics {
 
-    Modification::Modification(const std::wstring &id, const std::wstring &modificationType) : id(id), modificationType(modificationType) {
+    Modification::Modification(const std::string &id, const std::string &modificationType) : id(id), modificationType(modificationType) {
     }
 
-    std::wstring Modification::ToString() {
+    std::string Modification::ToString() {
         StringBuilder *sb = new StringBuilder();
         sb->appendLine(L"ID   " + id);
         sb->append(L"MT   " + modificationType);

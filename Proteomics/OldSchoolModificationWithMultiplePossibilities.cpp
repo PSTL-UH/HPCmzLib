@@ -1,11 +1,12 @@
 ﻿#include "OldSchoolModificationWithMultiplePossibilities.h"
 #include "../MzLibUtil/MzLibException.h"
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
 
-    ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::wstring &name, ModificationSites sites) : OldSchoolModification(0, name, sites), _modifications(new SortedList<double, OldSchoolModification*>()) {
+    ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites) : OldSchoolModification(0, name, sites), _modifications(new SortedList<double, OldSchoolModification*>()) {
     }
 
     int ModificationWithMultiplePossibilitiesCollection::getCount() const {

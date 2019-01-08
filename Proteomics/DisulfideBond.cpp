@@ -2,13 +2,13 @@
 
 namespace Proteomics {
 
-    DisulfideBond::DisulfideBond(int OneBasedBeginPosition, int OneBasedEndPosition, const std::wstring &Description) {
+    DisulfideBond::DisulfideBond(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &Description) {
         this->setOneBasedBeginPosition(OneBasedBeginPosition);
         this->setOneBasedEndPosition(OneBasedEndPosition);
         this->setDescription(Description);
     }
 
-    DisulfideBond::DisulfideBond(int OneBasedPosition, const std::wstring &Description) : DisulfideBond(OneBasedPosition, OneBasedPosition, Description) {
+    DisulfideBond::DisulfideBond(int OneBasedPosition, const std::string &Description) : DisulfideBond(OneBasedPosition, OneBasedPosition, Description) {
     }
 
     int DisulfideBond::getOneBasedBeginPosition() const {
@@ -27,11 +27,11 @@ namespace Proteomics {
         privateOneBasedEndPosition = value;
     }
 
-    std::wstring DisulfideBond::getDescription() const {
+    std::string DisulfideBond::getDescription() const {
         return privateDescription;
     }
 
-    void DisulfideBond::setDescription(const std::wstring &value) {
+    void DisulfideBond::setDescription(const std::string &value) {
         privateDescription = value;
     }
 

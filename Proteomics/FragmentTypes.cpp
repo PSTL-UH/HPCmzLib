@@ -3,6 +3,7 @@
 #include "../MzLibUtil/MzLibException.h"
 
 using namespace Chemistry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics {
