@@ -1,4 +1,5 @@
-﻿#include "Modification.h"
+﻿#include "../stringhelper.h"
+#include "Modification.h"
 
 
 namespace Proteomics {
@@ -15,12 +16,12 @@ namespace Proteomics {
         return sb->toString();
     }
 
-    bool Modification::Equals(std::any o) {
-        Modification *m = dynamic_cast<Modification*>(o);
-        return o != nullptr && m->id == id && m->modificationType == modificationType;
+    bool Modification::Equals(Modification *m) {
+//        Modification *m = dynamic_cast<Modification*>(o);
+        return m != nullptr && m->id == id && m->modificationType == modificationType;
     }
 
     int Modification::GetHashCode() {
-        return id.GetHashCode() ^ modificationType.GetHashCode();
+        return StringHelper::GetHashCode(id) ^ StringHelper::GetHashCode(modificationType);
     }
 }

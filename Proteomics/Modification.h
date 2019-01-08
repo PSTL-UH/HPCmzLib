@@ -15,7 +15,7 @@ namespace Proteomics {
 //        bool Equals(std::any o) override;
 //        int GetHashCode() override;
         std::string ToString();
-        bool Equals(std::any o);
+        bool Equals(Modification *m);
         int GetHashCode();
     };
 }

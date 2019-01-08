@@ -34,7 +34,7 @@ namespace Proteomics {
     class Residue : public IHasChemicalFormula {
     private:
         ChemicalFormula *privateThisChemicalFormula;
-        char privateLetter = L'\0';
+        char privateLetter = '\0';
         ModificationSites privateSite = static_cast<ModificationSites>(0);
         double privateMonoisotopicMass = 0;
         std::string privateName;
@@ -42,11 +42,11 @@ namespace Proteomics {
 
 
     public:
-        static std::vector<double> const ResidueMonoisotopicMass;
+        static std::vector<double> ResidueMonoisotopicMass;
 
     private:
-        static const std::unordered_map<std::string, Residue*> ResiduesDictionary;
-        static std::vector<Residue*> const ResiduesByLetter;
+        static std::unordered_map<std::string, Residue*> ResiduesDictionary;
+        static std::vector<Residue*> ResiduesByLetter;
 
 
     private:
@@ -64,7 +64,8 @@ namespace Proteomics {
 
 
         ChemicalFormula *getThisChemicalFormula() const override;
-        void setThisChemicalFormula(ChemicalFormula *value) override;
+//        void setThisChemicalFormula(ChemicalFormula *value) override;
+        void setThisChemicalFormula(ChemicalFormula *value);
 
         char getLetter() const;
         void setLetter(char value);
@@ -73,7 +74,8 @@ namespace Proteomics {
         void setSite(ModificationSites value);
 
         double getMonoisotopicMass() const override;
-        void setMonoisotopicMass(double value) override;
+//        void setMonoisotopicMass(double value) override;
+        void setMonoisotopicMass(double value);
 
         std::string getName() const;
         void setName(const std::string &value);
