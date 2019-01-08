@@ -1,0 +1,49 @@
+1. remove wstring
+    while this is popular on functional on windows, it is not on linux with
+    gcc 8.1. To do this:
+    + replace all instances of std::wstring with std::string
+    + same of wchar_t to char
+    + same of wostream to ostream and wistream to istream
+    + remove of prepanding L to quotes (e.g. L"This is a string" with "This is
+    a string"), take care of single string as well.
+
+2. add include statememnts whenever a namespace is used, e.g.
+   ---snip---
+     namespace MzLibUtil
+   ---snip---
+   to
+   ---snip---
+     #include "MzLibUtil.h"
+     namespace MzLibUtil
+   ---snip--
+
+3. String Format
+   replace Format() with StringHelper::simpleformat(), e.g.
+   ---snip---
+   ---snip---
+   with
+   ---snip---
+   ---snip---
+    
+
+4. non-existent C# functions
+   + there is no ToString() method in C++,
+      * remove therefore the override attribute
+ 
+   + there is no Equal() method in C++:
+      * remove the override attribute
+      * argument should not be std::any, but take directly the pointer to the
+        object, e.g. instead of
+        ----snip---
+        bool Modification::Equals(std::any *o) {
+             Modification *m = dynamic_cast<Modification*>(o);
+        ---snip---
+        make it
+        ---snip---
+        bool Modification::Equals(Modification *m) {
+        ---snip---         
+   + there is no GetHashCode() method in C++
+      * remove the override attribute
+      * replace string.GetHashCode() for calculating a hash code
+        with my own StringHelper::GetHashCode(string) method
+        
