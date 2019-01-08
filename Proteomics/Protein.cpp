@@ -72,7 +72,7 @@ namespace Proteomics {
     }
 
     std::string Protein::getFullDescription() const {
-        return getAccession() + L"|" + getName() + L"|" + getFullName();
+        return getAccession() + "|" + getName() + "|" + getFullName();
     }
 
     std::string Protein::getName() const {

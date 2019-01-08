@@ -8,9 +8,9 @@ const std::unordered_map<std::string, TerminusLocalization> ModificationWithLoca
 
     ModificationWithLocation::StaticConstructor::StaticConstructor() {
         terminusLocalizationTypeCodes = std::unordered_map<std::string, TerminusLocalization> {
-            {L"N-terminal.", TerminusLocalization::NProt}, {
-            {L"Peptide N-terminal.", TerminusLocalization::NPep}, {
-            {L"Anywhere.", TerminusLocalization::Any}, {
+            {"N-terminal.", TerminusLocalization::NProt}, {
+            {"Peptide N-terminal.", TerminusLocalization::NPep}, {
+            {"Anywhere.", TerminusLocalization::Any}, {
             };
     }
 
@@ -25,15 +25,15 @@ ModificationWithLocation::StaticConstructor ModificationWithLocation::staticCons
         StringBuilder *sb = new StringBuilder();
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         sb->appendLine(Modification::ToString());
-        sb->appendLine(L"PP   " + terminusLocalizationTypeCodes.First([&] (std::any b) {
+        sb->appendLine("PP   " + terminusLocalizationTypeCodes.First([&] (std::any b) {
             b->Value->Equals(terminusLocalization);
         }).Key);
         for (auto nice : linksToOtherDbs) {
             for (auto db : nice.Value) {
-                sb->appendLine(L"DR   " + nice.Key + L"; " + db);
+                sb->appendLine("DR   " + nice.Key + "; " + db);
             }
         }
-        sb->append(L"TG   " + motif);
+        sb->append("TG   " + motif);
 
         delete sb;
         return sb->toString();

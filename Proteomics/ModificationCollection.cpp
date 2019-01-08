@@ -45,7 +45,7 @@ namespace Proteomics {
         StringBuilder *sb = new StringBuilder();
         for (auto mod : _modifications) {
             sb->append(mod);
-            sb->append(L" | ");
+            sb->append(" | ");
         }
         if (sb->length() > 0) {
             sb->remove(sb->length() - 3, 3);

@@ -19,10 +19,10 @@ using namespace MzLibUtil;
 
 namespace Proteomics {
 
-    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula(L"H")) {
+    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
     }
 
-    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula(L"H")) {
+    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
     }
 
     AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm) {
@@ -44,8 +44,8 @@ namespace Proteomics {
         bool isNterm = firstResidue == 0;
         bool isCterm = length + firstResidue == aminoAcidPolymer->getLength();
 
-        _nTerminus = isNterm ? aminoAcidPolymer->getNTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula(L"H"));
-        _cTerminus = isCterm ? aminoAcidPolymer->getCTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula(L"OH"));
+        _nTerminus = isNterm ? aminoAcidPolymer->getNTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H"));
+        _cTerminus = isCterm ? aminoAcidPolymer->getCTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH"));
 
         double monoMass = _nTerminus->getMonoisotopicMass() + _cTerminus->getMonoisotopicMass();
 
@@ -279,7 +279,7 @@ namespace Proteomics {
         if ((mod = _modifications[0]) != nullptr && mod->getMonoisotopicMass() > 0) {
             modSeqSb->append(L'[');
             modSeqSb->append(mod);
-            modSeqSb->append(L"]-");
+            modSeqSb->append("]-");
         }
 
         // Handle Amino Acid Residues
@@ -301,7 +301,7 @@ namespace Proteomics {
 
         // Handle C-Terminus Modification
         if ((mod = _modifications[getLength() + 1]) != nullptr && mod->getMonoisotopicMass() > 0) {
-            modSeqSb->append(L"-[");
+            modSeqSb->append("-[");
             modSeqSb->append(mod);
             modSeqSb->append(L']');
         }
@@ -352,7 +352,7 @@ namespace Proteomics {
             });
         }
 
-        count += ChemicalFormula::ParseFormula(L"H2O")->CountWithIsotopes(element);
+        count += ChemicalFormula::ParseFormula("H2O")->CountWithIsotopes(element);
         return count;
     }
 
@@ -487,7 +487,7 @@ namespace Proteomics {
 
 template<typename T>
     ISet<T> *AminoAcidPolymer::GetUniqueModifications() {
-        static_assert(std::is_base_of<IHasMass, T>::value, L"T must inherit from IHasMass");
+        static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
 
         std::unordered_set<T> uniqueMods;
 
@@ -575,7 +575,7 @@ template<typename T>
 
     void AminoAcidPolymer::SetModification(IHasMass *modification, int residueNumber) {
         if (residueNumber > getLength() || residueNumber < 1) {
-            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, L"Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
+            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, "Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
         }
 
         ReplaceMod(residueNumber, modification);
@@ -599,7 +599,7 @@ template<typename T>
 
     int AminoAcidPolymer::ReplaceModification(IHasMass *oldMod, IHasMass *newMod) {
         if (oldMod == nullptr) {
-            throw MzLibException(L"Cannot replace a null modification");
+            throw MzLibException("Cannot replace a null modification");
         }
 
         int count = 0;
@@ -753,7 +753,7 @@ template<typename T>
 
                 if (chemMod == nullptr) {
                     delete formula;
-                    throw MzLibException(L"Modification " + _modifications[i] + L" does not have a chemical formula!");
+                    throw MzLibException("Modification " + _modifications[i] + " does not have a chemical formula!");
                 }
 
                 formula->Add(chemMod->getThisChemicalFormula());
@@ -879,7 +879,7 @@ template<typename T>
                         else {
                             delete modification;
                             delete modSb;
-                            throw MzLibException(L"Unable to correctly parse the following modification: " + modString);
+                            throw MzLibException("Unable to correctly parse the following modification: " + modString);
                         }
                     }
 
@@ -924,7 +924,7 @@ template<typename T>
                         default:
 
                             delete modSb;
-                            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, L"Amino Acid Letter {0} does not exist in the Amino Acid Dictionary. {0} is also not a valid character", letter));
+                            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, "Amino Acid Letter {0} does not exist in the Amino Acid Dictionary. {0} is also not a valid character", letter));
                     }
                 }
             }
@@ -932,7 +932,7 @@ template<typename T>
 
         if (inMod) {
             delete modSb;
-            throw MzLibException(L"Couldn't find the closing ] for a modification in this sequence: " + sequence);
+            throw MzLibException("Couldn't find the closing ] for a modification in this sequence: " + sequence);
         }
 
         setLength(index);

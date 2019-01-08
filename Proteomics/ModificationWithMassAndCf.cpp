@@ -15,12 +15,12 @@ namespace Proteomics {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         auto baseString = ModificationWithMass::ToString();
         if (std::abs(monoisotopicMass - chemicalFormula->getMonoisotopicMass()) < tolForEquality) {
-            baseString = Regex::Replace(baseString, LR"(MM.*$)", L"CF   " + chemicalFormula->getFormula());
+            baseString = Regex::Replace(baseString, LR"(MM.*$)", "CF   " + chemicalFormula->getFormula());
             sb->append(baseString);
         }
         else {
             sb->appendLine(baseString);
-            sb->append(L"CF   " + chemicalFormula->getFormula());
+            sb->append("CF   " + chemicalFormula->getFormula());
         }
 
         delete sb;

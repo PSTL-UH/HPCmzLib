@@ -77,7 +77,7 @@ namespace Proteomics {
     }
 
     std::string Fragment::ToString() {
-        return std::string::Format(CultureInfo::InvariantCulture, L"{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
+        return std::string::Format(CultureInfo::InvariantCulture, "{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
     }
 
     int Fragment::GetHashCode() {

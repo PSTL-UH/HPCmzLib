@@ -21,17 +21,17 @@ namespace Proteomics {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         sb->appendLine(ModificationWithLocation::ToString());
         if (neutralLosses.size()() != 1 || neutralLosses.front() != 0) {
-            sb->appendLine(L"NL   " + std::string::Join(L" or ", neutralLosses.Select([&] (std::any b) {
+            sb->appendLine("NL   " + std::string::Join(" or ", neutralLosses.Select([&] (std::any b) {
                 b.ToString(CultureInfo::InvariantCulture);
             })));
         }
         if (diagnosticIons.size()() > 0) {
-            sb->appendLine(L"DI   " + std::string::Join(L" or ", diagnosticIons.Select([&] (std::any b) {
+            sb->appendLine("DI   " + std::string::Join(" or ", diagnosticIons.Select([&] (std::any b) {
                 b.ToString(CultureInfo::InvariantCulture);
             })));
         }
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        sb->append(L"MM   " + monoisotopicMass.ToString(CultureInfo::InvariantCulture));
+        sb->append("MM   " + monoisotopicMass.ToString(CultureInfo::InvariantCulture));
 
         delete sb;
         return sb->toString();

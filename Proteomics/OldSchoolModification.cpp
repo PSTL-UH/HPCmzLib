@@ -7,10 +7,10 @@ namespace Proteomics {
     OldSchoolModification::OldSchoolModification(const OldSchoolModification &modification) : OldSchoolModification(modification->MonoisotopicMass, modification->Name, modification->getSites()) {
     }
 
-    OldSchoolModification::OldSchoolModification() : OldSchoolModification(0.0, L"", ModificationSites::Any) {
+    OldSchoolModification::OldSchoolModification() : OldSchoolModification(0.0, "", ModificationSites::Any) {
     }
 
-    OldSchoolModification::OldSchoolModification(double monoMass) : OldSchoolModification(monoMass, L"", ModificationSites::Any) {
+    OldSchoolModification::OldSchoolModification(double monoMass) : OldSchoolModification(monoMass, "", ModificationSites::Any) {
     }
 
     OldSchoolModification::OldSchoolModification(double monoMass, const std::string &name) : OldSchoolModification(monoMass, name, ModificationSites::Any) {
@@ -47,7 +47,7 @@ namespace Proteomics {
     }
 
     std::string OldSchoolModification::getNameAndSites() const {
-        return std::string::Format(CultureInfo::InvariantCulture, L"{0} ({1})", getName(), getSites());
+        return std::string::Format(CultureInfo::InvariantCulture, "{0} ({1})", getName(), getSites());
     }
 
     std::string OldSchoolModification::ToString() {

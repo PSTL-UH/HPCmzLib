@@ -29,27 +29,28 @@ namespace Chemistry { class ChemicalFormula; }
 // Modified work copyright 2016 Stefan Solntsev
 //
 // This file (AminoAcidPolymer.cs) is part of Proteomics.
-/
+//
 // Proteomics is free software: you can redistribute it and/or modify i
 // under the terms of the GNU Lesser General Public License as publishe
 // by the Free Software Foundation, either version 3 of the License, o
 // (at your option) any later version
-/
+//
 // Proteomics is distributed in the hope that it will be useful, but WITHOU
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY o
 // FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Publi
 // License for more details
-/
+//
 // You should have received a copy of the GNU Lesser General Publi
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>
-using namespace Chemistry
+using namespace Chemistry;
 #include "MzLibUtil.h"
-using namespace MzLibUtil
+using namespace MzLibUtil;
 namespace Proteomics {
     /// <summary>
     /// A linear polymer of amino acids
     /// </summary>
-    class AminoAcidPolymer : public IEquatable<AminoAcidPolymer*>, public IHasMass {
+//    class AminoAcidPolymer : public IEquatable<AminoAcidPolymer*>, public IHasMass {
+    class AminoAcidPolymer : public IHasMass {
     private:
         int privateLength = 0;
         double privateMonoisotopicMass = 0;
@@ -117,7 +118,8 @@ namespace Proteomics {
         /// The total monoisotopic mass of this peptide and all of its modifications
         /// </summary>
         double getMonoisotopicMass() const override;
-        void setMonoisotopicMass(double value) override;
+//        void setMonoisotopicMass(double value) override;
+        void setMonoisotopicMass(double value);
 
         /// <summary>
         /// Returns the amino acid sequence with all isoleucines (I) replaced with leucines (L);
@@ -251,7 +253,7 @@ namespace Proteomics {
 
         template<typename T>
         ISet<T> *GetUniqueModifications();
-        static_assert(std::is_base_of<IHasMass, T>::value, L"T must inherit from IHasMass");
+        static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
 
         /// <summary>
         /// Counts the total number of modifications on this polymer that are not null
@@ -372,13 +374,17 @@ namespace Proteomics {
         /// <returns></returns>
         ChemicalFormula *GetChemicalFormula();
 
-        std::string ToString() override;
+//        std::string ToString() override;
+        std::string ToString();
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
-        bool Equals(std::any obj) override;
+//        bool Equals(std::any obj) override;
+        bool Equals(std::any obj);
 
-        bool Equals(AminoAcidPolymer *other) override;
+//        bool Equals(AminoAcidPolymer *other) override;
+        bool Equals(AminoAcidPolymer *other);
 
 
     private:
@@ -409,7 +415,8 @@ namespace Proteomics {
 
             double getMonoisotopicMass() const override;
 
-            std::string ToString() override;
+//            std::string ToString() override;
+            std::string ToString();
 
         };
 

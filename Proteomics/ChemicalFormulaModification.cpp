@@ -8,7 +8,7 @@ namespace Proteomics {
     OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula) : OldSchoolChemicalFormulaModification(chemicalFormula, ModificationSites::Any) {
     }
 
-    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, ModificationSites sites) : OldSchoolChemicalFormulaModification(chemicalFormula, L"", sites) {
+    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, ModificationSites sites) : OldSchoolChemicalFormulaModification(chemicalFormula, "", sites) {
         setName(getThisChemicalFormula()->getFormula());
     }
 

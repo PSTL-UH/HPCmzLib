@@ -31,7 +31,7 @@ namespace Proteomics {
         bool privateIsContaminant = false;
 
     public:
-        Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name = L"", const std::string &full_name = L"", bool isDecoy = false, bool isContaminant = false, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::string &databaseFilePath = L"");
+        Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name = "", const std::string &full_name = "", bool isDecoy = false, bool isContaminant = false, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::string &databaseFilePath = "");
 
         std::unordered_map<int, std::vector<Modification*>> getOneBasedPossibleLocalizedModifications() const;
 

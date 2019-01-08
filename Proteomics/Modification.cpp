@@ -8,8 +8,8 @@ namespace Proteomics {
 
     std::string Modification::ToString() {
         StringBuilder *sb = new StringBuilder();
-        sb->appendLine(L"ID   " + id);
-        sb->append(L"MT   " + modificationType);
+        sb->appendLine("ID   " + id);
+        sb->append("MT   " + modificationType);
 
         delete sb;
         return sb->toString();

@@ -31,7 +31,8 @@ namespace Chemistry { class IHasMass; }
 using namespace Chemistry;
 
 namespace Proteomics {
-    class Fragment : public IHasMass, public IEquatable<Fragment*> {
+//    class Fragment : public IHasMass, public IEquatable<Fragment*> {
+    class Fragment : public IHasMass {
     private:
         double privateMonoisotopicMass = 0;
         int privateNumber = 0;
@@ -43,7 +44,8 @@ namespace Proteomics {
         Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
 
         double getMonoisotopicMass() const override;
-        void setMonoisotopicMass(double value) override;
+//        void setMonoisotopicMass(double value) override;
+        void setMonoisotopicMass(double value);
 
         int getNumber() const;
         void setNumber(int value);
@@ -58,11 +60,14 @@ namespace Proteomics {
 
         std::string getSequence() const;
 
-        std::string ToString() override;
+//        std::string ToString() override;
+        std::string ToString();
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
-        bool Equals(Fragment *other) override;
+//        bool Equals(Fragment *other) override;
+        bool Equals(Fragment *other);
 
     };
 }

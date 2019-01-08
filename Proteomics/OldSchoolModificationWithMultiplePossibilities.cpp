@@ -19,7 +19,7 @@ namespace Proteomics {
 
     void ModificationWithMultiplePossibilitiesCollection::AddModification(OldSchoolModification *modification) {
         if (!getSites()::ContainsSites(modification->getSites())) {
-            throw MzLibException(L"Unable to add a modification with sites other than " + getSites());
+            throw MzLibException("Unable to add a modification with sites other than " + getSites());
         }
 
         _modifications->Add(modification->MonoisotopicMass, modification);
