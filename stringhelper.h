@@ -13,7 +13,7 @@
 #include <exception>
 #include <cctype>
 #include <algorithm>
-
+#include <tuple>
 /***********************************************************************
 // crc32 checksum
 // adapted from free code by Mark Adler <madler@alumni.caltech.edu>
@@ -90,6 +90,11 @@ static const long int _crc32_table[256] = {
 class StringHelper
 {
 public:
+        static int GetHashCode (std::tuple<std::string, std::string> st){
+            std::string s0 = std::get<0>(st);
+            std::string s1 = std::get<1>(st);
+            return (GetHashCode(s0.c_str(), s0.length()) ^ GetHashCode(s1.c_str(), s1.length()));
+        }
         static int GetHashCode ( std::string s ) {
             return GetHashCode (s.c_str(), s.length());
         }

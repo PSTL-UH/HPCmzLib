@@ -38,9 +38,11 @@ namespace Proteomics {
         /// </summary>
         std::vector<std::tuple<std::string, std::string>> getProperties() const;
 
-        bool Equals(std::any obj) override;
+//        bool Equals(std::any obj) override;
+        bool Equals(DatabaseReference *);
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
     };
 }
