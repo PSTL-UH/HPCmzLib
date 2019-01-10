@@ -109,7 +109,7 @@ namespace Chemistry {
         /// <summary>
         /// Gets the string representation (Hill Notation) of this chemical formula
         /// </summary>
-        std::string getFormula() const;
+        std::string getFormula();
 
         int getProtonCount() const;
 
@@ -117,7 +117,7 @@ namespace Chemistry {
         /// The ratio of the number of Carbon to Hydrogen in this chemical formula
         /// </summary>
         /// <returns></returns>
-        double getHydrogenCarbonRatio() const;
+        double getHydrogenCarbonRatio();
 
         std::unordered_map<Isotope*, int> getIsotopes() const;
         void setIsotopes(const std::unordered_map<Isotope*, int> &value);

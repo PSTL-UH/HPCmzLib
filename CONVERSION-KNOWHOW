@@ -24,9 +24,10 @@
    with
    ---snip---
    ---snip---
-    
 
-4. non-existent C# functions
+4. Regex replacements: look at Chemistry/ChemicalFormula.cpp
+
+5. non-existent C# functions
    + there is no ToString() method in C++,
       * remove therefore the override attribute
  
@@ -47,3 +48,4 @@
       * replace string.GetHashCode() for calculating a hash code
         with my own StringHelper::GetHashCode(string) method
         
+6. Lambda functions: 

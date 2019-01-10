@@ -27,7 +27,6 @@ namespace Chemistry {
     /// http://physics.nist.gov/cuu/Constants/index.html
     /// </summary>
     class Constants final {
-//        #region Public Fields
 
         /// <summary>
         /// The mass of the subatomic particle with a single elementary charge in atomic
@@ -40,10 +39,6 @@ namespace Chemistry {
         /// The electron mass in atomic units (u)
         /// </summary>
         static constexpr double electronMass = 5.48579909070e-4;
-
-//        #endregion Public Fields
-
-//        #region Internal Fields
 
         /// <summary>
         /// The largest number of elements to consider
@@ -59,6 +54,5 @@ namespace Chemistry {
 
         static constexpr int HydrogenAtomicNumber = 1;
 
-//        #endregion Internal Fields
     };
 }
