@@ -13,7 +13,9 @@
 #include "ModificationCollection.h"
 #include "ChemicalFormulaModification.h"
 
+include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
 

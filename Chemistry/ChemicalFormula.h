@@ -10,9 +10,14 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class Isotope; }
-namespace Chemistry { class Element; }
-namespace Chemistry { class IHasChemicalFormula; }
+//namespace Chemistry { class Isotope; }
+#include "Isotope.h"
+
+//namespace Chemistry { class Element; }
+#include "Element.h"
+
+//namespace Chemistry { class IHasChemicalFormula; }
+#include "Interfaces/IHasChemicalFormula.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016, 2017 Stefan Solntsev

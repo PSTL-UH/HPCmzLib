@@ -15,15 +15,16 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class IHasChemicalFormula; }
-namespace Chemistry { class IHasMass; }
+//namespace Chemistry { class IHasChemicalFormula; }
+//namespace Chemistry { class IHasMass; }
+//namespace Chemistry { class Isotope; }
+//namespace Chemistry { class ChemicalFormula; }
+
 namespace Proteomics { class Residue; }
 namespace Proteomics { class Fragment; }
 namespace Proteomics { class DigestionPointAndLength; }
 namespace Proteomics { class IProtease; }
-namespace Chemistry { class Isotope; }
 namespace Proteomics { class OldSchoolModification; }
-namespace Chemistry { class ChemicalFormula; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -42,9 +43,12 @@ namespace Chemistry { class ChemicalFormula; }
 //
 // You should have received a copy of the GNU Lesser General Publi
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>
+
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
+
 namespace Proteomics {
     /// <summary>
     /// A linear polymer of amino acids
