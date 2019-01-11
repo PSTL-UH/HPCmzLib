@@ -2,6 +2,7 @@
 #include "ChemicalFormula.h"
 #include "Isotope.h"
 #include <any>
+#include <iostream>
 
 namespace Chemistry {
 
@@ -27,11 +28,13 @@ int IsotopicDistribution::_factorLnTop = 1;
         return GetDistribution(formula, fineResolution, defaultMinProbability, defaultMolecularWeightResolution);
     }
 
-    IsotopicDistribution *IsotopicDistribution::GetDistribution(ChemicalFormula *formula, double fineResolution, double minProbability) {
+    IsotopicDistribution *IsotopicDistribution::GetDistribution(ChemicalFormula *formula, double fineResolution,
+                                                                double minProbability) {
         return GetDistribution(formula, fineResolution, minProbability, defaultMolecularWeightResolution);
     }
 
-    IsotopicDistribution *IsotopicDistribution::GetDistribution(ChemicalFormula *formula, double fineResolution, double minProbability, double molecularWeightResolution) {
+    IsotopicDistribution *IsotopicDistribution::GetDistribution(ChemicalFormula *formula, double fineResolution,
+                                                                double minProbability, double molecularWeightResolution) {
         auto a = GetNewFineAndMergeResolutions(fineResolution);
         fineResolution = std::get<0>(a);
         double _mergeFineResolution = std::get<1>(a);
@@ -39,8 +42,9 @@ int IsotopicDistribution::_factorLnTop = 1;
 
         // Get all the unique elements that might have isotopes
         for (auto elementAndCount : formula->getElements()) {
-            int count = elementAndCount.Value;
+            int count = elementAndCount.second;
             std::vector<Composition*> isotopeComposition;
+#ifdef ORIG
             for (Isotope *isotope : elementAndCount.Key->Isotopes.OrderBy([&] (std::any iso) {
                 iso::AtomicMass;
             })) {
@@ -52,26 +56,41 @@ int IsotopicDistribution::_factorLnTop = 1;
 
                 isotopeComposition.push_back(c);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete c' statement was not added since c was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete c' statement was not added since c was passed to a method or constructor.
+//Handle memory management manually.
+            }
+#endif
+//            for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),elementAndCount.first->getIsotopes().end(),[ ] (const Isotope* &l, const Isotope* &r) {return l->getAtomicMass() > r->getAtomicMass(); }  ))  {
+            std::cout << "EG WARNING: The routine mzLib IsotopicDistributioN::GetDistribution : Isotopes are not sorted according to AtomicMass in the C++ version" << std::endl;            
+            for (Isotope *isotope : elementAndCount.first->getIsotopes() )  {
+                Composition *c = new Composition();
+                c->Atoms = count;
+                c->MolecularWeight = isotope->getAtomicMass();
+                c->Power = isotope->getAtomicMass();
+                c->Probability = isotope->getRelativeAbundance();
+
+                isotopeComposition.push_back(c);
             }
             elementalComposition.push_back(isotopeComposition);
         }
 
         for (auto compositions : elementalComposition) {
-            double sumProb = compositions.Sum([&] (std::any t) {
-                t::Probability;
-            });
+            double sumProb = 0.0;
+            for ( auto c : compositions ) {
+                sumProb += c->Probability;
+            }
             for (auto composition : compositions) {
                 composition->Probability /= sumProb;
                 composition->LogProbability = std::log(composition->Probability);
                 composition->Power = std::floor(composition->MolecularWeight / molecularWeightResolution + 0.5);
             }
         }
-        IsotopicDistribution *dist = CalculateFineGrain(elementalComposition, molecularWeightResolution, _mergeFineResolution, fineResolution, minProbability);
+        IsotopicDistribution *dist = CalculateFineGrain(elementalComposition, molecularWeightResolution, _mergeFineResolution,
+                                                        fineResolution, minProbability);
 
         double additionalMass = 0;
         for (auto isotopeAndCount : formula->getIsotopes()) {
-            additionalMass += isotopeAndCount.Key->AtomicMass * isotopeAndCount.Value;
+            additionalMass += isotopeAndCount.first->getAtomicMass() * isotopeAndCount.second;
         }
 
         for (int i = 0; i < dist->masses.size(); i++) {
@@ -85,12 +104,12 @@ int IsotopicDistribution::_factorLnTop = 1;
         return std::tuple<double, double>(fineResolution / 2.0, fineResolution);
     }
 
-    std::vector<Polynomial> IsotopicDistribution::MergeFinePolynomial(std::vector<Polynomial> &tPolynomial, double _mwResolution, double _mergeFineResolution) {
+    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MergeFinePolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial, double _mwResolution, double _mergeFineResolution) {
         // Sort by mass (i.e. power)
 //C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while the .NET Comparison parameter produces a tri-state result:
 //ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
-        std::sort(tPolynomial.begin(), tPolynomial.end(), [&] (a, b) {
-            a::Power->CompareTo(b::Power);
+        std::sort(tPolynomial.begin(), tPolynomial.end(), [ ] (auto &a, auto &b) {
+                return a.Power > b.Power;
         });
 
         int count = tPolynomial.size();

@@ -6,9 +6,10 @@
 #include <tuple>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class ChemicalFormula; }
-namespace Chemistry { class Polynomial; }
-namespace Chemistry { class Composition; }
+#include "ChemicalFormula.h"
+//namespace Chemistry { class ChemicalFormula; }
+//namespace Chemistry { class Polynomial; }
+//namespace Chemistry { class Composition; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016, 2017 Stefan Solntsev
@@ -49,8 +50,27 @@ namespace Chemistry {
     /// Only calculates the fine grained distribution.
     /// </remarks>
     class IsotopicDistribution {
-//        #region Private Fields
 
+    private:
+        class Polynomial {
+
+        public:
+            double Power = 0;
+            double Probablity = 0;
+
+        };
+
+    private:
+        class Composition {
+
+        public:
+            double Power = 0;
+            double Probability = 0;
+            double LogProbability = 0;
+            double MolecularWeight = 0;
+            int Atoms = 0;
+        };
+ 
     private:
         static constexpr double defaultFineResolution = 0.01;
         static constexpr double defaultMinProbability = 1e-200;
@@ -60,23 +80,11 @@ namespace Chemistry {
         std::vector<double> const masses;
         std::vector<double> const intensities;
 
-//        #endregion Private Fields
-
-//        #region Private Constructors
-
         IsotopicDistribution(int count);
-
-//        #endregion Private Constructors
-
-//        #region Public Properties
 
     public:
         std::vector<double> getMasses() const;
         std::vector<double> getIntensities() const;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         static IsotopicDistribution *GetDistribution(ChemicalFormula *formula);
 
@@ -84,11 +92,8 @@ namespace Chemistry {
 
         static IsotopicDistribution *GetDistribution(ChemicalFormula *formula, double fineResolution, double minProbability);
 
-        static IsotopicDistribution *GetDistribution(ChemicalFormula *formula, double fineResolution, double minProbability, double molecularWeightResolution);
-
-//        #endregion Public Methods
-
-//        #region Private Methods
+        static IsotopicDistribution *GetDistribution(ChemicalFormula *formula, double fineResolution, double minProbability,
+                                                     double molecularWeightResolution);
 
         /// <summary>
         /// Calculates the fineResolution and mergeFineResolution parameters
@@ -97,51 +102,26 @@ namespace Chemistry {
     private:
         static std::tuple<double, double> GetNewFineAndMergeResolutions(double fineResolution);
 
-        static std::vector<Polynomial> MergeFinePolynomial(std::vector<Polynomial> &tPolynomial, double _mwResolution, double _mergeFineResolution);
+        static std::vector<Polynomial> MergeFinePolynomial(std::vector<Polynomial> &tPolynomial, double _mwResolution,
+                                                           double _mergeFineResolution);
 
-        static std::vector<Polynomial> MultiplyFinePolynomial(std::vector<std::vector<Composition*>> &elementalComposition, double _fineResolution, double _mwResolution, double _fineMinProb);
+        static std::vector<Polynomial> MultiplyFinePolynomial(std::vector<std::vector<Composition*>> &elementalComposition,
+                                                              double _fineResolution, double _mwResolution, double _fineMinProb);
 
-        static void MultiplyFineFinalPolynomial(std::vector<Polynomial> &tPolynomial, std::vector<Polynomial> &fPolynomial, std::vector<Polynomial> &fgidPolynomial, double _fineResolution, double _mwResolution, double _fineMinProb);
+        static void MultiplyFineFinalPolynomial(std::vector<Polynomial> &tPolynomial, std::vector<Polynomial> &fPolynomial,
+                                                std::vector<Polynomial> &fgidPolynomial, double _fineResolution, double _mwResolution,
+                                                double _fineMinProb);
 
-        static void MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins, std::vector<int> &maxs, std::vector<int> &indices, int index, std::vector<Polynomial> &fPolynomial, std::vector<Composition*> &elementalComposition, int atoms, double minProb, int maxValue);
+        static void MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins, std::vector<int> &maxs, std::vector<int> &indices,
+                                                          int index, std::vector<Polynomial> &fPolynomial,
+                                                          std::vector<Composition*> &elementalComposition, int atoms, double minProb,
+                                                          int maxValue);
 
         static double FactorLn(int n);
 
-        static IsotopicDistribution *CalculateFineGrain(std::vector<std::vector<Composition*>> &elementalComposition, double _mwResolution, double _mergeFineResolution, double _fineResolution, double _fineMinProb);
+        static IsotopicDistribution *CalculateFineGrain(std::vector<std::vector<Composition*>> &elementalComposition,
+                                                        double _mwResolution, double _mergeFineResolution, double _fineResolution,
+                                                        double _fineMinProb);
 
-//        #endregion Private Methods
-
-//        #region Private Structs
-
-    private:
-        class Polynomial {
-//            #region Public Fields
-
-        public:
-            double Power = 0;
-            double Probablity = 0;
-
-//            #endregion Public Fields
-        };
-
-//        #endregion Private Structs
-
-//        #region Private Classes
-
-    private:
-        class Composition {
-//            #region Public Fields
-
-        public:
-            double Power = 0;
-            double Probability = 0;
-            double LogProbability = 0;
-            double MolecularWeight = 0;
-            int Atoms = 0;
-
-//            #endregion Public Fields
-        };
-
-//        #endregion Private Classes
     };
 }
