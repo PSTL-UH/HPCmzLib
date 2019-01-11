@@ -170,23 +170,26 @@ namespace Chemistry {
         }
 
         std::smatch match;
-#if ORIG
+#ifdef NOTWORKING
+// This parsing of the string to extract a formula needs probably completely
+// rewritten for C++. Will only do it if really required
+#ifdef ORIG
 //        for (auto match : FormulaRegex->Matches(formula)) {
 #endif
         std::regex_search(formula, match, FormulaRegex);
 //EG TODO: will need to loop over the individual elements. For now,
 //        just doing the first one.
-           std::string chemsym = match[1]; // Group 1: Chemical Symbol
+        std::string chemsym = match.str(1); // Group 1: Chemical Symbol
 
             Element *element = PeriodicTable::GetElement(chemsym);
 
-            int sign = match[3] ? -1 : 1;
+            int sign = std::stoi(match.str(3)) ? -1 : 1;
 
-            int numofelem = match[4] ? std::stoi(match[4]) : 1;
+            int numofelem = std::stoi(match.str(4)) ? std::stoi(match.str(4)) : 1;
 
-            if (match[2]) { // Group 2 (optional): Isotope Mass Number
+            if (std::stoi(match.str(2))) { // Group 2 (optional): Isotope Mass Number
                 // Adding isotope!
-                f->Add(element[std::stoi(match[2]], sign * numofelem));
+                f->Add(element[match.str(2)], sign * numofelem));
             }
             else {
                 // Adding element!
@@ -195,7 +198,8 @@ namespace Chemistry {
         }
 //    }
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was used in a 'return' or 'throw' statement.
-        return f;
+#endif 
+      return f;
     }
 
     int ChemicalFormula::NeutronCount() {
@@ -209,7 +213,7 @@ namespace Chemistry {
 #endif
         int sum = 0;
         for ( auto b: getIsotopes() ) {
-            sum += b.first->getNeutrons() * b.second
+            sum += b.first->getNeutrons() * b.second;
         }
         return sum;
     }
@@ -224,6 +228,7 @@ namespace Chemistry {
     }
 
     void ChemicalFormula::Multiply(int multiplier) {
+#ifdef ORIG
         std::vector<Element*> keys(getElements().Keys);
         for (auto key : keys) {
             getElements()[key] *= multiplier;
@@ -232,14 +237,21 @@ namespace Chemistry {
         for (auto key : keysIsotope) {
             getIsotopes()[key] *= multiplier;
         }
+ #endif       
+        for ( auto k: getElements() ) {
+            k.second *= multiplier;
+        }
+        for ( auto k: getIsotopes() ) {
+            k.second *= multiplier;
+        }
     }
 
     void ChemicalFormula::Add(ChemicalFormula *formula) {
         for (auto e : formula->getElements()) {
-            Add(e.Key, e.Value);
+            Add(e.first, e.second);
         }
         for (auto i : formula->getIsotopes()) {
-            Add(i.Key, i.Value);
+            Add(i.first, i.second);
         }
     }
 
@@ -334,12 +346,14 @@ namespace Chemistry {
 
     bool ChemicalFormula::IsSupersetOf(ChemicalFormula *formula) {
         for (auto aa : formula->getElements()) {
-            if (getElements().find(aa.Key) == getElements().end() || aa.Value > getElements()[aa.Key]) {
+            if (getElements().find(aa.first) == getElements().end() ||
+                aa.second > getElements()[aa.first]) {
                 return false;
             }
         }
         for (auto aa : formula->getIsotopes()) {
-            if (getIsotopes().find(aa.Key) == getIsotopes().end() || aa.Value > getIsotopes()[aa.Key]) {
+            if (getIsotopes().find(aa.first) == getIsotopes().end() ||
+                aa.second > getIsotopes()[aa.first]) {
                 return false;
             }
         }
