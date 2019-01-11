@@ -7,6 +7,7 @@
 #include "Constants.h"
 #include <any>
 #include <regex>
+#include <iostream>
 
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
@@ -170,6 +171,7 @@ namespace Chemistry {
         }
 
         std::smatch match;
+        std::cout << "EG WARNING: The routine mzLib ChemicalFormula::ParseFormula is not implemented CORRECTLY in the C++ version" << std::endl;
 #ifdef NOTWORKING
 // This parsing of the string to extract a formula needs probably completely
 // rewritten for C++. Will only do it if really required
@@ -322,10 +324,10 @@ namespace Chemistry {
     int ChemicalFormula::RemoveIsotopesOf(Element *element) {
         int count = getElements()[element];
         Add(element, -count);
-        for (auto k : getIsotopes().Where([&] (std::any b) {
-            return b::Key->Element == element;
-        }).ToList()) {
-            getIsotopes().erase(k::Key);
+        for (auto k : getIsotopes() ) {
+            if ( k.first->getElement() == element ) {
+                getIsotopes().erase(k.first);
+            }
         }
         return count;
     }
@@ -369,10 +371,12 @@ namespace Chemistry {
     }
 
     int ChemicalFormula::CountSpecificIsotopes(Isotope *isotope) {
-        int isotopeCount;
-        std::unordered_map<Isotope*, int>::const_iterator Isotopes_iterator = Isotopes.find(isotope);
-        return (getIsotopes()_iterator != getIsotopes().end() ? isotopeCount : 0);
-        isotopeCount = Isotopes_iterator->second;
+        int isotopeCount=0;
+        std::unordered_map<Isotope*, int>::const_iterator Is_iter = getIsotopes().find(isotope);
+        if (Is_iter != getIsotopes().end() ) {
+            isotopeCount = Is_iter->second;
+        }
+        return isotopeCount;
     }
 
     int ChemicalFormula::CountWithIsotopes(Element *element) {
@@ -383,36 +387,51 @@ namespace Chemistry {
 #endif
         int isotopeCount=0;
         for ( auto isotope : element->getIsotopes() ) {
-            isotopeCount += isotope->CountSpecificIsotopes();
+            isotopeCount += CountSpecificIsotopes(isotope);
         }
         
-        int ElementCount;
-        std::unordered_map<Element*, int>::const_iterator Elements_iterator = Elements.find(element);
-        return isotopeCount + (getElements()_iterator != getElements().end() ? ElementCount : 0);
-        ElementCount = Elements_iterator->second;
+        int ElementCount=0;
+        std::unordered_map<Element*, int>::const_iterator El_iter = getElements().find(element);
+        if (El_iter != getElements().end() ) {
+            ElementCount = El_iter->second;
+        }
+        return isotopeCount + ElementCount;
     }
 
     int ChemicalFormula::CountSpecificIsotopes(Element *element, int massNumber) {
-        Isotope *isotope = element[massNumber];
+#ifdef ORIG
+        Isotope *isotope = PeriodicTable::GetElement(massNumber);
         return CountSpecificIsotopes(isotope);
+#endif
+        // Not sure how to convert from an Element* to an Isotope*
+        std::cout << "EG WARNING: The routine mzLib ChemicalFormula::CountWithIsotopes(Element*, massnumber) is not implemented CORRECTLY in the C++ version" << std::endl;
+        return 0;
     }
 
     int ChemicalFormula::GetHashCode() {
-//#ifdef ORIG
+#ifdef ORIG
         return std::make_tuple(getIsotopes().Sum([&] (std::any b) {
             return b::Key->AtomicMass * b->Value;
         }), getElements().Sum([&] (std::any b) {
             return b::Key->AverageMass * b->Value;
         }))->GetHashCode();
-//#endif
-
+#endif
+        double is_sum=0.0;
+        for ( auto i : getIsotopes() ){
+            is_sum += i.first->getAtomicMass() * i.second;           
+        }
+        double el_sum=0.0;
+        for ( auto e: getElements() ) {
+            el_sum += e.first->getAverageMass() * e.second;
+        }
+        return StringHelper::GetHashCode(std::tuple<std::string, std::string> {std::to_string(is_sum), std::to_string(el_sum)});
     }
 
     bool ChemicalFormula::Equals(ChemicalFormula *other) {
         if (other == nullptr) {
             return false;
         }
-        if (ReferenceEquals(this, other)) {
+        if ( this == other) {
             return true;
         }
         if (std::abs(getMonoisotopicMass() - other->getMonoisotopicMass()) > 1e-9) {
@@ -429,25 +448,29 @@ namespace Chemistry {
 
         // Find carbons
         if (getElements().find(PeriodicTable::GetElement(Constants::CarbonAtomicNumber)) != getElements().end()) {
-            s->append("C" + (getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)] == 1 ? "" : "" + std::to_string(getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)])));
+            s->append("C" + (getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)] == 1 ? "" : "" +
+                             std::to_string(getElements()[PeriodicTable::GetElement(Constants::CarbonAtomicNumber)])));
         }
 
         // Find carbon isotopes
         for (auto i : PeriodicTable::GetElement(Constants::CarbonAtomicNumber)->getIsotopes()) {
             if (getIsotopes().find(i) != getIsotopes().end()) {
-                s->append("C{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" + std::to_string(getIsotopes()[i])));
+                s->append("C{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" +
+                                                                             std::to_string(getIsotopes()[i])));
             }
         }
 
         // Find hydrogens
         if (getElements().find(PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) != getElements().end()) {
-            s->append("H" + (getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)] == 1 ? "" : "" + std::to_string(getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)])));
+            s->append("H" + (getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)] == 1 ? "" : "" +
+                             std::to_string(getElements()[PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)])));
         }
 
         // Find hydrogen isotopes
         for (auto i : PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)->getIsotopes()) {
             if (getIsotopes().find(i) != getIsotopes().end()) {
-                s->append("H{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" + std::to_string(getIsotopes()[i])));
+                s->append("H{" + std::to_string(i->getMassNumber()) + "}" + (getIsotopes()[i] == 1 ? "" : "" +
+                                                                             std::to_string(getIsotopes()[i])));
             }
         }
 
@@ -455,38 +478,31 @@ namespace Chemistry {
 
         // Find other elements
         for (auto i : getElements()) {
-#ifdef ORIG
-            if (i.Key != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.Key != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.Key->AtomicSymbol + (i.Value == 1 ? "" : "" + i.Value));
-            }
-#endif
-            if (i.first != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.first != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.first->getAtomicSymbol() + (i.second == 1 ? "" : "" + i.second));
+            if (i.first != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) &&
+                i.first != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
+                std::string temp = i.first->getAtomicSymbol() + (i.second == 1 ? "" : "" + i.second);
+                otherParts.push_back(temp);
             }
         }
 
         // Find other isotopes
         for (auto i : getIsotopes()) {
-#ifdef ORIG
-            if (i.Key->Element != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.Key->Element != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.Key->Element->AtomicSymbol + "{" + i.Key->MassNumber + "}" + (i.Value == 1 ? "" : "" + i.Value));
-            }
-#endif
-            if (i.first->getElement() != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) && i.first->getElement() != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                otherParts.push_back(i.first->getElement()->getAtomicSymbol() + "{" + i.first->getMassNumber() + "}" + (i.second == 1 ? "" : "" + i.second));
+            if (i.first->getElement() != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) &&
+                i.first->getElement() != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
+                std::string temp = i.first->getElement()->getAtomicSymbol() + "{" + std::to_string(i.first->getMassNumber()) +
+                                   "}" + (i.second == 1 ? "" : "" + i.second);
+                otherParts.push_back(temp);
             }
         }
 
         std::sort(otherParts.begin(), otherParts.end());
 
         delete s;
-#ifdef ORIG
-        return s + std::string::Join("", otherParts);
-#endif
         std::string st;
         for ( auto sp: otherParts ){
             st += sp;
         }
+
         return st;
     }
 }
