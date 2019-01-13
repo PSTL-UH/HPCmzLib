@@ -75,10 +75,10 @@ namespace Chemistry {
         static constexpr double defaultFineResolution = 0.01;
         static constexpr double defaultMinProbability = 1e-200;
         static constexpr double defaultMolecularWeightResolution = 1e-12;
-        static std::vector<double> const factorLnArray;
+        static std::vector<double> factorLnArray;
         static int _factorLnTop;
-        std::vector<double> const masses;
-        std::vector<double> const intensities;
+        std::vector<double> masses;
+        std::vector<double> intensities;
 
         IsotopicDistribution(int count);
 

@@ -6,7 +6,7 @@
 
 namespace Chemistry {
 
-std::vector<double> const IsotopicDistribution::factorLnArray = std::vector<double>(50003);
+std::vector<double> IsotopicDistribution::factorLnArray = std::vector<double>(50003);
 int IsotopicDistribution::_factorLnTop = 1;
 
     IsotopicDistribution::IsotopicDistribution(int count) : masses(std::vector<double>(count)), intensities(std::vector<double>(count)) {
@@ -104,7 +104,9 @@ int IsotopicDistribution::_factorLnTop = 1;
         return std::tuple<double, double>(fineResolution / 2.0, fineResolution);
     }
 
-    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MergeFinePolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial, double _mwResolution, double _mergeFineResolution) {
+    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MergeFinePolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial,
+                                                                                            double _mwResolution,
+                                                                                            double _mergeFineResolution) {
         // Sort by mass (i.e. power)
 //C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while the .NET Comparison parameter produces a tri-state result:
 //ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
@@ -158,16 +160,26 @@ int IsotopicDistribution::_factorLnTop = 1;
         }
 
         // return only non-zero terms
+#ifdef ORIG
         return tPolynomial.Where([&] (std::any poly) {
             !std::isnan(poly::Power);
         }).ToList();
+#endif
+
+        std::vector<IsotopicDistribution::Polynomial>::iterator t;
+        for ( t=tPolynomial.begin(); t<tPolynomial.end(); t++ ) {
+            if ( std::isnan ( t->Power )) {
+                tPolynomial.erase ( t) ;
+            }
+        }
+        return tPolynomial;
     }
 
-    std::vector<Polynomial> IsotopicDistribution::MultiplyFinePolynomial(std::vector<std::vector<Composition*>> &elementalComposition, double _fineResolution, double _mwResolution, double _fineMinProb) {
+    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MultiplyFinePolynomial(std::vector<std::vector<IsotopicDistribution::Composition*>> &elementalComposition, double _fineResolution, double _mwResolution, double _fineMinProb) {
         constexpr int nc = 10;
         constexpr int ncAddValue = 1;
         constexpr int nAtoms = 200;
-        std::vector<Polynomial> tPolynomial;
+        std::vector<IsotopicDistribution::Polynomial> tPolynomial;
 
         int n = 0;
         int k;
@@ -178,9 +190,9 @@ int IsotopicDistribution::_factorLnTop = 1;
             }
         }
 
-        std::vector<std::vector<Polynomial>> fPolynomial;
+        std::vector<std::vector<IsotopicDistribution::Polynomial>> fPolynomial;
         for (int i = 0; i < n; i++) {
-            fPolynomial.push_back(std::vector<Polynomial>());
+            fPolynomial.push_back(std::vector<IsotopicDistribution::Polynomial>());
         }
 
         for (k = 0; k < n; k++) {
@@ -248,7 +260,10 @@ int IsotopicDistribution::_factorLnTop = 1;
         return tPolynomial;
     }
 
-    void IsotopicDistribution::MultiplyFineFinalPolynomial(std::vector<Polynomial> &tPolynomial, std::vector<Polynomial> &fPolynomial, std::vector<Polynomial> &fgidPolynomial, double _fineResolution, double _mwResolution, double _fineMinProb) {
+    void IsotopicDistribution::MultiplyFineFinalPolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial,
+                                                           std::vector<IsotopicDistribution::Polynomial> &fPolynomial,
+                                                           std::vector<IsotopicDistribution::Polynomial> &fgidPolynomial,
+                                                           double _fineResolution, double _mwResolution, double _fineMinProb) {
         int i = tPolynomial.size();
         int j = fPolynomial.size();
 
@@ -328,17 +343,31 @@ int IsotopicDistribution::_factorLnTop = 1;
         }
 
         if (j < index) {
-            tPolynomial.RemoveRange(j, tPolynomial.size() - j);
+//          tPolynomial.RemoveRange(j, tPolynomial.size() - j);
+            tPolynomial.erase(tPolynomial.begin()+j, tPolynomial.end()-j);
         }
     }
 
-    void IsotopicDistribution::MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins, std::vector<int> &maxs, std::vector<int> &indices, int index, std::vector<Polynomial> &fPolynomial, std::vector<Composition*> &elementalComposition, int atoms, double minProb, int maxValue) {
+    void IsotopicDistribution::MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins,
+                                                                     std::vector<int> &maxs,
+                                                                     std::vector<int> &indices,
+                                                                     int index,
+                                                                     std::vector<Polynomial> &fPolynomial,
+                                                                     std::vector<Composition*> &elementalComposition,
+                                                                     int atoms, double minProb, int maxValue) {
+        int sum=0;
+        for ( auto ii: indices ) {
+            sum += ii;
+        }
         for (indices[index] = mins[index]; indices[index] <= maxs[index]; indices[index]++) {
             if (index < mins.size() - 1) {
-                MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, index + 1, fPolynomial, elementalComposition, atoms, minProb, maxValue);
+                MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, index + 1,
+                                                      fPolynomial, elementalComposition, atoms,
+                                                      minProb, maxValue);
             }
             else {
-                int l = atoms - indices.Sum();
+//                int l = atoms - indices.Sum();
+                int l = atoms - sum;
                 if (l < 0 || l > maxValue) {
                     continue;
                 }
