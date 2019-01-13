@@ -29,6 +29,7 @@ OBJ = 	Constants.o                      \
 .SUFFIXES: .o.cpp
 
 all:    
+	cd Interfaces ; make ; cd ..
 	make $(MZLIB_LIB) 
 
 
@@ -39,5 +40,6 @@ $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
 	$(CXX) $(CXXFLAGS) -c $<
 
-clean:
+clean:  
+	cd Interfaces ; make clean ; cd ..
 	rm -rf *.o *~
