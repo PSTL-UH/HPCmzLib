@@ -1,6 +1,7 @@
-﻿#include "ModificationCollection.h"
-#include "../Chemistry/Interfaces/IHasMass.h"
-#include "../Chemistry/ChemicalFormula.h"
+﻿#include <iostream>
+#include <algorithm>
+#include "ModificationCollection.h"
+#include "../Chemistry/Chemistry.h"
 #include "../MzLibUtil/ClassExtensions.h"
 
 using namespace Chemistry;
@@ -9,10 +10,19 @@ using namespace MzLibUtil;
 
 namespace Proteomics {
 
+#ifdef ORIG
     ModificationCollection::ModificationCollection(std::vector<IHasMass> &mods) : _modifications(mods::ToList()) {
         setMonoisotopicMass(_modifications.Sum([&] (std::any m) {
             m::MonoisotopicMass;
         }));
+    }
+#endif
+    ModificationCollection::ModificationCollection(std::vector<IHasMass *> &mods) {
+        double msum=0.0;
+        for ( auto m: mods ) {
+            msum += m->getMonoisotopicMass();
+        }
+        setMonoisotopicMass(msum);
     }
 
     double ModificationCollection::getMonoisotopicMass() const {
@@ -70,26 +80,36 @@ namespace Proteomics {
     }
 
     void ModificationCollection::CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex) {
-        _modifications.CopyTo(array_Renamed, arrayIndex);
+//        _modifications.CopyTo(array_Renamed, arrayIndex);
+        for ( auto m: _modifications ) {
+            array_Renamed.at(arrayIndex) = m;
+            arrayIndex++;
+        }
+
     }
 
     bool ModificationCollection::Remove(IHasMass *item) {
-        if (!_modifications.Remove(item)) {
+        auto i = std::find (_modifications.begin(), _modifications.end(), item );
+        if ( i != _modifications.end() ){ 
             return false;
         }
+        _modifications.erase(i);
         setMonoisotopicMass(getMonoisotopicMass() - item->getMonoisotopicMass());
         return true;
     }
 
     bool ModificationCollection::Equals(ModificationCollection *other) {
-        return getCount() == other->getCount() && MzLibUtil::ClassExtensions::ScrambledEquals(_modifications, other->_modifications);
+        return getCount() == other->getCount() &&
+            MzLibUtil::ClassExtensions::ScrambledEquals(_modifications, other->_modifications);
     }
 
-    IEnumerator<IHasMass*> *ModificationCollection::GetEnumerator() {
+    std::vector<IHasMass*>::iterator ModificationCollection::GetEnumerator() {
         return _modifications.begin();
     }
-
+#ifdef ORIG
+    // Not implementing this one in C++
     System::Collections::IEnumerator *ModificationCollection::IEnumerable_GetEnumerator() {
         return _modifications.begin();
     }
+#endif
 }

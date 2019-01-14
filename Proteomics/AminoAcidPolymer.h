@@ -98,7 +98,8 @@ namespace Proteomics {
         AminoAcidPolymer(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length, bool includeModifications);
 
     public:
-        ReadOnlyCollection<IHasMass*> *getModifications() const;
+//        ReadOnlyCollection<IHasMass*> *getModifications() const;
+        std::vector<IHasMass*> *getModifications() const;
 
         /// <summary>
         /// Gets or sets the C terminus of this amino acid polymer
@@ -256,7 +257,8 @@ namespace Proteomics {
         bool ContainsModifications();
 
         template<typename T>
-        ISet<T> *GetUniqueModifications();
+//        ISet<T> *GetUniqueModifications();
+        std::set<T> *GetUniqueModifications();
         static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
 
         /// <summary>

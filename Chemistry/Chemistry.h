@@ -7,3 +7,5 @@
 #include "Isotope.h"
 #include "IsotopicDistribution.h"
 #include "PeriodicTable.h"
+#include "Interfaces/IHasMass.h"
+#include "Interfaces/IHasChemicalFormula.h"

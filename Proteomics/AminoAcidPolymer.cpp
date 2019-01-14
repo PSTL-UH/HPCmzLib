@@ -90,8 +90,8 @@ namespace Proteomics {
         }
     }
 
-    ReadOnlyCollection<IHasMass*> *AminoAcidPolymer::getModifications() const {
-        return new ReadOnlyCollection<IHasMass*>(_modifications);
+    std::vector<IHasMass*> *AminoAcidPolymer::getModifications() const {
+        return new std::vector<IHasMass*>(_modifications);
     }
 
     IHasChemicalFormula *AminoAcidPolymer::getCTerminus() const {
@@ -488,7 +488,7 @@ namespace Proteomics {
     }
 
 template<typename T>
-    ISet<T> *AminoAcidPolymer::GetUniqueModifications() {
+   std::set<T> *AminoAcidPolymer::GetUniqueModifications() {
         static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
 
         std::unordered_set<T> uniqueMods;
