@@ -63,38 +63,8 @@ namespace Proteomics {
         static std::vector<ModificationSites> EnumerateActiveSites(ModificationSites sites);
 
         static bool ContainsSites(ModificationSites sites, ModificationSites otherSites);
-
+        static  const std::vector<ModificationSites> ModificationSitesValues;
         static std::vector<ModificationSites> GetValues();
-    private:
-        const std::vector<ModificationSites> ModificationSitesValues = {   ModificationSites::None,
-                                                                           ModificationSites::A,
-                                                                           ModificationSites::R,
-                                                                           ModificationSites::N,
-                                                                           ModificationSites::D,
-                                                                           ModificationSites::C,
-                                                                           ModificationSites::E,
-                                                                           ModificationSites::Q,
-                                                                           ModificationSites::G,
-                                                                           ModificationSites::H,
-                                                                           ModificationSites::I,
-                                                                           ModificationSites::L,
-                                                                           ModificationSites::K,
-                                                                           ModificationSites::M,
-                                                                           ModificationSites::F,
-                                                                           ModificationSites::P,
-                                                                           ModificationSites::S,
-                                                                           ModificationSites::T,
-                                                                           ModificationSites::U,
-                                                                           ModificationSites::W,
-                                                                           ModificationSites::Y,
-                                                                           ModificationSites::V,
-                                                                           ModificationSites::NPep,
-                                                                           ModificationSites::PepC,
-                                                                           ModificationSites::NProt,
-                                                                           ModificationSites::ProtC,
-                                                                           ModificationSites::All,
-                                                                           ModificationSites::NTerminus,
-                                                                           ModificationSites::TerminusC,
-                                                                           ModificationSites::Any};
+
     };
 }

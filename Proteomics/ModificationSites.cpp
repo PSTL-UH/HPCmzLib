@@ -4,6 +4,37 @@
 
 namespace Proteomics {
 
+        static  const std::vector<ModificationSites> ModificationSitesValues = {   ModificationSites::None,
+                                                                           ModificationSites::A,
+                                                                           ModificationSites::R,
+                                                                           ModificationSites::N,
+                                                                           ModificationSites::D,
+                                                                           ModificationSites::C,
+                                                                           ModificationSites::E,
+                                                                           ModificationSites::Q,
+                                                                           ModificationSites::G,
+                                                                           ModificationSites::H,
+                                                                           ModificationSites::I,
+                                                                           ModificationSites::L,
+                                                                           ModificationSites::K,
+                                                                           ModificationSites::M,
+                                                                           ModificationSites::F,
+                                                                           ModificationSites::P,
+                                                                           ModificationSites::S,
+                                                                           ModificationSites::T,
+                                                                           ModificationSites::U,
+                                                                           ModificationSites::W,
+                                                                           ModificationSites::Y,
+                                                                           ModificationSites::V,
+                                                                           ModificationSites::NPep,
+                                                                           ModificationSites::PepC,
+                                                                           ModificationSites::NProt,
+                                                                           ModificationSites::ProtC,
+                                                                           ModificationSites::All,
+                                                                           ModificationSites::NTerminus,
+                                                                           ModificationSites::TerminusC,
+                                                                           ModificationSites::Any};
+
     std::vector<ModificationSites> ModificationSiteExtensions::EnumerateActiveSites(ModificationSites sites) {
         std::vector<ModificationSites> s;
         for (auto site : GetValues()) {
@@ -37,4 +68,9 @@ namespace Proteomics {
         
         return (~bsites & botherSites) == bNone;
     }
+
+    std::vector<ModificationSites> GetValues() {
+        return ModificationSiteExtensions::ModificationSitesValues;
+    }
+
 }
