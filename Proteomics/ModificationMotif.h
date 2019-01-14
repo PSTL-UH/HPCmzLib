@@ -9,7 +9,7 @@ namespace Proteomics {
     class ModificationMotif {
 
     private:
-        static Regex *const ModificationMotifRegex;
+//        static Regex *const ModificationMotifRegex;
 
         const std::string motifString;
 
@@ -26,11 +26,14 @@ namespace Proteomics {
     public:
         static bool TryGetMotif(const std::string &motifString, ModificationMotif *&motif);
 
-        bool Equals(std::any o) override;
+//        bool Equals(std::any o) override;
+        bool Equals( ModificationMotif *&m );
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
-        std::string ToString() override;
+//        std::string ToString() override;
+        std::string ToString();
 
     };
 }
