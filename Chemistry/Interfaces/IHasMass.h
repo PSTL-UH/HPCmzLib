@@ -23,7 +23,6 @@ namespace Chemistry {
     ///
     /// </summary>
     class IHasMass {
-//        #region Public Properties
 
         /// <summary>
         /// The monoisotopic mass of this object
@@ -31,6 +30,5 @@ namespace Chemistry {
     public:
         virtual double getMonoisotopicMass() const = 0;
 
-//        #endregion Public Properties
     };
 }

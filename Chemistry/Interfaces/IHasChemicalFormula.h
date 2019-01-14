@@ -5,6 +5,7 @@
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace Chemistry { class ChemicalFormula; }
 
+
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016, 2017 Stefan Solntsev
 //
@@ -28,7 +29,6 @@ namespace Chemistry {
     /// An object that has a chemical formula
     /// </summary>
     class IHasChemicalFormula : public IHasMass {
-//        #region Public Properties
 
         /// <summary>
         /// The chemical formula of this object
@@ -36,6 +36,5 @@ namespace Chemistry {
     public:
         virtual ChemicalFormula *getThisChemicalFormula() const = 0;
 
-//        #endregion Public Properties
     };
 }
