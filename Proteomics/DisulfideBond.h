@@ -33,9 +33,9 @@ namespace Proteomics {
         std::string getDescription() const;
         void setDescription(const std::string &value);
 
-        bool Equals(std::any obj) override;
+        bool Equals(DisulfideBond *bond);
 
-        int GetHashCode() override;
+        int GetHashCode();
 
     };
 }

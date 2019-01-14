@@ -1,4 +1,5 @@
 ﻿#include "DisulfideBond.h"
+#include "stringhelper.h"
 
 namespace Proteomics {
 
@@ -35,12 +36,12 @@ namespace Proteomics {
         privateDescription = value;
     }
 
-    bool DisulfideBond::Equals(std::any obj) {
-        DisulfideBond *bond = dynamic_cast<DisulfideBond*>(obj);
+    bool DisulfideBond::Equals(DisulfideBond *bond) {
+//        DisulfideBond *bond = dynamic_cast<DisulfideBond*>(obj);
         return bond != nullptr && bond->getOneBasedBeginPosition() == getOneBasedBeginPosition() && bond->getOneBasedEndPosition() == getOneBasedEndPosition() && bond->getDescription() == getDescription();
     }
 
     int DisulfideBond::GetHashCode() {
-        return getOneBasedBeginPosition() ^ getOneBasedEndPosition() ^ getDescription().GetHashCode();
+        return getOneBasedBeginPosition() ^ getOneBasedEndPosition() ^ StringHelper::GetHashCode(getDescription());
     }
 }
