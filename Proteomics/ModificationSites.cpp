@@ -1,18 +1,24 @@
-﻿#include "ModificationSites.h"
+﻿#include <bitset>
+#include "ModificationSites.h"
 
 
 namespace Proteomics {
 
     std::vector<ModificationSites> ModificationSiteExtensions::EnumerateActiveSites(ModificationSites sites) {
-        for (auto site : Enum::GetValues(ModificationSites::typeid)) {
+        std::vector<ModificationSites> s;
+        for (auto site : GetValues()) {
             if (site == ModificationSites::None) {
                 continue;
             }
-            if ((sites & site) == site) {
+            std::bitset<8> bsites((int)sites);
+            std::bitset<8> bsite((int)site);
+            if ((bsites & bsite) == bsite) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return site;
+//                yield return site;
+                s.push_back(site);
             }
         }
+        return s;
     }
 
     bool ModificationSiteExtensions::ContainsSites(ModificationSites sites, ModificationSites otherSites) {
@@ -25,6 +31,10 @@ namespace Proteomics {
             return sites == ModificationSites::None;
         }
 
-        return (~sites & otherSites) == ModificationSites::None;
+        std::bitset<8> bsites((int)sites);
+        std::bitset<8> botherSites((int)otherSites);
+        std::bitset<8> bNone((int)ModificationSites::None);
+        
+        return (~bsites & botherSites) == bNone;
     }
 }
