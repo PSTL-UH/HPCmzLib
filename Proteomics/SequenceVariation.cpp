@@ -1,4 +1,5 @@
 ﻿#include "SequenceVariation.h"
+#include "stringhelper.h"
 
 namespace Proteomics {
 
@@ -53,12 +54,12 @@ namespace Proteomics {
         privateDescription = value;
     }
 
-    bool SequenceVariation::Equals(std::any obj) {
-        SequenceVariation *s = dynamic_cast<SequenceVariation*>(obj);
+    bool SequenceVariation::Equals(SequenceVariation *s ) {
+//        SequenceVariation *s = dynamic_cast<SequenceVariation*>(obj);
         return s != nullptr && getOneBasedBeginPosition() == s->getOneBasedBeginPosition() && getOneBasedEndPosition() == s->getOneBasedEndPosition() && getOriginalSequence() == s->getOriginalSequence() && getVariantSequence() == s->getVariantSequence() && getDescription() == s->getDescription();
     }
 
     int SequenceVariation::GetHashCode() {
-        return getOneBasedBeginPosition().GetHashCode() ^ getOneBasedEndPosition().GetHashCode() ^ getOriginalSequence().GetHashCode() ^ getVariantSequence().GetHashCode() ^ getDescription().GetHashCode();
+        return StringHelper::GetHashCode(std::to_string(getOneBasedBeginPosition())) ^ StringHelper::GetHashCode(std::to_string(getOneBasedEndPosition())) ^ StringHelper::GetHashCode(getOriginalSequence()) ^ StringHelper::GetHashCode(getVariantSequence()) ^ StringHelper::GetHashCode(getDescription());
     }
 }

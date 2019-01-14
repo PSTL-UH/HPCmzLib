@@ -60,9 +60,9 @@ namespace Proteomics {
         std::string getDescription() const;
         void setDescription(const std::string &value);
 
-        bool Equals(std::any obj) override;
+        bool Equals(SequenceVariation *s);
 
-        int GetHashCode() override;
+        int GetHashCode();
 
     };
 }
