@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <vector>
+#include <string>
 // Copyright 2017 Stefan Solntsev
 //
 // This file (TerminusLocalization.cs) is part of Proteomics.
@@ -25,4 +27,5 @@ namespace Proteomics {
         ProtC,
         Any
     };
+    static std::vector<std::string> TerminusLocalizationString ={"NPep", "PepC", "NProt", "ProtC", "Any"};
 }

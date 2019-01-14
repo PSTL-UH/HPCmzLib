@@ -9,18 +9,19 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class ModificationMotif; }
+//namespace Proteomics { class ModificationMotif; }
+#include "ModificationMotif.h"
 
 
 namespace Proteomics {
     class ModificationWithLocation : public Modification {
 
     public:
-        static const std::unordered_map<std::string, TerminusLocalization> terminusLocalizationTypeCodes;
-        const std::unordered_map<std::string, std::vector<std::string>> linksToOtherDbs;
-        const std::vector<std::string> keywords;
+        static std::unordered_map<std::string, TerminusLocalization> terminusLocalizationTypeCodes;
+        std::unordered_map<std::string, std::vector<std::string>> linksToOtherDbs;
+        std::vector<std::string> keywords;
         const TerminusLocalization terminusLocalization;
-        ModificationMotif *const motif;
+        ModificationMotif *motif;
 
         virtual ~ModificationWithLocation() {
             delete motif;
@@ -37,13 +38,23 @@ namespace Proteomics {
 
 
     public:
-        ModificationWithLocation(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs = nullptr, std::vector<std::string> &keywords);
+        ModificationWithLocation(const std::string &id, const std::string &modificationType,
+                                 ModificationMotif *motif,
+                                 TerminusLocalization terminusLocalization,
+                                 std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs,
+                                 std::vector<std::string> &keywords);
 
-        std::string ToString() override;
+//                                 std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs = nullptr,
 
-        bool Equals(std::any o) override;
+        
+//        std::string ToString() override;
+        std::string ToString();
 
-        int GetHashCode() override;
+//        bool Equals(std::any o) override;
+        bool Equals(ModificationWithLocation *m);
+
+//        int GetHashCode() override;
+        int GetHashCode();
 
     };
 }

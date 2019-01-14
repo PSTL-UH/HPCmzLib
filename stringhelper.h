@@ -95,6 +95,13 @@ public:
             std::string s1 = std::get<1>(st);
             return (GetHashCode(s0.c_str(), s0.length()) ^ GetHashCode(s1.c_str(), s1.length()));
         }
+        static int GetHashCode ( std::vector<std::string> sv ) {
+            int hash=0;
+            for ( auto s: sv ) {
+                hash = hash ^ GetHashCode(s);
+            }
+            return hash;
+        }
         static int GetHashCode ( std::string s ) {
             return GetHashCode (s.c_str(), s.length());
         }
