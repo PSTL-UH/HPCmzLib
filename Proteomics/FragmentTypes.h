@@ -5,7 +5,7 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class ChemicalFormula; }
+//namespace Chemistry { class ChemicalFormula; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -25,6 +25,7 @@ namespace Chemistry { class ChemicalFormula; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
@@ -51,22 +52,17 @@ namespace Proteomics {
     };
 
     class FragmentTypesExtension final {
-//        #region Private Fields
 
     private:
         static const std::unordered_map<FragmentTypes, ChemicalFormula*> FragmentIonCaps;
-
-//        #endregion Private Fields
-
-//        #region Public Methods
 
     public:
         static std::vector<FragmentTypes> GetIndividualFragmentTypes(FragmentTypes fragmentTypes);
 
         static Terminus GetTerminus(FragmentTypes fragmentType);
 
-        static ChemicalFormula *GetIonCap(FragmentTypes fragmentType);
-
-//        #endregion Public Methods
+        ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
+        static const std::vector<FragmentTypes> FragmentTypesValues; 
+        static std::vector<FragmentTypes> GetValues();
     };
 }

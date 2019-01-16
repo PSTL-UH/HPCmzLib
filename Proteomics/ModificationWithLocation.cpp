@@ -22,19 +22,17 @@ namespace Proteomics {
                                                        const std::string &mType,
                                                        ModificationMotif *motif,
                                                        TerminusLocalization terminusLocalization,
-                                                       std::unordered_map<std::string, std::vector<std::string>> &lToOtherDbs,
-                                                       std::vector<std::string> &kwords) : Modification(i, mType), terminusLocalization() {
+                                                       std::unordered_map<std::string, std::vector<std::string>> *lToOtherDbs,
+                                                       std::vector<std::string> *kwords) : Modification(i, mType), terminusLocalization() {
 
         // According to C++, a reference always has to point to a valid object, it cannot be NULL. Nevertheless, to follow the logic
         // of the original C# code, converting to a pointer and checking for NULL;
-        std::unordered_map<std::string, std::vector<std::string>> *l = (std::unordered_map<std::string, std::vector<std::string>> *) &lToOtherDbs;
-        if ( l != nullptr ) {
-            linksToOtherDbs = lToOtherDbs;
+        if ( lToOtherDbs != nullptr ) {
+            linksToOtherDbs = *lToOtherDbs;
         }
 
-        std::vector<std::string> *k = ( std::vector<std::string> *) &kwords;
-        if ( k != nullptr ) {
-            keywords = kwords;
+        if ( kwords != nullptr ) {
+            keywords = *kwords;
         }
 
         motif=motif;

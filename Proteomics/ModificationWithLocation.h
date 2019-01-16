@@ -41,8 +41,8 @@ namespace Proteomics {
         ModificationWithLocation(const std::string &id, const std::string &modificationType,
                                  ModificationMotif *motif,
                                  TerminusLocalization terminusLocalization,
-                                 std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs,
-                                 std::vector<std::string> &keywords);
+                                 std::unordered_map<std::string, std::vector<std::string>> *linksToOtherDbs,
+                                 std::vector<std::string> *keywords);
 
 //                                 std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs = nullptr,
 
