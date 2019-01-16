@@ -18,9 +18,9 @@ namespace Proteomics {
         Nullable<int> getOneBasedEndPosition() const;
         std::string getType() const;
 
-        bool Equals(std::any obj) override;
+        bool Equals(ProteolysisProduct* obj);
 
-        int GetHashCode() override;
+        int GetHashCode();
 
     };
 }
