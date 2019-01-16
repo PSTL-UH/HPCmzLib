@@ -33,7 +33,8 @@ namespace Proteomics {
     class ModificationWithMultiplePossibilitiesCollection : public OldSchoolModification, public std::vector<OldSchoolModification*> {
 
     private:
-        SortedList<double, OldSchoolModification*> *const _modifications;
+//        SortedList<double, OldSchoolModification*> *const _modifications;
+        std::map<double, OldSchoolModification*> *const _modifications;
 
     public:
         virtual ~ModificationWithMultiplePossibilitiesCollection() {
@@ -50,9 +51,10 @@ namespace Proteomics {
 
         bool Contains(OldSchoolModification *modification);
 
-        IEnumerator<OldSchoolModification*> *GetEnumerator() override;
 
-        System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
+//        IEnumerator<OldSchoolModification*> *GetEnumerator() override;
+//
+//        System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
 
     };
 }

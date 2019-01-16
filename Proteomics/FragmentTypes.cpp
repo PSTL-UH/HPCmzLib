@@ -26,7 +26,17 @@ namespace Proteomics {
                                                                                      FragmentTypes::Internal,
                                                                                      FragmentTypes::All
     };
-        
+
+    const std::vector<std::string> FragmentTypesExtension::FragmentTypesNames = { "None",
+                                                                                  "a", "adot",
+                                                                                  "b", "bdot",
+                                                                                  "c","cdot",
+                                                                                  "x", "xdot",
+                                                                                  "y", "ydot",
+                                                                                  "z", "zdot"
+                                                                                  "Internal", "All"
+        };
+    
     const std::unordered_map<FragmentTypes, ChemicalFormula*> FragmentTypesExtension::FragmentIonCaps = std::unordered_map<FragmentTypes, ChemicalFormula*> {
         {FragmentTypes::a, ChemicalFormula::ParseFormula("C-1H-1O-1")}, 
         {FragmentTypes::b, ChemicalFormula::ParseFormula("H-1")}, 
@@ -80,4 +90,19 @@ namespace Proteomics {
         return FragmentTypesExtension::FragmentTypesValues;
 
     }
+    std::vector<std::string> GetNames(){
+        return FragmentTypesExtension::FragmentTypesNames;
+    }
+    std::string GetName( FragmentTypes fragmentType){
+        std::string defstring; // empty string
+        int i=0;
+        for (  auto f: GetValues() ) {
+            if ( f == fragmentType ) {
+                return FragmentTypesExtension::FragmentTypesNames[i];
+            }
+            i++;
+        }
+        return defstring;
+    }
+
 }

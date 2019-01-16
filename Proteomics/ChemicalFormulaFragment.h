@@ -5,7 +5,8 @@
 #include "FragmentTypes.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class ChemicalFormula; }
+#include "../Chemistry/ChemicalFormula.h"
+//namespace Chemistry { class ChemicalFormula; }
 namespace Proteomics { class AminoAcidPolymer; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey

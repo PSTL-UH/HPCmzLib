@@ -7,8 +7,8 @@
 #include <cmath>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class AminoAcidPolymer; }
-namespace Chemistry { class IHasMass; }
+
+//namespace Chemistry { class IHasMass; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -28,7 +28,13 @@ namespace Chemistry { class IHasMass; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
+//#include "Proteomics.h"
+#include "AminoAcidPolymer.h"
+//namespace Proteomics { class AminoAcidPolymer; }
+
 
 namespace Proteomics {
 //    class Fragment : public IHasMass, public IEquatable<Fragment*> {
@@ -44,8 +50,8 @@ namespace Proteomics {
         Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
 
         double getMonoisotopicMass() const override;
-//        void setMonoisotopicMass(double value) override;
-        void setMonoisotopicMass(double value);
+        void setMonoisotopicMass(double value) override;
+//        void setMonoisotopicMass(double value);
 
         int getNumber() const;
         void setNumber(int value);

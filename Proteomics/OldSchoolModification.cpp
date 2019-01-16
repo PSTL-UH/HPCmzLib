@@ -1,10 +1,11 @@
 ﻿#include "OldSchoolModification.h"
+#include "stringhelper.h"
 
 using namespace Chemistry;
 
 namespace Proteomics {
 
-    OldSchoolModification::OldSchoolModification(const OldSchoolModification &modification) : OldSchoolModification(modification->MonoisotopicMass, modification->Name, modification->getSites()) {
+    OldSchoolModification::OldSchoolModification(const OldSchoolModification &modification) : OldSchoolModification(modification.getMonoisotopicMass(), modification.getName(), modification.getSites()) {
     }
 
     OldSchoolModification::OldSchoolModification() : OldSchoolModification(0.0, "", ModificationSites::Any) {
@@ -47,7 +48,10 @@ namespace Proteomics {
     }
 
     std::string OldSchoolModification::getNameAndSites() const {
-        return std::string::Format(CultureInfo::InvariantCulture, "{0} ({1})", getName(), getSites());
+//        return std::string::Format(CultureInfo::InvariantCulture, "{0} ({1})", getName(), getSites());
+        Proteomics::ModificationSites s = getSites();
+        int si = (int) s;
+        return StringHelper::formatSimple("{0} ({1})", getName(), std::to_string(si));
     }
 
     std::string OldSchoolModification::ToString() {
@@ -55,16 +59,18 @@ namespace Proteomics {
     }
 
     int OldSchoolModification::GetHashCode() {
-        return getMonoisotopicMass().GetHashCode();
+//        return getMonoisotopicMass().GetHashCode();
+        return StringHelper::GetHashCode(std::to_string(getMonoisotopicMass()));
     }
 
-    bool OldSchoolModification::Equals(std::any obj) {
-        OldSchoolModification *modObj = dynamic_cast<OldSchoolModification*>(obj);
-        return modObj != nullptr && Equals(modObj);
-    }
+// Not required anymore
+//    bool OldSchoolModification::Equals(OldSchoolModification *modObj) {
+//        OldSchoolModification *modObj = dynamic_cast<OldSchoolModification*>(obj);
+//        return modObj != nullptr && Equals(modObj);
+//    }
 
     bool OldSchoolModification::Equals(OldSchoolModification *other) {
-        if (ReferenceEquals(this, other)) {
+        if (this == other) {
             return true;
         }
 
@@ -76,9 +82,11 @@ namespace Proteomics {
             return false;
         }
 
-        if (!getSites().Equals(other->getSites())) {
+#ifdef ORIG
+        if (!getSites() == (other->getSites())) {
             return false;
         }
+#endif
 
         return true;
     }

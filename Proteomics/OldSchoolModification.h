@@ -30,7 +30,8 @@ namespace Proteomics {
     /// <summary>
     /// Represents a modification with a mass and name and default amino acid sites of modification
     /// </summary>
-    class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
+//    class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
+    class OldSchoolModification : public IHasMass {
     private:
         std::string privateName;
         double privateMonoisotopicMass = 0;
@@ -57,7 +58,8 @@ namespace Proteomics {
         /// The monoisotopic mass of the modification, commoningly known as the delta mass
         /// </summary>
         double getMonoisotopicMass() const override;
-        void setMonoisotopicMass(double value) override;
+//        void setMonoisotopicMass(double value) override;
+        void setMonoisotopicMass(double value);
 
         /// <summary>
         /// The potentially modified sites of this modification
@@ -70,13 +72,15 @@ namespace Proteomics {
         /// </summary>
         std::string getNameAndSites() const;
 
-        std::string ToString() override;
+//        std::string ToString() override;
+        std::string ToString();
 
-        int GetHashCode() override;
+//        int GetHashCode() override;
+        int GetHashCode();
 
-        bool Equals(std::any obj) override;
-
-        bool Equals(OldSchoolModification *other) override;
+//        bool Equals(std::any obj) override;
+//        bool Equals(OldSchoolModification *other) override;
+        bool Equals(OldSchoolModification *other);
 
     };
 }

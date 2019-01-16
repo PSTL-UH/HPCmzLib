@@ -64,5 +64,9 @@ namespace Proteomics {
         ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
         static const std::vector<FragmentTypes> FragmentTypesValues; 
         static std::vector<FragmentTypes> GetValues();
+        static const std::vector<std::string> FragmentTypesNames;
+        static std::vector<std::string> GetNames();
+        static std::string GetName( FragmentTypes fragmentType);
+
     };
 }

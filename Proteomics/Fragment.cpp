@@ -2,6 +2,7 @@
 #include "AminoAcidPolymer.h"
 #include "Terminus.h"
 #include "../MzLibUtil/MzLibUtil.h"
+#include "stringhelper.h"
 
 using namespace Chemistry;
 
@@ -48,11 +49,13 @@ namespace Proteomics {
 
     std::vector<IHasMass*> Fragment::getModifications() const {
         auto mods = getParent()->getModifications();
+        std::vector<IHasMass *> vmods;
         if (getFragmentType()::GetTerminus() == Terminus::N) {
             for (int i = 0; i <= getNumber(); i++) {
-                if (mods[i] != nullptr) {
+                if ( mods[i] != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return mods[i];
+//                    yield return mods[i];
+                    vmods.push_back(mods[i]);
                 }
             }
         }
@@ -61,10 +64,12 @@ namespace Proteomics {
             for (int i = length - getNumber(); i <= length; i++) {
                 if (mods[i] != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return mods[i];
+//                    yield return mods[i];
+                    vmods.push_back(mods[i]);
                 }
             }
         }
+        return vmods;
     }
 
     std::string Fragment::getSequence() const {
@@ -77,7 +82,8 @@ namespace Proteomics {
     }
 
     std::string Fragment::ToString() {
-        return std::string::Format(CultureInfo::InvariantCulture, "{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
+//        return std::string::Format(CultureInfo::InvariantCulture, "{0}{1}", Enum::GetName(FragmentTypes::typeid, getFragmentType()), getNumber());
+        return StringHelper::formatSimple("{0}{1}", FragmentTypesExtension::GetName(getFragmentType()), getNumber());
     }
 
     int Fragment::GetHashCode() {
@@ -85,6 +91,6 @@ namespace Proteomics {
     }
 
     bool Fragment::Equals(Fragment *other) {
-        return getFragmentType().Equals(other->getFragmentType()) && getNumber().Equals(other->getNumber()) && std::abs(getMonoisotopicMass() - other->getMonoisotopicMass()) < 1e-9;
+        return getFragmentType() == other->getFragmentType() && getNumber() == other->getNumber() && std::abs(getMonoisotopicMass() - other->getMonoisotopicMass()) < 1e-9;
     }
 }

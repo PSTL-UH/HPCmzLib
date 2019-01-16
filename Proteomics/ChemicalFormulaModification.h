@@ -6,7 +6,8 @@
 #include <string>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class ChemicalFormula; }
+#include "../Chemistry/ChemicalFormula.h"
+//namespace Chemistry { class ChemicalFormula; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev

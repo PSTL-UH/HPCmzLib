@@ -20,11 +20,12 @@
 //namespace Chemistry { class Isotope; }
 //namespace Chemistry { class ChemicalFormula; }
 
-namespace Proteomics { class Residue; }
-namespace Proteomics { class Fragment; }
-namespace Proteomics { class DigestionPointAndLength; }
+#include "Proteomics.h"
+//namespace Proteomics { class Residue; }
+//namespace Proteomics { class Fragment; }
+//namespace Proteomics { class DigestionPointAndLength; }
 namespace Proteomics { class IProtease; }
-namespace Proteomics { class OldSchoolModification; }
+//namespace Proteomics { class OldSchoolModification; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
