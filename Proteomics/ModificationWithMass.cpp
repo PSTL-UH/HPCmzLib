@@ -10,12 +10,7 @@ namespace Proteomics {
         monoisotopicMass = monoisotopicMass;
         diagnosticIons   = diagnosticIons;
         neutralLosses    = neutralLosses;
-        
-//        if ( diagnosticI != nullptr ) 
-//            diagnosticIons   = *diagnosticI;
-//        if ( neutralL != nullptr ) 
-//            neutralLosses    = *neutralL;
-        
+               
         // Optional
 #ifdef ORIG
         this->neutralLosses = this->neutralLosses.OrderBy([&] (std::any b) {
