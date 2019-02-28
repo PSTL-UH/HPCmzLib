@@ -20,12 +20,15 @@
 //namespace Chemistry { class Isotope; }
 //namespace Chemistry { class ChemicalFormula; }
 
-#include "Proteomics.h"
 //namespace Proteomics { class Residue; }
-//namespace Proteomics { class Fragment; }
+#include "Residue.h"
+namespace Proteomics { class Fragment; }
 //namespace Proteomics { class DigestionPointAndLength; }
-namespace Proteomics { class IProtease; }
+#include "DigestionPoint.h"
+//namespace Proteomics { class IProtease; }
+#include "Interfaces/IProtease.h"
 //namespace Proteomics { class OldSchoolModification; }
+#include "OldSchoolModification.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -260,7 +263,7 @@ namespace Proteomics {
         template<typename T>
 //        ISet<T> *GetUniqueModifications();
         std::set<T> *GetUniqueModifications();
-        static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
+//        static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
 
         /// <summary>
         /// Counts the total number of modifications on this polymer that are not null
@@ -273,7 +276,7 @@ namespace Proteomics {
         /// </summary>
         /// <param name="residueNumber">The amino acid residue number</param>
         /// <returns>The modification at the site, null if there isn't any modification present</returns>
-        IHasMass *GetModification(int residueNumber);
+        IHasMass *GetModification(int residueNumber) const;
 
         /// <summary>
         /// Sets the modification at the terminus of this amino acid polymer

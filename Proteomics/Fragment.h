@@ -50,8 +50,8 @@ namespace Proteomics {
         Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
 
         double getMonoisotopicMass() const override;
-        void setMonoisotopicMass(double value) override;
-//        void setMonoisotopicMass(double value);
+//        void setMonoisotopicMass(double value) override;
+        void setMonoisotopicMass(double value);
 
         int getNumber() const;
         void setNumber(int value);

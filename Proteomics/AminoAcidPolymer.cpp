@@ -13,7 +13,7 @@
 #include "ModificationCollection.h"
 #include "ChemicalFormulaModification.h"
 
-include "../Chemistry/Chemistry.h"
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 
 #include "MzLibUtil.h"
@@ -21,11 +21,11 @@ using namespace MzLibUtil;
 
 namespace Proteomics {
 
-    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
-    }
+//    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
+//    }
 
-    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
-    }
+//    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
+//    }
 
     AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm) {
         setMonoisotopicMass(0);
@@ -127,13 +127,19 @@ namespace Proteomics {
     }
 
     std::string AminoAcidPolymer::getBaseLeucineSequence() const {
-        return StringHelper::replace(getBaseSequence(), L'I', L'L');
+        return StringHelper::replace(getBaseSequence(), std::to_string('I'), std::to_string('L'));
     }
 
     std::string AminoAcidPolymer::getBaseSequence() const {
-        return std::string(residues.Select([&] (std::any aa) {
-            aa::Letter;
-        })->ToArray());
+//        return std::string(residues.Select([&] (std::any aa) {
+//            aa::Letter;
+//        })->ToArray());
+        std::string astring;
+        for_each(residues.begin(), residues.end(), [&] (Residue aa) {
+                char bb = aa.getLetter();
+                astring.append(&bb);
+            });
+        return astring;
     }
 
     IHasMass *AminoAcidPolymer::getCTerminusModification() const {
@@ -153,15 +159,54 @@ namespace Proteomics {
     }
 
     std::vector<Proteomics::Fragment*> AminoAcidPolymer::GetSiteDeterminingFragments(AminoAcidPolymer *peptideA, AminoAcidPolymer *peptideB, FragmentTypes types) {
-        std::unordered_set<Proteomics::Fragment*> aFrags(peptideA->Fragment(types));
-        aFrags.SymmetricExceptWith(peptideB->Fragment(types));
-        return aFrags;
+        // std::unordered_set<Proteomics::Fragment*> aFrags(peptideA->Fragment(types));
+        //aFrags.SymmetricExceptWith(peptideB->Fragment(types));
+
+        std::vector<Proteomics::Fragment*> aFrags = peptideA->Fragment(types);
+        std::vector<Proteomics::Fragment*> bFrags = peptideB->Fragment(types);
+        std::vector<Proteomics::Fragment*> cFrags;
+        // SymmetricExceptWith return an object that is either in afrags or in bfrags,
+        // but not in both. There is a similar function in C++ stl, namely set_symmetric_difference,
+        // it requires however for the two arrays to be pre-sorted, which I am not sure whether it
+        // is given here. So I prefer to implement it manually.
+        // Step 1: insert all elements of aFrags that are not in bFrags
+        std::for_each(aFrags.begin(), aFrags.end(), [&] (Proteomics::Fragment *a) {
+                bool found = false;
+                std::vector<Proteomics::Fragment*>::iterator it;
+                for ( it = bFrags.begin(); it != bFrags.end(); ++it) {
+                    if ( a == *it ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( found == false ) {
+                    cFrags.push_back( a);
+                }                    
+            });
+        // Step 2: insert all elements of bFrags that are not in aFrags
+        std::for_each(bFrags.begin(), bFrags.end(), [&] (Proteomics::Fragment *b) {
+                bool found = false;
+                std::vector<Proteomics::Fragment*>::iterator it;
+                for ( it = aFrags.begin(); it != aFrags.end(); ++it) {
+                    if ( b == *it ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( found == false ) {
+                    cFrags.push_back( b);
+                }                    
+            });
+        
+        
+        return cFrags;
     }
 
-    std::vector<DigestionPointAndLength*> AminoAcidPolymer::GetDigestionPointsAndLengths(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
-        std::vector<int> indices = GetCleavageIndexes(sequence, proteases).ToArray();
-
-        bool includeMethionineCut = methionineInitiator && sequence[0] == L'M';
+   std::vector<DigestionPointAndLength*> AminoAcidPolymer::GetDigestionPointsAndLengths(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
+        std::vector<int> indices = GetCleavageIndexes(sequence, proteases);
+        std::vector<DigestionPointAndLength*> dpal;
+        
+        bool includeMethionineCut = methionineInitiator && sequence[0] == 'M';
 
         int indiciesCount = indices.size() - 1;
 
@@ -176,12 +221,14 @@ namespace Proteomics {
                     int newLength = len - 1;
                     if (newLength >= minLength && newLength <= maxLength) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        yield return new DigestionPointAndLength(1, newLength);
+//                        yield return new DigestionPointAndLength(1, newLength);
+                        dpal.push_back(new DigestionPointAndLength(1, newLength));
                         if (semiDigestion) {
                             for (int j = 1; j < newLength; j++) {
                                 if (j >= minLength && j <= maxLength) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                                    yield return new DigestionPointAndLength(1, j);
+//                                    yield return new DigestionPointAndLength(1, j);
+                                    dpal.push_back(new DigestionPointAndLength(1, j));
                                 }
                             }
                         }
@@ -193,22 +240,27 @@ namespace Proteomics {
                 }
 
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return new DigestionPointAndLength(indices[i] + 1, len);
+//                yield return new DigestionPointAndLength(indices[i] + 1, len);
+                dpal.push_back(new DigestionPointAndLength(indices[i] + 1, len));
+
                 if (semiDigestion) {
                     for (int j = 1; j < len; j++) {
                         if (len - j >= minLength && len - j <= maxLength) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                            yield return new DigestionPointAndLength(indices[i] + 1 + j, len - j);
+//                          yield return new DigestionPointAndLength();
+                            dpal.push_back(new DigestionPointAndLength(indices[i] + 1 + j, len - j));
                         }
                         if (j >= minLength && j <= maxLength) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                            yield return new DigestionPointAndLength(indices[i] + 1, j);
+//                            yield return new DigestionPointAndLength(indices[i] + 1, j);
+                            dpal.push_back(new DigestionPointAndLength(indices[i] + 1, j));
                         }
                     }
                 }
             }
         }
-    }
+        return dpal;
+   }
 
     std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases) {
         return GetCleavageIndexes(sequence, proteases, true);
@@ -217,12 +269,19 @@ namespace Proteomics {
     std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases, bool includeTermini) {
         // Combine all the proteases digestion sites
         std::set<int> locations;
+#ifdef ORIG
         for (IProtease *protease : proteases.Where([&] (std::any protease) {
             return protease != nullptr;
         })) {
             locations.UnionWith(protease::GetDigestionSites(sequence));
         }
-
+#endif
+        for (IProtease *protease : proteases ) {
+            if ( protease != nullptr ) {
+                locations.UnionWith(protease->GetDigestionSites(sequence));
+            } 
+        }
+        
         if (!includeTermini) {
             return locations;
         }
@@ -511,7 +570,7 @@ template<typename T>
         });
     }
 
-    IHasMass *AminoAcidPolymer::GetModification(int residueNumber) {
+    IHasMass *AminoAcidPolymer::GetModification(int residueNumber)  const {
         return _modifications.empty() ? nullptr : _modifications[residueNumber];
     }
 
@@ -864,7 +923,7 @@ template<typename T>
         StringBuilder *modSb = new StringBuilder(10);
         for (auto letter : sequence) {
             if (inMod) {
-                if (letter == L']') {
+                if (letter == ']') {
                     inMod = false; // end the modification phase
 
                     std::string modString = modSb->toString();
@@ -915,18 +974,18 @@ template<typename T>
                 }
                 else {
                     switch (letter) {
-                        case L'[': // start of a modification
+                        case '[': // start of a modification
                             inMod = true;
                             break;
 
-                        case L'-': // End of an n-terminus mod or start of a c-terminus mod
+                        case '-': // End of an n-terminus mod or start of a c-terminus mod
                             cterminalMod = (index > 0);
                             break;
 
                         default:
 
                             delete modSb;
-                            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, "Amino Acid Letter {0} does not exist in the Amino Acid Dictionary. {0} is also not a valid character", letter));
+                            throw MzLibException("Amino Acid Letter " + std::to_string(letter) + " does not exist in the Amino Acid Dictionary. It is also not a valid character");
                     }
                 }
             }
@@ -939,9 +998,11 @@ template<typename T>
 
         setLength(index);
         setMonoisotopicMass(getMonoisotopicMass() + monoMass);
-        Array::Resize(residues, getLength());
+//        Array::Resize(residues, getLength());
+        residues.resize(getLength());
         if (_modifications.size() > 0) {
-            Array::Resize(_modifications, getLength() + 2);
+//            Array::Resize(_modifications, getLength() + 2);
+            _modifications.resize(getLength() + 2);
         }
 
         delete modSb;
@@ -956,6 +1017,6 @@ template<typename T>
 
     std::string AminoAcidPolymer::ModWithOnlyMass::ToString() {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        return mass.ToString(CultureInfo::InvariantCulture);
+        return std::to_string(mass);
     }
 }

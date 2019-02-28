@@ -39,7 +39,8 @@ namespace Proteomics {
         ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
 
         ChemicalFormula *getThisChemicalFormula() const override;
-        void setThisChemicalFormula(ChemicalFormula *value) override;
+//        void setThisChemicalFormula(ChemicalFormula *value) override;
+        void setThisChemicalFormula(ChemicalFormula *value);
 
     };
 }
