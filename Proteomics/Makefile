@@ -37,14 +37,11 @@ HEADER = AminoAcidPolymer.h           \
 	Terminus.h                    \
 	TerminusLocalization.h
 
-OBJ = 	AminoAcidPolymer.o           \
-	ChemicalFormulaFragment.o     \
-	ChemicalFormulaModification.o \
+OBJ = 	ChemicalFormulaModification.o \
 	ChemicalFormulaTerminus.o     \
 	DatabaseReference.o           \
 	DigestionPoint.o              \
 	DisulfideBond.o               \
-	Fragment.o                    \
 	FragmentTypes.o               \
 	ModificationCollection.o      \
 	Modification.o                \
@@ -55,15 +52,17 @@ OBJ = 	AminoAcidPolymer.o           \
 	ModificationWithMass.o        \
 	OldSchoolModification.o       \
 	OldSchoolModificationWithMultiplePossibilities.o   \
-	Peptide.o                     \
 	Protein.o                     \
 	ProteolysisProduct.o          \
 	Proteomics.o                  \
 	Residue.o                     \
 	SequenceVariation.o           \
 	Terminus.o                    \
-	TerminusLocalization.o
-
+	TerminusLocalization.o        \
+	AminoAcidPolymer.o            \
+	Peptide.o                     \
+	Fragment.o                    \
+	ChemicalFormulaFragment.o     
 
 .SUFFIXES: .o.cpp
 

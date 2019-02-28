@@ -30,8 +30,6 @@ namespace Proteomics {
     /// A proteolyic enzyme that cuts amino acids at specific residues.
     /// </summary>
     class IProtease {
-//        #region Public Methods
-
         /// <summary>
         /// Finds the indicies of where this protease would cut in
         /// the given amino acid sequence
@@ -39,14 +37,13 @@ namespace Proteomics {
         /// <param name="aminoAcidSequence">The Amino Acid Polymer to cut</param>
         /// <returns>A set of the 1-based indicies to cut at</returns>
     public:
-        virtual std::vector<int> GetDigestionSites(const std::wstring &aminoAcidSequence) = 0;
+        virtual std::vector<int> GetDigestionSites(const std::string &aminoAcidSequence) = 0;
 
         virtual std::vector<int> GetDigestionSites(AminoAcidPolymer *aminoAcidSequence) = 0;
 
-        virtual int MissedCleavages(const std::wstring &sequence) = 0;
+        virtual int MissedCleavages(const std::string &sequence) = 0;
 
         virtual int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) = 0;
 
-//        #endregion Public Methods
     };
 }
