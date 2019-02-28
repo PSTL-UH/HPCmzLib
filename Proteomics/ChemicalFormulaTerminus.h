@@ -29,20 +29,16 @@ namespace Proteomics {
     private:
         ChemicalFormula *privateThisChemicalFormula;
 
-//        #region Public Constructors
 
     public:
         ChemicalFormulaTerminus(ChemicalFormula *chemicalFormula);
 
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         double getMonoisotopicMass() const override;
 
         ChemicalFormula *getThisChemicalFormula() const override;
-        void setThisChemicalFormula(ChemicalFormula *value) override;
+//        void setThisChemicalFormula(ChemicalFormula *value) override;
+        void setThisChemicalFormula(ChemicalFormula *value);
 
-//        #endregion Public Properties
     };
 }

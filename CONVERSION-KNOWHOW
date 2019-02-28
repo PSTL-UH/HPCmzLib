@@ -30,7 +30,9 @@
 5. non-existent C# functions
    + there is no ToString() method in C++,
       * remove therefore the override attribute
- 
+      * conversion of a single int/float/double is easiest done
+        using the std::to_string(a) where a is the int/float/double
+
    + there is no Equal() method in C++:
       * remove the override attribute
       * argument should not be std::any, but take directly the pointer to the

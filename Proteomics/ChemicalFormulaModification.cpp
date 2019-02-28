@@ -19,9 +19,10 @@ namespace Proteomics {
         setThisChemicalFormula(chemicalFormula);
     }
 
-    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other) : OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(other->getThisChemicalFormula()->getFormula()), other->Name, other->getSites()) {
+    OldSchoolChemicalFormulaModification::OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other) : OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(other.getThisChemicalFormula()->getFormula()), other.getName(), other.getSites()) {
     }
 
+    
     ChemicalFormula *OldSchoolChemicalFormulaModification::getThisChemicalFormula() const {
         return privateThisChemicalFormula;
     }

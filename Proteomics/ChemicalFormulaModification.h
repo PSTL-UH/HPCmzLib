@@ -49,7 +49,8 @@ namespace Proteomics {
         /// The Chemical Formula of this modifications
         /// </summary>
         ChemicalFormula *getThisChemicalFormula() const override;
-        void setThisChemicalFormula(ChemicalFormula *value) override;
 
+//        void setThisChemicalFormula(ChemicalFormula *value) override;
+        void setThisChemicalFormula(ChemicalFormula *value);
     };
 }
