@@ -8,31 +8,66 @@
 
 namespace Proteomics {
 
-    Protein::Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> &gene_names, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name, const std::string &full_name, bool isDecoy, bool isContaminant, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<DisulfideBond*> &disulfideBonds, const std::string &databaseFilePath) {
+    Protein::Protein(const std::string &sequence, const std::string &accession, std::vector<std::tuple<std::string, std::string>> *gene_names, std::unordered_map<int, std::vector<Modification*>> *oneBasedModifications, std::vector<ProteolysisProduct*> *proteolysisProducts, const std::string &name, const std::string &full_name, bool isDecoy, bool isContaminant, std::vector<DatabaseReference*> *databaseReferences, std::vector<SequenceVariation*> *sequenceVariations, std::vector<DisulfideBond*> *disulfideBonds, const std::string &databaseFilePath) {
         // Mandatory
-        BaseSequence = sequence;
-        Accession = accession;
+        privateBaseSequence = sequence;
+        privateAccession = accession;
 
-        Name = name;
-        FullName = full_name;
-        IsDecoy = isDecoy;
-        IsContaminant = isContaminant;
-        DatabaseFilePath = databaseFilePath;
+        privateName = name;
+        privateFullName = full_name;
+        privateIsDecoy = isDecoy;
+        privateIsContaminant = isContaminant;
+        privateDatabaseFilePath = databaseFilePath;
 
-        GeneNames = gene_names ? gene_names : std::vector<std::tuple<std::string, std::string>>();
-        ProteolysisProducts = proteolysisProducts ? proteolysisProducts : std::vector<ProteolysisProduct*>();
-        SequenceVariations = sequenceVariations ? sequenceVariations : std::vector<SequenceVariation*>();
-        OneBasedPossibleLocalizedModifications = oneBasedModifications ? oneBasedModifications : std::unordered_map<int, std::vector<Modification*>>();
-        DatabaseReferences = databaseReferences ? databaseReferences : std::vector<DatabaseReference*>();
-        DisulfideBonds = disulfideBonds ? disulfideBonds : std::vector<DisulfideBond*>();
+        if ( gene_names != nullptr ) {
+            privateGeneNames = gene_names;
+        }
+        else {
+            privateGeneNames = new std::vector<std::tuple<std::string, std::string>>();
+        }
+        
+        if ( proteolysisProducts != nullptr ) {
+            privateProteolysisProducts = proteolysisProducts;
+        }
+        else {
+            privateProteolysisProducts = new std::vector<ProteolysisProduct*>();
+        }
+
+        if ( sequenceVariations != nullptr ) {
+            privateSequenceVariations =  sequenceVariations;
+        }
+        else {
+            privateSequenceVariations = new std::vector<SequenceVariation*>();
+        }
+
+        if ( oneBasedModifications != nullptr ) {
+            privateOneBasedPossibleLocalizedModifications =  oneBasedModifications;
+        }
+        else {
+            privateOneBasedPossibleLocalizedModifications = new std::unordered_map<int, std::vector<Modification*>>();
+        }
+
+        if ( databaseReferences!=nullptr) {
+            privateDatabaseReferences = databaseReferences;
+        }
+        else {
+            privateDatabaseReferences = new std::vector<DatabaseReference*>();
+        }
+
+        if ( disulfideBonds!=nullptr) {
+            privateDisulfideBonds =  disulfideBonds;
+        }
+        else {
+            privateDisulfideBonds = new std::vector<DisulfideBond*>();
+        }
     }
 
     std::unordered_map<int, std::vector<Modification*>> Protein::getOneBasedPossibleLocalizedModifications() const {
-        return privateOneBasedPossibleLocalizedModifications;
+        return *privateOneBasedPossibleLocalizedModifications;
     }
 
     std::vector<std::tuple<std::string, std::string>> Protein::getGeneNames() const {
-        return privateGeneNames;
+        return *privateGeneNames;
     }
 
     std::string Protein::getAccession() const {
@@ -48,19 +83,19 @@ namespace Proteomics {
     }
 
     std::vector<SequenceVariation*> Protein::getSequenceVariations() const {
-        return privateSequenceVariations;
+        return *privateSequenceVariations;
     }
 
     std::vector<DisulfideBond*> Protein::getDisulfideBonds() const {
-        return privateDisulfideBonds;
+        return *privateDisulfideBonds;
     }
 
     std::vector<ProteolysisProduct*> Protein::getProteolysisProducts() const {
-        return privateProteolysisProducts;
+        return *privateProteolysisProducts;
     }
 
     std::vector<DatabaseReference*> Protein::getDatabaseReferences() const {
-        return privateDatabaseReferences;
+        return *privateDatabaseReferences;
     }
 
     std::string Protein::getDatabaseFilePath() const {
