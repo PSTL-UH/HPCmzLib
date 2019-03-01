@@ -267,8 +267,9 @@ namespace Proteomics {
     }
 
     std::vector<int> AminoAcidPolymer::GetCleavageIndexes(const std::string &sequence, std::vector<IProtease*> &proteases, bool includeTermini) {
+
         // Combine all the proteases digestion sites
-        std::set<int> locations;
+        std::vector<int> locations;
 #ifdef ORIG
         for (IProtease *protease : proteases.Where([&] (std::any protease) {
             return protease != nullptr;
@@ -278,24 +279,41 @@ namespace Proteomics {
 #endif
         for (IProtease *protease : proteases ) {
             if ( protease != nullptr ) {
-                locations.UnionWith(protease->GetDigestionSites(sequence));
+                std::vector<int> vecs = protease->GetDigestionSites(sequence);
+                for ( int v: vecs ) {
+                    if ( locations.end() != std::find (locations.begin(), locations.end(), v)) {
+                        locations.push_back(v);
+                    }
+                }   
             } 
         }
         
-        if (!includeTermini) {
-            return locations;
+        if (includeTermini) {
+            locations.insert(locations.begin(), -1);
+            locations.push_back(sequence.length() - 1);
         }
-
-        locations.insert(-1);
-        locations.insert(sequence.length() - 1);
-
+        
         return locations;
     }
 
     std::vector<std::string> AminoAcidPolymer::Digest(const std::string &sequence, std::vector<IProtease*> &proteases, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
+#ifdef ORIG
         return GetDigestionPointsAndLengths(sequence, proteases, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion).Select([&] (std::any points) {
             sequence.substr(points::Index, points->Length);
         });
+#endif
+        std::vector<DigestionPointAndLength*> dpal = GetDigestionPointsAndLengths(sequence,
+                                                                                  proteases,
+                                                                                  maxMissedCleavages,
+                                                                                  minLength,
+                                                                                  maxLength,
+                                                                                  methionineInitiator,
+                                                                                  semiDigestion);
+        std::vector<std::string> s;
+        for ( DigestionPointAndLength* points: dpal ) {
+            s.push_back(sequence.substr(points->getIndex(), points->getLength()));
+        };
+        return s;
     }
 
     std::vector<std::string> AminoAcidPolymer::Digest(AminoAcidPolymer *sequence, IProtease *protease) {
@@ -303,7 +321,11 @@ namespace Proteomics {
     }
 
     std::vector<std::string> AminoAcidPolymer::Digest(AminoAcidPolymer *polymer, IProtease *protease, int maxMissedCleavages, int minLength, int maxLength, bool methionineInitiator, bool semiDigestion) {
-        return Digest(polymer->getBaseSequence(), {protease}, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion);
+#ifdef ORIG
+        return Digest(polymer->getBaseSequence(), protease, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion);
+#endif
+        return Digest(polymer, protease, maxMissedCleavages, minLength, maxLength, methionineInitiator, semiDigestion);
+
     }
 
     Residue *AminoAcidPolymer::GetResidue(int position) {
@@ -314,13 +336,26 @@ namespace Proteomics {
     }
 
     bool AminoAcidPolymer::Contains(char residue) {
+#ifdef ORIG
         return residues.Any([&] (std::any aa) {
             aa::Letter->Equals(residue);
         });
+#endif
+        for ( Residue* aa: residues ) {
+            if ( aa->getLetter() == residue){
+                return true;
+            }
+        }
+        return false;
     }
 
     bool AminoAcidPolymer::Contains(Residue *residue) {
-        return residues.Contains(residue);
+//        return residues.Contains(residue);
+        if ( residues.end() == std::find(residues.begin(), residues.end(), residue )){
+            return false;
+        }
+             
+        return true;
     }
 
     std::string AminoAcidPolymer::GetSequenceWithModifications() {
@@ -338,15 +373,15 @@ namespace Proteomics {
 
         // Handle N-Terminus Modification
         if ((mod = _modifications[0]) != nullptr && mod->getMonoisotopicMass() > 0) {
-            modSeqSb->append(L'[');
+            modSeqSb->append('[');
             modSeqSb->append(mod);
             modSeqSb->append("]-");
         }
 
         // Handle Amino Acid Residues
         for (int i = 0; i < getLength(); i++) {
-            if (leucineSequence && residues[i]->getLetter() == L'I') {
-                modSeqSb->append(L'L');
+            if (leucineSequence && residues[i]->getLetter() == 'I') {
+                modSeqSb->append('L');
             }
             else {
                 modSeqSb->append(residues[i]->getLetter());
@@ -354,9 +389,9 @@ namespace Proteomics {
 
             // Handle Amino Acid Modification (1-based)
             if ((mod = _modifications[i + 1]) != nullptr && mod->getMonoisotopicMass() > 0) {
-                modSeqSb->append(L'[');
+                modSeqSb->append('[');
                 modSeqSb->append(mod);
-                modSeqSb->append(L']');
+                modSeqSb->append(']');
             }
         }
 
@@ -364,7 +399,7 @@ namespace Proteomics {
         if ((mod = _modifications[getLength() + 1]) != nullptr && mod->getMonoisotopicMass() > 0) {
             modSeqSb->append("-[");
             modSeqSb->append(mod);
-            modSeqSb->append(L']');
+            modSeqSb->append(']');
         }
 
         delete modSeqSb;
@@ -376,59 +411,126 @@ namespace Proteomics {
     }
 
     int AminoAcidPolymer::ResidueCount(Residue *aminoAcid) {
+#ifdef ORIG
         return aminoAcid == nullptr ? 0 : residues.Count([&] (std::any aar) {
             aar->Equals(aminoAcid);
         });
+#endif
+        int counter=0;
+        for ( Residue* aar : residues ) {
+            if ( aar == aminoAcid ) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     int AminoAcidPolymer::ResidueCount(char residueLetter) {
+#ifdef ORIG
         return residues.Count([&] (std::any aar) {
             aar::Letter->Equals(residueLetter);
         });
+#endif
+        int counter=0;
+        for ( Residue* aar : residues ) {
+            if ( aar->getLetter() == residueLetter ) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     int AminoAcidPolymer::ResidueCount(char residueLetter, int index, int length) {
+#ifdef ORIG
         return residues.SubArray(index, length)->Count([&] (std::any aar) {
             aar::Letter->Equals(residueLetter);
         });
+#endif
+        int counter=0;
+        for ( int i=index; i<index+length; i++ ){
+            Residue* aar = residues.at(i);
+            if ( aar->getLetter() == residueLetter ) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     int AminoAcidPolymer::ResidueCount(Residue *aminoAcid, int index, int length) {
+#ifdef ORIG
         return residues.SubArray(index, length)->Count([&] (std::any aar) {
             aar->Equals(aminoAcid);
         });
+#endif
+        int counter=0;
+        for ( int i=index; i<index+length; i++ ){
+            Residue* aar = residues.at(i);
+            if ( aar == aminoAcid ) {
+                counter++;
+            }
+        }
+        return counter;
+
     }
 
     int AminoAcidPolymer::ElementCountWithIsotopes(const std::string &element) {
+        Element *e = PeriodicTable::GetElement(element);
         // Residues count
+#ifdef ORIG
         int count = residues.Sum([&] (std::any aar) {
             aar::ThisChemicalFormula::CountWithIsotopes(element);
         });
+#endif
+        int count=0;
+        for ( Residue * aar : residues ) {
+            count += aar->getThisChemicalFormula()->CountWithIsotopes(e);
+        }
         // Modifications count (if the mod is a IHasChemicalFormula)
         if (_modifications.size() > 0) {
+#ifdef ORIG
             count += _modifications.Where([&] (std::any mod) {
                 dynamic_cast<IHasChemicalFormula*>(mod) != nullptr;
             }).Cast<IHasChemicalFormula*>().Sum([&] (std::any mod) {
                 mod::ThisChemicalFormula::CountWithIsotopes(element);
             });
+#endif
+            for ( IHasMass* mod: _modifications ) {
+                if ( dynamic_cast<IHasChemicalFormula*>(mod) != nullptr ) {
+                    count += dynamic_cast<IHasChemicalFormula*>(mod)->getThisChemicalFormula()->CountWithIsotopes(e);
+                }
+            }
         }
 
-        count += ChemicalFormula::ParseFormula("H2O")->CountWithIsotopes(element);
+        count += ChemicalFormula::ParseFormula("H2O")->CountWithIsotopes(e);
         return count;
     }
 
     int AminoAcidPolymer::SpecificIsotopeCount(Isotope *isotope) {
         // Residues count
+#ifdef ORIG
         int count = residues.Sum([&] (std::any aar) {
             aar::ThisChemicalFormula::CountSpecificIsotopes(isotope);
         });
+#endif
+        int count = 0;
+        for ( Residue* aar: residues) {
+            count += aar->getThisChemicalFormula()->CountSpecificIsotopes(isotope);
+        }
+        
         // Modifications count (if the mod is a IHasChemicalFormula)
         if (_modifications.size() > 0) {
+#ifdef ORIG
             count += _modifications.Where([&] (std::any mod) {
                 dynamic_cast<IHasChemicalFormula*>(mod) != nullptr;
             }).Cast<IHasChemicalFormula*>().Sum([&] (std::any mod) {
                 mod::ThisChemicalFormula::CountSpecificIsotopes(isotope);
             });
+#endif
+            for ( IHasMass* mod: _modifications ) {
+                if ( dynamic_cast<IHasChemicalFormula*>(mod) != nullptr ) {
+                    count += dynamic_cast<IHasChemicalFormula*>(mod)->getThisChemicalFormula()->CountSpecificIsotopes(isotope);
+                }
+            }
         }
         return count;
     }
@@ -458,10 +560,13 @@ namespace Proteomics {
     }
 
     std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex, bool calculateChemicalFormula) {
-        for (FragmentTypes type : types::GetIndividualFragmentTypes()) {
+//      for (FragmentTypes type : types.GetIndividualFragmentTypes()) {
+        for (FragmentTypes type : FragmentTypesExtension::GetIndividualFragmentTypes(types)) {
             bool isChemicalFormula = calculateChemicalFormula;
-            ChemicalFormula *capFormula = type::GetIonCap();
-            bool isCTerminal = type::GetTerminus() == Terminus::C;
+//            ChemicalFormula *capFormula = type.GetIonCap(type);
+            ChemicalFormula *capFormula = FragmentTypesExtension::GetIonCap(type);
+//            bool isCTerminal = type.GetTerminus() == Terminus::C;
+            bool isCTerminal = FragmentTypesExtension::GetTerminus(type) == Terminus::C;
 
             double monoMass = capFormula->getMonoisotopicMass();
             ChemicalFormula *formula = new ChemicalFormula(capFormula);

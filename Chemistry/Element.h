@@ -115,7 +115,6 @@ namespace Chemistry {
         /// Returns the atomic symbol
         /// </summary>
         /// <returns>The atomic symbol</returns>
-//        std::wstring ToString() override;
         std::string ToString();
 
         /// <summary>

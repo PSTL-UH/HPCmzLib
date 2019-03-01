@@ -61,7 +61,7 @@ namespace Proteomics {
 
         static Terminus GetTerminus(FragmentTypes fragmentType);
 
-        ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
+        static ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
         static const std::vector<FragmentTypes> FragmentTypesValues; 
         static std::vector<FragmentTypes> GetValues();
         static const std::vector<std::string> FragmentTypesNames;
