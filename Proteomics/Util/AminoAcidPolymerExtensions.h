@@ -4,7 +4,8 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class AminoAcidPolymer; }
+//namespace Proteomics { class AminoAcidPolymer; }
+#include "../AminoAcidPolymer.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -27,7 +28,6 @@ namespace Proteomics { class AminoAcidPolymer; }
 
 namespace Proteomics {
     class AminoAcidPolymerExtensions final {
-//        #region Public Methods
 
     public:
         static double GetSequenceCoverageFraction(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences);
@@ -38,6 +38,5 @@ namespace Proteomics {
 
         static std::vector<int> GetSequenceCoverage(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &allPolymers, bool useLeucineSequence);
 
-//        #endregion Public Methods
     };
 }
