@@ -22,9 +22,9 @@ namespace Chemistry {
         setElements(std::unordered_map<Element*, int>());
     }
 
-    ChemicalFormula::ChemicalFormula(const ChemicalFormula &capFormula) {
-        setIsotopes(std::unordered_map<Isotope*, int>(capFormula.getIsotopes()));
-        setElements(std::unordered_map<Element*, int>(capFormula.getElements()));
+    ChemicalFormula::ChemicalFormula(ChemicalFormula *capFormula) {
+        setIsotopes(std::unordered_map<Isotope*, int>(capFormula->getIsotopes()));
+        setElements(std::unordered_map<Element*, int>(capFormula->getElements()));
     }
 
     double ChemicalFormula::getAverageMass() const {

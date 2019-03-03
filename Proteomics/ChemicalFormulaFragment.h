@@ -6,8 +6,9 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 #include "../Chemistry/ChemicalFormula.h"
+#include "AminoAcidPolymer.h"
 //namespace Chemistry { class ChemicalFormula; }
-namespace Proteomics { class AminoAcidPolymer; }
+//namespace Proteomics { class AminoAcidPolymer; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -38,7 +39,8 @@ namespace Proteomics {
     public:
         ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
 
-        ChemicalFormula *getThisChemicalFormula() const override;
+//        ChemicalFormula *getThisChemicalFormula() const override;
+        ChemicalFormula *getThisChemicalFormula();
 //        void setThisChemicalFormula(ChemicalFormula *value) override;
         void setThisChemicalFormula(ChemicalFormula *value);
 

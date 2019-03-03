@@ -10,7 +10,7 @@ namespace Proteomics {
         setThisChemicalFormula(ChemicalFormula::ParseFormula(formula->getFormula()));
     }
 
-    ChemicalFormula *ChemicalFormulaFragment::getThisChemicalFormula() const {
+    ChemicalFormula *ChemicalFormulaFragment::getThisChemicalFormula() {
         return privateThisChemicalFormula;
     }
 

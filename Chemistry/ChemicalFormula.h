@@ -79,7 +79,8 @@ namespace Chemistry {
     public:
         ChemicalFormula();
 
-        ChemicalFormula(const ChemicalFormula &capFormula);
+//        ChemicalFormula(const ChemicalFormula &capFormula);
+        ChemicalFormula(ChemicalFormula *capFormula);
 
         /// <summary>
         /// Gets the average mass of this chemical formula

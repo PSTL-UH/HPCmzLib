@@ -560,12 +560,10 @@ namespace Proteomics {
     }
 
     std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex, bool calculateChemicalFormula) {
-//      for (FragmentTypes type : types.GetIndividualFragmentTypes()) {
+        std::vector<Proteomics::Fragment*> v;
         for (FragmentTypes type : FragmentTypesExtension::GetIndividualFragmentTypes(types)) {
             bool isChemicalFormula = calculateChemicalFormula;
-//            ChemicalFormula *capFormula = type.GetIonCap(type);
             ChemicalFormula *capFormula = FragmentTypesExtension::GetIonCap(type);
-//            bool isCTerminal = type.GetTerminus() == Terminus::C;
             bool isCTerminal = FragmentTypesExtension::GetTerminus(type) == Terminus::C;
 
             double monoMass = capFormula->getMonoisotopicMass();
@@ -594,8 +592,8 @@ namespace Proteomics {
                             if (isChemicalFormula) {
 //C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables in 'is' expressions:
 //ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
-                                if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr modFormula) {
-                                    formula->Add(modFormula);
+                                if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr ) {
+                                    formula->Add(dynamic_cast<IHasChemicalFormula*>(mod));
                                 }
                                 else {
                                     isChemicalFormula = false;
@@ -617,8 +615,8 @@ namespace Proteomics {
                         if (isChemicalFormula) {
 //C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables in 'is' expressions:
 //ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
-                            if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr modFormula) {
-                                formula->Add(modFormula);
+                            if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr)   {
+                                formula->Add(dynamic_cast<IHasChemicalFormula*>(mod));
                             }
                             else {
                                 isChemicalFormula = false;
@@ -633,24 +631,36 @@ namespace Proteomics {
 
                 if (isChemicalFormula) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new ChemicalFormulaFragment(type, i, formula, this);
+//                  yield return new ChemicalFormulaFragment(type, i, formula, this);
+                    ChemicalFormulaFragment *cff = new ChemicalFormulaFragment(type, i, formula, this);
+                    v.push_back (cff);
                 }
                 else {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new Fragment(type, i, monoMass, this);
+//                  yield return new Fragment(type, i, monoMass, this);
+                    Fragment::Fragment *f = new Fragment(type, i, monoMass, this);
+                    v.push_back ( f);
                 }
             }
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was passed to a method or constructor. Handle memory management manually.
         }
+        return v;
     }
 
     bool AminoAcidPolymer::ContainsModifications() {
-        return _modifications.size() > 0 && _modifications.Any([&] (std::any m) {
-            return m != nullptr;
-        });
+        bool result = false;
+        if (  _modifications.size() > 0 ) {
+            for ( auto m :  _modifications ) {
+                if  (m != nullptr) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
     }
-
+    
 template<typename T>
    std::set<T> *AminoAcidPolymer::GetUniqueModifications() {
         static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
@@ -670,9 +680,15 @@ template<typename T>
     }
 
     int AminoAcidPolymer::ModificationCount() {
-        return _modifications.empty() ? 0 : _modifications.Count([&] (std::any mod) {
-            return mod != nullptr;
-        });
+        int counter=0;
+        if ( _modifications.empty() > 0 ) {
+            for ( auto mod: _modifications ) {
+                if ( mod != nullptr ) {
+                    counter++;
+                }
+            }
+        }
+        return counter;
     }
 
     IHasMass *AminoAcidPolymer::GetModification(int residueNumber)  const {
