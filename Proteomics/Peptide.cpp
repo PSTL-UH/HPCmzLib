@@ -73,19 +73,25 @@ namespace Proteomics {
 
     std::vector<Peptide*> Peptide::GenerateAllModificationCombinations() {
         // Get all the modifications that are isotopologues
-        auto isotopologues = GetUniqueModifications<ModificationWithMultiplePossibilitiesCollection*>()->ToArray();
-
+        auto is = GetUniqueModifications<ModificationWithMultiplePossibilitiesCollection*>();
+        std::vector<ModificationWithMultiplePossibilitiesCollection*> isotopologues(is->begin(), is->end());
+        std::vector<Peptide*> res;
+        
         // Base condition, no more isotopologues to make, so just return
         if (isotopologues.size() < 1) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield break;
+//            yield break;
+            return res;
         }
 
         // Grab the the first isotopologue
         ModificationWithMultiplePossibilitiesCollection *isotopologue = isotopologues[0];
 
         // Loop over each modification in the isotopologue
-        for (auto mod : isotopologue) {
+//        for (auto mod : isotopologue) {
+        for ( int i =0; i< isotopologue->getCount(); i++ ) {
+            auto mod = isotopologues[i];
+            
             // Create a clone of the peptide, cloning modifications as well.
             Peptide *peptide = new Peptide(this);
 
@@ -97,17 +103,20 @@ namespace Proteomics {
                 // Call the same rotuine on the newly generate peptide that has one less isotopologue
                 for (auto subpeptide : peptide->GenerateAllModificationCombinations()) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return subpeptide;
+//                    yield return subpeptide;
+                    res.push_back(subpeptide);
                 }
             }
             else {
                 // Return this peptide
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return peptide;
+//                yield return peptide;
+                res.push_back(peptide);
             }
 
             delete peptide;
         }
+        return res;
     }
 
     Peptide *Peptide::GetSubPeptide(int firstResidue, int length) {
