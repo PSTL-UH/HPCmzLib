@@ -48,24 +48,24 @@ namespace Proteomics {
     }
 
     std::vector<IHasMass*> Fragment::getModifications() const {
-        auto mods = getParent()->getModifications();
-        std::vector<IHasMass *> vmods;
-        if (getFragmentType()::GetTerminus() == Terminus::N) {
+        std::vector<IHasMass*> *mods = getParent()->getModifications();
+        std::vector<IHasMass*> vmods;
+        if (FragmentTypesExtension::GetTerminus(getFragmentType()) == Terminus::N) {
             for (int i = 0; i <= getNumber(); i++) {
-                if ( mods[i] != nullptr) {
+                if ( mods->at(i) != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
 //                    yield return mods[i];
-                    vmods.push_back(mods[i]);
+                    vmods.push_back(mods->at(i));
                 }
             }
         }
         else {
             int length = getParent()->getLength() + 1;
             for (int i = length - getNumber(); i <= length; i++) {
-                if (mods[i] != nullptr) {
+                if (mods->at(i) != nullptr) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
 //                    yield return mods[i];
-                    vmods.push_back(mods[i]);
+                    vmods.push_back(mods->at(i));
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace Proteomics {
 
     std::string Fragment::getSequence() const {
         std::string parentSeq = getParent()->getBaseSequence();
-        if (getFragmentType()::GetTerminus() == Terminus::N) {
+        if (FragmentTypesExtension::GetTerminus(getFragmentType()) == Terminus::N) {
             return parentSeq.substr(0, getNumber());
         }
 
@@ -87,7 +87,8 @@ namespace Proteomics {
     }
 
     int Fragment::GetHashCode() {
-        return getMonoisotopicMass().GetHashCode();
+        double d = getMonoisotopicMass();
+        return StringHelper::GetHashCode((const char *) &d, sizeof(double));
     }
 
     bool Fragment::Equals(Fragment *other) {
