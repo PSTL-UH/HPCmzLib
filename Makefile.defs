@@ -22,9 +22,9 @@ AR_FLAGS    = clr
 
 CC          = gcc
 CFLAGS      = -g -O0
-LDFLAGS     = 
 
 
 CXX         = g++
 CXXFLAGS    = -g -O0 -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
+LDFLAGS     = -L$(MZLIB_LIB_DIR) -lmzlib
 

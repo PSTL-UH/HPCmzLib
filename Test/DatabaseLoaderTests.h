@@ -42,78 +42,41 @@ namespace Test {
 //ORIGINAL LINE: [Test] public static void LoadModWithNl()
         static void LoadModWithNl();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void TestUpdateUnimod()
         void TestUpdateUnimod();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void TestUpdatePsiMod()
         void TestUpdatePsiMod();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void TestUpdateElements()
         void TestUpdateElements();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void TestUpdateUniprot()
         void TestUpdateUniprot();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void FilesEqualHash()
         void FilesEqualHash();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void FilesLoading()
         void FilesLoading();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoading()
         void SampleModFileLoading();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail1()
         void SampleModFileLoadingFail1();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail2()
         void SampleModFileLoadingFail2();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail3()
         void SampleModFileLoadingFail3();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail4()
         void SampleModFileLoadingFail4();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail5()
         void SampleModFileLoadingFail5();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void SampleModFileLoadingFail6()
         void SampleModFileLoadingFail6();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void CompactFormReading()
         void CompactFormReading();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void CompactFormReading2()
         void CompactFormReading2();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void Modification_read_write_into_proteinDb()
         void Modification_read_write_into_proteinDb();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent()
         void DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void DoNotWriteSameModTwiceButWriteInHeaderSinceDifferent()
         void DoNotWriteSameModTwiceButWriteInHeaderSinceDifferent();
 
-//        #endregion Public Methods
     };
 }
