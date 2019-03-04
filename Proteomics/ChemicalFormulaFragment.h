@@ -39,10 +39,13 @@ namespace Proteomics {
     public:
         ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
 
-//        ChemicalFormula *getThisChemicalFormula() const override;
-        ChemicalFormula *getThisChemicalFormula();
+        ChemicalFormula *getThisChemicalFormula() const override;
 //        void setThisChemicalFormula(ChemicalFormula *value) override;
         void setThisChemicalFormula(ChemicalFormula *value);
 
+        // ADDED BY EDGAR
+        double getMonoisotopicMass() const override;
+        
+        
     };
 }

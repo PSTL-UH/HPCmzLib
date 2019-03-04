@@ -30,4 +30,9 @@ namespace Proteomics {
     void OldSchoolChemicalFormulaModification::setThisChemicalFormula(ChemicalFormula *value) {
         privateThisChemicalFormula = value;
     }
+
+    double OldSchoolChemicalFormulaModification::getMonoisotopicMass() const {
+        return OldSchoolModification::getMonoisotopicMass();
+    }
+
 }

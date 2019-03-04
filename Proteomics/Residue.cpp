@@ -96,14 +96,14 @@ Residue::StaticConstructor Residue::staticConstructor;
         return ResiduesByLetter[letter];
     }
 
-    bool Residue::TryGetResidue(char letter, Residue *&residue) {
-        residue = ResiduesByLetter[letter];
-        return residue != nullptr;
+    bool Residue::TryGetResidue(char letter, Residue **residue) {
+        *residue = ResiduesByLetter[letter];
+        return *residue != nullptr;
     }
 
-    bool Residue::TryGetResidue(const std::string &name, Residue *&residue) {
+    bool Residue::TryGetResidue(const std::string &name, Residue **residue) {
         std::unordered_map<std::string, Residue*>::const_iterator ResiduesDictionary_iterator = ResiduesDictionary.find(name);
+        *residue = ResiduesDictionary_iterator->second;
         return ResiduesDictionary_iterator != ResiduesDictionary.end();
-        residue = ResiduesDictionary_iterator->second;
     }
 }

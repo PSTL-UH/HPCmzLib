@@ -18,7 +18,7 @@
    ---snip--
 
 3. String Format
-   replace Format() with StringHelper::simpleformat(), e.g.
+   replace Format() with StringHelper::formatSimple(), e.g.
    ---snip---
    ---snip---
    with

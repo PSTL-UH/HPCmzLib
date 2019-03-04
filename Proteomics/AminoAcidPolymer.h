@@ -391,7 +391,6 @@ namespace Proteomics {
         int GetHashCode();
 
 //        bool Equals(std::any obj) override;
-        bool Equals(std::any obj);
 
 //        bool Equals(AminoAcidPolymer *other) override;
         bool Equals(AminoAcidPolymer *other);

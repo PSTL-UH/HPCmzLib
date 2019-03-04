@@ -13,6 +13,8 @@
 #include "ModificationCollection.h"
 #include "ChemicalFormulaModification.h"
 
+#include <stdio.h>
+
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 
@@ -135,8 +137,8 @@ namespace Proteomics {
 //            aa::Letter;
 //        })->ToArray());
         std::string astring;
-        for_each(residues.begin(), residues.end(), [&] (Residue aa) {
-                char bb = aa.getLetter();
+        std::for_each(residues.begin(), residues.end(), [&] (Residue *aa) {
+                char bb = aa->getLetter();
                 astring.append(&bb);
             });
         return astring;
@@ -638,7 +640,7 @@ namespace Proteomics {
                 else {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
 //                  yield return new Fragment(type, i, monoMass, this);
-                    Fragment::Fragment *f = new Fragment(type, i, monoMass, this);
+                    Proteomics::Fragment *f = new Proteomics::Fragment(type, i, monoMass, this);
                     v.push_back ( f);
                 }
             }
@@ -732,7 +734,7 @@ template<typename T>
     int AminoAcidPolymer::SetModification(IHasMass *modification, char letter) {
         int count = 0;
         for (int i = 0; i < getLength(); i++) {
-            if (!letter.Equals(residues[i]->getLetter())) {
+            if (letter != residues[i]->getLetter()) {
                 continue;
             }
 
@@ -746,7 +748,7 @@ template<typename T>
     int AminoAcidPolymer::SetModification(IHasMass *modification, Residue *residue) {
         int count = 0;
         for (int i = 0; i < getLength(); i++) {
-            if (!residue->getLetter().Equals(residues[i]->getLetter())) {
+            if (residue->getLetter() != residues[i]->getLetter()) {
                 continue;
             }
             ReplaceMod(i + 1, modification);
@@ -757,7 +759,8 @@ template<typename T>
 
     void AminoAcidPolymer::SetModification(IHasMass *modification, int residueNumber) {
         if (residueNumber > getLength() || residueNumber < 1) {
-            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, "Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
+//            throw MzLibException(std::string::Format(CultureInfo::InvariantCulture, "Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
+            throw MzLibException(StringHelper::formatSimple("Residue number not in the correct range: [{0}-{1}] you specified: {2}", 1, getLength(), residueNumber));
         }
 
         ReplaceMod(residueNumber, modification);
@@ -787,7 +790,7 @@ template<typename T>
         int count = 0;
         for (int i = 0; i < getLength() + 2; i++) {
             IHasMass *mod = GetModification(i);
-            if (mod == nullptr || !oldMod->Equals(mod)) {
+            if (mod == nullptr || oldMod->getMonoisotopicMass() != mod->getMonoisotopicMass()) {
                 continue;
             }
 
@@ -912,7 +915,8 @@ template<typename T>
 
     void AminoAcidPolymer::ClearModifications(IHasMass *mod) {
         for (int i = 0; i <= getLength() + 1; i++) {
-            if (!mod->Equals(_modifications[i])) {
+//            if (!mod->Equals(_modifications[i])) {
+            if (mod->getMonoisotopicMass() == _modifications[i]->getMonoisotopicMass()) {
                 continue;
             }
 
@@ -935,7 +939,7 @@ template<typename T>
 
                 if (chemMod == nullptr) {
                     delete formula;
-                    throw MzLibException("Modification " + _modifications[i] + " does not have a chemical formula!");
+                    throw MzLibException("Modification " + std::to_string(_modifications[i]->getMonoisotopicMass()) + " does not have a chemical formula!");
                 }
 
                 formula->Add(chemMod->getThisChemicalFormula());
@@ -962,14 +966,16 @@ template<typename T>
     }
 
     int AminoAcidPolymer::GetHashCode() {
-        return getBaseSequence().GetHashCode();
+        return StringHelper::GetHashCode(getBaseSequence());
     }
 
-    bool AminoAcidPolymer::Equals(std::any obj) {
-        AminoAcidPolymer *aap = dynamic_cast<AminoAcidPolymer*>(obj);
+#ifdef ORIG
+    bool AminoAcidPolymer::Equals(AminoAcidPolymer *aap) {
+//        AminoAcidPolymer *aap = dynamic_cast<AminoAcidPolymer*>(obj);
         return aap != nullptr && Equals(aap);
     }
-
+#endif
+    
     bool AminoAcidPolymer::Equals(AminoAcidPolymer *other) {
         if (other == nullptr || getLength() != other->getLength() || !getNTerminus()->getThisChemicalFormula()->Equals(other->getNTerminus()->getThisChemicalFormula()) || !getCTerminus()->getThisChemicalFormula()->Equals(other->getCTerminus()->getThisChemicalFormula())) {
             return false;
@@ -982,7 +988,9 @@ template<typename T>
         }
 
         for (int i = 0; i <= getLength() + 1; i++) {
-            if (containsMod && !Equals(_modifications[i], other->_modifications[i])) {
+//            if (containsMod && !Equals(_modifications[i], other->_modifications[i])) {
+            if ( containsMod &&
+                 _modifications[i]->getMonoisotopicMass() != other->_modifications[i]->getMonoisotopicMass()) {
                 return false;
             }
 
@@ -990,7 +998,7 @@ template<typename T>
                 continue; // uneven arrays, so skip these two conditions
             }
 
-            if (!residues[i - 1]->Equals(other->residues[i - 1])) {
+            if (residues[i - 1]->getThisChemicalFormula()->Equals(other->residues[i - 1]->getThisChemicalFormula())) {
                 return false;
             }
         }
@@ -1019,7 +1027,8 @@ template<typename T>
 
         IHasMass *oldMod = _modifications[index]; // Get the mod at the index, if present
 
-        if (Equals(mod, oldMod)) {
+//        if ( oldMod->Equals(mod)) {
+        if ( oldMod->getMonoisotopicMass() == mod->getMonoisotopicMass() ) {
             return; // Same modifications, no change is required
         }
 
@@ -1055,7 +1064,8 @@ template<typename T>
                     }
                     catch (const MzLibException &e1) {
                         double mass;
-                        if (double::TryParse(modString, mass)) {
+//                        if (double::TryParse(modString, mass)) {
+                        if ( 1 == sscanf(modString.c_str(), "%lf", &mass)) {
                             modification = new ModWithOnlyMass(mass);
                         }
                         else {
@@ -1088,10 +1098,10 @@ template<typename T>
             }
             else {
                 //char upperletter = char.ToUpper(letter); // moved to amino acid dictionary
-                Residue residue;
-                if (Residue::TryGetResidue(letter, residue)) {
+                Residue *residue;
+                if (Residue::TryGetResidue(letter, &residue)) {
                     residues[index++] = residue;
-                    monoMass += residue::MonoisotopicMass;
+                    monoMass += residue->getMonoisotopicMass();
                 }
                 else {
                     switch (letter) {

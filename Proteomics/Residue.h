@@ -99,9 +99,9 @@ namespace Proteomics {
         /// <returns></returns>
         static Residue *GetResidue(char letter);
 
-        static bool TryGetResidue(char letter, Residue *&residue);
+        static bool TryGetResidue(char letter, Residue **residue);
 
-        static bool TryGetResidue(const std::string &name, Residue *&residue);
+        static bool TryGetResidue(const std::string &name, Residue **residue);
 
     };
 }

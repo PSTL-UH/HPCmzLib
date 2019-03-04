@@ -68,10 +68,11 @@ OBJ = 	ChemicalFormulaModification.o \
 
 all:    
 	make $(MZLIB_LIB) 
-
+	cd Util ; make ; cd ..
+	cd Interfaces ; make ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
-	$(AR) $(AR_FLAGS) $(ADCL_LIB_DIR)/$(ADCL_LIB) $(OBJ)
+	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
 
 $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
