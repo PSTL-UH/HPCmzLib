@@ -54,7 +54,6 @@ OBJ = 	ChemicalFormulaModification.o \
 	OldSchoolModificationWithMultiplePossibilities.o   \
 	Protein.o                     \
 	ProteolysisProduct.o          \
-	Proteomics.o                  \
 	Residue.o                     \
 	SequenceVariation.o           \
 	Terminus.o                    \
@@ -80,3 +79,5 @@ $(OBJ):	$(HEADER)
 
 clean:
 	rm -rf *.o *~
+	cd Util ; make clean ; cd ..
+	cd Interfaces ; make clean ; cd ..

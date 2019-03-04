@@ -1132,15 +1132,20 @@ template<typename T>
 
                     std::string modString = modSb->toString();
                     modSb->clear();
-                    IHasMass *modification;
+
+                    IHasMass *modification2=nullptr;
+                    OldSchoolChemicalFormulaModification *modification;
                     try {
-                        modification = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(modString));
+                         modification = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(modString));
+                    monoMass += modification->getMonoisotopicMass();
+                       
                     }
                     catch (const MzLibException &e1) {
                         double mass;
 //                        if (double::TryParse(modString, mass)) {
                         if ( 1 == sscanf(modString.c_str(), "%lf", &mass)) {
-                            modification = new ModWithOnlyMass(mass);
+                            modification2 = new ModWithOnlyMass(mass);
+                            monoMass += modification2->getMonoisotopicMass();
                         }
                         else {
                             delete modification;
@@ -1149,22 +1154,26 @@ template<typename T>
                         }
                     }
 
-                    monoMass += modification->getMonoisotopicMass();
+//                    monoMass += modification->getMonoisotopicMass();
 
                     if (_modifications.empty()) {
                         _modifications = std::vector<IHasMass*>(getLength() + 2);
                     }
 
                     if (cterminalMod) {
-                        _modifications[index + 1] = modification;
+//                        _modifications[index + 1] = modification;
+                        _modifications[index + 1] = modification2;
                     }
                     else {
-                        _modifications[index] = modification;
+//                        _modifications[index] = modification;
+                        _modifications[index] = modification2;
                     }
 
                     cterminalMod = false;
 
                     delete modification;
+                    delete modification2;
+
                 }
                 else {
                     modSb->append(letter);
