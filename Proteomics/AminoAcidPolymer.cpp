@@ -14,6 +14,7 @@
 #include "ChemicalFormulaModification.h"
 
 #include <stdio.h>
+#include <bitset>
 
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
@@ -698,32 +699,44 @@ template<typename T>
     }
 
     void AminoAcidPolymer::SetModification(IHasMass *modification, Terminus terminus) {
-        if ((terminus & Terminus::N) == Terminus::N) {
+        std::bitset<32> b1((int)terminus);
+        std::bitset<32> b2((int)Terminus::N);
+        std::bitset<32> b3((int)Terminus::C);
+//        if ((terminus & Terminus::N) == Terminus::N) {
+        if ((b1 & b2) == b2) {
             setNTerminusModification(modification);
         }
 
-        if ((terminus & Terminus::C) == Terminus::C) {
+//        if ((terminus & Terminus::C) == Terminus::C) {
+        if ((b1 & b3) == b3) {
             setCTerminusModification(modification);
         }
     }
 
     int AminoAcidPolymer::SetModification(IHasMass *modification, ModificationSites sites) {
         int count = 0;
-
-        if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
+        std::bitset<32> b1((int)sites);
+        std::bitset<32> b2((int)ModificationSites::NPep);
+//        if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
+        if ((b1 & b2) == b2) {
             setNTerminusModification(modification);
             count++;
         }
 
         for (int i = 0; i < getLength(); i++) {
             ModificationSites site = residues[i]->getSite();
-            if ((sites & site) == site) {
+            std::bitset<32> b3((int)site);
+//            if ((sites & site) == site) {
+            if ((b1 & b3) == b3) {
                 ReplaceMod(i + 1, modification);
                 count++;
             }
         }
 
-        if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
+        std::bitset<32> b4((int)ModificationSites::PepC);
+
+//        if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
+        if ((b1 & b4) == b4) {
             setCTerminusModification(modification);
             count++;
         }
@@ -802,18 +815,33 @@ template<typename T>
 
     int AminoAcidPolymer::AddModification(IHasMass *modification, Terminus terminus) {
         IHasMass *currentMod;
+        std::vector<IHasMass*> vec;
+        std::vector<IHasMass*> &v = vec;
         int count = 0;
 
-        if ((terminus & Terminus::N) == Terminus::N) {
-            currentMod = getNTerminusModification();
-            ModificationCollection tempVar({currentMod, modification});
+        std::bitset<32> b1((int)terminus);
+        std::bitset<32> b2((int)Terminus::N);
+        std::bitset<32> b3((int)Terminus::C);
+//      if ((terminus & Terminus::N) == Terminus::N) {
+        if ((b1 & b2) == b2) {
+            currentMod= getNTerminusModification();
+//          ModificationCollection tempVar({currentMod, modification});
+            v.push_back(currentMod);
+            v.push_back(modification);
+            ModificationCollection tempVar(v);
+            
             setNTerminusModification(currentMod == nullptr ? modification : &tempVar);
             count++;
         }
 
-        if ((terminus & Terminus::C) == Terminus::C) {
+//      if ((terminus & Terminus::C) == Terminus::C) {
+        if ((b1 & b3) == b3) {
             currentMod = getCTerminusModification();
-            ModificationCollection tempVar2({currentMod, modification});
+//          ModificationCollection tempVar2({currentMod, modification});
+            v.push_back(currentMod);
+            v.push_back(modification);
+            ModificationCollection tempVar2(v);
+
             setCTerminusModification(currentMod == nullptr ? modification : &tempVar2);
             count++;
         }
@@ -831,26 +859,49 @@ template<typename T>
 
         int count = 0;
         IHasMass *currentMod;
-        if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
+        std::vector<IHasMass*> vec;
+        std::vector<IHasMass*>& v = vec;
+        
+        std::bitset<32> b1((int)sites);
+        std::bitset<32> b2((int)ModificationSites::NPep);
+        
+//        if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
+        if ((b1 & b2) == b2) {
             currentMod = getNTerminusModification();
-            ModificationCollection tempVar({currentMod, modification});
+//          ModificationCollection tempVar({currentMod, modification});
+            v.push_back(currentMod);
+            v.push_back(modification);
+            ModificationCollection tempVar(v);
+            
             setNTerminusModification(currentMod == nullptr ? modification : &tempVar);
             count++;
         }
 
         for (int i = 0; i < getLength(); i++) {
             ModificationSites site = residues[i]->getSite();
-            if ((sites & site) == site) {
+            std::bitset<32> b3((int)site);
+//            if ((sites & site) == site) {
+            if ((b1 & b3) == b3) {
                 currentMod = _modifications[i + 1];
-                ModificationCollection tempVar2({currentMod, modification});
+//              ModificationCollection tempVar2({currentMod, modification});
+                v.push_back(currentMod);
+                v.push_back(modification);
+                ModificationCollection tempVar2(v);
+                
                 ReplaceMod(i + 1, currentMod == nullptr ? modification : &tempVar2);
                 count++;
             }
         }
 
-        if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
+        std::bitset<32> b4((int)ModificationSites::PepC);
+//        if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
+        if ((b1 & b4) == b4) {
             currentMod = getCTerminusModification();
-            ModificationCollection tempVar3({currentMod, modification});
+//          ModificationCollection tempVar3({currentMod, modification});
+            v.push_back(currentMod);
+            v.push_back(modification);
+            ModificationCollection tempVar3(v);
+            
             setCTerminusModification(currentMod == nullptr ? modification : &tempVar3);
             count++;
         }
@@ -860,22 +911,40 @@ template<typename T>
 
     void AminoAcidPolymer::AddModification(IHasMass *modification, int location) {
         IHasMass *currentMod = GetModification(location);
-        ModificationCollection tempVar({currentMod, modification});
+        std::vector<IHasMass*> vec;
+        std::vector<IHasMass*>& v = vec;
+
+//        ModificationCollection tempVar({currentMod, modification});
+        v.push_back(currentMod);
+        v.push_back(modification);
+        
+        ModificationCollection tempVar(v);
         ReplaceMod(location, currentMod == nullptr ? modification : &tempVar);
     }
 
     void AminoAcidPolymer::ClearModifications(Terminus terminus) {
-        if ((terminus & Terminus::N) == Terminus::N) {
+        std::bitset<32> b1((int)terminus);
+        std::bitset<32> b2((int)Terminus::N);
+        std::bitset<32> b3((int)Terminus::C);
+
+//        if ((terminus & Terminus::N) == Terminus::N) {
+        if ((b1 & b2) == b2) {
             setNTerminusModification(nullptr);
         }
 
-        if ((terminus & Terminus::C) == Terminus::C) {
+//        if ((terminus & Terminus::C) == Terminus::C) {
+        if ((b1 & b3) == b3) {
             setCTerminusModification(nullptr);
         }
     }
 
     void AminoAcidPolymer::ClearModifications(ModificationSites sites) {
-        if ((sites & ModificationSites::NPep) == ModificationSites::NPep || (sites & ModificationSites::NProt) == ModificationSites::NProt) {
+        std::bitset<32> b1((int)sites);
+        std::bitset<32> b2((int)ModificationSites::NPep);
+        std::bitset<32> b3((int)ModificationSites::NProt);
+        
+//        if ((sites & ModificationSites::NPep) == ModificationSites::NPep || (sites & ModificationSites::NProt) == ModificationSites::NProt) {
+        if ((b1 & b2) == b2 || (b1 & b3) == b3) {
             ReplaceMod(0, nullptr);
         }
 
@@ -887,13 +956,18 @@ template<typename T>
             }
 
             ModificationSites curSite = residues[i]->getSite();
-
-            if ((curSite & sites) == curSite) {
+            std::bitset<32> b4((int)curSite);
+//            if ((curSite & sites) == curSite) {
+            if ((b4 & b1) == b4) {
                 ReplaceMod(modIndex, nullptr);
             }
         }
 
-        if ((sites & ModificationSites::PepC) == ModificationSites::PepC || (sites & ModificationSites::ProtC) == ModificationSites::ProtC) {
+        std::bitset<32> b5((int)ModificationSites::PepC);
+        std::bitset<32> b6((int)ModificationSites::ProtC);
+        
+//        if ((sites & ModificationSites::PepC) == ModificationSites::PepC || (sites & ModificationSites::ProtC) == ModificationSites::ProtC) {
+        if ((b1 & b5) == b5 || (b1 & b6) == b6) {
             ReplaceMod(getLength() + 1, nullptr);
         }
     }
