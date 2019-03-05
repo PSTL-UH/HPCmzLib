@@ -85,7 +85,6 @@ namespace Chemistry {
         /// Returns a textual representation of this isotope in the following format: H{1} He{4} O{16}
         /// </summary>
         /// <returns>The atomic symbol and mass number combined</returns>
-//        std::wstring ToString() override;
         std::string ToString();
 
     };

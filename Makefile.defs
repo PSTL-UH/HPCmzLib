@@ -25,6 +25,6 @@ CFLAGS      = -g -O0
 
 
 CXX         = g++
-CXXFLAGS    = -g -O0 -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
+CXXFLAGS    = -Wall -g -O0 -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
 LDFLAGS     = -L$(MZLIB_LIB_DIR) -lmzlib
 

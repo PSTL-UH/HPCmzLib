@@ -93,7 +93,7 @@ int IsotopicDistribution::_factorLnTop = 1;
             additionalMass += isotopeAndCount.first->getAtomicMass() * isotopeAndCount.second;
         }
 
-        for (int i = 0; i < dist->masses.size(); i++) {
+        for (long unsigned int i = 0; i < dist->masses.size(); i++) {
             dist->masses[i] += additionalMass;
         }
 
@@ -235,7 +235,7 @@ int IsotopicDistribution::_factorLnTop = 1;
                 std::vector<int> mins(means.size() - 1);
                 std::vector<int> maxs(means.size() - 1);
                 indices = std::vector<int>(means.size() - 1);
-                for (int i = 0; i < means.size() - 1; i++) {
+                for (long unsigned int i = 0; i < means.size() - 1; i++) {
                     auto max = std::max(0, means[i] - stds[i]);
                     indices[i] = max;
                     mins[i] = max;
@@ -264,8 +264,8 @@ int IsotopicDistribution::_factorLnTop = 1;
                                                            std::vector<IsotopicDistribution::Polynomial> &fPolynomial,
                                                            std::vector<IsotopicDistribution::Polynomial> &fgidPolynomial,
                                                            double _fineResolution, double _mwResolution, double _fineMinProb) {
-        int i = tPolynomial.size();
-        int j = fPolynomial.size();
+        long unsigned int i = tPolynomial.size();
+        long unsigned int j = fPolynomial.size();
 
         if (i == 0 || j == 0) {
             return;
@@ -277,7 +277,7 @@ int IsotopicDistribution::_factorLnTop = 1;
         double minMass = tPolynomial[0].Power + fPolynomial[0].Power;
         double maxMass = tPolynomial[i - 1].Power + fPolynomial[j - 1].Power;
 
-        int maxIndex = static_cast<int>(std::abs(maxMass - minMass) / deltaMass + 0.5);
+        long unsigned int maxIndex = static_cast<int>(std::abs(maxMass - minMass) / deltaMass + 0.5);
         if (maxIndex >= fgidPolynomial.size()) {
             j = maxIndex - fgidPolynomial.size();
             for (i = 0; i <= j; i++) {
@@ -288,8 +288,8 @@ int IsotopicDistribution::_factorLnTop = 1;
             }
         }
 
-        for (int t = 0; t < tPolynomial.size(); t++) {
-            for (int f = 0; f < fPolynomial.size(); f++) {
+        for (long unsigned int t = 0; t < tPolynomial.size(); t++) {
+            for (long unsigned int f = 0; f < fPolynomial.size(); f++) {
                 double prob = tPolynomial[t].Probablity * fPolynomial[f].Probablity;
                 if (prob <= minProbability) {
                     continue;
@@ -360,7 +360,7 @@ int IsotopicDistribution::_factorLnTop = 1;
             sum += ii;
         }
         for (indices[index] = mins[index]; indices[index] <= maxs[index]; indices[index]++) {
-            if (index < mins.size() - 1) {
+            if ((long unsigned int) index < mins.size() - 1) {
                 MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, index + 1,
                                                       fPolynomial, elementalComposition, atoms,
                                                       minProb, maxValue);
@@ -374,7 +374,7 @@ int IsotopicDistribution::_factorLnTop = 1;
 
                 double prob = FactorLn(atoms) - FactorLn(l) + l * elementalComposition[elementalComposition.size() - 1]->LogProbability;
                 double power = l * elementalComposition[elementalComposition.size() - 1]->Power;
-                for (int i = 0; i <= elementalComposition.size() - 2; i++) {
+                for (long unsigned int i = 0; i <= elementalComposition.size() - 2; i++) {
                     int indexValue = indices[i];
                     Composition *tComposition = elementalComposition[i];
                     prob -= FactorLn(indexValue);

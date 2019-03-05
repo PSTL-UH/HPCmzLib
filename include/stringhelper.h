@@ -220,7 +220,7 @@ public:
 			return true;
 		else
 		{
-			for (int index = 0; index < source.length(); index++)
+			for (long unsigned int index = 0; index < source.length(); index++)
 			{
 				if (!std::isspace(source[index]))
 					return false;
@@ -271,8 +271,8 @@ public:
 	static std::string formatSimple(const std::string &input, T1 arg0, T2 arg1)
 	{
 		std::ostringstream ss;
-		int lastCloseBrace = -1;
-		int openBrace = -1;
+		long int lastCloseBrace = -1;
+		long unsigned int openBrace = -1;
 		while ((openBrace = input.find('{', openBrace + 1)) > -1)
 		{
 			if (openBrace + 1 < input.length())
