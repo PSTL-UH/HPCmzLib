@@ -5,7 +5,8 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Chemistry { class Isotope; }
+//namespace Chemistry { class Isotope; }
+#include "Isotope.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016, 2017 Stefan Solntsev
@@ -95,7 +96,8 @@ namespace Chemistry {
         /// Gets an isotope of this element based on its mass number
         /// </summary>
         Isotope *operator [](int massNumber);
-
+        Isotope * getIsotopeByMassNumber ( int massNumber);
+        
         /// <summary>
         /// Can use an integer instead of an element anytime you like
         /// </summary>

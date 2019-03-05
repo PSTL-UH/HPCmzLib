@@ -5,9 +5,10 @@
 #include "../MzLibUtil/MzLibException.h"
 #include "PeriodicTable.h"
 #include "Constants.h"
-#include <any>
 #include <regex>
 #include <iostream>
+
+#include <algorithm>
 
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
@@ -159,48 +160,51 @@ namespace Chemistry {
         ChemicalFormula *f = new ChemicalFormula();
 
         // These two lines represent the equivalent of the Regex stored in C# shown at
-        // the top of the file.
-        std::regex FormulaRegex("(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)");
-        std::regex ValidateFormulaRegex("^((\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*))+$");
+        // the top of the file. There is slight difference in the syntax, but the
+        // outcome should be the same based on my tests
+        std::regex FormulaRegex( R"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)");
+        std::regex ValidateFormulaRegex("^(\\s*([A-Z][a-z]*)(\\{?[0-9]*\\}?)?-?[0-9]*\\s*)+$");
+
 #if ORIG        
 //        if (!ValidateFormulaRegex->IsMatch(formula)) {
 #endif
-        if ( !std::regex_match(formula, ValidateFormulaRegex) ){
+        std::smatch sm;
+        if ( !std::regex_match(formula, sm, ValidateFormulaRegex) ){
             delete f;
             throw MzLibException("Input string for chemical formula was in an incorrect format: " + formula);
         }
 
-        std::smatch match;
-        std::cout << "EG WARNING: The routine mzLib ChemicalFormula::ParseFormula is not implemented CORRECTLY in the C++ version" << std::endl;
-#ifdef NOTWORKING
-// This parsing of the string to extract a formula needs probably completely
-// rewritten for C++. Will only do it if really required
+        std::sregex_iterator match(formula.begin(), formula.end(), FormulaRegex);
+        std::sregex_iterator reg_end;
+
 #ifdef ORIG
-//        for (auto match : FormulaRegex->Matches(formula)) {
+//      for (auto match : FormulaRegex->Matches(formula)) {
 #endif
-        std::regex_search(formula, match, FormulaRegex);
-//EG TODO: will need to loop over the individual elements. For now,
-//        just doing the first one.
-        std::string chemsym = match.str(1); // Group 1: Chemical Symbol
+        for ( ; match != reg_end; ++match) {
 
-            Element *element = PeriodicTable::GetElement(chemsym);
+            std::smatch res;
+            std::string group = match->str();
+            if ( std::regex_search(group, res, FormulaRegex) ) {
+                
+                std::string chemsym = res[1]; // Group 1: Chemical Symbol
 
-            int sign = std::stoi(match.str(3)) ? -1 : 1;
+                Element *element = PeriodicTable::GetElement(chemsym);
 
-            int numofelem = std::stoi(match.str(4)) ? std::stoi(match.str(4)) : 1;
+                int sign = std::stoi(res[3]) ? -1 : 1;
+                int numofelem = std::stoi(res[4]) ? std::stoi(res[4]) : 1;
 
-            if (std::stoi(match.str(2))) { // Group 2 (optional): Isotope Mass Number
+            if ( std::stoi(res[2]) ) { // Group 2 (optional): Isotope Mass Number
                 // Adding isotope!
-                f->Add(element[match.str(2)], sign * numofelem));
+                f->Add(element->getIsotopeByMassNumber(std::stoi(res[2])), sign * numofelem);
             }
             else {
                 // Adding element!
                 f->Add(element, numofelem * sign);
             }
         }
-//    }
+    }
+
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was used in a 'return' or 'throw' statement.
-#endif 
       return f;
     }
 

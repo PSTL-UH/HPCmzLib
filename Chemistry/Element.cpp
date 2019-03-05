@@ -59,6 +59,11 @@ namespace Chemistry {
         return IsotopesByMassNumber[massNumber];
     }
 
+    Isotope *Element::getIsotopeByMassNumber ( int massNumber) {
+        return IsotopesByMassNumber[massNumber];
+    }
+    
+    
 //C# TO C++ CONVERTER TODO TASK: C++ cast operators must convert from the enclosing type to another type:
 //    Element::operator Element*(int atomicNumber) {
 //        return PeriodicTable::GetElement(atomicNumber);
