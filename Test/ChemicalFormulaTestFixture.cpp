@@ -15,8 +15,29 @@ using namespace MzLibUtil;
 int main ( int argc, char **argv )
 {
 
+    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddIsotopeWithExistingMassNumber();
+
+    std::cout << "AddElementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddElementToFormula();
+
+    std::cout << "Multiply" << std::endl;    
+    Test::ChemicalFormulaTestFixture::Multiply();
+
+    std::cout << "CheckToStringOfElements" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CheckToStringOfElements();
+
+    std::cout << "AddFormulaToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddFormulaToFormula();
+
+    std::cout << "AddFormulaToItself" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddFormulaToItself();
+
+    std::cout << "AddLargeElementToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddLargeElementToFormula();
+
+    std::cout << "AddNegativeFormulaToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddNegativeFormulaToFormula();
     
     return 0;
 }
@@ -93,7 +114,6 @@ namespace Test {
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete formulaB' statement was not added since formulaB was passed to a method or constructor. Handle memory management manually.
     }
-
     
     void ChemicalFormulaTestFixture::AddIsotopeToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -105,6 +125,7 @@ namespace Test {
         Assert::AreEqual(formulaA, formulaB);
 
     }
+#endif
 
     void ChemicalFormulaTestFixture::AddLargeElementToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -127,6 +148,7 @@ namespace Test {
         Assert::AreEqual(formulaA, formulaC);
     }
 
+#ifdef LATER    
     void ChemicalFormulaTestFixture::AddNegativeIsotopeToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2HH{1}2NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2HNO");
