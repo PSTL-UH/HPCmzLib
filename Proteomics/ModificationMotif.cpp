@@ -23,7 +23,7 @@ namespace Proteomics {
 #endif
         if ( std::regex_match(motifString, ModificationMotifRegex) ) {
             int count=0;
-            for ( int i; i< motifString.length(); i++ ) {
+            for ( unsigned long int i; i< motifString.length(); i++ ) {
                 if ( isupper(motifString[i] ) ){
                         count++;
                     }

@@ -78,7 +78,7 @@ namespace Proteomics {
     }
 
     bool ModificationWithMass::ApproxSequenceEqual(std::vector<double> a, std::vector<double> b, double tolForEquality) {
-        for (int i = 0; i < a.size(); i++) {
+        for (unsigned long int i = 0; i < a.size(); i++) {
             if (std::abs(a[i] - b[i]) >= tolForEquality) {
                 return false;
             }

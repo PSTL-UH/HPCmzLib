@@ -272,10 +272,10 @@ public:
 	{
 		std::ostringstream ss;
 		long int lastCloseBrace = -1;
-		long unsigned int openBrace = -1;
+		int openBrace = -1;
 		while ((openBrace = input.find('{', openBrace + 1)) > -1)
 		{
-			if (openBrace + 1 < input.length())
+                    if ((long unsigned int)openBrace + 1 < input.length())
 			{
 				if (input[openBrace + 1] == '{')
 				{
@@ -300,7 +300,7 @@ public:
 			}
 		}
 
-		if (lastCloseBrace + 1 < input.length())
+		if ((long unsigned int)(lastCloseBrace + 1) < input.length())
 			ss << input.substr(lastCloseBrace + 1);
 
 		return ss.str();
@@ -314,7 +314,7 @@ public:
 		int openBrace = -1;
 		while ((openBrace = input.find('{', openBrace + 1)) > -1)
 		{
-			if (openBrace + 1 < input.length())
+                    if ((long unsigned int)(openBrace + 1) < input.length())
 			{
 				if (input[openBrace + 1] == '{')
 				{
@@ -341,7 +341,7 @@ public:
 			}
 		}
 
-		if (lastCloseBrace + 1 < input.length())
+		if ((long unsigned int)(lastCloseBrace + 1) < input.length())
 			ss << input.substr(lastCloseBrace + 1);
 
 		return ss.str();

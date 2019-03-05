@@ -33,7 +33,7 @@ namespace MzLibUtil {
         Match *m = StringRegex->Match(s);
         if (m->Groups[3]->Value->Equals(L"PPM", StringComparison::OrdinalIgnoreCase)) {
 #endif
-        std::regex StringRegex("((\+-|-\+|±)?\s*([\d.]+)\s*(PPM|Absolute))", std::regex_constants::icase);
+        std::regex StringRegex(R"((\+-|-\+|±)?\s*([\d.]+)\s*(PPM|Absolute))", std::regex_constants::icase);
         std::smatch m;
         std::regex_search(s, m, StringRegex);
         if ( iequals (m[3],"PPM") ) {
