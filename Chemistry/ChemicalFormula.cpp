@@ -7,7 +7,7 @@
 #include "Constants.h"
 #include <regex>
 #include <iostream>
-
+#include <stdexcept>
 #include <algorithm>
 
 #include "MzLibUtil.h"
@@ -186,24 +186,44 @@ namespace Chemistry {
             std::string group = match->str();
             if ( std::regex_search(group, res, FormulaRegex) ) {
                 
-                std::string chemsym = res[1]; // Group 1: Chemical Symbol
+                std::string chemsym = res[1].str(); // Group 1: Chemical Symbol
 
                 Element *element = PeriodicTable::GetElement(chemsym);
+                int sign =-1;
 
-                int sign = std::stoi(res[3]) ? -1 : 1;
-                int numofelem = std::stoi(res[4]) ? std::stoi(res[4]) : 1;
-
-            if ( std::stoi(res[2]) ) { // Group 2 (optional): Isotope Mass Number
-                // Adding isotope!
-                f->Add(element->getIsotopeByMassNumber(std::stoi(res[2])), sign * numofelem);
-            }
-            else {
-                // Adding element!
-                f->Add(element, numofelem * sign);
+                try {
+                    std::stoi(res[3].str());
+                }
+                catch (std::invalid_argument& e) {
+                    sign = 1;
+                }
+                    
+                int numofelem = 0;
+                try {
+                    numofelem = std::stoi(res[4].str());
+                }
+                catch(std::invalid_argument& e) {
+                    numofelem = 1;
+                }
+                
+                int temp =0;
+                try {
+                    temp = std::stoi(res[2].str());
+                }
+                catch(std::invalid_argument& e) {
+                    temp =0 ;
+                }
+                if ( temp ) { // Group 2 (optional): Isotope Mass Number
+                    // Adding isotope!
+                    f->Add(element->getIsotopeByMassNumber(temp), sign * numofelem);
+                }
+                else {
+                    // Adding element!
+                    f->Add(element, numofelem * sign);
+                }
             }
         }
-    }
-
+        
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was used in a 'return' or 'throw' statement.
       return f;
     }
