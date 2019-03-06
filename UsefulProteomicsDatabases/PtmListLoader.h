@@ -15,14 +15,9 @@ using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
     class PtmListLoader final {
-//        #region Private Fields
 
     private:
-        static const std::unordered_map<std::wstring, wchar_t> aminoAcidCodes;
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
+        static const std::unordered_map<std::string, wchar_t> aminoAcidCodes;
 
     private:
         class StaticConstructor {
@@ -33,31 +28,22 @@ namespace UsefulProteomicsDatabases {
     private:
         static PtmListLoader::StaticConstructor staticConstructor;
 
-
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
     public:
-        static std::vector<Modification*> ReadModsFromFile(const std::wstring &ptmListLocation);
+        static std::vector<Modification*> ReadModsFromFile(const std::string &ptmListLocation);
 
         /// <summary>
         /// Reads a list of modifications from a text file.
         /// </summary>
         /// <param name="ptmListLocation"></param>
         /// <returns></returns>
-        static std::vector<Modification*> ReadModsFromFile(const std::wstring &ptmListLocation, std::unordered_map<std::wstring, int> &formalChargesDictionary);
+        static std::vector<Modification*> ReadModsFromFile(const std::string &ptmListLocation, std::unordered_map<std::string, int> &formalChargesDictionary);
 
         /// <summary>
         /// Reads a list of modifications from a string representation of a ptmlist text file.
         /// </summary>
         /// <param name="storedModifications"></param>
         /// <returns></returns>
-        static std::vector<Modification*> ReadModsFromString(const std::wstring &storedModifications);
-
-//        #endregion Public Methods
-
-//        #region Private Methods
+        static std::vector<Modification*> ReadModsFromString(const std::string &storedModifications);
 
         /// <summary>
         /// Get a ModificationWithLocation from string representations of a modification specification. Returns null if the string representation is not recognized.
@@ -65,4 +51,6 @@ namespace UsefulProteomicsDatabases {
         /// <param name="specification"></param>
         /// <returns></returns>
     private:
-        static std::vector<Modification*> ReadMod(std::vector<std::wstring> &specification, std::unordered_map<std::wstring, int> &formalChargesDictionary);
+        static std::vector<Modification*> ReadMod(std::vector<std::string> &specification, std::unordered_map<std::string, int> &formalChargesDictionary);
+    }
+}

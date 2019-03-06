@@ -17,106 +17,106 @@ namespace UsefulProteomicsDatabases {
 
 Loaders::StaticConstructor Loaders::staticConstructor;
 
-    void Loaders::UpdateUniprot(const std::wstring &uniprotLocation) {
+    void Loaders::UpdateUniprot(const std::string &uniprotLocation) {
         DownloadUniprot(uniprotLocation);
         if (!FileSystem::fileExists(uniprotLocation)) {
-            std::wcout << L"Uniprot database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(uniprotLocation + L".temp", uniprotLocation);
+            std::cout << "Uniprot database did not exist, writing to disk" << std::endl;
+            FileSystem::renamePath(uniprotLocation + ".temp", uniprotLocation);
             return;
         }
-        bool ye = FilesAreEqual_Hash(uniprotLocation + L".temp", uniprotLocation);
+        bool ye = FilesAreEqual_Hash(uniprotLocation + ".temp", uniprotLocation);
         if (ye) {
-            std::wcout << L"Uniprot database is up to date, doing nothing" << std::endl;
-            File::Delete(uniprotLocation + L".temp");
+            std::cout << "Uniprot database is up to date, doing nothing" << std::endl;
+            File::Delete(uniprotLocation + ".temp");
         }
         else {
-            std::wcout << L"Uniprot database updated, saving old version as backup" << std::endl;
+            std::cout << "Uniprot database updated, saving old version as backup" << std::endl;
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            FileSystem::renamePath(uniprotLocation, uniprotLocation + DateTime::Now.ToString(L"dd-MMM-yyyy-HH-mm-ss"));
-            FileSystem::renamePath(uniprotLocation + L".temp", uniprotLocation);
+            FileSystem::renamePath(uniprotLocation, uniprotLocation + DateTime::Now.ToString("dd-MMM-yyyy-HH-mm-ss"));
+            FileSystem::renamePath(uniprotLocation + ".temp", uniprotLocation);
         }
     }
 
-    void Loaders::UpdateUnimod(const std::wstring &unimodLocation) {
+    void Loaders::UpdateUnimod(const std::string &unimodLocation) {
         DownloadUnimod(unimodLocation);
         if (!FileSystem::fileExists(unimodLocation)) {
-            std::wcout << L"Unimod database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(unimodLocation + L".temp", unimodLocation);
+            std::cout << "Unimod database did not exist, writing to disk" << std::endl;
+            FileSystem::renamePath(unimodLocation + ".temp", unimodLocation);
             return;
         }
-        bool ye = FilesAreEqual_Hash(unimodLocation + L".temp", unimodLocation);
+        bool ye = FilesAreEqual_Hash(unimodLocation + ".temp", unimodLocation);
         if (ye) {
-            std::wcout << L"Unimod database is up to date, doing nothing" << std::endl;
-            File::Delete(unimodLocation + L".temp");
+            std::cout << "Unimod database is up to date, doing nothing" << std::endl;
+            File::Delete(unimodLocation + ".temp");
         }
         else {
-            std::wcout << L"Unimod database updated, saving old version as backup" << std::endl;
+            std::cout << "Unimod database updated, saving old version as backup" << std::endl;
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            FileSystem::renamePath(unimodLocation, unimodLocation + DateTime::Now.ToString(L"dd-MMM-yyyy-HH-mm-ss"));
-            FileSystem::renamePath(unimodLocation + L".temp", unimodLocation);
+            FileSystem::renamePath(unimodLocation, unimodLocation + DateTime::Now.ToString("dd-MMM-yyyy-HH-mm-ss"));
+            FileSystem::renamePath(unimodLocation + ".temp", unimodLocation);
         }
     }
 
-    void Loaders::UpdatePsiMod(const std::wstring &psimodLocation) {
+    void Loaders::UpdatePsiMod(const std::string &psimodLocation) {
         DownloadPsiMod(psimodLocation);
         if (!FileSystem::fileExists(psimodLocation)) {
-            std::wcout << L"PSI-MOD database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(psimodLocation + L".temp", psimodLocation);
+            std::cout << "PSI-MOD database did not exist, writing to disk" << std::endl;
+            FileSystem::renamePath(psimodLocation + ".temp", psimodLocation);
             return;
         }
-        if (FilesAreEqual_Hash(psimodLocation + L".temp", psimodLocation)) {
-            std::wcout << L"PSI-MOD database is up to date, doing nothing" << std::endl;
-            File::Delete(psimodLocation + L".temp");
+        if (FilesAreEqual_Hash(psimodLocation + ".temp", psimodLocation)) {
+            std::cout << "PSI-MOD database is up to date, doing nothing" << std::endl;
+            File::Delete(psimodLocation + ".temp");
         }
         else {
-            std::wcout << L"PSI-MOD database updated, saving old version as backup" << std::endl;
+            std::cout << "PSI-MOD database updated, saving old version as backup" << std::endl;
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            FileSystem::renamePath(psimodLocation, psimodLocation + DateTime::Now.ToString(L"dd-MMM-yyyy-HH-mm-ss"));
-            FileSystem::renamePath(psimodLocation + L".temp", psimodLocation);
+            FileSystem::renamePath(psimodLocation, psimodLocation + DateTime::Now.ToString("dd-MMM-yyyy-HH-mm-ss"));
+            FileSystem::renamePath(psimodLocation + ".temp", psimodLocation);
         }
     }
 
-    void Loaders::UpdateElements(const std::wstring &elementLocation) {
+    void Loaders::UpdateElements(const std::string &elementLocation) {
         DownloadElements(elementLocation);
         if (!FileSystem::fileExists(elementLocation)) {
-            std::wcout << L"Element database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(elementLocation + L".temp", elementLocation);
+            std::cout << "Element database did not exist, writing to disk" << std::endl;
+            FileSystem::renamePath(elementLocation + ".temp", elementLocation);
             return;
         }
-        if (FilesAreEqual_Hash(elementLocation + L".temp", elementLocation)) {
-            std::wcout << L"Element database is up to date, doing nothing" << std::endl;
-            File::Delete(elementLocation + L".temp");
+        if (FilesAreEqual_Hash(elementLocation + ".temp", elementLocation)) {
+            std::cout << "Element database is up to date, doing nothing" << std::endl;
+            File::Delete(elementLocation + ".temp");
         }
         else {
-            std::wcout << L"Element database updated, saving old version as backup" << std::endl;
+            std::cout << "Element database updated, saving old version as backup" << std::endl;
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            FileSystem::renamePath(elementLocation, elementLocation + DateTime::Now.ToString(L"dd-MMM-yyyy-HH-mm-ss"));
-            FileSystem::renamePath(elementLocation + L".temp", elementLocation);
+            FileSystem::renamePath(elementLocation, elementLocation + DateTime::Now.ToString("dd-MMM-yyyy-HH-mm-ss"));
+            FileSystem::renamePath(elementLocation + ".temp", elementLocation);
         }
     }
 
-    std::unordered_map<std::wstring, int> Loaders::GetFormalChargesDictionary(obo *psiModDeserialized) {
+    std::unordered_map<std::string, int> Loaders::GetFormalChargesDictionary(obo *psiModDeserialized) {
         auto modsWithFormalCharges = psiModDeserialized->getItems().OfType<UsefulProteomicsDatabases::Generated::oboTerm*>().Where([&] (std::any b) {
             return b::xref_analog != nullptr && b::xref_analog::Any([&] (std::any c) {
-                c::dbname->Equals(L"FormalCharge");
+                c::dbname->Equals("FormalCharge");
             });
         });
         Regex *digitsOnly = new Regex(LR"([^\d])");
 
         delete digitsOnly;
 //C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
-        return modsWithFormalCharges->ToDictionary(b => TangibleLambdaToken237public static void LoadElements(std::wstring elementLocation){if (!FileSystem::fileExists(elementLocation))UpdateElements(elementLocation);
+        return modsWithFormalCharges->ToDictionary(b => TangibleLambdaToken237public static void LoadElements(std::string elementLocation){if (!FileSystem::fileExists(elementLocation))UpdateElements(elementLocation);
         PeriodicTableLoader::Load(elementLocation);
     }
 
-    std::vector<ModificationWithLocation*> Loaders::LoadUnimod(const std::wstring &unimodLocation) {
+    std::vector<ModificationWithLocation*> Loaders::LoadUnimod(const std::string &unimodLocation) {
         if (!FileSystem::fileExists(unimodLocation)) {
             UpdateUnimod(unimodLocation);
         }
         return UnimodLoader::ReadMods(unimodLocation);
     }
 
-    Generated::obo *Loaders::LoadPsiMod(const std::wstring &psimodLocation) {
+    Generated::obo *Loaders::LoadPsiMod(const std::string &psimodLocation) {
         auto psimodSerializer = new XmlSerializer(Generated::obo::typeid);
 
         if (!FileSystem::fileExists(psimodLocation)) {
@@ -128,17 +128,16 @@ Loaders::StaticConstructor Loaders::staticConstructor;
         return dynamic_cast<Generated::obo*>(psimodSerializer->Deserialize(&tempVar));
     }
 
-    std::vector<ModificationWithLocation*> Loaders::LoadUniprot(const std::wstring &uniprotLocation, std::unordered_map<std::wstring, int> &formalChargesDictionary) {
+    std::vector<ModificationWithLocation*> Loaders::LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> &formalChargesDictionary) {
         if (!FileSystem::fileExists(uniprotLocation)) {
             UpdateUniprot(uniprotLocation);
         }
         return PtmListLoader::ReadModsFromFile(uniprotLocation, formalChargesDictionary).OfType<ModificationWithLocation*>();
     }
 
-    bool Loaders::FilesAreEqual_Hash(const std::wstring &first, const std::wstring &second) {
+    bool Loaders::FilesAreEqual_Hash(const std::string &first, const std::string &second) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream a = File.Open(first, FileMode.Open, FileAccess.Read))
-    {
             FileStream a = File::Open(first, FileMode::Open, FileAccess::Read);
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream b = File.Open(second, FileMode.Open, FileAccess.Read))
@@ -154,41 +153,32 @@ Loaders::StaticConstructor Loaders::staticConstructor;
             return true;
             }
     }
-    }
 
-    void Loaders::DownloadPsiMod(const std::wstring &psimodLocation) {
+    void Loaders::DownloadPsiMod(const std::string &psimodLocation) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (WebClient Client = new WebClient())
-    {
             WebClient Client = WebClient();
-            Client.DownloadFile(LR"(http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/mod/data/PSI-MOD.obo.xml)", psimodLocation + L".temp");
-    }
+            Client.DownloadFile(LR"(http://psidev.cvs.sourceforge.net/viewvc/psidev/psi/mod/data/PSI-MOD.obo.xml)", psimodLocation + ".temp");
     }
 
-    void Loaders::DownloadUnimod(const std::wstring &unimodLocation) {
+    void Loaders::DownloadUnimod(const std::string &unimodLocation) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (WebClient Client = new WebClient())
-    {
             WebClient Client = WebClient();
-            Client.DownloadFile(LR"(http://www.unimod.org/xml/unimod.xml)", unimodLocation + L".temp");
-    }
+            Client.DownloadFile(LR"(http://www.unimod.org/xml/unimod.xml)", unimodLocation + ".temp");
     }
 
-    void Loaders::DownloadElements(const std::wstring &elementLocation) {
+    void Loaders::DownloadElements(const std::string &elementLocation) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (WebClient Client = new WebClient())
-    {
             WebClient Client = WebClient();
-            Client.DownloadFile(LR"(http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=ascii2&isotype=some)", elementLocation + L".temp");
-    }
+            Client.DownloadFile(LR"(http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=ascii2&isotype=some)", elementLocation + ".temp");
     }
 
-    void Loaders::DownloadUniprot(const std::wstring &uniprotLocation) {
+    void Loaders::DownloadUniprot(const std::string &uniprotLocation) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (WebClient Client = new WebClient())
-    {
             WebClient Client = WebClient();
-            Client.DownloadFile(LR"(http://www.uniprot.org/docs/ptmlist.txt)", uniprotLocation + L".temp");
-    }
+            Client.DownloadFile(LR"(http://www.uniprot.org/docs/ptmlist.txt)", uniprotLocation + ".temp");
     }
 }

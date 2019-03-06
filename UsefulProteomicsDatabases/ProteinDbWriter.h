@@ -14,7 +14,6 @@ using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
     class ProteinDbWriter {
-//        #region Public Methods
 
         /// <summary>
         /// Writes a protein database in mzLibProteinDb format, with additional modifications from the AdditionalModsToAddToProteins list.
@@ -24,10 +23,9 @@ namespace UsefulProteomicsDatabases {
         /// <param name="outputFileName"></param>
         /// <returns>The new "modified residue" entries that are added due to being in the Mods dictionary</returns>
     public:
-        static std::unordered_map<std::wstring, int> WriteXmlDatabase(std::unordered_map<std::wstring, std::unordered_set<std::tuple<int, Modification*>>> &AdditionalModsToAddToProteins, std::vector<Protein*> &proteinList, const std::wstring &outputFileName);
+        static std::unordered_map<std::string, int> WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>> &AdditionalModsToAddToProteins, std::vector<Protein*> &proteinList, const std::string &outputFileName);
 
-        static void WriteFastaDatabase(std::vector<Protein*> &proteinList, const std::wstring &outputFileName, const std::wstring &delimeter);
+        static void WriteFastaDatabase(std::vector<Protein*> &proteinList, const std::string &outputFileName, const std::string &delimeter);
 
-//        #endregion Public Methods
     };
 }

@@ -10,9 +10,9 @@ using namespace UsefulProteomicsDatabases::Generated;
 
 namespace UsefulProteomicsDatabases {
 
-const std::unordered_map<std::wstring, std::wstring> UnimodLoader::DictOfElements = std::unordered_map<std::wstring, std::wstring> {
-    {L"2H", L"H{2}"}, {
-    {L"18O", L"O{18}"}, {
+const std::unordered_map<std::string, std::string> UnimodLoader::DictOfElements = std::unordered_map<std::string, std::string> {
+    {"2H", "H{2}"}, {
+    {"18O", "O{18}"}, {
     };
 const std::unordered_map<position_t, TerminusLocalization> UnimodLoader::positionDict = std::unordered_map<position_t, TerminusLocalization> {
     {position_t::AnyCterm, TerminusLocalization::PepC}, {
@@ -20,7 +20,7 @@ const std::unordered_map<position_t, TerminusLocalization> UnimodLoader::positio
     {position_t::ProteinNterm, TerminusLocalization::NProt}
     };
 
-    std::vector<ModificationWithLocation*> UnimodLoader::ReadMods(const std::wstring &unimodLocation) {
+    std::vector<ModificationWithLocation*> UnimodLoader::ReadMods(const std::string &unimodLocation) {
         auto unimodSerializer = new XmlSerializer(unimod_t::typeid);
         FileStream tempVar(unimodLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
         auto deserialized = dynamic_cast<unimod_t*>(unimodSerializer->Deserialize(&tempVar));
@@ -43,20 +43,20 @@ const std::unordered_map<position_t, TerminusLocalization> UnimodLoader::positio
             for (auto nice : cool->getspecificity()) {
                 auto tg = nice->getsite();
                 if (tg.length() > 1) {
-                    tg = L"X";
+                    tg = "X";
                 }
                 ModificationMotif motif;
                 ModificationMotif::TryGetMotif(tg, motif);
                 auto pos = nice->getposition();
-                std::unordered_map<std::wstring, std::vector<std::wstring>> dblinks = {
+                std::unordered_map<std::string, std::vector<std::string>> dblinks = {
                 {
-                        L"Unimod", {std::to_wstring(ac)}
+                        "Unimod", {std::to_string(ac)}
                 }
                 };
 
                 if (nice->getNeutralLoss().empty()) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new ModificationWithMassAndCf(id + L" on " + motif + L" at " + positionDict[pos], L"Unimod", motif, positionDict[pos], cf, , dblinks);
+                    yield return new ModificationWithMassAndCf(id + " on " + motif + " at " + positionDict[pos], "Unimod", motif, positionDict[pos], cf, , dblinks);
                 }
                 else {
                     std::vector<double> neutralLosses;
@@ -83,7 +83,7 @@ const std::unordered_map<position_t, TerminusLocalization> UnimodLoader::positio
                     }
 
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new ModificationWithMassAndCf(id + L" on " + motif + L" at " + positionDict[pos], L"Unimod", motif, positionDict[pos], cf, , dblinks, , neutralLosses);
+                    yield return new ModificationWithMassAndCf(id + " on " + motif + " at " + positionDict[pos], "Unimod", motif, positionDict[pos], cf, , dblinks, , neutralLosses);
                 }
             }
 

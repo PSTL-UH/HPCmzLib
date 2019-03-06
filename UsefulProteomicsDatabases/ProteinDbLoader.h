@@ -19,7 +19,6 @@ using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
     class ProteinDbLoader final {
-//        #region Public Fields
 
     public:
         static Regex *uniprot_accession_expression;
@@ -33,26 +32,16 @@ namespace UsefulProteomicsDatabases {
         static Regex *ensembl_fullName_expression;
 
         static Regex *ensembl_gene_expression;
-
-//        #endregion Public Fields
-
-//        #region Private Fields
-
         /// <summary>
         /// Stores the last database file path.
         /// </summary>
     private:
-        static std::wstring last_database_location;
+        static std::string last_database_location;
 
         /// <summary>
         /// Stores the modification list read during LoadProteinXML
         /// </summary>
         static std::vector<Modification*> protein_xml_modlist;
-
-//        #endregion Private Fields
-
-//        #region Public Methods
-
         /// <summary>
         /// Load a mzLibProteinDb or UniProt XML file. Protein modifications may be specified before the protein entries (mzLibProteinDb format).
         /// If so, this modification list can be acquired with GetPtmListFromProteinXml after using this method.
@@ -72,7 +61,7 @@ namespace UsefulProteomicsDatabases {
     public:
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
 //ORIGINAL LINE: [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")] public static List<Protein> LoadProteinXML(string proteinDbLocation, bool generateTargetProteins, DecoyType decoyType, IEnumerable<Modification> allKnownModifications, bool IsContaminant, IEnumerable<string> modTypesToExclude, out Dictionary<string, Modification> unknownModifications)
-        static std::vector<Protein*> LoadProteinXML(const std::wstring &proteinDbLocation, bool generateTargetProteins, DecoyType decoyType, std::vector<Modification*> &allKnownModifications, bool IsContaminant, std::vector<std::wstring> &modTypesToExclude, std::unordered_map<std::wstring, Modification*> &unknownModifications);
+        static std::vector<Protein*> LoadProteinXML(const std::string &proteinDbLocation, bool generateTargetProteins, DecoyType decoyType, std::vector<Modification*> &allKnownModifications, bool IsContaminant, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications);
 
         /// <summary>
         /// Get the modification entries specified in a mzLibProteinDb XML file (.xml or .xml.gz).
@@ -81,7 +70,7 @@ namespace UsefulProteomicsDatabases {
         /// <returns></returns>
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
 //ORIGINAL LINE: [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")] public static List<Modification> GetPtmListFromProteinXml(string proteinDbLocation)
-        static std::vector<Modification*> GetPtmListFromProteinXml(const std::wstring &proteinDbLocation);
+        static std::vector<Modification*> GetPtmListFromProteinXml(const std::string &proteinDbLocation);
 
         /// <summary>
         /// Load a protein fasta database, using regular expressions to get various aspects of the headers. The first regex capture group is used as each field.
@@ -94,7 +83,7 @@ namespace UsefulProteomicsDatabases {
         /// <param name="name_expression"></param>
         /// <param name="gene_expression"></param>
         /// <returns></returns>
-        static std::vector<Protein*> LoadProteinFasta(const std::wstring &proteinDbLocation, bool originalTarget, DecoyType onTheFlyDecoys, bool IsContaminant, Regex *accession_expression, Regex *full_name_expression, Regex *name_expression, Regex *gene_expression);
+        static std::vector<Protein*> LoadProteinFasta(const std::string &proteinDbLocation, bool originalTarget, DecoyType onTheFlyDecoys, bool IsContaminant, Regex *accession_expression, Regex *full_name_expression, Regex *name_expression, Regex *gene_expression);
 
         /// <summary>
         /// Merge proteins that have the same accession, sequence, and contaminant designation.
@@ -102,16 +91,10 @@ namespace UsefulProteomicsDatabases {
         /// <param name="merge_these"></param>
         /// <returns></returns>
         static std::vector<Protein*> Merge_proteins(std::vector<Protein*> &merge_these);
-
-//        #endregion Public Methods
-
-//        #region Private Methods
-
     private:
         static int GetOldShuffleIndex(int i, int numSlides, int sequenceLength, bool methioninePresent);
 
-        static std::unordered_map<std::wstring, std::vector<Modification*>> GetModificationDict(std::vector<Modification*> &mods);
+        static std::unordered_map<std::string, std::vector<Modification*>> GetModificationDict(std::vector<Modification*> &mods);
 
-//        #endregion Private Methods
     };
 }

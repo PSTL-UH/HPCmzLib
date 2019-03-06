@@ -6,19 +6,19 @@ using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
 
-    std::unordered_map<std::wstring, int> ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::wstring, std::unordered_set<std::tuple<int, Modification*>>> &AdditionalModsToAddToProteins, std::vector<Protein*> &proteinList, const std::wstring &outputFileName) {
+    std::unordered_map<std::string, int> ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>> &AdditionalModsToAddToProteins, std::vector<Protein*> &proteinList, const std::string &outputFileName) {
         auto xmlWriterSettings = new XmlWriterSettings();
         xmlWriterSettings->Indent = true;
-        xmlWriterSettings->IndentChars = L"  ";
+        xmlWriterSettings->IndentChars = "  ";
 
-        std::unordered_map<std::wstring, int> newModResEntries;
+        std::unordered_map<std::string, int> newModResEntries;
 
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (XmlWriter writer = XmlWriter.Create(outputFileName, xmlWriterSettings))
         {
             XmlWriter writer = XmlWriter::Create(outputFileName, xmlWriterSettings);
             writer.WriteStartDocument();
-            writer.WriteStartElement(L"mzLibProteinDb");
+            writer.WriteStartElement("mzLibProteinDb");
 
             std::unordered_set<Modification*> all_relevant_modifications = std::unordered_set<Modification*>(proteinList.SelectMany([&] (std::any p) {
                 p::OneBasedPossibleLocalizedModifications->Values->SelectMany([&] (std::any list) {
@@ -38,83 +38,83 @@ namespace UsefulProteomicsDatabases {
             for (Modification *mod : all_relevant_modifications.OrderBy([&] (std::any m) {
                 m::id;
             })) {
-                writer.WriteStartElement(L"modification");
+                writer.WriteStartElement("modification");
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                writer.WriteString(mod.ToString() + L"\r\n" + L"//");
+                writer.WriteString(mod.ToString() + "\r\n" + "//");
                 writer.WriteEndElement();
             }
             for (auto protein : proteinList) {
-                writer.WriteStartElement(L"entry");
-                writer.WriteStartElement(L"accession");
+                writer.WriteStartElement("entry");
+                writer.WriteStartElement("accession");
                 writer.WriteString(protein->getAccession());
                 writer.WriteEndElement();
 
-                if (protein->getName() != L"") {
-                    writer.WriteStartElement(L"name");
+                if (protein->getName() != "") {
+                    writer.WriteStartElement("name");
                     writer.WriteString(protein->getName());
                     writer.WriteEndElement();
                 }
 
-                if (protein->getFullName() != L"") {
-                    writer.WriteStartElement(L"protein");
-                    writer.WriteStartElement(L"recommendedName");
-                    writer.WriteStartElement(L"fullName");
+                if (protein->getFullName() != "") {
+                    writer.WriteStartElement("protein");
+                    writer.WriteStartElement("recommendedName");
+                    writer.WriteStartElement("fullName");
                     writer.WriteString(protein->getFullName());
                     writer.WriteEndElement();
                     writer.WriteEndElement();
                     writer.WriteEndElement();
                 }
 
-                writer.WriteStartElement(L"gene");
+                writer.WriteStartElement("gene");
                 for (auto gene_name : protein->getGeneNames()) {
-                    writer.WriteStartElement(L"name");
-                    writer.WriteAttributeString(L"type", gene_name.Item1);
+                    writer.WriteStartElement("name");
+                    writer.WriteAttributeString("type", gene_name.Item1);
                     writer.WriteString(gene_name.Item2);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
 
                 for (auto dbRef : protein->getDatabaseReferences()) {
-                    writer.WriteStartElement(L"dbReference");
-                    writer.WriteAttributeString(L"type", dbRef->getType());
-                    writer.WriteAttributeString(L"id", dbRef->getId());
+                    writer.WriteStartElement("dbReference");
+                    writer.WriteAttributeString("type", dbRef->getType());
+                    writer.WriteAttributeString("id", dbRef->getId());
                     for (auto property_Renamed : dbRef->getProperties()) {
-                        writer.WriteStartElement(L"property");
-                        writer.WriteAttributeString(L"type", property_Renamed.Item1);
-                        writer.WriteAttributeString(L"value", property_Renamed.Item2);
+                        writer.WriteStartElement("property");
+                        writer.WriteAttributeString("type", property_Renamed.Item1);
+                        writer.WriteAttributeString("value", property_Renamed.Item2);
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();
                 }
                 for (auto proteolysisProduct : protein->getProteolysisProducts()) {
-                    writer.WriteStartElement(L"feature");
-                    writer.WriteAttributeString(L"type", proteolysisProduct->getType());
-                    writer.WriteStartElement(L"location");
-                    writer.WriteStartElement(L"begin");
+                    writer.WriteStartElement("feature");
+                    writer.WriteAttributeString("type", proteolysisProduct->getType());
+                    writer.WriteStartElement("location");
+                    writer.WriteStartElement("begin");
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    writer.WriteAttributeString(L"position", proteolysisProduct->getOneBasedBeginPosition().ToString());
+                    writer.WriteAttributeString("position", proteolysisProduct->getOneBasedBeginPosition().ToString());
                     writer.WriteEndElement();
-                    writer.WriteStartElement(L"end");
+                    writer.WriteStartElement("end");
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    writer.WriteAttributeString(L"position", proteolysisProduct->getOneBasedEndPosition().ToString());
+                    writer.WriteAttributeString("position", proteolysisProduct->getOneBasedEndPosition().ToString());
                     writer.WriteEndElement();
                     writer.WriteEndElement();
                     writer.WriteEndElement();
                 }
 
-                std::unordered_map<int, std::unordered_set<std::wstring>> modsToWriteForThisSpecificProtein;
+                std::unordered_map<int, std::unordered_set<std::string>> modsToWriteForThisSpecificProtein;
 
                 for (auto ye : protein->getOneBasedPossibleLocalizedModifications()) {
                     for (auto nice : ye.Value) {
-                        HashSet<std::wstring> val;
-                        std::unordered_map<int, std::unordered_set<std::wstring>>::const_iterator modsToWriteForThisSpecificProtein_iterator = modsToWriteForThisSpecificProtein.find(ye.Key);
+                        HashSet<std::string> val;
+                        std::unordered_map<int, std::unordered_set<std::string>>::const_iterator modsToWriteForThisSpecificProtein_iterator = modsToWriteForThisSpecificProtein.find(ye.Key);
                         if (modsToWriteForThisSpecificProtein_iterator != modsToWriteForThisSpecificProtein.end()) {
                             val = modsToWriteForThisSpecificProtein_iterator->second;
                             val->Add(nice->id);
                         }
                         else {
                             val = modsToWriteForThisSpecificProtein_iterator->second;
-                            modsToWriteForThisSpecificProtein.emplace(ye.Key, std::unordered_set<std::wstring> {nice->id});
+                            modsToWriteForThisSpecificProtein.emplace(ye.Key, std::unordered_set<std::string> {nice->id});
                         }
                     }
                 }
@@ -122,12 +122,12 @@ namespace UsefulProteomicsDatabases {
                 if (AdditionalModsToAddToProteins.find(protein->getAccession()) != AdditionalModsToAddToProteins.end()) {
                     for (auto ye : AdditionalModsToAddToProteins[protein->getAccession()]) {
                         int additionalModResidueIndex = ye.Item1;
-                        std::wstring additionalModId = ye.Item2->id;
+                        std::string additionalModId = ye.Item2->id;
                         bool modAdded = false;
 
                         // If we already have modifications that need to be written to the specific residue, get the hash set of those mods
-                        HashSet<std::wstring> val;
-                        std::unordered_map<int, std::unordered_set<std::wstring>>::const_iterator modsToWriteForThisSpecificProtein_iterator = modsToWriteForThisSpecificProtein.find(additionalModResidueIndex);
+                        HashSet<std::string> val;
+                        std::unordered_map<int, std::unordered_set<std::string>>::const_iterator modsToWriteForThisSpecificProtein_iterator = modsToWriteForThisSpecificProtein.find(additionalModResidueIndex);
                         if (modsToWriteForThisSpecificProtein_iterator != modsToWriteForThisSpecificProtein.end()) {
                             val = modsToWriteForThisSpecificProtein_iterator->second;
                             // Try to add the new mod to that hash set. If it's not there, modAdded=true, and it is added.
@@ -137,7 +137,7 @@ namespace UsefulProteomicsDatabases {
                         // Otherwise, no modifications currently need to be written to the residue at residueIndex, so need to create new hash set for that residue
                         else {
                             val = modsToWriteForThisSpecificProtein_iterator->second;
-                            modsToWriteForThisSpecificProtein.emplace(additionalModResidueIndex, std::unordered_set<std::wstring> {additionalModId});
+                            modsToWriteForThisSpecificProtein.emplace(additionalModResidueIndex, std::unordered_set<std::string> {additionalModId});
                             modAdded = true;
                         }
 
@@ -157,13 +157,13 @@ namespace UsefulProteomicsDatabases {
                     b::Key;
                 })) {
                     for (auto modId : hm->Value) {
-                        writer.WriteStartElement(L"feature");
-                        writer.WriteAttributeString(L"type", L"modified residue");
-                        writer.WriteAttributeString(L"description", modId);
-                        writer.WriteStartElement(L"location");
-                        writer.WriteStartElement(L"position");
+                        writer.WriteStartElement("feature");
+                        writer.WriteAttributeString("type", "modified residue");
+                        writer.WriteAttributeString("description", modId);
+                        writer.WriteStartElement("location");
+                        writer.WriteStartElement("position");
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        writer.WriteAttributeString(L"position", hm::Key->ToString(CultureInfo::InvariantCulture));
+                        writer.WriteAttributeString("position", hm::Key->ToString(CultureInfo::InvariantCulture));
                         writer.WriteEndElement();
                         writer.WriteEndElement();
                         writer.WriteEndElement();
@@ -171,27 +171,27 @@ namespace UsefulProteomicsDatabases {
                 }
 
                 for (auto hm : protein->getSequenceVariations()) {
-                    writer.WriteStartElement(L"feature");
-                    writer.WriteAttributeString(L"type", L"sequence variant");
-                    writer.WriteAttributeString(L"description", hm->getDescription());
-                    writer.WriteStartElement(L"original");
+                    writer.WriteStartElement("feature");
+                    writer.WriteAttributeString("type", "sequence variant");
+                    writer.WriteAttributeString("description", hm->getDescription());
+                    writer.WriteStartElement("original");
                     writer.WriteString(hm->getOriginalSequence());
                     writer.WriteEndElement(); // original
-                    writer.WriteStartElement(L"variation");
+                    writer.WriteStartElement("variation");
                     writer.WriteString(hm->getVariantSequence());
                     writer.WriteEndElement(); // variation
-                    writer.WriteStartElement(L"location");
+                    writer.WriteStartElement("location");
                     if (hm->getOneBasedBeginPosition() == hm->getOneBasedEndPosition()) {
-                        writer.WriteStartElement(L"position");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedBeginPosition()));
+                        writer.WriteStartElement("position");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedBeginPosition()));
                         writer.WriteEndElement();
                     }
                     else {
-                        writer.WriteStartElement(L"begin");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedBeginPosition()));
+                        writer.WriteStartElement("begin");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedBeginPosition()));
                         writer.WriteEndElement();
-                        writer.WriteStartElement(L"end");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedEndPosition()));
+                        writer.WriteStartElement("end");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedEndPosition()));
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement(); // location
@@ -199,30 +199,30 @@ namespace UsefulProteomicsDatabases {
                 }
 
                 for (auto hm : protein->getDisulfideBonds()) {
-                    writer.WriteStartElement(L"feature");
-                    writer.WriteAttributeString(L"type", L"disulfide bond");
-                    writer.WriteAttributeString(L"description", hm->getDescription());
-                    writer.WriteStartElement(L"location");
+                    writer.WriteStartElement("feature");
+                    writer.WriteAttributeString("type", "disulfide bond");
+                    writer.WriteAttributeString("description", hm->getDescription());
+                    writer.WriteStartElement("location");
                     if (hm->getOneBasedBeginPosition() == hm->getOneBasedEndPosition()) {
-                        writer.WriteStartElement(L"position");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedBeginPosition()));
+                        writer.WriteStartElement("position");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedBeginPosition()));
                         writer.WriteEndElement();
                     }
                     else {
-                        writer.WriteStartElement(L"begin");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedBeginPosition()));
+                        writer.WriteStartElement("begin");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedBeginPosition()));
                         writer.WriteEndElement();
-                        writer.WriteStartElement(L"end");
-                        writer.WriteAttributeString(L"position", std::to_wstring(hm->getOneBasedEndPosition()));
+                        writer.WriteStartElement("end");
+                        writer.WriteAttributeString("position", std::to_string(hm->getOneBasedEndPosition()));
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement(); // location
                     writer.WriteEndElement(); // feature
                 }
 
-                writer.WriteStartElement(L"sequence");
+                writer.WriteStartElement("sequence");
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                writer.WriteAttributeString(L"length", protein->getLength().ToString(CultureInfo::InvariantCulture));
+                writer.WriteAttributeString("length", protein->getLength().ToString(CultureInfo::InvariantCulture));
                 writer.WriteString(protein->getBaseSequence());
                 writer.WriteEndElement(); // sequence
                 writer.WriteEndElement(); // entry
@@ -236,14 +236,14 @@ namespace UsefulProteomicsDatabases {
         return newModResEntries;
     }
 
-    void ProteinDbWriter::WriteFastaDatabase(std::vector<Protein*> &proteinList, const std::wstring &outputFileName, const std::wstring &delimeter) {
+    void ProteinDbWriter::WriteFastaDatabase(std::vector<Protein*> &proteinList, const std::string &outputFileName, const std::string &delimeter) {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (StreamWriter writer = new StreamWriter(outputFileName))
     {
             StreamWriter writer = StreamWriter(outputFileName);
             for (auto protein : proteinList) {
-                std::wstring header = protein->getFullName() != protein->getAccession() ? protein->getAccession() + delimeter + protein->getFullName() : protein->getAccession(); // we read in full name and accession to be the same string if the format isn't recognized
-                writer.WriteLine(L">" + header);
+                std::string header = protein->getFullName() != protein->getAccession() ? protein->getAccession() + delimeter + protein->getFullName() : protein->getAccession(); // we read in full name and accession to be the same string if the format isn't recognized
+                writer.WriteLine(">" + header);
                 writer.WriteLine(protein->getBaseSequence());
             }
     }

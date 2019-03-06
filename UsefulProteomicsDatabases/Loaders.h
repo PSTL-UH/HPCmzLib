@@ -32,7 +32,6 @@ using namespace UsefulProteomicsDatabases::Generated;
 
 namespace UsefulProteomicsDatabases {
     class Loaders final {
-//        #region Public Constructors
 
     private:
         class StaticConstructor {
@@ -44,42 +43,33 @@ namespace UsefulProteomicsDatabases {
         static Loaders::StaticConstructor staticConstructor;
 
 
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
     public:
-        static void UpdateUniprot(const std::wstring &uniprotLocation);
+        static void UpdateUniprot(const std::string &uniprotLocation);
 
-        static void UpdateUnimod(const std::wstring &unimodLocation);
+        static void UpdateUnimod(const std::string &unimodLocation);
 
-        static void UpdatePsiMod(const std::wstring &psimodLocation);
+        static void UpdatePsiMod(const std::string &psimodLocation);
 
-        static void UpdateElements(const std::wstring &elementLocation);
+        static void UpdateElements(const std::string &elementLocation);
 
-        static std::unordered_map<std::wstring, int> GetFormalChargesDictionary(obo *psiModDeserialized);
+        static std::unordered_map<std::string, int> GetFormalChargesDictionary(obo *psiModDeserialized);
 
-        static std::vector<ModificationWithLocation*> LoadUnimod(const std::wstring &unimodLocation);
+        static std::vector<ModificationWithLocation*> LoadUnimod(const std::string &unimodLocation);
 
-        static Generated::obo *LoadPsiMod(const std::wstring &psimodLocation);
+        static Generated::obo *LoadPsiMod(const std::string &psimodLocation);
 
-        static std::vector<ModificationWithLocation*> LoadUniprot(const std::wstring &uniprotLocation, std::unordered_map<std::wstring, int> &formalChargesDictionary);
-
-//        #endregion Public Methods
-
-//        #region Private Methods
+        static std::vector<ModificationWithLocation*> LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> &formalChargesDictionary);
 
     private:
-        static bool FilesAreEqual_Hash(const std::wstring &first, const std::wstring &second);
+        static bool FilesAreEqual_Hash(const std::string &first, const std::string &second);
 
-        static void DownloadPsiMod(const std::wstring &psimodLocation);
+        static void DownloadPsiMod(const std::string &psimodLocation);
 
-        static void DownloadUnimod(const std::wstring &unimodLocation);
+        static void DownloadUnimod(const std::string &unimodLocation);
 
-        static void DownloadElements(const std::wstring &elementLocation);
+        static void DownloadElements(const std::string &elementLocation);
 
-        static void DownloadUniprot(const std::wstring &uniprotLocation);
+        static void DownloadUniprot(const std::string &uniprotLocation);
 
-//        #endregion Private Methods
     };
 }

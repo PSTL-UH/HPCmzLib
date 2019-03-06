@@ -26,11 +26,9 @@ namespace UsefulProteomicsDatabases {
     /// The Periodic Table of Elements.
     /// </summary>
     class PeriodicTableLoader final {
-//        #region Public Methods
 
     public:
-        static void Load(const std::wstring &elementLocation);
+        static void Load(const std::string &elementLocation);
 
-//        #endregion Public Methods
     };
 }
