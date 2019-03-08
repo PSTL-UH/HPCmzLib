@@ -2,19 +2,43 @@
 #include "../Chemistry/Element.h"
 #include "../Chemistry/Isotope.h"
 #include "../Chemistry/PeriodicTable.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
-using namespace Chemistry;
-using namespace NUnit::Framework;
+#include "Assert.h"
+
+//using namespace Chemistry;
+//using namespace NUnit::Framework;
+
+int main ( int argc, char **argv )
+{
+    
+    std::cout << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    
+    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
+    Test::ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber();
+    
+    
+    std::cout << "AddExistingElementsTest" << std::endl;    
+    Test::ElementsAndIsotopesTest::AddingExistingElementsTest();
+    
+    return 0;
+}
+
 
 namespace Test {
-
+    
+    
     void ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber() {
-        auto elementC = new Element(L"C", 6, 12.0106);
+        Element* elementC = new Element("C", 6, 12.0106);
         elementC->AddIsotope(12, 12, 0.9893);
         elementC->AddIsotope(13, 13.00335483507, 0.0107);
-        Isotope *isotope = elementC[13];
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"C{13}", isotope->ToString());
+        Isotope *isotope = elementC->getIsotopeByMassNumber(13);
+
+        std::string s("C{13}");
+        Assert::AreEqual(s, isotope->ToString());
         Assert::AreEqual(6, isotope->getProtons());
         Assert::AreEqual(7, isotope->getNeutrons());
 
@@ -22,9 +46,8 @@ namespace Test {
     }
 
     void ElementsAndIsotopesTest::AddingExistingElementsTest() {
-        auto elementC = new Element(L"GGG", 127, 12.0106);
+        auto elementC = new Element("GGG", 127, 12.0106);
         PeriodicTable::Add(elementC);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete elementC' statement was not added since elementC was passed to a method or constructor. Handle memory management manually.
     }
 }

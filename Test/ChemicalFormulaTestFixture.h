@@ -33,14 +33,9 @@ using namespace MzLibUtil;
 //using namespace NUnit::Framework;
 
 namespace Test {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [TestFixture] public static class ChemicalFormulaTestFixture
     class ChemicalFormulaTestFixture final {
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public static void AddIsotopeWithExistingMassNumber()
-
         static void AddIsotopeWithExistingMassNumber();
 
         static void AddElementToFormula();

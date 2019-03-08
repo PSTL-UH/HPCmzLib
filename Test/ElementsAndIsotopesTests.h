@@ -18,24 +18,17 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Chemistry Library. If not, see <http://www.gnu.org/licenses/>
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
-using namespace NUnit::Framework;
+//using namespace NUnit::Framework;
 
 namespace Test {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [TestFixture] public class ElementsAndIsotopesTest
     class ElementsAndIsotopesTest {
-//        #region Public Methods
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void AddIsotopeWithExistingMassNumber()
-        void AddIsotopeWithExistingMassNumber();
+        static void AddIsotopeWithExistingMassNumber();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void AddingExistingElementsTest()
-        void AddingExistingElementsTest();
+       static  void AddingExistingElementsTest();
 
-//        #endregion Public Methods
     };
 }
