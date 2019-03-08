@@ -5,6 +5,7 @@
 #include "../Chemistry/ChemicalFormula.h"
 #include "../Chemistry/Isotope.h"
 #include "../Chemistry/IsotopicDistribution.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 using namespace Chemistry;
 using namespace MzLibUtil;
@@ -14,7 +15,12 @@ using namespace MzLibUtil;
 
 int main ( int argc, char **argv )
 {
-
+    
+    std::cout << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    
     std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddIsotopeWithExistingMassNumber();
 

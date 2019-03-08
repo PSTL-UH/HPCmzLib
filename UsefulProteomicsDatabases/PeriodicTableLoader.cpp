@@ -5,20 +5,9 @@
 #include <iostream>
 #include <fstream>
 
-//using namespace Chemistry;
-
 namespace UsefulProteomicsDatabases {
 
     void PeriodicTableLoader::Load(const std::string &elementLocation) {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (StreamReader sr = new StreamReader(elementLocation))
-#ifdef ORIG
-        StreamReader sr = StreamReader(elementLocation);
-        std::string line = sr.ReadLine();
-        while (!line.find("Atomic Number") != std::string::npos) {
-            line = sr.ReadLine();
-        }
-#endif
         std::ifstream sr(elementLocation);
         std::string line;
         while ( getline(sr, line) ){
@@ -27,14 +16,14 @@ namespace UsefulProteomicsDatabases {
             }
         }
         
-        auto prevAtomicNumber = -1;
+        int prevAtomicNumber = -1;
         Element *element = new Element("fake", prevAtomicNumber, -1);
         do {
             //int atomicNumber = Convert::ToInt32(Regex::Match(line, R"(\d+)")->Value);
             int atomicNumber=-1;
-            std::regex atomicNumberRegex(R"(\d+)");
+            std::regex IntegerRegex(R"(\d+)");
             std::smatch amatch;
-            if ( std::regex_search(line, amatch, atomicNumberRegex) ) {
+            if ( std::regex_search(line, amatch, IntegerRegex) ) {
                 try {
                     atomicNumber = std::stoi(amatch.str());
                 }
@@ -46,17 +35,17 @@ namespace UsefulProteomicsDatabases {
             getline(sr, line);
             //std::string atomicSymbol = Regex::Match(line, R"([A-Za-z]+$)")->Value;
             std::string atomicSymbol;
-            std::regex atomicSymbolRegex(R"([A-Za-z]+$)");
+            std::regex atomicSymbolRegex(R"(([A-Z][a-z]?\s*)$)"); 
             std::smatch atmatch;
-            if ( std::regex_search(line, atmatch, atomicNumberRegex) ) {
+            if ( std::regex_search(line, atmatch, atomicSymbolRegex) ) {
                 atomicSymbol = atmatch.str();
             }
-        
+            
             getline(sr, line);
-            //int massNumber = Convert::ToInt32(Regex::Match(line, R"(\d+)")->Value);
+            // int massNumber = Convert::ToInt32(Regex::Match(line, R"(\d+)")->Value); 
             int massNumber=-1;
             std::smatch mmatch;
-            if ( std::regex_search(line, mmatch, atomicNumberRegex) ) {
+            if ( std::regex_search(line, mmatch, IntegerRegex) ) {
                 try {
                     massNumber = std::stoi(mmatch.str());
                 }
@@ -68,9 +57,9 @@ namespace UsefulProteomicsDatabases {
             getline(sr, line);
             //double atomicMass = Convert::ToDouble(Regex::Match(line, R"([\d\.]+)")->Value);
             double atomicMass=-1;
-            std::regex atomicMassRegex(R"([\d\.]+)");
+            std::regex DoubleRegex(R"([\d\.]+)");
             std::smatch ammatch;
-            if ( std::regex_search(line, ammatch, atomicMassRegex) ) {
+            if ( std::regex_search(line, ammatch, DoubleRegex) ) {
                 try {
                     atomicMass = std::stod(ammatch.str());
                 }
@@ -82,7 +71,7 @@ namespace UsefulProteomicsDatabases {
             getline(sr, line);
             double abundance=-1;
             std::smatch abmatch;
-            if (std::regex_search(line, abmatch, atomicMassRegex )) {
+            if (std::regex_search(line, abmatch, DoubleRegex )) {
                 try {
                     abundance = std::stod(abmatch.str());
                 }
@@ -101,34 +90,36 @@ namespace UsefulProteomicsDatabases {
             getline(sr, line);
             double averageMass;
             std::regex openParRegex(R"(\[)");
-            std::regex averageMass1Regex(R"((?<=\[)[\d\.]+)");
             std::smatch opmatch;
             if (std::regex_search (line, opmatch, openParRegex))  {
-                //double averageMass1 = Convert::ToDouble(Regex::Match(line, R"((?<=\[)[\d\.]+)")->Value);
+                std::sregex_iterator it(line.begin(), line.end(), DoubleRegex);
+                std::sregex_iterator reg_end;
                 double averageMass1=-1;
-                std::regex_search (line, opmatch, averageMass1Regex);
-                try {
-                    averageMass1 = std::stod(opmatch.str());
-                }
-                catch (std::invalid_argument &e ) {
-                    std::cout << "Could not extract average Mass 1 " << std::endl;
-                }
+                double averageMass2=-1;
+                int i=0;
                 
-                //auto kkajsdf = Regex::Match(line, R"((?<=,)[\d\.]+)")->Value;
-                std::regex kkajsdfRegex(R"((?<=,)[\d\.]+)");
-                std::regex_search(line, opmatch, kkajsdfRegex);
-                double averageMass2 = -1;
-                try {
-                    averageMass2 = std::stod(opmatch.str());
-                }
-                catch (std::invalid_argument &e ) {
-                    std::cout << "Could not extract average Mass 2 " << std::endl;
+                for ( ; it!= reg_end; ++it, ++i ) {
+                    if ( i== 0 ) {
+                        try {
+                            averageMass1 = std::stod(it->str());
+                        }
+                        catch (std::invalid_argument &e ) {
+                            std::cout << "Could not extract average Mass 1 " << std::endl;
+                        }
+                    }else if ( i == 1 ) {
+                        try {
+                            averageMass2 = std::stod(it->str());
+                        }
+                        catch (std::invalid_argument &e ) {
+                            std::cout << "Could not extract average Mass 2 " << std::endl;
+                        }
+                    }
                 }
                 averageMass = (averageMass1 + averageMass2) / 2;
             }
             else {
                 //averageMass = Convert::ToDouble(Regex::Match(line, R"([\d\.]+)")->Value);
-                std::regex_search(line, opmatch, atomicMassRegex ); 
+                std::regex_search(line, opmatch, DoubleRegex ); 
                 try {
                     averageMass = std::stod(opmatch.str());
                 }

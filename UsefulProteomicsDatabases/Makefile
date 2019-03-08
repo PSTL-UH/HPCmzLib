@@ -18,18 +18,20 @@ HEADER =  DecoyType.h          \
 
 
 OBJ =   DecoyType.o            \
-	Loaders.o              \
-	PeriodicTableLoader.o  \
-	ProteinDbLoader.o      \
-	ProteinDbWriter.o      \
-	PtmListLoader.o        \
-	UnimodLoader.o	
+	PeriodicTableLoader.o  
+
+#	Loaders.o              \
+#	ProteinDbLoader.o      \
+#	ProteinDbWriter.o      \
+#	PtmListLoader.o        \
+#	UnimodLoader.o	
 
 .SUFFIXES: .o.cpp
 
 all:    
 	make $(MZLIB_LIB) 
-	cd Generated ; make ; cd ..
+
+#	cd Generated ; make ; cd ..
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
@@ -40,5 +42,4 @@ $(OBJ):	$(HEADER)
 	$(CXX) $(CXXFLAGS) -c $<
 
 clean:  
-	cd Interfaces ; make clean ; cd ..
 	rm -rf *.o *~
