@@ -37,10 +37,10 @@ namespace Chemistry {
         });
 #endif
         double sum=0.0;
-        for ( auto b: getIsotopes() ) {
+        for ( auto b: privateIsotopes ) {
             sum += b.first->getAtomicMass() * b.second;
         }
-        for ( auto b: getElements() ) {
+        for ( auto b: privateElements ) {
             sum += b.first->getAverageMass() * b.second;
         }
         return sum;
@@ -55,10 +55,10 @@ namespace Chemistry {
         });
 #endif
         double sum=0.0;
-        for ( auto b: getIsotopes() ) {
+        for ( auto b: privateIsotopes ) {
             sum += b.first->getAtomicMass() * b.second;
         }
-        for ( auto b: getElements()) {
+        for ( auto b: privateElements ) {
             sum += b.first->getPrincipalIsotope()->getAtomicMass() * b.second;
         }
         return sum;
@@ -73,10 +73,10 @@ namespace Chemistry {
         });
 #endif
         int sum=0;
-        for ( auto b: getIsotopes() ) {
+        for ( auto b: privateIsotopes ) {
             sum += b.second;
         }
-        for ( auto b: getElements() ) {
+        for ( auto b: privateElements ) {
             sum += b.second;
         }
         return sum;
@@ -84,17 +84,17 @@ namespace Chemistry {
 
     int ChemicalFormula::getNumberOfUniqueElementsByAtomicNumber() const {
         std::unordered_set<int> ok;
-        for (auto i : getIsotopes()) {
+        for (auto i : privateIsotopes ) {
             ok.insert(i.first->getAtomicNumber());
         }
-        for (auto i : getElements()) {
+        for (auto i : privateElements ) {
             ok.insert(i.first->getAtomicNumber());
         }
         return ok.size();
     }
 
     int ChemicalFormula::getNumberOfUniqueIsotopes() const {
-        return getIsotopes().size();
+        return privateIsotopes.size();
     }
 
     std::string ChemicalFormula::getFormula() {
@@ -113,10 +113,10 @@ namespace Chemistry {
         });
 #endif
         int sum=0;
-        for ( auto b: getIsotopes() ) {
+        for ( auto b: privateIsotopes ) {
             sum += b.first->getProtons() * b.second;
         }
-        for ( auto b: getElements() ) {
+        for ( auto b: privateElements ) {
             sum += b.first->getProtons() * b.second;
         }
         return sum;
@@ -302,6 +302,24 @@ namespace Chemistry {
         formulaString = "";
     }
 
+    void ChemicalFormula::Add(int atomicNumber, int count) {
+        Element *element = PeriodicTable::GetElement( atomicNumber);
+        if (count == 0) {
+            return;
+        }
+        if (privateElements.find(element) == privateElements.end()) {
+            privateElements.emplace(element, count);
+        }
+        else {
+            privateElements[element] += count;
+            if (privateElements[element] == 0) {
+                privateElements.erase(element);
+            }
+        }
+        formulaString = "";
+    }
+
+    
     void ChemicalFormula::Add(Isotope *isotope, int count) {
         if (count == 0) {
             return;

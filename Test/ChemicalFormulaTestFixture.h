@@ -33,6 +33,7 @@ using namespace MzLibUtil;
 //using namespace NUnit::Framework;
 
 namespace Test {
+
     class ChemicalFormulaTestFixture final {
 
     public:
@@ -256,9 +257,10 @@ namespace Test {
         static void TestToChemicalFormula();
 
         static void IsoTest();
-
-    private:
-        class PhysicalObjectWithChemicalFormula : public IHasChemicalFormula {
+    };
+    
+    
+    class PhysicalObjectWithChemicalFormula : public IHasChemicalFormula {
         private:
             ChemicalFormula *privateThisChemicalFormula;
 
@@ -269,8 +271,5 @@ namespace Test {
 
             ChemicalFormula *getThisChemicalFormula() const override;
             void setThisChemicalFormula(ChemicalFormula *value);
-
         };
-
-    };
 }

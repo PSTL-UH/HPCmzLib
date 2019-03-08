@@ -39,12 +39,26 @@ int main ( int argc, char **argv )
     std::cout << "AddFormulaToItself" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddFormulaToItself();
 
+    std::cout << "AddIChemicalFormulaToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddIChemicalFormulaToFormula();
+    
+    std::cout << "AddIsotopeToFormula" << std::endl;
+    Test::ChemicalFormulaTestFixture::AddIsotopeToFormula();
+
     std::cout << "AddLargeElementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddLargeElementToFormula();
 
     std::cout << "AddNegativeFormulaToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddNegativeFormulaToFormula();
     
+
+    std::cout << "AddNegativeIsotopeToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddNegativeIsotopeToFormula();
+
+    std::cout << "AddELementByAtomicNumber" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddELementByAtomicNumber();
+
+
     return 0;
 }
 
@@ -106,7 +120,6 @@ namespace Test {
         Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
-#ifdef LATER
     
     void ChemicalFormulaTestFixture::AddIChemicalFormulaToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -116,21 +129,19 @@ namespace Test {
         formulaA->Add(formulaB);
 
         Assert::IsTrue(formulaA->Equals(formulaC));
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaB' statement was not added since formulaB was passed to a method or constructor. Handle memory management manually.
+        delete formulaB;
     }
     
     void ChemicalFormulaTestFixture::AddIsotopeToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3H{1}NO");
-        Isotope *h1 = PeriodicTable::GetElement("H")[1];
+        Isotope *h1 = PeriodicTable::GetElement("H")->getIsotopeByMassNumber(1);
 
         formulaA->Add(h1, 1);
 
         Assert::IsTrue(formulaA->Equals(formulaB));
 
     }
-#endif
 
     void ChemicalFormulaTestFixture::AddLargeElementToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -153,16 +164,15 @@ namespace Test {
         Assert::IsTrue(formulaA->Equals( formulaC));
     }
 
-#ifdef LATER    
     void ChemicalFormulaTestFixture::AddNegativeIsotopeToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2HH{1}2NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2HNO");
 
-        Isotope *h1 = PeriodicTable::GetElement("H")[1];
+        Isotope *h1 = PeriodicTable::GetElement("H")->getIsotopeByMassNumber(1);
 
         formulaA->Add(h1, -2);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
 
     }
 
@@ -172,9 +182,10 @@ namespace Test {
 
         formulaB->Add(1, 1);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
+#ifdef LATER    
     void ChemicalFormulaTestFixture::AddNonExistentSymbolToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
 
@@ -861,21 +872,25 @@ namespace Test {
         Assert::AreEqual(17, d->getIntensities().size()());
     }
 
-    ChemicalFormulaTestFixture::PhysicalObjectWithChemicalFormula::PhysicalObjectWithChemicalFormula(const std::string &v) {
+
+#endif
+
+    
+    PhysicalObjectWithChemicalFormula::PhysicalObjectWithChemicalFormula(const std::string &v) {
         setThisChemicalFormula(ChemicalFormula::ParseFormula(v));
     }
 
-    double ChemicalFormulaTestFixture::PhysicalObjectWithChemicalFormula::getMonoisotopicMass() const {
+    double PhysicalObjectWithChemicalFormula::getMonoisotopicMass() const {
         return getThisChemicalFormula()->getMonoisotopicMass();
     }
 
-    ChemicalFormula *ChemicalFormulaTestFixture::PhysicalObjectWithChemicalFormula::getThisChemicalFormula() const {
+    ChemicalFormula * PhysicalObjectWithChemicalFormula::getThisChemicalFormula() const {
         return privateThisChemicalFormula;
     }
 
-    void ChemicalFormulaTestFixture::PhysicalObjectWithChemicalFormula::setThisChemicalFormula(ChemicalFormula *value) {
+    void PhysicalObjectWithChemicalFormula::setThisChemicalFormula(ChemicalFormula *value) {
         privateThisChemicalFormula = value;
     }
-#endif
+
 
 }

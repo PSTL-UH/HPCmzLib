@@ -167,7 +167,8 @@ namespace Chemistry {
         void AddPrincipalIsotopesOf(Element *element, int count);
 
         void Add(Element *element, int count);
-
+        void Add(int atomicNumber, int count);
+        
         /// <summary>
         /// Add an isotope to this chemical formula
         /// </summary>
