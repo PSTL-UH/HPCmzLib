@@ -67,7 +67,7 @@ namespace Test {
 
         formulaA->Add(n, 1);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::Multiply() {
@@ -75,8 +75,7 @@ namespace Test {
         formulaA->Multiply(2);
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C4H6N2O2");
 
-        Assert::AreEqual(formulaA, formulaB);
-
+        Assert::IsTrue(formulaA->Equals(formulaB));
         Assert::IsFalse(formulaA->Equals(nullptr));
     }
 
@@ -94,7 +93,7 @@ namespace Test {
 
         formulaA->Add(formulaB);
 
-        Assert::AreEqual(formulaA, formulaC);
+        Assert::IsTrue(formulaA->Equals(formulaC));
     }
 
     void ChemicalFormulaTestFixture::AddFormulaToItself() {
@@ -104,7 +103,7 @@ namespace Test {
         ChemicalFormula tempVar(formulaA);
         formulaA->Add(&tempVar);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
 #ifdef LATER
@@ -116,7 +115,7 @@ namespace Test {
 
         formulaA->Add(formulaB);
 
-        Assert::AreEqual(formulaA, formulaC);
+        Assert::IsTrue(formulaA->Equals(formulaC));
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete formulaB' statement was not added since formulaB was passed to a method or constructor. Handle memory management manually.
     }
@@ -128,7 +127,7 @@ namespace Test {
 
         formulaA->Add(h1, 1);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
 
     }
 #endif
@@ -141,7 +140,7 @@ namespace Test {
 
         formulaA->Add(fe, 1);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::AddNegativeFormulaToFormula() {
@@ -151,7 +150,7 @@ namespace Test {
 
         formulaA->Add(formulaB);
 
-        Assert::AreEqual(formulaA, formulaC);
+        Assert::IsTrue(formulaA->Equals( formulaC));
     }
 
 #ifdef LATER    

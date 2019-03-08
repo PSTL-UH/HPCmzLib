@@ -264,10 +264,10 @@ namespace Chemistry {
             getIsotopes()[key] *= multiplier;
         }
  #endif       
-        for ( auto k: getElements() ) {
+        for ( auto k: privateElements ) {
             k.second *= multiplier;
         }
-        for ( auto k: getIsotopes() ) {
+        for ( auto k: privateIsotopes ) {
             k.second *= multiplier;
         }
     }
@@ -290,13 +290,13 @@ namespace Chemistry {
         if (count == 0) {
             return;
         }
-        if (getElements().find(element) == getElements().end()) {
-            getElements().emplace(element, count);
+        if (privateElements.find(element) == privateElements.end()) {
+            privateElements.emplace(element, count);
         }
         else {
-            getElements()[element] += count;
-            if (getElements()[element] == 0) {
-                getElements().erase(element);
+            privateElements[element] += count;
+            if (privateElements[element] == 0) {
+                privateElements.erase(element);
             }
         }
         formulaString = "";
@@ -306,13 +306,13 @@ namespace Chemistry {
         if (count == 0) {
             return;
         }
-        if (getIsotopes().find(isotope) == getIsotopes().end()) {
-            getIsotopes().emplace(isotope, count);
+        if (privateIsotopes.find(isotope) == privateIsotopes.end()) {
+            privateIsotopes.emplace(isotope, count);
         }
         else {
-            getIsotopes()[isotope] += count;
-            if (getIsotopes()[isotope] == 0) {
-                getIsotopes().erase(isotope);
+            privateIsotopes[isotope] += count;
+            if (privateIsotopes[isotope] == 0) {
+                privateIsotopes.erase(isotope);
             }
         }
         formulaString = "";
@@ -350,7 +350,7 @@ namespace Chemistry {
         Add(element, -count);
         for (auto k : getIsotopes() ) {
             if ( k.first->getElement() == element ) {
-                getIsotopes().erase(k.first);
+                privateIsotopes.erase(k.first);
             }
         }
         return count;
