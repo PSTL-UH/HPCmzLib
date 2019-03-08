@@ -40,6 +40,7 @@ namespace Chemistry {
     }
 
     std::string Isotope::ToString() {
-        return StringHelper::formatSimple("{0}{{{1}}}", getElement()->getAtomicSymbol(), getMassNumber());
+        std::string s = getElement()->getAtomicSymbol() + "{" + std::to_string(getMassNumber()) + "}";
+        return s;
     }
 }
