@@ -15,60 +15,347 @@ using namespace MzLibUtil;
 
 int main ( int argc, char **argv )
 {
-    
-    std::cout << "PeriodicTableLoader" << std::endl;    
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     
-    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
+    std::cout << ++i << ". AddIsotopeWithExistingMassNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddIsotopeWithExistingMassNumber();
 
-    std::cout << "AddElementToFormula" << std::endl;    
+    std::cout << ++i << ". AddElementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddElementToFormula();
 
-    std::cout << "Multiply" << std::endl;    
+    std::cout << ++i << ". Multiply" << std::endl;    
     Test::ChemicalFormulaTestFixture::Multiply();
 
-    std::cout << "CheckToStringOfElements" << std::endl;    
+    std::cout << ++i << ". CheckToStringOfElements" << std::endl;    
     Test::ChemicalFormulaTestFixture::CheckToStringOfElements();
 
-    std::cout << "AddFormulaToFormula" << std::endl;    
+    std::cout << ++i << ". AddFormulaToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddFormulaToFormula();
 
-    std::cout << "AddFormulaToItself" << std::endl;    
+    std::cout << ++i << ". AddFormulaToItself" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddFormulaToItself();
 
-    std::cout << "AddIChemicalFormulaToFormula" << std::endl;    
+    std::cout << ++i << ". AddIChemicalFormulaToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddIChemicalFormulaToFormula();
     
-    std::cout << "AddIsotopeToFormula" << std::endl;
+    std::cout << ++i << ". AddIsotopeToFormula" << std::endl;
     Test::ChemicalFormulaTestFixture::AddIsotopeToFormula();
 
-    std::cout << "AddLargeElementToFormula" << std::endl;    
+    std::cout << ++i << ". AddLargeElementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddLargeElementToFormula();
 
-    std::cout << "AddNegativeFormulaToFormula" << std::endl;    
+    std::cout << ++i << ". AddNegativeFormulaToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddNegativeFormulaToFormula();
     
-
-    std::cout << "AddNegativeIsotopeToFormula" << std::endl;    
+    std::cout << ++i << ". AddNegativeIsotopeToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddNegativeIsotopeToFormula();
 
-    std::cout << "AddELementByAtomicNumber" << std::endl;    
+    std::cout << ++i << ". AddELementByAtomicNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddELementByAtomicNumber();
 
-    std::cout << "AddZeroELementToFormula" << std::endl;    
+#ifdef LATER
+    // These two elements
+    std::cout << ++i << ". " << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddNonExistentSymbolToFormula();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::ChemicalFormulaTestFixture::InexistingElement();
+#endif 
+    std::cout << ++i << ". AddZeroELementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddZeroElementToFormula();
 
-    std::cout << "AddZeroIsotopeToFormula" << std::endl;    
+    std::cout << ++i << ". AddZeroIsotopeToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddZeroIsotopeToFormula();
 
-    std::cout << "AddZeroSymbolToFormula" << std::endl;    
+    std::cout << ++i << ". AddZeroSymbolToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddZeroSymbolToFormula();
 
-    std::cout << "ClearFormula" << std::endl;    
+    std::cout << ++i << ". ClearFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::ClearFormula();
+
+
+    std::cout << ++i << ". ConstructorBlankStringEqualsEmptyFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ConstructorBlankStringEqualsEmptyFormula();
+
+#ifdef LATER
+    // is identical to the previous one in C++ version
+    std::cout << ++i << ". ConstructorDefaultEqualsEmptyFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ConstructorDefaultEqualsEmptyFormula();
+#endif
+
+    std::cout << ++i << ". CopyConstructorValueEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CopyConstructorValueEquality();
+
+    std::cout << ++i << ". CopyConstructorReferenceInequality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CopyConstructorReferenceInequality();
+
+#ifdef LATER
+    std::cout << ++i << ". EmptyMonoisotopicMassIsZero" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyMonoisotopicMassIsZero();
+
+    std::cout << ++i << ". EmptyAverageMassIsZero" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyAverageMassIsZero();
+
+    std::cout << ++i << ". EmptyStringIsBlank" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyStringIsBlank();
+
+    std::cout << ++i << ". EmptyAtomCountIsZero" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyAtomCountIsZero();
+
+    std::cout << ++i << ". EmptyElementCountIsZero" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyElementCountIsZero();
+
+    std::cout << ++i << ". EmptyIsotopeCountIsZero" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EmptyIsotopeCountIsZero();
+
+    std::cout << ++i << ". FormulaValueInequality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaValueInequality();
+
+    std::cout << ++i << ". FormulaValueInequalityHeavyIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaValueInequalityHeavyIsotope();
+
+    std::cout << ++i << ". FormulaValueEqualityItself" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaValueEqualityItself();
+
+    std::cout << ++i << ". FormulaValueEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaValueEquality();
+
+    std::cout << ++i << ". FormulaEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaEquality();
+
+    std::cout << ++i << ". FormulaAlmostEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::FormulaAlmostEquality();
+
+    std::cout << ++i << ". HashCodeEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HashCodeEquality();
+
+    std::cout << ++i << ". HashCodeImmutableEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HashCodeImmutableEquality();
+
+    std::cout << ++i << ". HashCodeCheck" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HashCodeCheck();
+
+    std::cout << ++i << ". HillNotation" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotation();
+
+    std::cout << ++i << ". HillNotationNoCarbon" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationNoCarbon();
+
+    std::cout << ++i << ". HillNotationNoCarbonNoHydrogen" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationNoCarbonNoHydrogen();
+
+    std::cout << ++i << ". HillNotationNoHydrogen" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationNoHydrogen();
+
+    std::cout << ++i << ". HillNotationWithHeavyIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationWithHeavyIsotope();
+
+    std::cout << ++i << ". HillNotationWithNegativeCount" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationWithNegativeCount();
+
+    std::cout << ++i << ". HillNotationWithHeavyIsotopeNegativeCount" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HillNotationWithHeavyIsotopeNegativeCount();
+
+    std::cout << ++i << ". BadFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::BadFormula();
+
+    std::cout << ++i << ". InvalidChemicalElement" << std::endl;    
+    Test::ChemicalFormulaTestFixture::InvalidChemicalElement();
+
+    std::cout << ++i << ". InvalidElementIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::InvalidElementIsotope();
+
+    std::cout << ++i << ". NumberOfAtoms" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NumberOfAtoms();
+
+    std::cout << ++i << ". NumberOfAtomsOfEmptyFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NumberOfAtomsOfEmptyFormula();
+
+    std::cout << ++i << ". NumberOfAtomsOfNegativeFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NumberOfAtomsOfNegativeFormula();
+
+    std::cout << ++i << ". ParsingFormulaNoNumbers" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaNoNumbers();
+
+    std::cout << ++i << ". ParsingFormulaWithInternalSpaces" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaWithInternalSpaces();
+
+    std::cout << ++i << ". ParsingFormulaWithSpacesAtEnd" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaWithSpacesAtEnd();
+
+    std::cout << ++i << ". ParsingFormulaWithSpacesAtBeginning" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaWithSpacesAtBeginning();
+
+    std::cout << ++i << ". ParsingFormulaWithSpaces" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaWithSpaces();
+
+    std::cout << ++i << ". ParsingFormulaNoNumbersRandomOrder" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaNoNumbersRandomOrder();
+
+    std::cout << ++i << ". EqualsFalse" << std::endl;    
+    Test::ChemicalFormulaTestFixture::EqualsFalse();
+
+    std::cout << ++i << ". Equals" << std::endl;    
+    Test::ChemicalFormulaTestFixture::Equals();
+
+    std::cout << ++i << ". ParsingFormulaRepeatedElements" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaRepeatedElements();
+
+    std::cout << ++i << ". IsSuperSetOf" << std::endl;    
+    Test::ChemicalFormulaTestFixture::IsSuperSetOf();
+
+    std::cout << ++i << ". ParsingFormulaRepeatedElementsCancelEachOther" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ParsingFormulaRepeatedElementsCancelEachOther();
+
+    std::cout << ++i << ". RemoveElementCompletelyFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveElementCompletelyFromFromula();
+
+    std::cout << ++i << ". RemoveElementCompletelyFromFromulaBySymbol" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveElementCompletelyFromFromulaBySymbol();
+
+    std::cout << ++i << ". RemoveElementCompletelyFromFromulaWithHeavyIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveElementCompletelyFromFromulaWithHeavyIsotope();
+
+    std::cout << ++i << ". RemoveEmptyFormulaFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveEmptyFormulaFromFromula();
+
+    std::cout << ++i << ". RemoveFormulaFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveFormulaFromFromula();
+
+    std::cout << ++i << ". ContainsSpecificIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ContainsSpecificIsotope();
+
+    std::cout << ++i << ". ContainsIsotopesOf" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ContainsIsotopesOf();
+
+    std::cout << ++i << ". HydrogenCarbonRatio" << std::endl;    
+    Test::ChemicalFormulaTestFixture::HydrogenCarbonRatio();
+
+    std::cout << ++i << ". RemoveIsotopeCompletelyFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveIsotopeCompletelyFromFromula();
+
+    std::cout << ++i << ". RemoveElementFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveElementFromFromula();
+
+    std::cout << ++i << ". RemoveIsotopeFromFromulaEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveIsotopeFromFromulaEquality();
+
+    std::cout << ++i << ". RemoveNegativeElementFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveNegativeElementFromFromula();
+
+    std::cout << ++i << ". RemoveNonExistantIsotopeFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveNonExistantIsotopeFromFromula();
+
+    std::cout << ++i << ". RemoveZeroIsotopeFromFromula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::RemoveZeroIsotopeFromFromula();
+
+    std::cout << ++i << ". TotalProtons" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TotalProtons();
+
+    std::cout << ++i << ". TotalProtons2" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TotalProtons2();
+
+    std::cout << ++i << ". AverageMass" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AverageMass();
+
+    std::cout << ++i << ". UniqueElements" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueElements();
+
+    std::cout << ++i << ". UniqueElementsOfEmptyFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueElementsOfEmptyFormula();
+
+    std::cout << ++i << ". UniqueElementsWithHeavyIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueElementsWithHeavyIsotope();
+
+    std::cout << ++i << ". UniqueIsotopes" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueIsotopes();
+
+    std::cout << ++i << ". UniqueIsotopesOfEmptyFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueIsotopesOfEmptyFormula();
+
+    std::cout << ++i << ". UniqueIsotopesWithHeavyIsotope" << std::endl;    
+    Test::ChemicalFormulaTestFixture::UniqueIsotopesWithHeavyIsotope();
+
+    std::cout << ++i << ". ContainsIsotopesOfYe" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ContainsIsotopesOfYe();
+
+    std::cout << ++i << ". TestReplaceIsotopes" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestReplaceIsotopes();
+
+    std::cout << ++i << ". ChemicalForulaIsSubSet" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ChemicalForulaIsSubSet();
+
+    std::cout << ++i << ". ChemicalForulaIsNotSubSet" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ChemicalForulaIsNotSubSet();
+
+    std::cout << ++i << ". ChemicalForulaIsSuperSet" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ChemicalForulaIsSuperSet();
+
+    std::cout << ++i << ". ChemicalForulaIsNotSuperSet" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ChemicalForulaIsNotSuperSet();
+
+    std::cout << ++i << ". ChemicalForulaMyTest" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ChemicalForulaMyTest();
+
+    std::cout << ++i << ". TestIsotopicDistribution" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestIsotopicDistribution();
+
+    std::cout << ++i << ". TestIsotopicDistribution2" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestIsotopicDistribution2();
+
+    std::cout << ++i << ". TestIsotopicDistribution3" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestIsotopicDistribution3();
+
+    std::cout << ++i << ". CatchIsotopicDistributionStuff" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CatchIsotopicDistributionStuff();
+
+    std::cout << ++i << ". CatchProbStuff" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CatchProbStuff();
+
+    std::cout << ++i << ". I0j1" << std::endl;    
+    Test::ChemicalFormulaTestFixture::I0j1();
+
+    std::cout << ++i << ". ThresholdProbability" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ThresholdProbability();
+
+    std::cout << ++i << ". TestAnotherFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestAnotherFormula();
+
+    std::cout << ++i << ". NeutronCount" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NeutronCount();
+
+    std::cout << ++i << ". NeutronCountFail" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NeutronCountFail();
+
+    std::cout << ++i << ". CombineTest" << std::endl;    
+    Test::ChemicalFormulaTestFixture::CombineTest();
+
+    std::cout << ++i << ". ValidatePeriodicTable" << std::endl;
+    Test::ChemicalFormulaTestFixture::ValidatePeriodicTable();
+
+    std::cout << ++i << ". TestAddChemicalFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestAddChemicalFormula();
+
+    std::cout << ++i << ". NotEqual" << std::endl;    
+    Test::ChemicalFormulaTestFixture::NotEqual();
+
+    std::cout << ++i << ". TestRemoveObjectFromChemicalFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestRemoveObjectFromChemicalFormula();
+
+    std::cout << ++i << ". TestEquality" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestEquality();
+
+    std::cout << ++i << ". TestToChemicalFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::TestToChemicalFormula();
+
+    std::cout << ++i << ".  IsoTest" << std::endl;    
+    Test::ChemicalFormulaTestFixture::IsoTest();    
+
+#endif    
     
     return 0;
 }
@@ -251,17 +538,17 @@ namespace Test {
         Assert::IsTrue(formulaA->Equals(&tempVar));
     }
     
-#ifdef LATER
     
     void ChemicalFormulaTestFixture::ConstructorBlankStringEqualsEmptyFormula() {
         ChemicalFormula *formulaA = new ChemicalFormula();
 
-        ChemicalFormula tempVar();
-        Assert::AreEqual(formulaA, &tempVar);
+        ChemicalFormula tempVar;
+        Assert::IsTrue(formulaA->Equals(&tempVar));
 
         delete formulaA;
     }
 
+#ifdef LATER
     void ChemicalFormulaTestFixture::ConstructorDefaultEqualsEmptyFormula() {
         ChemicalFormula *formulaA = new ChemicalFormula();
 
@@ -270,12 +557,13 @@ namespace Test {
 
         delete formulaA;
     }
-
+#endif
+    
     void ChemicalFormulaTestFixture::CopyConstructorValueEquality() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = new ChemicalFormula(formulaA);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
 
         delete formulaB;
     }
@@ -284,11 +572,12 @@ namespace Test {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = new ChemicalFormula(formulaA);
 
-        Assert::AreNotSame(formulaA, formulaB);
+        Assert::IsFalse(formulaA->Equals(formulaB));
 
         delete formulaB;
     }
 
+#ifdef LATER    
     void ChemicalFormulaTestFixture::EmptyMonoisotopicMassIsZero() {
         ChemicalFormula tempVar();
         Assert::AreEqual(0.0, (&tempVar)->getMonoisotopicMass());
