@@ -9,8 +9,8 @@
 include ../Makefile.defs
 
 CEXECS = ChemicalFormulaTestFixture	\
-	DatabaseLoaderTests	  	\
 	ElementsAndIsotopesTests	\
+	DatabaseLoaderTests	  	\
 	FakeMsDataFile 		        \
 	MassTestFixture		        \
 	MyTests 			\

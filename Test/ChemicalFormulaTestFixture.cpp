@@ -58,7 +58,18 @@ int main ( int argc, char **argv )
     std::cout << "AddELementByAtomicNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddELementByAtomicNumber();
 
+    std::cout << "AddZeroELementToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddZeroElementToFormula();
 
+    std::cout << "AddZeroIsotopeToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddZeroIsotopeToFormula();
+
+    std::cout << "AddZeroSymbolToFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::AddZeroSymbolToFormula();
+
+    std::cout << "ClearFormula" << std::endl;    
+    Test::ChemicalFormulaTestFixture::ClearFormula();
+    
     return 0;
 }
 
@@ -200,6 +211,8 @@ namespace Test {
         });
     }
 
+#endif
+    
     void ChemicalFormulaTestFixture::AddZeroElementToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
@@ -208,43 +221,45 @@ namespace Test {
 
         formulaA->Add(n, 0);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::AddZeroIsotopeToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Isotope *h1 = PeriodicTable::GetElement("H")[1];
+        Isotope *h1 = PeriodicTable::GetElement("H")->getIsotopeByMassNumber(1);
 
         formulaA->Add(h1, 0);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::AddZeroSymbolToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        formulaA->AddPrincipalIsotopesOf("H", 0);
+        formulaA->AddPrincipalIsotopesOf(PeriodicTable::GetElement("H"), 0);
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ClearFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         formulaA->Clear();
-        ChemicalFormula tempVar();
-        Assert::AreEqual(formulaA, &tempVar);
+        ChemicalFormula tempVar;
+        Assert::IsTrue(formulaA->Equals(&tempVar));
     }
-
+    
+#ifdef LATER
+    
     void ChemicalFormulaTestFixture::ConstructorBlankStringEqualsEmptyFormula() {
         ChemicalFormula *formulaA = new ChemicalFormula();
 
         ChemicalFormula tempVar();
         Assert::AreEqual(formulaA, &tempVar);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+        delete formulaA;
     }
 
     void ChemicalFormulaTestFixture::ConstructorDefaultEqualsEmptyFormula() {
@@ -253,7 +268,7 @@ namespace Test {
         ChemicalFormula tempVar();
         Assert::AreEqual(formulaA, &tempVar);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+        delete formulaA;
     }
 
     void ChemicalFormulaTestFixture::CopyConstructorValueEquality() {
@@ -262,7 +277,7 @@ namespace Test {
 
         Assert::AreEqual(formulaA, formulaB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaB' statement was not added since formulaB was passed to a method or constructor. Handle memory management manually.
+        delete formulaB;
     }
 
     void ChemicalFormulaTestFixture::CopyConstructorReferenceInequality() {
@@ -271,7 +286,7 @@ namespace Test {
 
         Assert::AreNotSame(formulaA, formulaB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaB' statement was not added since formulaB was passed to a method or constructor. Handle memory management manually.
+        delete formulaB;
     }
 
     void ChemicalFormulaTestFixture::EmptyMonoisotopicMassIsZero() {
