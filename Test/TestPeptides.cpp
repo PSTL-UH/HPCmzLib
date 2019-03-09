@@ -17,10 +17,27 @@
 #include "../Proteomics/FragmentTypes.h"
 #include "../Proteomics/DigestionPoint.h"
 
-using namespace Chemistry;
-using namespace MzLibUtil;
-using namespace NUnit::Framework;
-using namespace Proteomics;
+#include "Assert.h"
+
+//using namespace Chemistry;
+//using namespace MzLibUtil;
+//using namespace NUnit::Framework;
+//using namespace Proteomics;
+
+int main ( int argc, char **argv )
+{
+    
+    std::cout << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    
+//    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
+//    Test::ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber();
+    
+    return 0;
+}
+
 
 namespace Test {
 

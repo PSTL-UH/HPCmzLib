@@ -10,19 +10,19 @@ include ../Makefile.defs
 
 CEXECS = ChemicalFormulaTestFixture	\
 	ElementsAndIsotopesTests	\
+	TestAminoAcids			\
+	TestFragments			\
+	TestModifications		\
+	TestPeptides			\
 	DatabaseLoaderTests	  	\
 	FakeMsDataFile 		        \
 	MassTestFixture		        \
 	MyTests 			\
 	SetUpTests	                \
-	TestAminoAcids			\
 	TestChromatogram		\
 	TestDataFile			\
-	TestFragments			\
 	TestIsolation			\
-	TestModifications		\
 	TestMzML			\
-	TestPeptides			\
 	TestProteinReader		\
 	TestProteomicsReadWrite		\
 	TestRange			\
@@ -42,18 +42,21 @@ cxxtests: $(CEXECS)
 ###################################################################################################
 ### CXXTESTS                                                                                      ###
 ###################################################################################################
-
-ChemicalFormulaTestFixture: ChemicalFormulaTestFixture.o
-	$(CXX) $^ -o $@ $(LDFLAGS)
-#
-DatabaseLoaderTests: DatabaseLoaderTests.o 
-	$(CXX) $^ -o $@ $(LDFLAGS)
-#
 ElementsAndIsotopesTests: ElementsAndIsotopesTests.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
-FakeMsDataFile: FakeMsDataFile.o 
+ChemicalFormulaTestFixture: ChemicalFormulaTestFixture.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+TestAminoAcids: TestAminoAcids.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+TestModifications: TestModifications.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+TestPeptides: TestPeptides.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
 
 ###################################################################################################
 
@@ -61,4 +64,4 @@ FakeMsDataFile: FakeMsDataFile.o
 clean:
 	rm -rf *.o *~
 
-	rm -f ChemicalFormulaTestFixture DatabaseLoaderTests ElementsAndIsotopesTests FakeMsDataFile
+	rm -f ChemicalFormulaTestFixture DatabaseLoaderTests ElementsAndIsotopesTests FakeMsDataFile	   rm -f TestPeptides TestAminoAcids TestModifications

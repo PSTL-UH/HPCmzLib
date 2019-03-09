@@ -24,79 +24,52 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
+
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
+#include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
-using namespace NUnit::Framework;
+
+#include "../Proteomics/Proteomics.h"
 using namespace Proteomics;
-using namespace UsefulProteomicsDatabases;
+
+//#include "../UsefulProteomicsDatabases/UsefulProteomicsDatabases.h"
+//using namespace UsefulProteomicsDatabases;
 
 namespace Test {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [TestFixture] public sealed class TestModifications
     class TestModifications final {
-//        #region Public Methods
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public static void Test_modificationsHashCode()
         static void Test_modificationsHashCode();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public static void Test_ModificationWithNoMassWritten()
         static void Test_ModificationWithNoMassWritten();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void NameAndSites()
         void NameAndSites();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationEquality()
         void ModificationEquality();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationSitesTest()
         void ModificationSitesTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void Sites()
         void Sites();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationCollectionTest()
         void ModificationCollectionTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationCollectionTest2()
         void ModificationCollectionTest2();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationWithMultiplePossibilitiesTest()
         void ModificationWithMultiplePossibilitiesTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationSitesTest55()
         void ModificationSitesTest55();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ChemicalFormulaModificaiton()
         void ChemicalFormulaModificaiton();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void ModificationCollectionScrambledEquals()
         void ModificationCollectionScrambledEquals();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void Test_modification_hash_set()
         void Test_modification_hash_set();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void Test_modification2_hash_set()
         void Test_modification2_hash_set();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Test] public void Test_modification3_hash_set()
         void Test_modification3_hash_set();
 
-//        #endregion Public Methods
     };
 }

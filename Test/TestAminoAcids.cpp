@@ -1,8 +1,23 @@
 ﻿#include "TestAminoAcids.h"
 #include "../Proteomics/Residue.h"
 
-using namespace NUnit::Framework;
-using namespace Proteomics;
+#include "Assert.h"
+
+
+int main ( int argc, char **argv )
+{
+    
+    std::cout << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    
+//    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
+//    Test::ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber();
+    
+    return 0;
+}
+
 
 namespace Test {
 
