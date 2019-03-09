@@ -210,11 +210,11 @@ namespace Test {
     public:
         std::vector<int> GetDigestionSites(AminoAcidPolymer *aminoAcidSequence) override;
 
-        std::vector<int> GetDigestionSites(const std::wstring &aminoAcidSequence) override;
+        std::vector<int> GetDigestionSites(const std::string &aminoAcidSequence) override;
 
         int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) override;
 
-        int MissedCleavages(const std::wstring &sequence) override;
+        int MissedCleavages(const std::string &sequence) override;
 
     };
 }

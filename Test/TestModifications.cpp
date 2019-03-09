@@ -14,6 +14,7 @@
 #include "../MzLibUtil/MzLibException.h"
 #include "../Proteomics/ChemicalFormulaModification.h"
 #include "../Proteomics/ModificationWithLocation.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 
 #include "Assert.h"
@@ -37,9 +38,9 @@ namespace Test {
 
     void TestModifications::Test_modificationsHashCode() {
         ModificationMotif motif;
-        ModificationMotif::TryGetMotif(L"M", motif);
-        auto mod1 = new ModificationWithMass(L"mod", L"type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
-        auto mod2 = new ModificationWithMass(L"mod2", L"type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
+        ModificationMotif::TryGetMotif("M", motif);
+        auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
+        auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
 
         Assert::AreNotEqual(mod1->GetHashCode(), mod2->GetHashCode());
         Assert::AreNotEqual(mod1, mod2);
@@ -52,12 +53,12 @@ namespace Test {
 
     void TestModifications::Test_ModificationWithNoMassWritten() {
         ModificationMotif motif;
-        ModificationMotif::TryGetMotif(L"M", motif);
-        auto mod1 = new ModificationWithMassAndCf(L"mod", L"type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula(L"H"), std::make_optional(ChemicalFormula::ParseFormula(L"H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
+        ModificationMotif::TryGetMotif("M", motif);
+        auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         auto mod1string = mod1->ToString();
-        Assert::IsTrue(!mod1string.find(L"MM") != std::wstring::npos);
-        auto modAfterWriteRead = dynamic_cast<ModificationWithMassAndCf*>(PtmListLoader::ReadModsFromString(mod1string + L"\r\n" + L"//").front());
+        Assert::IsTrue(!mod1string.find("MM") != std::string::npos);
+        auto modAfterWriteRead = dynamic_cast<ModificationWithMassAndCf*>(PtmListLoader::ReadModsFromString(mod1string + "\r\n" + "//").front());
         Assert::AreEqual(mod1, modAfterWriteRead);
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to a method or constructor. Handle memory management manually.
@@ -67,7 +68,7 @@ namespace Test {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         OldSchoolModification *a = new OldSchoolModification();
         OldSchoolModification *b = new OldSchoolModification(a);
-        Assert::AreEqual(L" (Any)", b->getNameAndSites());
+        Assert::AreEqual(" (Any)", b->getNameAndSites());
 
         delete b;
 //C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a method or constructor. Handle memory management manually.
@@ -77,8 +78,8 @@ namespace Test {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         OldSchoolModification *a = new OldSchoolModification();
         OldSchoolModification *b = new OldSchoolModification();
-        OldSchoolModification *c = new OldSchoolModification(0, L"c");
-        OldSchoolModification *d = new OldSchoolModification(0, L"", ModificationSites::E);
+        OldSchoolModification *c = new OldSchoolModification(0, "c");
+        OldSchoolModification *d = new OldSchoolModification(0, "", ModificationSites::E);
         Assert::IsTrue(a->Equals(b));
         Assert::IsFalse(a->Equals(c));
         Assert::IsFalse(a->Equals(d));
@@ -108,8 +109,8 @@ namespace Test {
     }
 
     void TestModifications::ModificationCollectionTest() {
-        OldSchoolModification tempVar(1, L"Mod1");
-        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, L"Mod2")});
+        OldSchoolModification tempVar(1, "Mod1");
+        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, "Mod2")});
 
         double lala = 0;
         System::Collections::IEnumerable *aasdf = a;
@@ -119,12 +120,12 @@ namespace Test {
         Assert::AreEqual(3, lala);
 
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"Mod1 | Mod2", a->ToString());
-        OldSchoolModification tempVar2(3, L"Mod3");
+        Assert::AreEqual("Mod1 | Mod2", a->ToString());
+        OldSchoolModification tempVar2(3, "Mod3");
         a->Add(&tempVar2);
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"Mod1 | Mod2 | Mod3", a->ToString());
-        OldSchoolModification tempVar3(2, L"Mod2");
+        Assert::AreEqual("Mod1 | Mod2 | Mod3", a->ToString());
+        OldSchoolModification tempVar3(2, "Mod2");
         Assert::IsTrue(a->Contains(&tempVar3));
         std::vector<IHasMass*> myArray(4);
         a->CopyTo(myArray, 1);
@@ -134,10 +135,10 @@ namespace Test {
         }));
         Assert::AreEqual(3, a->Count());
         Assert::IsFalse(a->getIsReadOnly());
-        OldSchoolModification tempVar4(2, L"Mod2");
+        OldSchoolModification tempVar4(2, "Mod2");
         a->Remove(&tempVar4);
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"Mod1 | Mod3", a->ToString());
+        Assert::AreEqual("Mod1 | Mod3", a->ToString());
         double ok = 0;
         for (auto b : a) {
             ok += b->MonoisotopicMass;
@@ -146,33 +147,33 @@ namespace Test {
 
         a->Clear();
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"", a->ToString());
+        Assert::AreEqual("", a->ToString());
 
         delete a;
     }
 
     void TestModifications::ModificationCollectionTest2() {
-        OldSchoolModification tempVar(1, L"Mod1");
-        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, L"Mod2")});
-        OldSchoolModification tempVar2(3, L"Mod3");
+        OldSchoolModification tempVar(1, "Mod1");
+        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, "Mod2")});
+        OldSchoolModification tempVar2(3, "Mod3");
         Assert::IsFalse(a->Remove(&tempVar2));
 
         delete a;
     }
 
     void TestModifications::ModificationWithMultiplePossibilitiesTest() {
-        auto m = new ModificationWithMultiplePossibilitiesCollection(L"My Iso Mod", ModificationSites::E);
-        OldSchoolModification tempVar(1, L"My Mod1a", ModificationSites::E);
+        auto m = new ModificationWithMultiplePossibilitiesCollection("My Iso Mod", ModificationSites::E);
+        OldSchoolModification tempVar(1, "My Mod1a", ModificationSites::E);
         m->AddModification(&tempVar);
-        OldSchoolModification tempVar2(2, L"My Mod2b", ModificationSites::E);
+        OldSchoolModification tempVar2(2, "My Mod2b", ModificationSites::E);
         m->AddModification(&tempVar2);
         Assert::AreEqual(2, m->size());
-        Assert::AreEqual(L"My Mod2b", m[1]->Name);
+        Assert::AreEqual("My Mod2b", m[1]->Name);
         Assert::Throws<MzLibException*>([&] () {
-            OldSchoolModification tempVar3(1, L"gg", ModificationSites::R);
+            OldSchoolModification tempVar3(1, "gg", ModificationSites::R);
             m->AddModification(&tempVar3);
-        }, L"Unable to add a modification with sites other than ModificationSites.E");
-        OldSchoolModification tempVar4(2, L"My Mod2b", ModificationSites::E);
+        }, "Unable to add a modification with sites other than ModificationSites.E");
+        OldSchoolModification tempVar4(2, "My Mod2b", ModificationSites::E);
         Assert::IsTrue(std::find(m->begin(), m->end(), &tempVar4) != m->end()));
         double kk = 0;
         System::Collections::IEnumerable *a = m;
@@ -191,7 +192,7 @@ namespace Test {
     }
 
     void TestModifications::ChemicalFormulaModificaiton() {
-        OldSchoolChemicalFormulaModification *a = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(L"OH"));
+        OldSchoolChemicalFormulaModification *a = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("OH"));
         OldSchoolChemicalFormulaModification *b = new OldSchoolChemicalFormulaModification(a);
         Assert::AreEqual(a, b);
 
@@ -200,10 +201,10 @@ namespace Test {
     }
 
     void TestModifications::ModificationCollectionScrambledEquals() {
-        OldSchoolModification tempVar(1, L"Mod1");
-        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, L"Mod2")});
-        OldSchoolModification tempVar2(1, L"Mod1");
-        ModificationCollection *b = new ModificationCollection({&tempVar2, new OldSchoolModification(3, L"Mod3")});
+        OldSchoolModification tempVar(1, "Mod1");
+        ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, "Mod2")});
+        OldSchoolModification tempVar2(1, "Mod1");
+        ModificationCollection *b = new ModificationCollection({&tempVar2, new OldSchoolModification(3, "Mod3")});
 
         Assert::IsFalse(a->Equals(b));
 
@@ -212,8 +213,8 @@ namespace Test {
     }
 
     void TestModifications::Test_modification_hash_set() {
-        Modification *m1 = new Modification(L"23", L"unknown");
-        Modification *m2 = new Modification(L"23", L"unknown");
+        Modification *m1 = new Modification("23", "unknown");
+        Modification *m2 = new Modification("23", "unknown");
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
         Assert::AreEqual(1, mods.size());
 
@@ -223,11 +224,11 @@ namespace Test {
 
     void TestModifications::Test_modification2_hash_set() {
         ModificationMotif motif;
-        ModificationMotif::TryGetMotif(L"K", motif);
-        ModificationWithLocation *m1 = new ModificationWithLocation(L"id1", L"modificationType", motif, TerminusLocalization::Any, std::unordered_map<std::wstring, std::vector<std::wstring>>());
-        ModificationWithLocation *m2 = new ModificationWithLocation(L"id1", L"modificationType", motif, TerminusLocalization::Any);
-        m1->linksToOtherDbs.emplace(L"key", std::vector<std::wstring> {L"value"});
-        m2->linksToOtherDbs.emplace(L"key", std::vector<std::wstring> {L"value"});
+        ModificationMotif::TryGetMotif("K", motif);
+        ModificationWithLocation *m1 = new ModificationWithLocation("id1", "modificationType", motif, TerminusLocalization::Any, std::unordered_map<std::string, std::vector<std::string>>());
+        ModificationWithLocation *m2 = new ModificationWithLocation("id1", "modificationType", motif, TerminusLocalization::Any);
+        m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
+        m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
         Assert::True(m1->Equals(m2));
         Assert::AreEqual(1, mods.size());
@@ -238,11 +239,11 @@ namespace Test {
 
     void TestModifications::Test_modification3_hash_set() {
         ModificationMotif motif;
-        ModificationMotif::TryGetMotif(L"K", motif);
-        ModificationWithMass *m1 = new ModificationWithMass(L"id1", L"modificationType", motif, TerminusLocalization::Any, 1.11111, std::unordered_map<std::wstring, std::vector<std::wstring>>(), neutralLosses: {2.222222}, diagnosticIons: std::vector<double> {1.2233});
-        ModificationWithMass *m2 = new ModificationWithMass(L"id1", L"modificationType", motif, TerminusLocalization::Any, 1.11111 - 1e-10, std::unordered_map<std::wstring, std::vector<std::wstring>>(), neutralLosses: {2.222222 + 1e-10}, diagnosticIons: std::vector<double> {1.2233});
-        m1->linksToOtherDbs.emplace(L"key", std::vector<std::wstring> {L"value"});
-        m2->linksToOtherDbs.emplace(L"key", std::vector<std::wstring> {L"value"});
+        ModificationMotif::TryGetMotif("K", motif);
+        ModificationWithMass *m1 = new ModificationWithMass("id1", "modificationType", motif, TerminusLocalization::Any, 1.11111, std::unordered_map<std::string, std::vector<std::string>>(), neutralLosses: {2.222222}, diagnosticIons: std::vector<double> {1.2233});
+        ModificationWithMass *m2 = new ModificationWithMass("id1", "modificationType", motif, TerminusLocalization::Any, 1.11111 - 1e-10, std::unordered_map<std::string, std::vector<std::string>>(), neutralLosses: {2.222222 + 1e-10}, diagnosticIons: std::vector<double> {1.2233});
+        m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
+        m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
         Assert::AreEqual(1, mods.size());
         Assert::True(m1->Equals(m2));

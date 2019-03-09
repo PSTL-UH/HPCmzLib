@@ -13,28 +13,29 @@ CEXECS = ChemicalFormulaTestFixture	\
 	TestAminoAcids			\
 	TestFragments			\
 	TestModifications		\
-	TestPeptides			\
-	DatabaseLoaderTests	  	\
-	FakeMsDataFile 		        \
-	MassTestFixture		        \
-	MyTests 			\
-	SetUpTests	                \
-	TestChromatogram		\
-	TestDataFile			\
-	TestIsolation			\
-	TestMzML			\
-	TestProteinReader		\
-	TestProteomicsReadWrite		\
-	TestRange			\
-	TestSpectrap			\
-	TestTolerance
+	TestPeptides			
+
+#	DatabaseLoaderTests	  	\
+#	FakeMsDataFile 		        \
+#	MassTestFixture		        \
+#	MyTests 			\
+#	SetUpTests	                \
+#	TestChromatogram		\
+#	TestDataFile			\
+#	TestIsolation			\
+#	TestMzML			\
+#	TestProteinReader		\
+#	TestProteomicsReadWrite		\
+#	TestRange			\
+#	TestSpectrap			\
+#	TestTolerance
 
 
 .SUFFIXES: .cxx .h  
 
 ###################################################################################################
 
-all: ctests 
+all: cxxtests 
 
 cxxtests: $(CEXECS)
 

@@ -16,13 +16,10 @@
 #include "../Proteomics/AminoAcidPolymer.h"
 #include "../Proteomics/FragmentTypes.h"
 #include "../Proteomics/DigestionPoint.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 #include "Assert.h"
 
-//using namespace Chemistry;
-//using namespace MzLibUtil;
-//using namespace NUnit::Framework;
-//using namespace Proteomics;
 
 int main ( int argc, char **argv )
 {
@@ -599,7 +596,7 @@ namespace Test {
 
     void TestPeptides::GetLeucineSequence() {
         Peptide *pepA = new Peptide(L"DERIEK");
-        std::wstring leuSeq = pepA->getBaseLeucineSequence();
+        std::string leuSeq = pepA->getBaseLeucineSequence();
 
         Assert::AreEqual(L"DERLEK", leuSeq);
 
@@ -609,7 +606,7 @@ namespace Test {
     void TestPeptides::GetLeucineSequenceNoReplacement() {
         Peptide *pepA = new Peptide(L"DERLEK");
 
-        std::wstring leuSeq = pepA->getBaseLeucineSequence();
+        std::string leuSeq = pepA->getBaseLeucineSequence();
 
         Assert::AreEqual(L"DERLEK", leuSeq);
 
@@ -840,7 +837,7 @@ namespace Test {
         return GetDigestionSites(aminoAcidSequence->getBaseSequence());
     }
 
-    std::vector<int> TestProtease::GetDigestionSites(const std::wstring &aminoAcidSequence) {
+    std::vector<int> TestProtease::GetDigestionSites(const std::string &aminoAcidSequence) {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
         yield return 4;
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
@@ -851,7 +848,7 @@ namespace Test {
         throw NotImplementedException();
     }
 
-    int TestProtease::MissedCleavages(const std::wstring &sequence) {
+    int TestProtease::MissedCleavages(const std::string &sequence) {
         throw NotImplementedException();
     }
 }

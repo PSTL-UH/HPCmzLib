@@ -1,5 +1,6 @@
 ﻿#include "TestAminoAcids.h"
 #include "../Proteomics/Residue.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 #include "Assert.h"
 
@@ -22,30 +23,30 @@ int main ( int argc, char **argv )
 namespace Test {
 
     void TestAminoAcids::GetResidueByCharacter() {
-        Residue *aa = Residue::GetResidue(L'A');
+        Residue *aa = Residue::GetResidue('A');
 
-        Assert::AreEqual(L"Alanine", aa->getName());
+        Assert::AreEqual("Alanine", aa->getName());
     }
 
     void TestAminoAcids::GetResidueByCharacterString() {
-        Residue *aa = Residue::GetResidue(L"A");
+        Residue *aa = Residue::GetResidue("A");
 
-        Assert::AreEqual(aa->getName(), L"Alanine");
+        Assert::AreEqual(aa->getName(), "Alanine");
     }
 
     void TestAminoAcids::GetResidueByName() {
-        Residue *aa = Residue::GetResidue(L"Alanine");
+        Residue *aa = Residue::GetResidue("Alanine");
 
-        Assert::AreEqual(L"Alanine", aa->getName());
+        Assert::AreEqual("Alanine", aa->getName());
     }
 
     void TestAminoAcids::GetResidueNotInDictionary() {
         Residue r;
-        Assert::IsFalse(Residue::TryGetResidue(L"?", r));
-        Assert::IsFalse(Residue::TryGetResidue(L'?', r));
+        Assert::IsFalse(Residue::TryGetResidue("?", r));
+        Assert::IsFalse(Residue::TryGetResidue('?', r));
     }
 
     void TestAminoAcids::ResidueMonoisotopicMassTest() {
-        Assert::AreEqual(Residue::ResidueMonoisotopicMass[L'A'], Residue::GetResidue(L'A')->getMonoisotopicMass(), 1e-9);
+        Assert::AreEqual(Residue::ResidueMonoisotopicMass['A'], Residue::GetResidue('A')->getMonoisotopicMass(), 1e-9);
     }
 }

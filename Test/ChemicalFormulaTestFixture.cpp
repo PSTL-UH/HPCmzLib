@@ -9,7 +9,6 @@
 
 using namespace Chemistry;
 using namespace MzLibUtil;
-//using namespace NUnit::Framework;
 
 #include "Assert.h"
 

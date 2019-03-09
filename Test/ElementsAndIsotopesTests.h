@@ -20,7 +20,6 @@
 
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
-//using namespace NUnit::Framework;
 
 namespace Test {
     class ElementsAndIsotopesTest {

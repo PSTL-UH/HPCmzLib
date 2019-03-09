@@ -6,9 +6,6 @@
 
 #include "Assert.h"
 
-//using namespace Chemistry;
-//using namespace NUnit::Framework;
-
 int main ( int argc, char **argv )
 {
     
