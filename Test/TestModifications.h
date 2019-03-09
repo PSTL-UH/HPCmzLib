@@ -45,31 +45,31 @@ namespace Test {
 
         static void Test_ModificationWithNoMassWritten();
 
-        void NameAndSites();
+        static void NameAndSites();
 
-        void ModificationEquality();
+        static void ModificationEquality();
 
-        void ModificationSitesTest();
+        static void ModificationSitesTest();
 
-        void Sites();
+        static void Sites();
 
-        void ModificationCollectionTest();
+        static void ModificationCollectionTest();
 
-        void ModificationCollectionTest2();
+        static void ModificationCollectionTest2();
 
-        void ModificationWithMultiplePossibilitiesTest();
+        static void ModificationWithMultiplePossibilitiesTest();
 
-        void ModificationSitesTest55();
+        static void ModificationSitesTest55();
 
-        void ChemicalFormulaModificaiton();
+        static void ChemicalFormulaModificaiton();
 
-        void ModificationCollectionScrambledEquals();
+        static void ModificationCollectionScrambledEquals();
 
-        void Test_modification_hash_set();
+        static void Test_modification_hash_set();
 
-        void Test_modification2_hash_set();
+        static void Test_modification2_hash_set();
 
-        void Test_modification3_hash_set();
+        static void Test_modification3_hash_set();
 
     };
 }

@@ -26,15 +26,15 @@ namespace Test {
     class TestAminoAcids final {
 
     public:
-        void GetResidueByCharacter();
+        static void GetResidueByCharacter();
 
-        void GetResidueByCharacterString();
+        static void GetResidueByCharacterString();
 
-        void GetResidueByName();
+        static void GetResidueByName();
 
-        void GetResidueNotInDictionary();
+        static void GetResidueNotInDictionary();
 
-        void ResidueMonoisotopicMassTest();
+        static void ResidueMonoisotopicMassTest();
 
     };
 }

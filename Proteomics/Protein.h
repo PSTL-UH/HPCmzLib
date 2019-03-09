@@ -12,6 +12,7 @@
 //namespace Proteomics { class ProteolysisProduct; }
 //namespace Proteomics { class DatabaseReference; }
 #include "Proteomics.h"
+using namespace Proteomics;
 
 namespace Proteomics {
     class Protein {

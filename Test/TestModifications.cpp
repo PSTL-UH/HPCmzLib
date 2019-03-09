@@ -5,7 +5,7 @@
 #include "../Proteomics/Modification.h"
 #include "../Chemistry/ChemicalFormula.h"
 #include "../Proteomics/ModificationWithMassAndCf.h"
-#include "../UsefulProteomicsDatabases/PtmListLoader.h"
+//#include "../UsefulProteomicsDatabases/PtmListLoader.h"
 #include "../Proteomics/OldSchoolModification.h"
 #include "../Proteomics/ModificationSites.h"
 #include "../Proteomics/ModificationCollection.h"
@@ -21,15 +21,60 @@
 
 int main ( int argc, char **argv )
 {
+    int i=0;
     
-    std::cout << "PeriodicTableLoader" << std::endl;    
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     
-//    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
-//    Test::ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber();
-    
+    std::cout << ++i << ". Test_modificationsHashCode " << std::endl;    
+    Test::TestModifications::Test_modificationsHashCode();
+
+#ifdef LATER
+    std::cout << ++i << ". Test_ModificationWithNoMassWritten " << std::endl;    
+    Test::TestModifications::Test_ModificationWithNoMassWritten();    
+
+    std::cout << ++i << ". NameAndSites " << std::endl;    
+    Test::TestModifications::NameAndSites();
+
+    std::cout << ++i << ". ModificationEquality " << std::endl;    
+    Test::TestModifications::ModificationEquality();
+
+    std::cout << ++i << ". ModificationSitesTest " << std::endl;    
+    Test::TestModifications::ModificationSitesTest();
+
+    std::cout << ++i << ". Sites " << std::endl;    
+    Test::TestModifications::Sites();
+
+    std::cout << ++i << ". ModificationCollectionTest " << std::endl;    
+    Test::TestModifications::ModificationCollectionTest();
+
+    std::cout << ++i << ". ModificationCollectionTest2 " << std::endl;    
+    Test::TestModifications::ModificationCollectionTest2();
+
+    std::cout << ++i << ". ModificationWithMultiplePossibilitiesTest " << std::endl;    
+    Test::TestModifications::ModificationWithMultiplePossibilitiesTest();
+
+    std::cout << ++i << ". ModificationSitesTest55 " << std::endl;    
+    Test::TestModifications::ModificationSitesTest55();
+
+    std::cout << ++i << ". ChemicalFormulaModificaiton " << std::endl;    
+    Test::TestModifications::ChemicalFormulaModificaiton();
+
+    std::cout << ++i << ". ModificationCollectionScrambledEquals " << std::endl;    
+    Test::TestModifications::ModificationCollectionScrambledEquals();
+
+    std::cout << ++i << ". Test_modification_hash_set " << std::endl;    
+    Test::TestModifications::Test_modification_hash_set();
+
+    std::cout << ++i << ". Test_modification2_hash_set " << std::endl;    
+    Test::TestModifications::Test_modification2_hash_set();
+
+    std::cout << ++i << ". Test_modification3_hash_set " << std::endl;    
+    Test::TestModifications::Test_modification3_hash_set();
+
+#endif    
     return 0;
 }
 
@@ -45,23 +90,23 @@ namespace Test {
         Assert::AreNotEqual(mod1->GetHashCode(), mod2->GetHashCode());
         Assert::AreNotEqual(mod1, mod2);
         std::unordered_set<Modification*> myHashSet = {mod1, mod2};
-        Assert::AreEqual(2, myHashSet.size());
+        Assert::AreEqual((long unsigned int)2, myHashSet.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete mod2' statement was not added since mod2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to a method or constructor. Handle memory management manually.
+//        delete mod2;
+//        delete mod1;
     }
-
+#ifdef LATER
     void TestModifications::Test_ModificationWithNoMassWritten() {
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("M", motif);
         auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+
         auto mod1string = mod1->ToString();
         Assert::IsTrue(!mod1string.find("MM") != std::string::npos);
         auto modAfterWriteRead = dynamic_cast<ModificationWithMassAndCf*>(PtmListLoader::ReadModsFromString(mod1string + "\r\n" + "//").front());
         Assert::AreEqual(mod1, modAfterWriteRead);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to a method or constructor. Handle memory management manually.
+        delete mod1;
     }
 
     void TestModifications::NameAndSites() {
@@ -71,7 +116,7 @@ namespace Test {
         Assert::AreEqual(" (Any)", b->getNameAndSites());
 
         delete b;
-//C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a method or constructor. Handle memory management manually.
+        delete a;
     }
 
     void TestModifications::ModificationEquality() {
@@ -84,9 +129,9 @@ namespace Test {
         Assert::IsFalse(a->Equals(c));
         Assert::IsFalse(a->Equals(d));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete d' statement was not added since d was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete c' statement was not added since c was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a method or constructor. Handle memory management manually.
+        delete d;
+        delete c;
+        delete b;
         delete a;
     }
 
@@ -119,11 +164,9 @@ namespace Test {
         }
         Assert::AreEqual(3, lala);
 
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod2", a->ToString());
         OldSchoolModification tempVar2(3, "Mod3");
         a->Add(&tempVar2);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod2 | Mod3", a->ToString());
         OldSchoolModification tempVar3(2, "Mod2");
         Assert::IsTrue(a->Contains(&tempVar3));
@@ -137,16 +180,14 @@ namespace Test {
         Assert::IsFalse(a->getIsReadOnly());
         OldSchoolModification tempVar4(2, "Mod2");
         a->Remove(&tempVar4);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod3", a->ToString());
         double ok = 0;
         for (auto b : a) {
             ok += b->MonoisotopicMass;
         }
-        Assert::AreEqual(4, ok);
+        Assert::AreEqual((double)4, ok);
 
         a->Clear();
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         Assert::AreEqual("", a->ToString());
 
         delete a;
@@ -167,7 +208,7 @@ namespace Test {
         m->AddModification(&tempVar);
         OldSchoolModification tempVar2(2, "My Mod2b", ModificationSites::E);
         m->AddModification(&tempVar2);
-        Assert::AreEqual(2, m->size());
+        Assert::AreEqual((long unsigned int)2, m->size());
         Assert::AreEqual("My Mod2b", m[1]->Name);
         Assert::Throws<MzLibException*>([&] () {
             OldSchoolModification tempVar3(1, "gg", ModificationSites::R);
@@ -180,8 +221,8 @@ namespace Test {
         for (auto b : a) {
             kk += (dynamic_cast<OldSchoolModification*>(b))->MonoisotopicMass;
         }
-        Assert::AreEqual(3, kk);
-
+        Assert::AreEqual((double)3, kk);
+    
         delete m;
     }
 
@@ -196,8 +237,8 @@ namespace Test {
         OldSchoolChemicalFormulaModification *b = new OldSchoolChemicalFormulaModification(a);
         Assert::AreEqual(a, b);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a method or constructor. Handle memory management manually.
+        delete b;
+        delete a;
     }
 
     void TestModifications::ModificationCollectionScrambledEquals() {
@@ -207,8 +248,7 @@ namespace Test {
         ModificationCollection *b = new ModificationCollection({&tempVar2, new OldSchoolModification(3, "Mod3")});
 
         Assert::IsFalse(a->Equals(b));
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a method or constructor. Handle memory management manually.
+        delete b;
         delete a;
     }
 
@@ -216,10 +256,10 @@ namespace Test {
         Modification *m1 = new Modification("23", "unknown");
         Modification *m2 = new Modification("23", "unknown");
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
-        Assert::AreEqual(1, mods.size());
+        Assert::AreEqual((long unsigned int)1, mods.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete m2' statement was not added since m2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete m1' statement was not added since m1 was passed to a method or constructor. Handle memory management manually.
+        delete m2;
+        delete m1;
     }
 
     void TestModifications::Test_modification2_hash_set() {
@@ -230,11 +270,11 @@ namespace Test {
         m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
-        Assert::True(m1->Equals(m2));
-        Assert::AreEqual(1, mods.size());
+        Assert::IsTrue(m1->Equals(m2));
+        Assert::AreEqual((long unsigned int)1, mods.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete m2' statement was not added since m2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete m1' statement was not added since m1 was passed to a method or constructor. Handle memory management manually.
+        delete m2;
+        delete m1;
     }
 
     void TestModifications::Test_modification3_hash_set() {
@@ -245,10 +285,11 @@ namespace Test {
         m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
         std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
-        Assert::AreEqual(1, mods.size());
-        Assert::True(m1->Equals(m2));
+        Assert::AreEqual( (long unsigned int)1, mods.size());
+        Assert::IsTrue(m1->Equals(m2));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete m2' statement was not added since m2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete m1' statement was not added since m1 was passed to a method or constructor. Handle memory management manually.
+        delete m2;
+        delete m1;
     }
+#endif
 }
