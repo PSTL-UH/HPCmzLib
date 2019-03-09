@@ -21,9 +21,12 @@ int main ( int argc, char **argv )
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     
+#ifdef LATER
+    // throws an exception
     std::cout << ++i << ". AddIsotopeWithExistingMassNumber" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddIsotopeWithExistingMassNumber();
-
+#endif
+    
     std::cout << ++i << ". AddElementToFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::AddElementToFormula();
 
@@ -77,7 +80,6 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". ClearFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::ClearFormula();
 
-
     std::cout << ++i << ". ConstructorBlankStringEqualsEmptyFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::ConstructorBlankStringEqualsEmptyFormula();
 
@@ -93,7 +95,6 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". CopyConstructorReferenceInequality" << std::endl;    
     Test::ChemicalFormulaTestFixture::CopyConstructorReferenceInequality();
 
-#ifdef LATER
     std::cout << ++i << ". EmptyMonoisotopicMassIsZero" << std::endl;    
     Test::ChemicalFormulaTestFixture::EmptyMonoisotopicMassIsZero();
 
@@ -160,11 +161,14 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". HillNotationWithHeavyIsotopeNegativeCount" << std::endl;    
     Test::ChemicalFormulaTestFixture::HillNotationWithHeavyIsotopeNegativeCount();
 
+#ifdef LATER
+    //uses exceptions
     std::cout << ++i << ". BadFormula" << std::endl;    
     Test::ChemicalFormulaTestFixture::BadFormula();
 
     std::cout << ++i << ". InvalidChemicalElement" << std::endl;    
     Test::ChemicalFormulaTestFixture::InvalidChemicalElement();
+#endif
 
     std::cout << ++i << ". InvalidElementIsotope" << std::endl;    
     Test::ChemicalFormulaTestFixture::InvalidElementIsotope();
@@ -202,6 +206,7 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Equals" << std::endl;    
     Test::ChemicalFormulaTestFixture::Equals();
 
+#ifdef LATER
     std::cout << ++i << ". ParsingFormulaRepeatedElements" << std::endl;    
     Test::ChemicalFormulaTestFixture::ParsingFormulaRepeatedElements();
 
@@ -362,14 +367,14 @@ int main ( int argc, char **argv )
 
 namespace Test {
 
+#ifdef LATER
     void ChemicalFormulaTestFixture::AddIsotopeWithExistingMassNumber() {
         Element *al = PeriodicTable::GetElement("Al");
-#ifdef LATER
         Assert::Throws<MzLibException*>([&] () {
             al->AddIsotope(27, 28, 1);
         }, "Isotope with mass number " + std::to_string(28) + " already exists");
-#endif
     }
+#endif
 
     void ChemicalFormulaTestFixture::AddElementToFormula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -577,34 +582,34 @@ namespace Test {
         delete formulaB;
     }
 
-#ifdef LATER    
     void ChemicalFormulaTestFixture::EmptyMonoisotopicMassIsZero() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0.0, (&tempVar)->getMonoisotopicMass());
     }
 
     void ChemicalFormulaTestFixture::EmptyAverageMassIsZero() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0.0, (&tempVar)->getAverageMass());
     }
 
     void ChemicalFormulaTestFixture::EmptyStringIsBlank() {
-        ChemicalFormula tempVar();
-        Assert::IsEmpty((&tempVar)->getFormula());
+        ChemicalFormula tempVar;
+        std::string s;
+        Assert::AreEqual((&tempVar)->getFormula(), s);
     }
 
     void ChemicalFormulaTestFixture::EmptyAtomCountIsZero() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0, (&tempVar)->getAtomCount());
     }
 
     void ChemicalFormulaTestFixture::EmptyElementCountIsZero() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0, (&tempVar)->getNumberOfUniqueElementsByAtomicNumber());
     }
 
     void ChemicalFormulaTestFixture::EmptyIsotopeCountIsZero() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0, (&tempVar)->getNumberOfUniqueIsotopes());
     }
 
@@ -612,38 +617,38 @@ namespace Test {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("NC1OH3");
 
-        Assert::AreNotEqual(formulaA, formulaB);
+        Assert::IsFalse(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::FormulaValueInequalityHeavyIsotope() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("CC{13}H3NO");
 
-        Assert::AreNotEqual(formulaA, formulaB);
+        Assert::IsFalse(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::FormulaValueEqualityItself() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaA);
+        Assert::IsTrue(formulaA->Equals(formulaA));
     }
 
     void ChemicalFormulaTestFixture::FormulaValueEquality() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("NC2OH3");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::FormulaEquality() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
-        Assert::AreEqual(formulaA, formulaA);
+        Assert::IsTrue(formulaA->Equals(formulaA));
     }
 
     void ChemicalFormulaTestFixture::FormulaAlmostEquality() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C{12}2H3NO");
-        Assert::AreNotEqual(formulaA, formulaB);
+        Assert::IsFalse(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::HashCodeEquality() {
@@ -666,46 +671,48 @@ namespace Test {
 
     void ChemicalFormulaTestFixture::HillNotation() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC2O");
-
-        Assert::AreEqual("C2H3NO", formulaA->getFormula());
+        std::string s="C2H3NO";
+        Assert::AreEqual( s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationNoCarbon() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("BrH");
-
-        Assert::AreEqual("HBr", formulaA->getFormula());
+        std::string s="HBr";
+        
+        Assert::AreEqual(s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationNoCarbonNoHydrogen() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("Ca5O14Br6");
-
-        Assert::AreEqual("Br6Ca5O14", formulaA->getFormula());
+        std::string s="Br6Ca5O14";
+        Assert::AreEqual( s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationNoHydrogen() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("NC2O");
-
-        Assert::AreEqual("C2NO", formulaA->getFormula());
+        std::string s="C2NO";
+        Assert::AreEqual(s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationWithHeavyIsotope() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC2C{13}2O");
-
-        Assert::AreEqual("C2C{13}2H3NO", formulaA->getFormula());
+        std::string s="C2C{13}2H3NO";
+        Assert::AreEqual(s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationWithNegativeCount() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC-2O");
-
-        Assert::AreEqual("C-2H3NO", formulaA->getFormula());
+        std::string s="C-2H3NO";
+        Assert::AreEqual(s, formulaA->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationWithHeavyIsotopeNegativeCount() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC2C{13}-2O");
-
-        Assert::AreEqual("C2C{13}-2H3NO", formulaA->getFormula());
+        std::string s="C2C{13}-2H3NO";
+        Assert::AreEqual(s, formulaA->getFormula());
     }
 
+#ifdef LATER    
     void ChemicalFormulaTestFixture::BadFormula() {
         Assert::Throws<MzLibException*>([&] () {
             ChemicalFormula::ParseFormula("!@#$");
@@ -717,9 +724,10 @@ namespace Test {
             PeriodicTable::GetElement("Faa");
         });
     }
-
+#endif
+    
     void ChemicalFormulaTestFixture::InvalidElementIsotope() {
-        Assert::IsNull(PeriodicTable::GetElement("C")[100]);
+        Assert::IsNull(PeriodicTable::GetElement("C")->getIsotopeByMassNumber(100));
     }
 
     void ChemicalFormulaTestFixture::NumberOfAtoms() {
@@ -729,7 +737,7 @@ namespace Test {
     }
 
     void ChemicalFormulaTestFixture::NumberOfAtomsOfEmptyFormula() {
-        ChemicalFormula tempVar();
+        ChemicalFormula tempVar;
         Assert::AreEqual(0, (&tempVar)->getAtomCount());
     }
 
@@ -743,47 +751,48 @@ namespace Test {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CCHHHNO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ParsingFormulaWithInternalSpaces() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2 H3 N O");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ParsingFormulaWithSpacesAtEnd() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO  ");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ParsingFormulaWithSpacesAtBeginning() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("    C2H3NO");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ParsingFormulaWithSpaces() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("  C2 H3 N O  ");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::ParsingFormulaNoNumbersRandomOrder() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("OCHHCHN");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
 
-        Assert::AreEqual(formulaA, formulaB);
+        Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::EqualsFalse() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("OCHHCHN");
-        Assert::IsFalse(formulaA->Equals("C"));
+        ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C");
+        Assert::IsFalse(formulaA->Equals(formulaB));
     }
 
     void ChemicalFormulaTestFixture::Equals() {
@@ -791,6 +800,7 @@ namespace Test {
         Assert::AreEqual(formulaA, formulaA);
     }
 
+#ifdef LATER
     void ChemicalFormulaTestFixture::ParsingFormulaRepeatedElements() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CH3NOC");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2H3NO");
