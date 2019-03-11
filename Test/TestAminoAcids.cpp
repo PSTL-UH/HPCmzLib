@@ -20,7 +20,7 @@ int main ( int argc, char **argv )
     
     std::cout << ++i << ". GetResidueByCharacter" << std::endl;    
     Test::TestAminoAcids::GetResidueByCharacter();
-#ifdef LATER
+
     std::cout << ++i << ". GetResidueByCharacterString" << std::endl;    
     Test::TestAminoAcids::GetResidueByCharacterString();
 
@@ -32,7 +32,6 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". ResidueMonoisotopicMassTest" << std::endl;    
     Test::TestAminoAcids::ResidueMonoisotopicMassTest();
-#endif
 
     return 0;
 }
@@ -45,7 +44,7 @@ namespace Test {
         std::string s="Alanine";
         Assert::AreEqual(s, aa->getName());
     }
-#ifdef LATER
+
     void TestAminoAcids::GetResidueByCharacterString() {
         Residue *aa = Residue::GetResidue("A");
         std::string s="Alanine";
@@ -71,5 +70,4 @@ namespace Test {
         double d2 = Residue::GetResidue('A')->getMonoisotopicMass();
         Assert::AreEqual(d1, d2 , 1e-9);
     }
-#endif
 }
