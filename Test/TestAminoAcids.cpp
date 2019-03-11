@@ -14,6 +14,9 @@ int main ( int argc, char **argv )
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+
+    std::cout << ++i << ". Residue::StaticConstructor" << std::endl;    
+    Residue::StaticConstructor ();
     
     std::cout << ++i << ". GetResidueByCharacter" << std::endl;    
     Test::TestAminoAcids::GetResidueByCharacter();

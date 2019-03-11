@@ -22,9 +22,9 @@ namespace Proteomics {
         std::string privateAccession;
         std::string privateBaseSequence;
         bool privateIsDecoy = false;
-        std::vector<SequenceVariation*> *privateSequenceVariations;
+        std::vector<Proteomics::SequenceVariation*> *privateSequenceVariations;
         std::vector<DisulfideBond*> *privateDisulfideBonds;
-        std::vector<ProteolysisProduct*> *privateProteolysisProducts;
+        std::vector<Proteomics::ProteolysisProduct*> *privateProteolysisProducts;
         std::vector<DatabaseReference*> *privateDatabaseReferences;
         std::string privateDatabaseFilePath;
         std::string privateName;

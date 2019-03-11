@@ -1,13 +1,21 @@
 ﻿#include "PeriodicTable.h"
 #include "Element.h"
 #include "Isotope.h"
-#include <any>
+
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+
 
 namespace Chemistry {
 
 std::unordered_map<std::string, Element*> PeriodicTable::_elements = std::unordered_map<std::string, Element*>();
 std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Constants::MaximumNumberOfElementsAllowed);
 
+    void PeriodicTable::Load() {
+        const std::string elfile="elements.dat";
+        const std::string &elr=elfile;
+        UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    }
+    
     void PeriodicTable::Add(Element *element) {
         if (_elements.find(element->getAtomicSymbol()) == _elements.end()) {
             _elements.emplace(element->getAtomicSymbol(), element);
@@ -16,14 +24,23 @@ std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Cons
     }
 
     Element *PeriodicTable::GetElement(const std::string &atomicSymbol) {
+        if ( _elementsArray.size() == 0 ) {
+            PeriodicTable::Load();
+        }
         return _elements[atomicSymbol];
     }
 
     Element *PeriodicTable::GetElement(int atomicNumber) {
+        if ( _elementsArray.size() == 0 ) {
+            PeriodicTable::Load();
+        }
         return _elementsArray[atomicNumber];
     }
 
     bool PeriodicTable::ValidateAbundances(double epsilon) {
+        if ( _elementsArray.size() == 0 ) {
+            PeriodicTable::Load();
+        }
         for (auto e : _elements) {
 #ifdef ORIG
             double totalAbundance = e->Value->Isotopes->Select([&] (std::any b) {
@@ -42,6 +59,9 @@ std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Cons
     }
 
     bool PeriodicTable::ValidateAverageMasses(double epsilon) {
+        if ( _elementsArray.size() == 0 ) {
+            PeriodicTable::Load();
+        }
         for (auto e : _elements) {
 #ifdef ORIG
             double averageMass = e->Value->Isotopes->Select([&] (std::any b) {

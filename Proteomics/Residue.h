@@ -10,7 +10,6 @@
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 
 #include "../Chemistry/Chemistry.h"
-//namespace Chemistry { class ChemicalFormula; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -57,14 +56,17 @@ namespace Proteomics {
             StaticConstructor();
         };
 
+#ifdef ORIG
     private:
         static Residue::StaticConstructor staticConstructor;
-
+#endif
 
     public:
         Residue(const std::string &name, char oneLetterAbbreviation, const std::string &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site);
 
 
+        static void StaticConstructor();
+        
         ChemicalFormula *getThisChemicalFormula() const override;
 //        void setThisChemicalFormula(ChemicalFormula *value) override;
         void setThisChemicalFormula(ChemicalFormula *value);

@@ -53,7 +53,13 @@ namespace Chemistry {
         /// <summary>
         /// Populate the periodic table by calling this method
         /// </summary>
+        static void Load();
+
     public:
+        /// <summary>
+        /// Fast method for getting an element by its atomic symbol
+        /// </summary>
+
         static void Add(Element *element);
 
         /// <summary>
