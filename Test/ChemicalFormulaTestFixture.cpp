@@ -701,14 +701,17 @@ namespace Test {
 
     void ChemicalFormulaTestFixture::HillNotationWithNegativeCount() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC-2O");
-        std::string s="C-2H3NO";
-        Assert::AreEqual(s, formulaA->getFormula());
+//        std::string s="C-2H3NO";
+        ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C-2H3NO");
+        
+        Assert::AreEqual(formulaA->getFormula(), formulaB->getFormula());
     }
 
     void ChemicalFormulaTestFixture::HillNotationWithHeavyIsotopeNegativeCount() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("H3NC2C{13}-2O");
-        std::string s="C2C{13}-2H3NO";
-        Assert::AreEqual(s, formulaA->getFormula());
+//        std::string s="C2C{13}-2H3NO";
+        ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("C2C{13}-2H3NO");
+        Assert::AreEqual(formulaA->getFormula(), formulaB->getFormula());
     }
 
 #ifdef LATER    
