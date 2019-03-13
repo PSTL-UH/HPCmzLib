@@ -522,7 +522,7 @@ namespace Chemistry {
         for (auto i : getElements()) {
             if (i.first != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) &&
                 i.first != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
-                std::string temp = i.first->getAtomicSymbol() + (i.second == 1 ? "" : "" + i.second);
+                std::string temp = i.first->getAtomicSymbol() + (i.second == 1 ? "" : "" + std::to_string(i.second));
                 otherParts.push_back(temp);
             }
         }
@@ -532,18 +532,18 @@ namespace Chemistry {
             if (i.first->getElement() != PeriodicTable::GetElement(Constants::CarbonAtomicNumber) &&
                 i.first->getElement() != PeriodicTable::GetElement(Constants::HydrogenAtomicNumber)) {
                 std::string temp = i.first->getElement()->getAtomicSymbol() + "{" + std::to_string(i.first->getMassNumber()) +
-                                   "}" + (i.second == 1 ? "" : "" + i.second);
+                    "}" + (i.second == 1 ? "" : "" + std::to_string(i.second));
                 otherParts.push_back(temp);
             }
         }
 
         std::sort(otherParts.begin(), otherParts.end());
 
-        delete s;
-        std::string st;
+        std::string st = s->toString();
         for ( auto sp: otherParts ){
             st += sp;
         }
+        delete s;
 
         return st;
     }
