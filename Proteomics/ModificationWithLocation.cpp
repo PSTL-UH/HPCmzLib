@@ -20,7 +20,7 @@ namespace Proteomics {
 
     ModificationWithLocation::ModificationWithLocation(const std::string &i,
                                                        const std::string &mType,
-                                                       ModificationMotif *motif,
+                                                       ModificationMotif *mtf,
                                                        TerminusLocalization terminusLocalization,
                                                        std::unordered_map<std::string, std::vector<std::string>> *lToOtherDbs,
                                                        std::vector<std::string> *kwords) : Modification(i, mType), terminusLocalization() {
@@ -35,7 +35,7 @@ namespace Proteomics {
             keywords = *kwords;
         }
 
-        motif=motif;
+        motif=mtf;
     }
 
     std::string ModificationWithLocation::ToString() {
@@ -61,8 +61,9 @@ namespace Proteomics {
         }
         sb->append("TG   " + motif->ToString());
 
+        std::string s= sb->toString();
         delete sb;
-        return sb->toString();
+        return s;
     }
 
     bool ModificationWithLocation::Equals(ModificationWithLocation *m) {

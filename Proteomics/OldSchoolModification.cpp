@@ -5,7 +5,7 @@ using namespace Chemistry;
 
 namespace Proteomics {
 
-    OldSchoolModification::OldSchoolModification(const OldSchoolModification &modification) : OldSchoolModification(modification.getMonoisotopicMass(), modification.getName(), modification.getSites()) {
+    OldSchoolModification::OldSchoolModification(OldSchoolModification *modification) : OldSchoolModification(modification->getMonoisotopicMass(), modification->getName(), modification->getSites()) {
     }
 
     OldSchoolModification::OldSchoolModification() : OldSchoolModification(0.0, "", ModificationSites::Any) {

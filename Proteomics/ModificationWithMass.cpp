@@ -26,9 +26,8 @@ namespace Proteomics {
     
     std::string ModificationWithMass::ToString() {
         StringBuilder *sb = new StringBuilder();
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        sb->appendLine(ModificationWithLocation::ToString());
 
+        sb->appendLine(ModificationWithLocation::ToString());
 #if ORIG
         if (neutralLosses.size()() != 1 || neutralLosses.front() != 0) {
             sb->appendLine("NL   " + std::string::Join(" or ", neutralLosses.Select([&] (std::any b) {
@@ -56,16 +55,14 @@ namespace Proteomics {
                     sb->appendLine(std::to_string(b));
                 });
         }
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-//        sb->append("MM   " + monoisotopicMass.ToString(CultureInfo::InvariantCulture));
         sb->append("MM   " + std::to_string(monoisotopicMass));
 
+        std::string s= sb->toString();
         delete sb;
-        return sb->toString();
+        return s;
     }
 
     bool ModificationWithMass::Equals(ModificationWithMass* m) {
-//        ModificationWithMass *m = dynamic_cast<ModificationWithMass*>(o);
         return m != nullptr                                                        &&
             ModificationWithLocation::Equals(m)                                    &&
             ApproxSequenceEqual(diagnosticIons, m->diagnosticIons, tolForEquality) &&

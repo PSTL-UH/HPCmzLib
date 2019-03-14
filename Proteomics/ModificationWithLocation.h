@@ -8,8 +8,6 @@
 #include <any>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class ModificationMotif; }
 #include "ModificationMotif.h"
 
 
@@ -44,16 +42,9 @@ namespace Proteomics {
                                  std::unordered_map<std::string, std::vector<std::string>> *linksToOtherDbs,
                                  std::vector<std::string> *keywords);
 
-//                                 std::unordered_map<std::string, std::vector<std::string>> &linksToOtherDbs = nullptr,
-
         
-//        std::string ToString() override;
         std::string ToString();
-
-//        bool Equals(std::any o) override;
         bool Equals(ModificationWithLocation *m);
-
-//        int GetHashCode() override;
         int GetHashCode();
 
     };

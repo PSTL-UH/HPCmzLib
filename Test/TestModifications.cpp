@@ -34,13 +34,14 @@ int main ( int argc, char **argv )
 #ifdef LATER
     std::cout << ++i << ". Test_ModificationWithNoMassWritten " << std::endl;    
     Test::TestModifications::Test_ModificationWithNoMassWritten();    
-
+#endif
     std::cout << ++i << ". NameAndSites " << std::endl;    
     Test::TestModifications::NameAndSites();
 
     std::cout << ++i << ". ModificationEquality " << std::endl;    
     Test::TestModifications::ModificationEquality();
 
+#ifdef LATER
     std::cout << ++i << ". ModificationSitesTest " << std::endl;    
     Test::TestModifications::ModificationSitesTest();
 
@@ -82,38 +83,41 @@ int main ( int argc, char **argv )
 namespace Test {
 
     void TestModifications::Test_modificationsHashCode() {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("M", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("M", &motif);
         auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
         auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
 
         Assert::AreNotEqual(mod1->GetHashCode(), mod2->GetHashCode());
-        Assert::AreNotEqual(mod1, mod2);
+        Assert::IsFalse(mod1->Equals(mod2));
         std::unordered_set<Modification*> myHashSet = {mod1, mod2};
         Assert::AreEqual((long unsigned int)2, myHashSet.size());
 
-//        delete mod2;
-//        delete mod1;
+        delete mod2;
+        delete mod1;
     }
+
 #ifdef LATER
     void TestModifications::Test_ModificationWithNoMassWritten() {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("M", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("M", &motif);
         auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
 
         auto mod1string = mod1->ToString();
         Assert::IsTrue(!mod1string.find("MM") != std::string::npos);
         auto modAfterWriteRead = dynamic_cast<ModificationWithMassAndCf*>(PtmListLoader::ReadModsFromString(mod1string + "\r\n" + "//").front());
-        Assert::AreEqual(mod1, modAfterWriteRead);
+        Assert::IsTrue(mod1->Equals( modAfterWriteRead));
 
         delete mod1;
     }
+#endif
 
     void TestModifications::NameAndSites() {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         OldSchoolModification *a = new OldSchoolModification();
         OldSchoolModification *b = new OldSchoolModification(a);
-        Assert::AreEqual(" (Any)", b->getNameAndSites());
+        std::string s=" (Any)";
+        Assert::AreEqual(s , b->getNameAndSites());
 
         delete b;
         delete a;
@@ -135,6 +139,7 @@ namespace Test {
         delete a;
     }
 
+#ifdef LATER
     void TestModifications::ModificationSitesTest() {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         auto a = ModificationSites::A | ModificationSites::E;

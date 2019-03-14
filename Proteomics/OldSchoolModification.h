@@ -38,7 +38,7 @@ namespace Proteomics {
         ModificationSites privateSites = static_cast<ModificationSites>(0);
 
     public:
-        OldSchoolModification(const OldSchoolModification &modification);
+        OldSchoolModification(OldSchoolModification *modification);
 
         OldSchoolModification();
 

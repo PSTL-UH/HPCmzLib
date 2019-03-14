@@ -165,9 +165,6 @@ namespace Chemistry {
         std::regex FormulaRegex( R"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)");
         std::regex ValidateFormulaRegex("^(\\s*([A-Z][a-z]*)(\\{?[0-9]*\\}?)?-?[0-9]*\\s*)+$");
 
-#if ORIG        
-//        if (!ValidateFormulaRegex->IsMatch(formula)) {
-#endif
         std::smatch sm;
         if ( !std::regex_match(formula, sm, ValidateFormulaRegex) ){
             delete f;
@@ -177,9 +174,6 @@ namespace Chemistry {
         std::sregex_iterator match(formula.begin(), formula.end(), FormulaRegex);
         std::sregex_iterator reg_end;
 
-#ifdef ORIG
-//      for (auto match : FormulaRegex->Matches(formula)) {
-#endif
         for ( ; match != reg_end; ++match) {
 
             std::smatch res;

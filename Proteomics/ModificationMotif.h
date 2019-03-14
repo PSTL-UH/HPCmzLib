@@ -24,16 +24,12 @@ namespace Proteomics {
         /// <param name="motif"></param>
         /// <returns></returns>
     public:
-        static bool TryGetMotif(const std::string &motifString, ModificationMotif *&motif);
+        static bool TryGetMotif(const std::string &motifString, ModificationMotif **motif);
 
-//        bool Equals(std::any o) override;
         bool Equals( ModificationMotif *&m );
 
-//        int GetHashCode() override;
         int GetHashCode();
 
-//        std::string ToString() override;
         std::string ToString();
-
     };
 }

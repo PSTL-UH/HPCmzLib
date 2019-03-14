@@ -9,8 +9,6 @@
 #include <any>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class ModificationMotif; }
 #include "ModificationMotif.h"
 
 namespace Proteomics {
@@ -29,10 +27,6 @@ namespace Proteomics {
 //        ModificationWithMass(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, double monoisotopicMass, std::unordered_map<std::string, std::vector<std::string>> &externalDatabaseReferences = nullptr, std::vector<std::string> &keywords = nullptr, std::vector<double> &neutralLosses, std::vector<double> &diagnosticIons = nullptr);
         ModificationWithMass(const std::string &id, const std::string &modificationType, ModificationMotif *motif, TerminusLocalization terminusLocalization, double monoisotopicMass, std::unordered_map<std::string, std::vector<std::string>> *externalDatabaseReferences = nullptr, std::vector<std::string> *keywords=nullptr, std::vector<double> *neutralLosses=nullptr, std::vector<double> *diagnosticIons=nullptr);
 
-
-//        std::string ToString() override;
-//        bool Equals(std::any o) override;
-//        int GetHashCode() override;
 
         std::string ToString();
         bool Equals(ModificationWithMass* m);
