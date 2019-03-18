@@ -34,15 +34,10 @@ namespace MassSpectrometry {
     class IMsDataFile : public std::vector<TScan>
     {
     static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, L"TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
-//        #region Public Properties
 
     public:
         virtual int getNumSpectra() const = 0;
         virtual MassSpectrometry::SourceFile *getSourceFile() const = 0;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         virtual TScan GetOneBasedScan(int oneBasedScanNumber) = 0;
 
@@ -52,6 +47,5 @@ namespace MassSpectrometry {
 
         virtual int GetClosestOneBasedSpectrumNumber(double retentionTime) = 0;
 
-//        #endregion Public Methods
     };
 }

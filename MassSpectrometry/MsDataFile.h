@@ -42,14 +42,8 @@ namespace MassSpectrometry {
     private:
         MassSpectrometry::SourceFile *privateSourceFile;
 
-//        #region Protected Fields
-
     protected:
         std::vector<TScan> Scans;
-
-//        #endregion Protected Fields
-
-//        #region Protected Constructors
 
         MsDataFile(int numSpectra, MassSpectrometry::SourceFile *sourceFile) : MsDataFile(sourceFile) {
             Scans = std::vector<TScan>(numSpectra);
@@ -59,18 +53,10 @@ namespace MassSpectrometry {
             Scans = scans;
         }
 
-//        #endregion Protected Constructors
-
-//        #region Private Constructors
-
     private:
         MsDataFile(MassSpectrometry::SourceFile *sourceFile) {
             this->SourceFile = sourceFile;
         }
-
-//        #endregion Private Constructors
-
-//        #region Public Properties
 
     public:
         MassSpectrometry::SourceFile *getSourceFile() const override {
@@ -80,10 +66,6 @@ namespace MassSpectrometry {
         int getNumSpectra() const override {
             return Scans.size();
         }
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         virtual TScan GetOneBasedScan(int scanNumber) = 0;
 
@@ -190,20 +172,13 @@ namespace MassSpectrometry {
             }
         }
 
-//        #endregion Public Methods
-
-//        #region Protected Classes
-
     protected:
         class ReverseComparer : public IComparer<double> {
-//            #region Public Methods
 
         public:
             int Compare(double x, double y) override;
 
-//            #endregion Public Methods
         };
 
-//        #endregion Protected Classes
     };
 }

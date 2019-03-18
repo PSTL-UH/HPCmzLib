@@ -14,13 +14,7 @@ namespace MassSpectrometry {
         double privateMass = 0;
         int privateNumPeaks = 0;
 
-//        #region Private Fields
-
         std::vector<IsotopicEnvelope*> isotopicEnvelopes = std::vector<IsotopicEnvelope*>();
-
-//        #endregion Private Fields
-
-//        #region Public Properties
 
     public:
         double getMass() const;
@@ -32,19 +26,9 @@ namespace MassSpectrometry {
         IsotopicEnvelope *getMostIntenseEnvelope() const;
 
         std::vector<int> getAllCharges() const;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
-
-//        #endregion Public Methods
-
-//        #region Internal Methods
+        std::string ToString();
 
         void AddEnvelope(IsotopicEnvelope *isotopicEnvelope);
 
-//        #endregion Internal Methods
     };
 }

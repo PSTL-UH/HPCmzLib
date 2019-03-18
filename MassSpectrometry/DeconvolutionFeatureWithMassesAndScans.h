@@ -22,20 +22,10 @@ namespace MassSpectrometry {
         double privateMaxElutionTime = 0;
         double privateTotalIntensity = 0;
 
-//        #region Private Fields
-
         std::vector<DeconvolutionFeature*> groups = std::vector<DeconvolutionFeature*>();
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         DeconvolutionFeatureWithMassesAndScans();
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         int getMinScanIndex() const;
         void setMinScanIndex(int value);
@@ -55,16 +45,10 @@ namespace MassSpectrometry {
         double getTotalIntensity() const;
         void setTotalIntensity(double value);
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
-
-        std::wstring OneLineString();
+        std::string ToString();
+        std::string OneLineString();
 
         void AddEnvelope(IsotopicEnvelope *isotopicEnvelope, int scanIndex, double elutionTime);
 
-//        #endregion Public Methods
     };
 }

@@ -68,7 +68,7 @@ namespace MassSpectrometry {
         privateTotalIntensity = value;
     }
 
-    std::wstring DeconvolutionFeatureWithMassesAndScans::ToString() {
+    std::string DeconvolutionFeatureWithMassesAndScans::ToString() {
         StringBuilder *sb = new StringBuilder();
         sb->append(OneLineString());
         for (auto heh : groups.OrderBy([&] (std::any b) {
@@ -76,30 +76,30 @@ namespace MassSpectrometry {
         })) {
             sb->appendLine();
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            sb->append(L"  " + heh.ToString());
+            sb->append("  " + heh.ToString());
         }
 
         delete sb;
         return sb->toString();
     }
 
-    std::wstring DeconvolutionFeatureWithMassesAndScans::OneLineString() {
+    std::string DeconvolutionFeatureWithMassesAndScans::OneLineString() {
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        return getMass().ToString(L"G8") + L"\t"
-            + getNumPeaks() + L"\t"
-            + (getMaxScanIndex() - getMinScanIndex() + 1) + L"\t"
-            + getMinScanIndex() + L"\t"
-            + getMaxScanIndex() + L"\t"
+        return getMass().ToString("G8") + "\t"
+            + getNumPeaks() + "\t"
+            + (getMaxScanIndex() - getMinScanIndex() + 1) + "\t"
+            + getMinScanIndex() + "\t"
+            + getMaxScanIndex() + "\t"
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + ((getMinElutionTime() + getMaxElutionTime()) / 2).ToString(L"F2") + L"\t"
+            + ((getMinElutionTime() + getMaxElutionTime()) / 2).ToString("F2") + "\t"
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + getTotalIntensity().ToString(L"E5") + L"\t"
+            + getTotalIntensity().ToString("E5") + "\t"
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + std::wstring::Join(L",", (std::unordered_set<int>(groups.SelectMany([&] (std::any b) {
+            + std::wstring::Join(",", (std::unordered_set<int>(groups.SelectMany([&] (std::any b) {
                 b::AllCharges;
             })))->OrderBy([&] (std::any b) {
                 return b;
-            })) + L"\t" + groups.OrderByDescending([&] (std::any b) {
+            })) + "\t" + groups.OrderByDescending([&] (std::any b) {
                 b::MostIntenseEnvelope::totalIntensity;
             }).First().MostIntenseEnvelope.ToString();
     }

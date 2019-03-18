@@ -24,36 +24,31 @@
 namespace MassSpectrometry {
     class SourceFile {
     private:
-        std::wstring privateNativeIdFormat;
-        std::wstring privateMassSpectrometerFileFormat;
-        std::wstring privateCheckSum;
-        std::wstring privateFileChecksumType;
+        std::string privateNativeIdFormat;
+        std::string privateMassSpectrometerFileFormat;
+        std::string privateCheckSum;
+        std::string privateFileChecksumType;
         System::Uri *privateUri;
-        std::wstring privateFileName;
-        std::wstring privateId;
+        std::string privateFileName;
+        std::string privateId;
 
-//        #region Public Constructors
 
     public:
-        SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, const std::wstring &id);
+        SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &id);
 
-        SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, const std::wstring &filePath, const std::wstring &id);
+        SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &filePath, const std::string &id);
 
-        SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, System::Uri *uri, const std::wstring &id, const std::wstring &fileName);
+        SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, System::Uri *uri, const std::string &id, const std::string &fileName);
 
-//        #endregion Public Constructors
 
-//        #region Public Properties
-
-        std::wstring getNativeIdFormat() const;
-        std::wstring getMassSpectrometerFileFormat() const;
-        std::wstring getCheckSum() const;
-        std::wstring getFileChecksumType() const;
+        std::string getNativeIdFormat() const;
+        std::string getMassSpectrometerFileFormat() const;
+        std::string getCheckSum() const;
+        std::string getFileChecksumType() const;
         System::Uri *getUri() const;
 
-        std::wstring getFileName() const;
-        std::wstring getId() const;
+        std::string getFileName() const;
+        std::string getId() const;
 
-//        #endregion Public Properties
     };
 }

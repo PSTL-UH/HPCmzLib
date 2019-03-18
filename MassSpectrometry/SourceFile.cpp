@@ -3,7 +3,7 @@
 
 namespace MassSpectrometry {
 
-    SourceFile::SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, const std::wstring &id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &id) {
         NativeIdFormat = nativeIdFormat;
         MassSpectrometerFileFormat = massSpectrometerFileFormat;
         CheckSum = checkSum;
@@ -11,31 +11,31 @@ namespace MassSpectrometry {
         Id = id;
     }
 
-    SourceFile::SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, const std::wstring &filePath, const std::wstring &id) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &filePath, const std::string &id) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
         getUri() result;
         getUri()->TryCreate(Directory::GetParent(filePath)->FullName, UriKind::Absolute, result);
         this->Uri = result;
         this->FileName = FileSystem::getFileName(filePath);
     }
 
-    SourceFile::SourceFile(const std::wstring &nativeIdFormat, const std::wstring &massSpectrometerFileFormat, const std::wstring &checkSum, const std::wstring &fileChecksumType, System::Uri *uri, const std::wstring &id, const std::wstring &fileName) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, System::Uri *uri, const std::string &id, const std::string &fileName) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
         this->Uri = uri;
         this->FileName = fileName;
     }
 
-    std::wstring SourceFile::getNativeIdFormat() const {
+    std::string SourceFile::getNativeIdFormat() const {
         return privateNativeIdFormat;
     }
 
-    std::wstring SourceFile::getMassSpectrometerFileFormat() const {
+    std::string SourceFile::getMassSpectrometerFileFormat() const {
         return privateMassSpectrometerFileFormat;
     }
 
-    std::wstring SourceFile::getCheckSum() const {
+    std::string SourceFile::getCheckSum() const {
         return privateCheckSum;
     }
 
-    std::wstring SourceFile::getFileChecksumType() const {
+    std::string SourceFile::getFileChecksumType() const {
         return privateFileChecksumType;
     }
 
@@ -43,11 +43,11 @@ namespace MassSpectrometry {
         return privateUri;
     }
 
-    std::wstring SourceFile::getFileName() const {
+    std::string SourceFile::getFileName() const {
         return privateFileName;
     }
 
-    std::wstring SourceFile::getId() const {
+    std::string SourceFile::getId() const {
         return privateId;
     }
 }

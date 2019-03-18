@@ -32,9 +32,9 @@ namespace MassSpectrometry {
         }).ToList();
     }
 
-    std::wstring DeconvolutionFeature::ToString() {
+    std::string DeconvolutionFeature::ToString() {
         StringBuilder *sb = new StringBuilder();
-        sb->append(L" Mass: " + std::to_wstring(getMass()) + L" NumPeaks: " + std::to_wstring(getNumPeaks()));
+        sb->append(" Mass: " + std::to_string(getMass()) + " NumPeaks: " + std::to_string(getNumPeaks()));
         for (auto heh : isotopicEnvelopes.OrderBy([&] (std::any b) {
             -b::peaks->Count;
         })) {

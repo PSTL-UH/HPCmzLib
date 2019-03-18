@@ -15,16 +15,11 @@ using namespace MzLibUtil;
 
 namespace MassSpectrometry {
     class SummedMsDataFile : public MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> {
-//        #region Private Fields
 
     private:
         IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *const raw;
         const int numScansToAverage;
         const double ppmToleranceForPeakCombination;
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         virtual ~SummedMsDataFile() {
@@ -33,19 +28,10 @@ namespace MassSpectrometry {
 
         SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination);
 
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
         IMsDataScan<IMzSpectrum<IMzPeak*>*> *GetOneBasedScan(int oneBasedScanNumber) override;
-
-//        #endregion Public Methods
-
-//        #region Private Methods
 
     private:
         IMzSpectrum<IMzPeak*> *CombinePeaks(std::vector<IMzSpectrum<IMzPeak*>*> &spectraToCombine, double ppmTolerance);
 
-//        #endregion Private Methods
     };
 }

@@ -6,13 +6,10 @@
 namespace MassSpectrometry {
     template<typename TScan>
     class IMsDynamicDataFile : public IDisposable {
-        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, L"TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
-
-//        #region Public Methods
+        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, "TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
 
     public:
         virtual void ClearCachedScans() = 0;
 
-//        #endregion Public Methods
     };
 }

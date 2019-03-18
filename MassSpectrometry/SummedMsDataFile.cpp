@@ -15,7 +15,7 @@ using namespace MzLibUtil;
 
 namespace MassSpectrometry {
 
-    SummedMsDataFile::SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>>(LR"(scan number only nativeID format)", raw->getSourceFile()->getMassSpectrometerFileFormat(), raw->getSourceFile()->getCheckSum(), raw->getSourceFile()->getFileChecksumType(), raw->getSourceFile()->getUri(), raw->getSourceFile()->getId(), raw->getSourceFile()->getFileName()), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination) {
+    SummedMsDataFile::SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>>(R"(scan number only nativeID format)", raw->getSourceFile()->getMassSpectrometerFileFormat(), raw->getSourceFile()->getCheckSum(), raw->getSourceFile()->getFileChecksumType(), raw->getSourceFile()->getUri(), raw->getSourceFile()->getId(), raw->getSourceFile()->getFileName()), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination) {
     }
 
     IMsDataScan<IMzSpectrum<IMzPeak*>*> *SummedMsDataFile::GetOneBasedScan(int oneBasedScanNumber) {
@@ -23,12 +23,12 @@ namespace MassSpectrometry {
             auto representativeScanNumber = oneBasedScanNumber + (numScansToAverage - 1) / 2;
             auto representative = raw->GetOneBasedScan(representativeScanNumber);
             if (representative->getMsnOrder() != 1) {
-                throw MzLibException(L"Scan " + std::to_wstring(representativeScanNumber) + L" is not MS1 scan");
+                throw MzLibException("Scan " + std::to_string(representativeScanNumber) + " is not MS1 scan");
             }
             int msnOrder = 1;
             Polarity polarity = representative->getPolarity();
             if (!representative->getIsCentroid()) {
-                throw MzLibException(L"Scan " + std::to_wstring(representativeScanNumber) + L" is not centroid scan");
+                throw MzLibException("Scan " + std::to_string(representativeScanNumber) + " is not centroid scan");
             }
             bool isCentroid = true;
             double retentionTime = representative->getRetentionTime();
@@ -46,7 +46,7 @@ namespace MassSpectrometry {
             double injectionTime = NAN;
             std::vector<std::vector<double>> noiseData;
 
-            Scans[oneBasedScanNumber - 1] = new MsDataScan<IMzSpectrum<IMzPeak*>*>(peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, L"", mzAnalyzer, totalIonCurrent, std::make_optional(injectionTime), noiseData, L"scan=" + std::to_wstring(oneBasedScanNumber));
+            Scans[oneBasedScanNumber - 1] = new MsDataScan<IMzSpectrum<IMzPeak*>*>(peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, std::make_optional(injectionTime), noiseData, "scan=" + std::to_string(oneBasedScanNumber));
         }
         return Scans[oneBasedScanNumber - 1];
     }
