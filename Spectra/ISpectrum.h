@@ -38,7 +38,6 @@ namespace Spectra {
     class ISpectrum
     {
     static_assert(std::is_base_of<IPeak, TPeak>::value, L"TPeak must inherit from IPeak");
-//        #region Public Properties
 
     public:
         virtual std::vector<double> getXArray() const = 0;
@@ -51,10 +50,6 @@ namespace Spectra {
         virtual double getXofPeakWithHighestY() const = 0;
         virtual double getSumOfAllY() const = 0;
         virtual DoubleRange *getRange() const = 0;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         virtual std::vector<std::vector<double>> CopyTo2DArray() = 0;
 
@@ -76,6 +71,5 @@ namespace Spectra {
 
         virtual void ReplaceXbyApplyingFunction(std::function<double(IPeak*)> convertor) = 0;
 
-//        #endregion Public Methods
     };
 }

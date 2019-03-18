@@ -41,16 +41,10 @@ namespace Spectra {
     private:
         std::vector<double> privateXArray;
         std::vector<double> privateYArray;
-
-//        #region Private Fields
-
+        
         std::vector<TPeak> peakList;
         std::optional<int> indexOfpeakWithHighestY;
         std::optional<double> sumOfAllY;
-
-//        #endregion Private Fields
-
-//        #region Protected Constructors
 
     protected:
         Spectrum(std::vector<double> &x, std::vector<double> &y, bool shouldCopy) {
@@ -76,10 +70,6 @@ namespace Spectra {
             Buffer::BlockCopy(xy, sizeof(double) * count, getYArray(), 0, sizeof(double) * count);
             peakList = std::vector<TPeak>(getSize());
         }
-
-//        #endregion Protected Constructors
-
-//        #region Public Properties
 
     public:
         std::vector<double> getXArray() const override {
@@ -131,10 +121,6 @@ namespace Spectra {
         DoubleRange *getRange() const override {
             return new DoubleRange(getFirstX(), getLastX());
         }
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         void ReplaceXbyApplyingFunction(std::function<double(IPeak*)> convertor) override {
             for (int i = 0; i < getSize(); i++) {
@@ -251,10 +237,6 @@ namespace Spectra {
             return FilterByY(yRange->Minimum, yRange->Maximum);
         }
 
-//        #endregion Public Methods
-
-//        #region Protected Methods
-
     protected:
         virtual TPeak GeneratePeak(int index) = 0;
 
@@ -265,6 +247,5 @@ namespace Spectra {
             return peakList[index];
         }
 
-//        #endregion Protected Methods
     };
 }
