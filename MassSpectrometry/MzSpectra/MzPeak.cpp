@@ -15,7 +15,7 @@ namespace MassSpectrometry {
         return getX();
     }
 
-    std::wstring MzPeak::ToString() {
-        return std::wstring::Format(L"({0:G7},{1:G7})", getX(), getY());
+    std::string MzPeak::ToString() {
+        return std::wstring::Format("({0:G7},{1:G7})", getX(), getY());
     }
 }

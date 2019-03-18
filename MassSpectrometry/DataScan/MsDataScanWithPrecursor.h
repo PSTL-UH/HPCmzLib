@@ -56,13 +56,7 @@ namespace MassSpectrometry {
         std::optional<double> privateSelectedIonMonoisotopicGuessIntensity;
         std::optional<double> privateSelectedIonMonoisotopicGuessMz;
 
-//        #region Private Fields
-
         MzRange *isolationRange;
-
-//        #endregion Private Fields
-
-//        #region Protected Constructors
 
     public:
         virtual ~MsDataScanWithPrecursor() {
@@ -70,7 +64,7 @@ namespace MassSpectrometry {
         }
 
     protected:
-        MsDataScanWithPrecursor(TSpectrum massSpectrum, int ScanNumber, int MsnOrder, bool isCentroid, MassSpectrometry::Polarity Polarity, double RetentionTime, MzRange *MzRange, const std::wstring &ScanFilter, MZAnalyzerType MzAnalyzer, double TotalIonCurrent, double selectedIonMZ, std::optional<int> &selectedIonChargeStateGuess, std::optional<double> &selectedIonIntensity, std::optional<double> &isolationMZ, std::optional<double> &isolationWidth, MassSpectrometry::DissociationType dissociationType, std::optional<int> &oneBasedPrecursorScanNumber, std::optional<double> &selectedIonMonoisotopicGuessMz, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::wstring &nativeId) : MsDataScan<TSpectrum>(massSpectrum, ScanNumber, MsnOrder, isCentroid, Polarity, RetentionTime, MzRange, ScanFilter, MzAnalyzer, TotalIonCurrent, injectionTime, noiseData, nativeId) {
+        MsDataScanWithPrecursor(TSpectrum massSpectrum, int ScanNumber, int MsnOrder, bool isCentroid, MassSpectrometry::Polarity Polarity, double RetentionTime, MzRange *MzRange, const std::string &ScanFilter, MZAnalyzerType MzAnalyzer, double TotalIonCurrent, double selectedIonMZ, std::optional<int> &selectedIonChargeStateGuess, std::optional<double> &selectedIonIntensity, std::optional<double> &isolationMZ, std::optional<double> &isolationWidth, MassSpectrometry::DissociationType dissociationType, std::optional<int> &oneBasedPrecursorScanNumber, std::optional<double> &selectedIonMonoisotopicGuessMz, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId) : MsDataScan<TSpectrum>(massSpectrum, ScanNumber, MsnOrder, isCentroid, Polarity, RetentionTime, MzRange, ScanFilter, MzAnalyzer, TotalIonCurrent, injectionTime, noiseData, nativeId) {
             this->OneBasedPrecursorScanNumber = oneBasedPrecursorScanNumber;
 
             this->setIsolationMz(isolationMZ);
@@ -83,10 +77,6 @@ namespace MassSpectrometry {
             this->SelectedIonChargeStateGuess = selectedIonChargeStateGuess;
             this->setSelectedIonMonoisotopicGuessMz(selectedIonMonoisotopicGuessMz);
         }
-
-//        #endregion Protected Constructors
-
-//        #region Public Properties
 
     public:
         std::optional<double> getIsolationMz() const override {
@@ -141,10 +131,6 @@ namespace MassSpectrometry {
             }
             return isolationRange;
         }
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         std::vector<IsotopicEnvelope*> GetIsolatedMassesAndCharges(IMzSpectrum<IMzPeak*> *precursorSpectrum, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatio) override {
             if (getIsolationRange() == nullptr) {
@@ -215,6 +201,5 @@ namespace MassSpectrometry {
             }
         }
 
-//        #endregion Public Methods
     };
 }

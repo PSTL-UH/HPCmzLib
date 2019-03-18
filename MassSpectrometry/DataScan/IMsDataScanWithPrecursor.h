@@ -43,7 +43,6 @@ namespace MassSpectrometry {
     class IMsDataScanWithPrecursor : public IMsDataScan<TSpectrum>
     {
     static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, L"TSpectrum must inherit from IMzSpectrum<IMzPeak>");
-//        #region Public Properties
 
     public:
         virtual std::optional<int> getOneBasedPrecursorScanNumber() const = 0;
@@ -58,10 +57,6 @@ namespace MassSpectrometry {
 
         virtual std::optional<double> getIsolationMz() const = 0;
         virtual MzRange *getIsolationRange() const = 0;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         /// <summary>
         /// Use to set value of SelectedIonIntensity based on SelectedIonMZ
@@ -83,6 +78,5 @@ namespace MassSpectrometry {
 
         virtual void TransformMzs(std::function<double(IPeak*)> convertorForSpectrum, std::function<double(IPeak*)> convertorForPrecursor) = 0;
 
-//        #endregion Public Methods
     };
 }

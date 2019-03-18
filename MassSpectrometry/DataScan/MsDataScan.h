@@ -45,17 +45,15 @@ namespace MassSpectrometry {
         MassSpectrometry::Polarity privatePolarity = static_cast<MassSpectrometry::Polarity>(0);
         MZAnalyzerType privateMzAnalyzer = static_cast<MZAnalyzerType>(0);
         MzRange *privateScanWindowRange;
-        std::wstring privateScanFilter;
-        std::wstring privateNativeId;
+        std::string privateScanFilter;
+        std::string privateNativeId;
         bool privateIsCentroid = false;
         double privateTotalIonCurrent = 0;
         std::optional<double> privateInjectionTime;
         std::vector<std::vector<double>> privateNoiseData;
 
-//        #region Public Constructors
-
     public:
-        MsDataScan(TSpectrum massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::wstring &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::wstring &nativeId) {
+        MsDataScan(TSpectrum massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId) {
             OneBasedScanNumber = oneBasedScanNumber;
             MsnOrder = msnOrder;
             IsCentroid = isCentroid;
@@ -70,10 +68,6 @@ namespace MassSpectrometry {
             setMassSpectrum(massSpectrum);
             NativeId = nativeId;
         }
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         /// <summary>
         /// The mass spectrum associated with the scan
@@ -109,11 +103,11 @@ namespace MassSpectrometry {
             return privateScanWindowRange;
         }
 
-        std::wstring getScanFilter() const override {
+        std::string getScanFilter() const override {
             return privateScanFilter;
         }
 
-        std::wstring getNativeId() const override {
+        std::string getNativeId() const override {
             return privateNativeId;
         }
 
@@ -132,11 +126,7 @@ namespace MassSpectrometry {
             return privateNoiseData;
         }
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override {
+        std::string ToString() override {
             return StringHelper::formatSimple(L"Scan #{0}", getOneBasedScanNumber());
         }
 
@@ -151,10 +141,6 @@ namespace MassSpectrometry {
         std::vector<unsigned char> Get64BitNoiseDataBaseline() override {
             return MzSpectrum<IMzPeak*>::Get64Bitarray(GetNoiseDataBaseline(getNoiseData()));
         }
-
-//        #endregion Public Methods
-
-//        #region Private Methods
 
     private:
         std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> &noiseData) {
@@ -178,6 +164,5 @@ namespace MassSpectrometry {
             }
         }
 
-//        #endregion Private Methods
     };
 }

@@ -45,8 +45,6 @@ namespace MassSpectrometry {
     class MzSpectrum : public Spectrum<TPeak>, public IMzSpectrum<TPeak> {
         static_assert(std::is_base_of<IMzPeak, TPeak>::value, L"TPeak must inherit from IMzPeak");
 
-//        #region Private Fields
-
     private:
         static constexpr int numAveraginesToGenerate = 1500;
 //C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
@@ -64,9 +62,6 @@ namespace MassSpectrometry {
 //C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
         static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions = std::vector<std::tuple<double, std::vector<double>>>();
 
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     private:
         class StaticConstructor {
@@ -77,11 +72,6 @@ namespace MassSpectrometry {
     private:
         static MzSpectrum::StaticConstructor staticConstructor;
 
-
-//        #endregion Public Constructors
-
-//        #region Protected Constructors
-
     protected:
         MzSpectrum(std::vector<std::vector<double>> &mzintensities) : Spectrum<TPeak>(mzintensities) {
         }
@@ -89,18 +79,10 @@ namespace MassSpectrometry {
         MzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy) : Spectrum<TPeak>(mz, intensities, shouldCopy) {
         }
 
-//        #endregion Protected Constructors
-
-//        #region Public Properties
-
     public:
         MzRange *getRange() const override {
             return new MzRange(getFirstX(), getLastX());
         }
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         static std::vector<unsigned char> Get64Bitarray(std::vector<double> &array_Renamed) {
             auto mem = new MemoryStream();
@@ -122,7 +104,7 @@ namespace MassSpectrometry {
             return Get64Bitarray(getXArray());
         }
 
-        std::wstring ToString() override {
+        std::string ToString() override {
             return StringHelper::formatSimple(L"{0} (Peaks {1})", getRange(), getSize());
         }
 
@@ -270,9 +252,6 @@ namespace MassSpectrometry {
             }
         }
 
-//        #endregion Public Methods
-
-//        #region Private Methods
 
     private:
         double ScoreIsotopeEnvelope(IsotopicEnvelope *b) {
@@ -318,6 +297,5 @@ namespace MassSpectrometry {
             return true;
         }
 
-//        #endregion Private Methods
     };
 }

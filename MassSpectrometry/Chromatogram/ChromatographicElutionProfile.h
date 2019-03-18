@@ -28,20 +28,14 @@ using namespace Spectra;
 namespace MassSpectrometry {
     template<typename T>
     class ChromatographicElutionProfile {
-        static_assert(std::is_base_of<IPeak, T>::value, L"T must inherit from IPeak");
+        static_assert(std::is_base_of<IPeak, T>::value, "T must inherit from IPeak");
 
     private:
         DoubleRange *privateTimeRange;
         int privateCount = 0;
         double privateSummedArea = 0;
 
-//        #region Private Fields
-
         std::vector<T> const _peaks;
-
-//        #endregion Private Fields
-
-//        #region Public Constructors
 
     public:
         ChromatographicElutionProfile(ICollection<T> *peaks) : _peaks(peaks->ToArray()) {
@@ -56,10 +50,6 @@ namespace MassSpectrometry {
             DoubleRange tempVar(_peaks[0]->getX(), _peaks[getCount() - 1]->getX());
             setTimeRange(&tempVar);
         }
-
-//        #endregion Public Constructors
-
-//        #region Public Properties
 
         T getStartPeak() const {
             return _peaks[0];
@@ -90,10 +80,6 @@ namespace MassSpectrometry {
             privateSummedArea = value;
         }
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
         double TrapezoidalArea() {
             double area = 0;
             for (int i = 0; i < getCount() - 1; i++) {
@@ -104,6 +90,5 @@ namespace MassSpectrometry {
             return area / 2.0;
         }
 
-//        #endregion Public Methods
     };
 }

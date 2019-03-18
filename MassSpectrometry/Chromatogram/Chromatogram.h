@@ -33,7 +33,6 @@ using namespace Spectra;
 namespace MassSpectrometry {
     template<>
     class Chromatogram<void> : public Chromatogram<ChromatographicPeak*> {
-//        #region Public Constructors
 
     public:
         Chromatogram(std::vector<double> &times, std::vector<double> &intensities, bool shouldCopy) : Chromatogram<ChromatographicPeak>(times, intensities, shouldCopy) {
@@ -44,10 +43,6 @@ namespace MassSpectrometry {
 
         Chromatogram(const Chromatogram<void> &other) : Chromatogram<ChromatographicPeak>(other) {
         }
-
-//        #endregion Public Constructors
-
-//        #region Public Methods
 
         Chromatogram<void> *CreateSmoothChromatogram(SmoothingType smoothing, int points) {
             switch (smoothing) {
@@ -62,23 +57,16 @@ namespace MassSpectrometry {
             }
         }
 
-//        #endregion Public Methods
-
-//        #region Protected Methods
-
     protected:
         ChromatographicPeak *GeneratePeak(int index) override {
             return new ChromatographicPeak(getXArray()[index], getYArray()[index]);
         }
 
-//        #endregion Protected Methods
     };
 
     template<typename TPeak>
     class Chromatogram : public Spectrum<TPeak> {
         static_assert(std::is_base_of<IPeak, TPeak>::value, L"TPeak must inherit from IPeak");
-
-//        #region Protected Constructors
 
     protected:
         Chromatogram(std::vector<double> &times, std::vector<double> &intensities, bool shouldCopy) : Spectrum<TPeak>(times, intensities, shouldCopy) {
@@ -90,10 +78,6 @@ namespace MassSpectrometry {
         Chromatogram(const Chromatogram<TPeak> &other) : Chromatogram(other->getXArray(), other->getYArray(), true) {
         }
 
-//        #endregion Protected Constructors
-
-//        #region Public Properties
-
     public:
         double getFirstTime() const {
             return getXArray()[0];
@@ -102,10 +86,6 @@ namespace MassSpectrometry {
         double getLastTime() const {
             return getXArray()[getSize() - 1];
         }
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         std::vector<double> GetTimes() {
             std::vector<double> times = std::vector<double>(getSize());
@@ -226,10 +206,9 @@ namespace MassSpectrometry {
             return GetPeak(bestApex);
         }
 
-        std::wstring ToString() override {
-            return std::wstring::Format(L"Count = {0:N0} TIC = {1:G4}", getSize(), getYArray().Sum());
+        std::string ToString() {
+            return std::string::Format("Count = {0:N0} TIC = {1:G4}", getSize(), getYArray().Sum());
         }
 
-//        #endregion Public Methods
     };
 }

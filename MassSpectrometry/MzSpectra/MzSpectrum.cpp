@@ -23,11 +23,11 @@ namespace MassSpectrometry {
             double averagineMultiplier = (i + 1) / 2.0;
             //Console.Write("numAveragines = " + numAveragines);
             ChemicalFormula *chemicalFormula = new ChemicalFormula();
-            chemicalFormula->Add(L"C", FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
-            chemicalFormula->Add(L"H", FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
-            chemicalFormula->Add(L"O", FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
-            chemicalFormula->Add(L"N", FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
-            chemicalFormula->Add(L"S", FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
+            chemicalFormula->Add("C", FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
+            chemicalFormula->Add("H", FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
+            chemicalFormula->Add("O", FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
+            chemicalFormula->Add("N", FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
+            chemicalFormula->Add("S", FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
         
             {
                 auto chemicalFormulaReg = chemicalFormula;

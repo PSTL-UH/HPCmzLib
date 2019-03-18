@@ -15,7 +15,7 @@ namespace MassSpectrometry {
         return getX();
     }
 
-    std::wstring ChromatographicPeak::ToString() {
-        return std::wstring::Format(L"({0:G4}, {1:G4})", getTime(), getIntensity());
+    std::string ChromatographicPeak::ToString() {
+        return std::wstring::Format("({0:G4}, {1:G4})", getTime(), getIntensity());
     }
 }

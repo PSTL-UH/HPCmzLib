@@ -36,7 +36,6 @@ namespace MassSpectrometry {
     class IMsDataScan
     {
     static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, L"TSpectrum must inherit from IMzSpectrum<IMzPeak>");
-//        #region Public Properties
 
     public:
         virtual TSpectrum getMassSpectrum() const = 0;
@@ -44,8 +43,8 @@ namespace MassSpectrometry {
         virtual int getMsnOrder() const = 0;
         virtual double getRetentionTime() const = 0;
         virtual MzRange *getScanWindowRange() const = 0;
-        virtual std::wstring getScanFilter() const = 0;
-        virtual std::wstring getNativeId() const = 0;
+        virtual std::string getScanFilter() const = 0;
+        virtual std::string getNativeId() const = 0;
         virtual bool getIsCentroid() const = 0;
         virtual double getTotalIonCurrent() const = 0;
         virtual MassSpectrometry::Polarity getPolarity() const = 0;
@@ -53,16 +52,11 @@ namespace MassSpectrometry {
         virtual Nullable<double> getInjectionTime() const = 0;
         virtual std::vector<std::vector<double>> getNoiseData() const = 0;
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
         virtual std::vector<unsigned char> Get64BitNoiseDataMass() = 0;
 
         virtual std::vector<unsigned char> Get64BitNoiseDataNoise() = 0;
 
         virtual std::vector<unsigned char> Get64BitNoiseDataBaseline() = 0;
 
-//        #endregion Public Methods
     };
 }

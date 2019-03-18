@@ -39,14 +39,9 @@ namespace MassSpectrometry {
     class IMzSpectrum : public ISpectrum<TPeak>
     {
     static_assert(std::is_base_of<IMzPeak, TPeak>::value, L"TPeak must inherit from IMzPeak");
-//        #region Public Properties
 
     public:
         virtual MzRange *getRange() const = 0;
-
-//        #endregion Public Properties
-
-//        #region Public Methods
 
         virtual std::vector<unsigned char> Get64BitXarray() = 0;
 
@@ -56,6 +51,5 @@ namespace MassSpectrometry {
 
         virtual std::vector<std::tuple<std::vector<IMzPeak*>, int>> DeconvoluteOld(MzRange *theRange, int maxAssumedChargeState, Tolerance *massTolerance, double intensityRatio) = 0;
 
-//        #endregion Public Methods
     };
 }

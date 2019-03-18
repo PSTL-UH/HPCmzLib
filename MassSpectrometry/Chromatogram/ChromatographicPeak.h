@@ -25,25 +25,13 @@ using namespace Spectra;
 
 namespace MassSpectrometry {
     class ChromatographicPeak final : public Peak {
-//        #region Public Constructors
 
     public:
         ChromatographicPeak(double time, double intensity);
 
-//        #endregion Public Constructors
-
-//        #region Public Properties
-
         double getIntensity() const;
-
         double getTime() const;
+        std::string ToString();
 
-//        #endregion Public Properties
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
-
-//        #endregion Public Methods
     };
 }
