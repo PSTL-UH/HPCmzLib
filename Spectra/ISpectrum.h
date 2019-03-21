@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <functional>
 #include <vector>
 #include <type_traits>
 

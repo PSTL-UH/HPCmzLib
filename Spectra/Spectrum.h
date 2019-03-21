@@ -26,7 +26,9 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
-using namespace MathNet::Numerics::Statistics;
+//using namespace MathNet::Numerics::Statistics;
+#include "RectangularVectors.h"
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Spectra {
@@ -51,8 +53,10 @@ namespace Spectra {
             if (shouldCopy) {
                 setXArray(std::vector<double>(x.size()));
                 setYArray(std::vector<double>(y.size()));
-                Array::Copy(x, getXArray(), x.size());
-                Array::Copy(y, getYArray(), y.size());
+                // Array::Copy(x, getXArray(), x.size());
+                // Array::Copy(y, getYArray(), y.size());
+                std::copy (x.begin(), x.end(), privateXArray.begin());
+                std::copy (y.begin(), y.end(), privateYArray.begin());
             }
             else {
                 setXArray(x);
@@ -66,8 +70,10 @@ namespace Spectra {
 
             setXArray(std::vector<double>(count));
             setYArray(std::vector<double>(count));
-            Buffer::BlockCopy(xy, 0, getXArray(), 0, sizeof(double) * count);
-            Buffer::BlockCopy(xy, sizeof(double) * count, getYArray(), 0, sizeof(double) * count);
+            // Buffer::BlockCopy(xy, 0, getXArray(), 0, sizeof(double) * count);
+            // Buffer::BlockCopy(xy, sizeof(double)*count, getYArray(), 0, sizeof(double)*count);
+            std::copy (xy.begin(), xy.begin()+count, privateXArray.begin()); 
+            std::copy (xy.begin()+count, xy.end(), privateYArray.begin()); 
             peakList = std::vector<TPeak>(getSize());
         }
 
@@ -85,37 +91,47 @@ namespace Spectra {
             privateYArray = value;
         }
         double getFirstX() const override {
-            return getXArray()[0];
+            return privateXArray[0];
         }
 
         double getLastX() const override {
-            return getXArray()[getSize() - 1];
+            return privateXArray[getSize() - 1];
         }
 
         int getSize() const override {
-            return getXArray().size();
+            return privateXArray.size();
         }
 
-        int getIndexOfPeakWithHighesetY() const {
-            if (!indexOfpeakWithHighestY.HasValue) {
-                indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
+        std::optional<int> getIndexOfPeakWithHighesetY() const {
+            if (!indexOfpeakWithHighestY.has_value()) {
+                //indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
+                indexOfpeakWithHighestY = std::make_optional(std::max_element(privateYArray.begin(), privateYArray.end()));
+                return indexOfpeakWithHighestY;
             }
-            return indexOfpeakWithHighestY.Value;
+            return std::nullopt;
         }
 
         double getYofPeakWithHighestY() const override {
-            return getYArray()[getIndexOfPeakWithHighesetY()];
+            // return getYArray()[getIndexOfPeakWithHighesetY()];
+            if ( getIndexOfPeakWithHighesetY().has_value() ) {
+                return privateYArray[getIndexOfPeakWithHighesetY()];
+            }
+            return -1.0;        
         }
 
         double getXofPeakWithHighestY() const override {
-            return getXArray()[getIndexOfPeakWithHighesetY()];
+            //return getXArray()[getIndexOfPeakWithHighesetY()];
+            if ( getIndexOfPeakWithHighesetY().has_value() ) {
+                return privateXArray[getIndexOfPeakWithHighesetY()];
+            }
+            return -1.0;        
         }
 
         double getSumOfAllY() const override {
-            if (!sumOfAllY.HasValue) {
+            if (!sumOfAllY.has_value()) {
                 sumOfAllY = getYArray().Sum();
             }
-            return sumOfAllY.Value;
+            return sumOfAllY.value();
         }
 
         DoubleRange *getRange() const override {
@@ -134,13 +150,16 @@ namespace Spectra {
 //ORIGINAL LINE: double[,] data = new double[2, Size];
             std::vector<std::vector<double>> data = RectangularVectors::ReturnRectangularDoubleVector(2, getSize());
             constexpr int size = sizeof(double);
-            Buffer::BlockCopy(getXArray(), 0, data, 0, size * getSize());
-            Buffer::BlockCopy(getYArray(), 0, data, size * getSize(), size * getSize());
+            // Buffer::BlockCopy(getXArray(), 0, data, 0, size * getSize());
+            // Buffer::BlockCopy(getYArray(), 0, data, size * getSize(), size * getSize());
+            std::copy(data.begin(), data.begin()+getSize(), privateXArray.begin());
+            std::copy(data.begin()+getSize(), data.begin()+(2*getSize()), privateYArray.begin());
             return data;
         }
 
         int GetClosestPeakIndex(double x) override {
-            int index = Array::BinarySearch(getXArray(), x);
+            // int index = Array::BinarySearch(getXArray(), x);
+            int index = std::binary_search(privateXArray.begin(), privateXArray.end(), x);
             if (index >= 0) {
                 return index;
             }
@@ -153,7 +172,7 @@ namespace Spectra {
                 return index;
             }
 
-            if (x - getXArray()[index - 1] > getXArray()[index] - x) {
+            if (x - privateXArray[index - 1] > privateXArray[index] - x) {
                 return index;
             }
             return index - 1;
@@ -164,14 +183,16 @@ namespace Spectra {
         }
 
         int NumPeaksWithinRange(double minX, double maxX) override {
-            int startingIndex = Array::BinarySearch(getXArray(), minX);
+            // int startingIndex = Array::BinarySearch(getXArray(), minX);
+            int startingIndex = std::binary_search(privateXArray.begin(), privateXArray.end(), minX);
             if (startingIndex < 0) {
                 startingIndex = ~startingIndex;
             }
             if (startingIndex >= getSize()) {
                 return 0;
             }
-            int endIndex = Array::BinarySearch(getXArray(), maxX);
+            // int endIndex = Array::BinarySearch(getXArray(), maxX);
+            int endIndex = std::binary_search(privateXArray.begin(), privateXArray.end(), maxX);
             if (endIndex < 0) {
                 endIndex = ~endIndex;
             }
@@ -187,54 +208,64 @@ namespace Spectra {
             quantile = std::max(0, quantile);
             quantile = std::min(1, quantile);
             double cutoffYvalue = getYArray().Quantile(quantile);
-
+            std::vector<TPeak> t;
+            
             for (int i = 0; i < getSize(); i++) {
                 if (getYArray()[i] >= cutoffYvalue) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return GetPeak(i);
+                    //yield return GetPeak(i);
+                    t.push_back (GetPeak(i));
                 }
             }
+            return t;
         }
 
         std::vector<TPeak> Extract(DoubleRange *xRange) override {
-            return Extract(xRange->Minimum, xRange->Maximum);
+            return Extract(xRange->getMinimum(), xRange->getMaximum());
         }
 
         std::vector<TPeak> Extract(double minX, double maxX) override {
-            int ind = Array::BinarySearch(getXArray(), minX);
+            // int ind = Array::BinarySearch(getXArray(), minX);
+            int ind = std::binary_search(privateXArray.begin(), privateXArray.end(), minX);
             if (ind < 0) {
                 ind = ~ind;
             }
-            while (ind < getSize() && getXArray()[ind] <= maxX) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return GetPeak(ind);
+            std::vector<TPeak> tt;
+            while (ind < getSize() && privateXArray[ind] <= maxX) {
+                //yield return GetPeak(ind);
+                tt.push_back (GetPeak(ind));
                 ind++;
             }
+            return tt;
         }
 
         std::vector<int> ExtractIndices(double minX, double maxX) {
-            int ind = Array::BinarySearch(getXArray(), minX);
+            // int ind = Array::BinarySearch(getXArray(), minX);
+            int ind = std::binary_search(privateXArray.begin(), privateXArray.end(), minX);
             if (ind < 0) {
                 ind = ~ind;
             }
-            while (ind < getSize() && getXArray()[ind] <= maxX) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return ind;
+            std::vector<int> it;
+            while (ind < getSize() && privateXArray[ind] <= maxX) {
+                //yield return ind;
+                it.push_back (ind);
                 ind++;
             }
+            return it;
         }
 
         std::vector<TPeak> FilterByY(double minY, double maxY) override {
+            std::vector<TPeak> t;
             for (int i = 0; i < getSize(); i++) {
-                if (getYArray()[i] >= minY && getYArray()[i] <= maxY) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return GetPeak(i);
+                if (getYArray()[i] >= minY && privateYArray[i] <= maxY) {
+                    // yield return GetPeak(i);
+                    t.push_back (GetPeak(i));
                 }
             }
+            return t;
         }
 
         std::vector<TPeak> FilterByY(DoubleRange *yRange) override {
-            return FilterByY(yRange->Minimum, yRange->Maximum);
+            return FilterByY(yRange->getMinimum(), yRange->getMaximum());
         }
 
     protected:

@@ -12,9 +12,9 @@ namespace Spectra {
         Peak(double x, double y);
 
         double getX() const override;
-        void setX(double value) override;
+        void setX(double value);
         double getY() const override;
-        void setY(double value) override;
+        void setY(double value);
 
     };
 }
