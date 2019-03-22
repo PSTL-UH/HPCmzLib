@@ -23,6 +23,7 @@
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace MzLibUtil;
+#include "../../Spectra/IPeak.h"
 using namespace Spectra;
 
 namespace MassSpectrometry {
@@ -38,15 +39,16 @@ namespace MassSpectrometry {
         std::vector<T> const _peaks;
 
     public:
-        ChromatographicElutionProfile(ICollection<T> *peaks) : _peaks(peaks->ToArray()) {
+    ChromatographicElutionProfile(std::vector<T> *peaks) : _peaks(peaks) {
             setCount(peaks->Count);
             if (getCount() == 0) {
                 return;
             }
-
-            setSummedArea(_peaks.Sum([&] (std::any p) {
-                p::Y;
-            }));
+            double sum=0.0;
+            std::for_each(_peaks.begin(), _peaks.end(), [&] (T p) {
+                    sum+= p.getY();
+                } );
+            setSummedArea (sum);
             DoubleRange tempVar(_peaks[0]->getX(), _peaks[getCount() - 1]->getX());
             setTimeRange(&tempVar);
         }

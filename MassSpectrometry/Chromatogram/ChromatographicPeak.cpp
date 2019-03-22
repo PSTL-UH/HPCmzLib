@@ -1,4 +1,5 @@
 ﻿#include "ChromatographicPeak.h"
+#include "stringhelper.h"
 
 using namespace Spectra;
 
@@ -16,6 +17,6 @@ namespace MassSpectrometry {
     }
 
     std::string ChromatographicPeak::ToString() {
-        return std::wstring::Format("({0:G4}, {1:G4})", getTime(), getIntensity());
+        return StringHelper::formatSimple("({0:G4}, {1:G4})", getTime(), getIntensity());
     }
 }
