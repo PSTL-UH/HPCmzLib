@@ -52,13 +52,13 @@ namespace MassSpectrometry {
         static_assert(std::is_base_of<IMzPeak, TPeak>::value, "TPeak must inherit from IMzPeak");
 
     private:
-        static constexpr int numAveraginesToGenerate = 1500;
+//        static constexpr int numAveraginesToGenerate = 1500;
         static std::vector<std::vector<double>> const allMasses;
         static std::vector<std::vector<double>> const allIntensities;
         static std::vector<double> const mostIntenseMasses;
         static std::vector<double> const diffToMonoisotopic;
         static std::vector<double> const mms;
-        static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions;
+        static std::vector<std::tuple<double, std::vector<double>>> intensityFractions;
 
 
     private:
@@ -196,28 +196,35 @@ namespace MassSpectrometry {
             }
     
             std::unordered_set<double> seen = std::unordered_set<double>();
-            for (auto ok : isolatedMassesAndCharges.OrderByDescending([&] (std::any b) {
-                        ScoreIsotopeEnvelope(b);
-                    })) {
-                if (seen.Overlaps(ok::peaks->Select([&] (std::any b) {
-                                b::Item1;
-                            }))) {
+            std::vector<IsotopicEnvelope*> y;
+            std::sort(isolatedMassesAndCharges.begin(), isolatedMassesAndCharges.end(), [&] ( IsotopicEnvelope *lhs, IsotopicEnvelope *rhs) {
+                    return (ScoreIsotopeEnvelope(lhs) < ScoreIsotopeEnvelope(rhs));
+                });
+            for (IsotopicEnvelope* ok : isolatedMassesAndCharges ) {
+                bool found =false;
+                for ( auto p : ok->peaks ) {
+                    if (seen.find(std::get<0>(p)) == seen.end()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( found ) {
                     continue;
                 }
-                for (auto ah : ok::peaks->Select([&] (std::any b) {
-                            b::Item1;
-                        })) {
-                    seen.insert(ah);
+                for ( auto p: ok->peaks ) {
+                    seen.insert(std::get<0>(p));
                 }
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return ok;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                y.push_back(ok);
             }
+            return y;
         }
 
         std::vector<std::tuple<std::vector<IMzPeak*>, int>> DeconvoluteOld(MzRange *theRange, int maxAssumedChargeState, Tolerance *massTolerance, double intensityRatio) override {
+            std::cout << " MzSpectrumLLDeconvoluteOld is not implemented correctly in the C++ version" << std::endl;
             auto isolatedMassesAndCharges = std::vector<std::tuple<std::vector<IMzPeak*>, int>>();
-
-            for (auto peak : Extract(theRange)) {
+#ifdef HALF_CONVERTED
+            for (auto peak : this->Extract(theRange)) {
                 // Always assume the current peak is a monoisotopic peak!
 
                 std::vector<IMzPeak*> bestListOfPeaks = std::vector<IMzPeak*>();
@@ -229,7 +236,8 @@ namespace MassSpectrometry {
                         double diffToNextMmPeak = mms[mm - 1];
                         double theorMass = mMass + diffToNextMmPeak;
                         auto closestpeak = GetPeak(this->GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMass, chargeState)));
-                        if (massTolerance->Within(Chemistry::ClassExtensions::ToMass(closestpeak->getMz(), chargeState), theorMass) && SatisfiesRatios(mMass, mm, peak, closestpeak, intensityRatio)) {
+                        if (massTolerance->Within(Chemistry::ClassExtensions::ToMass(closestpeak->getMz(), chargeState), theorMass)
+                             && SatisfiesRatios(mMass, mm, peak, closestpeak, intensityRatio)) {
                             // Found a match to an isotope peak for this charge state!
                             listOfPeaksForThisChargeState.push_back(closestpeak);
                         }
@@ -246,20 +254,26 @@ namespace MassSpectrometry {
                     isolatedMassesAndCharges.push_back(std::tuple<std::vector<IMzPeak*>, int>(bestListOfPeaks, bestChargeState));
                 }
             }
-
-            std::vector<double> seen = std::vector<double>();
-            while (isolatedMassesAndCharges.Any()) {
+#endif
+            std::vector<std::tuple<std::vector<IMzPeak*>, int>> y;
+#ifdef HALF_CONVERTED
+            while ( !isolatedMassesAndCharges.empty()) {
                 // Pick longest
+                // this is max
                 auto longest = isolatedMassesAndCharges.OrderByDescending([&] (std::any b) {
-                    b::Item1->Count;
-                }).First();
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return longest;
+                        b::Item1->Count;
+                    }).First();
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                // yield return longest;
+                y.push_back(longest);
+                
                 isolatedMassesAndCharges.Remove(longest);
                 isolatedMassesAndCharges.RemoveAll([&] (std::any b) {
-                    b::Item1->Intersect(longest->Item1)->Any();
-                });
+                        b::Item1->Intersect(longest->Item1)->Any();
+                    });
             }
+#endif
+            return y;
         }
 
 

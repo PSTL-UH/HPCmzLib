@@ -1,20 +1,21 @@
-﻿#include "MzSpectrum.h"
-#include "../../Chemistry/ChemicalFormula.h"
-#include "../../Chemistry/IsotopicDistribution.h"
+﻿#include <iostream>
 
+#include "MzSpectrum.h"
 using namespace Chemistry;
 using namespace MzLibUtil;
 using namespace Spectra;
 
 namespace MassSpectrometry {
-
+    static constexpr int numAveraginesToGenerate = 1500;
+    
     static std::vector<std::vector<double>> const allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
     static std::vector<std::vector<double>> const allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
     static std::vector<double> const mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
     static std::vector<double> const diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
     static std::vector<double> const mms = {1.0029, 2.0052, 3.0077, 4.01, 5.012, 6.0139, 7.0154, 8.0164};
-    static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions = std::vector<std::tuple<double, std::vector<double>>>();    
+    static std::vector<std::tuple<double, std::vector<double>>> intensityFractions = std::vector<std::tuple<double, std::vector<double>>>();    
 
+    template<typename TPeak>
     MzSpectrum<TPeak>::StaticConstructor::StaticConstructor() {
         // AVERAGINE
         constexpr double averageC = 4.9384;
@@ -30,20 +31,21 @@ namespace MassSpectrometry {
             double averagineMultiplier = (i + 1) / 2.0;
             //Console.Write("numAveragines = " + numAveragines);
             ChemicalFormula *chemicalFormula = new ChemicalFormula();
-            chemicalFormula->Add("C", FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
-            chemicalFormula->Add("H", FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
-            chemicalFormula->Add("O", FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
-            chemicalFormula->Add("N", FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
-            chemicalFormula->Add("S", FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("C"), FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("H"), FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("O"), FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("N"), FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("S"), FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
         
             {
                 auto chemicalFormulaReg = chemicalFormula;
                 IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormulaReg, fineRes, minRes);
-                auto masses = ye->getMasses().ToArray();
-                auto intensities = ye->getIntensities().ToArray();
-                Array::Sort(intensities, masses);
-                Array::Reverse(intensities);
-                Array::Reverse(masses);
+                auto masses = ye->getMasses();
+                auto intensities = ye->getIntensities();
+                std::sort(intensities.begin(), intensities.end());
+                std::sort(masses.begin(), masses.end());
+                std::reverse(std::begin(intensities), std::end(intensities));
+                std::reverse(std::begin(masses), std::end(masses));
         
                 mostIntenseMasses[i] = masses[0];
                 diffToMonoisotopic[i] = masses[0] - chemicalFormulaReg->getMonoisotopicMass();
