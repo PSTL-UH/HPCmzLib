@@ -7,7 +7,7 @@
 using namespace Spectra;
 
 namespace MassSpectrometry {
-    class MzPeak : public Peak, public IMzPeak {
+    class MzPeak : public virtual Peak, public virtual IMzPeak {
 
     public:
         MzPeak(double mz, double intensity);
@@ -15,8 +15,6 @@ namespace MassSpectrometry {
         double getIntensity() const override;
 
         double getMz() const override;
-
-        std::string ToString() override;
-
+        std::string ToString();
     };
 }

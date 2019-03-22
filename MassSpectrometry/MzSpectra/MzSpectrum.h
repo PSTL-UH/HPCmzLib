@@ -1,12 +1,5 @@
 ﻿#pragma once
 
-#include "IMzSpectrum.h"
-#include "../../Spectra/Spectrum.h"
-#include "../../MzLibUtil/MzRange.h"
-#include "IsotopicEnvelope.h"
-#include "../../Chemistry/ClassExtensions.h"
-#include "IMzPeak.h"
-#include "../../MzLibUtil/Tolerance.h"
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -15,8 +8,17 @@
 #include <limits>
 #include <tuple>
 #include <type_traits>
+
 #include "stringhelper.h"
 #include "floating_point_to_integer.h"
+#include "Math.h"
+
+#include "IMzSpectrum.h"
+//#include "../../MzLibUtil/MzRange.h"
+#include "IsotopicEnvelope.h"
+//#include "../../Chemistry/ClassExtensions.h"
+#include "IMzPeak.h"
+//#include "../../MzLibUtil/Tolerance.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -36,31 +38,27 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../../Chemistry/Chemistry.h"
 using namespace Chemistry;
+#include "../../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
+
+#include "../../Spectra/Spectrum.h"
 using namespace Spectra;
 
 namespace MassSpectrometry {
     template<typename TPeak>
     class MzSpectrum : public Spectrum<TPeak>, public IMzSpectrum<TPeak> {
-        static_assert(std::is_base_of<IMzPeak, TPeak>::value, L"TPeak must inherit from IMzPeak");
+        static_assert(std::is_base_of<IMzPeak, TPeak>::value, "TPeak must inherit from IMzPeak");
 
     private:
         static constexpr int numAveraginesToGenerate = 1500;
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static std::vector<std::vector<double>> const allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static std::vector<std::vector<double>> const allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static std::vector<double> const mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static std::vector<double> const diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
-
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static std::vector<double> const mms = {1.0029, 2.0052, 3.0077, 4.01, 5.012, 6.0139, 7.0154, 8.0164};
-
-//C# TO C++ CONVERTER TODO TASK: Native C++ does not allow initialization of static non-const/integral fields in their declarations - choose the conversion option for separate .h and .cpp files:
-        static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions = std::vector<std::tuple<double, std::vector<double>>>();
+        static std::vector<std::vector<double>> const allMasses;
+        static std::vector<std::vector<double>> const allIntensities;
+        static std::vector<double> const mostIntenseMasses;
+        static std::vector<double> const diffToMonoisotopic;
+        static std::vector<double> const mms;
+        static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions;
 
 
     private:
@@ -81,49 +79,51 @@ namespace MassSpectrometry {
 
     public:
         MzRange *getRange() const override {
-            return new MzRange(getFirstX(), getLastX());
+            return new MzRange(this->getFirstX(), this->getLastX());
         }
 
-        static std::vector<unsigned char> Get64Bitarray(std::vector<double> &array_Renamed) {
-            auto mem = new MemoryStream();
-            for (auto okk : array_Renamed) {
-                std::vector<unsigned char> ok = BitConverter::GetBytes(okk);
-                mem->Write(ok, 0, ok.size());
+        static std::vector<unsigned char> Get64Bitarray(std::vector<double> array_Renamed) {
+            std::vector<unsigned char> ok;
+            for (double okk : array_Renamed) {
+                unsigned char* ptr = (unsigned char *)(&okk);
+                for ( int i=0; i<sizeof(double); i++ ){
+                    ok.push_back(*ptr);
+                    ptr++;
+                }
             }
-            mem->Position = 0;
-
-            delete mem;
-            return mem->ToArray();
+            return ok;
         }
 
         std::vector<unsigned char> Get64BitYarray() override {
-            return Get64Bitarray(getYArray());
+            return Get64Bitarray(this->getYArray());
         }
 
         std::vector<unsigned char> Get64BitXarray() override {
-            return Get64Bitarray(getXArray());
+            return Get64Bitarray(this->getXArray());
         }
 
         std::string ToString() override {
-            return StringHelper::formatSimple(L"{0} (Peaks {1})", getRange(), getSize());
+            return StringHelper::formatSimple("{0} (Peaks {1})", getRange(), this->getSize());
         }
 
         // Mass tolerance must account for different isotope spacing!
-        std::vector<IsotopicEnvelope*> Deconvolute(MzRange *theRange, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatioLimit) override {
+        std::vector<IsotopicEnvelope*> Deconvolute(MzRange *theRange, int maxAssumedChargeState,
+                                                   double deconvolutionTolerancePpm,
+                                                   double intensityRatioLimit) override {
             auto isolatedMassesAndCharges = std::vector<IsotopicEnvelope*>();
-
-            for (auto candidateForMostIntensePeak : ExtractIndices(theRange->Minimum, theRange->Maximum)) {
+            
+            for (auto candidateForMostIntensePeak : this->ExtractIndices(theRange->getMinimum(), theRange->getMaximum())){
                 IsotopicEnvelope *bestIsotopeEnvelopeForThisPeak = nullptr;
-
-                auto candidateForMostIntensePeakMz = getXArray()[candidateForMostIntensePeak];
+                
+                auto candidateForMostIntensePeakMz = this->getXArray()[candidateForMostIntensePeak];
                 //Console.WriteLine("candidateForMostIntensePeakMz: " + candidateForMostIntensePeakMz);
-                auto candidateForMostIntensePeakIntensity = getYArray()[candidateForMostIntensePeak];
-
+                auto candidateForMostIntensePeakIntensity = this->getYArray()[candidateForMostIntensePeak];
+                
                 for (int chargeState = 1; chargeState <= maxAssumedChargeState; chargeState++) {
                     //Console.WriteLine(" chargeState: " + chargeState);
-                    auto testMostIntenseMass = Chemistry::ClassExtensions::ToMass(candidateForMostIntensePeakMz, chargeState);
-
-                    auto massIndex = Array::BinarySearch(mostIntenseMasses, testMostIntenseMass);
+                    double testMostIntenseMass = Chemistry::ClassExtensions::ToMass(candidateForMostIntensePeakMz, chargeState);
+                    
+                    int massIndex = std::binary_search(mostIntenseMasses.begin(), mostIntenseMasses.end(), testMostIntenseMass);
                     if (massIndex < 0) {
                         massIndex = ~massIndex;
                     }
@@ -132,12 +132,13 @@ namespace MassSpectrometry {
                         break;
                     }
                     //Console.WriteLine("  massIndex: " + massIndex);
-
-                    auto listOfPeaks = std::vector<(double, double)*> {(candidateForMostIntensePeakMz, candidateForMostIntensePeakIntensity)};
-                    auto listOfRatios = std::vector<std::vector<std::vector<double>>>(massIndex) / candidateForMostIntensePeakIntensity };
+                    
+                    auto listOfPeaks = std::vector<std::tuple<double, double>> {(candidateForMostIntensePeakMz, candidateForMostIntensePeakIntensity)};
+                    auto listOfRatios = std::vector<double>{ allIntensities[massIndex][0] / candidateForMostIntensePeakIntensity };
+                
                     // Assuming the test peak is most intense...
                     // Try to find the rest of the isotopes!
-
+                
                     double differenceBetweenTheorAndActual = testMostIntenseMass - mostIntenseMasses[massIndex];
                     double totalIntensity = candidateForMostIntensePeakIntensity;
                     for (int indexToLookAt = 1; indexToLookAt < allIntensities[massIndex].size(); indexToLookAt++) {
@@ -145,11 +146,13 @@ namespace MassSpectrometry {
                         double theorMassThatTryingToFind = allMasses[massIndex][indexToLookAt] + differenceBetweenTheorAndActual;
                         //Console.WriteLine("   theorMassThatTryingToFind: " + theorMassThatTryingToFind);
                         //Console.WriteLine("   theorMassThatTryingToFind.ToMz(chargeState): " + theorMassThatTryingToFind.ToMz(chargeState));
-                        auto closestPeakToTheorMass = GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMassThatTryingToFind, chargeState));
-                        auto closestPeakmz = getXArray()[closestPeakToTheorMass];
+                        auto closestPeakToTheorMass = this->GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMassThatTryingToFind, chargeState));
+                        auto closestPeakmz = this->getXArray()[closestPeakToTheorMass];
                         //Console.WriteLine("   closestPeakmz: " + closestPeakmz);
-                        auto closestPeakIntensity = getYArray()[closestPeakToTheorMass];
-                        if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm && Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit) && !std::find(listOfPeaks.begin(), listOfPeaks.end(), (closestPeakmz, closestPeakIntensity)) != listOfPeaks.end())) {
+                        auto closestPeakIntensity = this->getYArray()[closestPeakToTheorMass];
+                        if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm &&
+                            Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit)
+                            && (!std::find(listOfPeaks.begin(), listOfPeaks.end(), (closestPeakmz, closestPeakIntensity))) != listOfPeaks.end()) {
                             //Found a match to an isotope peak for this charge state!
                             //Console.WriteLine(" *   Found a match to an isotope peak for this charge state!");
                             //Console.WriteLine(" *   chargeState: " + chargeState);
@@ -162,21 +165,28 @@ namespace MassSpectrometry {
                             break;
                         }
                     }
+                    
+                    // Optimized for proteoforms!!
+                    auto extrapolatedMonoisotopicMass = testMostIntenseMass - diffToMonoisotopic[massIndex]; 
+                    double lM = std::numeric_limits<double>::max();
+                    std::for_each(listOfPeaks.begin(), listOfPeaks.end(), [&] (std::pair<double, double> b) {
+                            double b1 = std::get<0>(b);
+                            if ( b1< lM ) {
+                                lM = b1;
+                            }});
+                    // But may actually observe this small peak
+                    double lowestMass = Chemistry::ClassExtensions::ToMass(lM, chargeState); 
 
-                    auto extrapolatedMonoisotopicMass = testMostIntenseMass - diffToMonoisotopic[massIndex]; // Optimized for proteoforms!!
-                    auto lowestMass = listOfPeaks.Min([&] (std::any b) {
-                        b::Item1;
-                    }).ToMass(chargeState); // But may actually observe this small peak
                     auto monoisotopicMass = std::abs(extrapolatedMonoisotopicMass - lowestMass) < 0.5 ? lowestMass : extrapolatedMonoisotopicMass;
-
-                    IsotopicEnvelope *test = new IsotopicEnvelope(listOfPeaks, monoisotopicMass, chargeState, totalIntensity, MathNet::Numerics::Statistics::Statistics::StandardDeviation(listOfRatios), massIndex);
-
+            
+                    IsotopicEnvelope *test = new IsotopicEnvelope(listOfPeaks, monoisotopicMass, chargeState, totalIntensity, Math::StandardDeviation(listOfRatios), massIndex);
+            
                     if (listOfPeaks.size() >= 2 && ScoreIsotopeEnvelope(test) > ScoreIsotopeEnvelope(bestIsotopeEnvelopeForThisPeak)) {
                         //Console.WriteLine("Better charge state is " + test.charge);
                         //Console.WriteLine("peaks: " + string.Join(",", listOfPeaks.Select(b => b.Item1)));
                         bestIsotopeEnvelopeForThisPeak = test;
                     }
-
+                    
 //C# TO C++ CONVERTER TODO TASK: A 'delete test' statement was not added since test was passed to a method or constructor. Handle memory management manually.
                 }
 
@@ -184,19 +194,19 @@ namespace MassSpectrometry {
                     isolatedMassesAndCharges.push_back(bestIsotopeEnvelopeForThisPeak);
                 }
             }
-
+    
             std::unordered_set<double> seen = std::unordered_set<double>();
             for (auto ok : isolatedMassesAndCharges.OrderByDescending([&] (std::any b) {
-                ScoreIsotopeEnvelope(b);
-            })) {
+                        ScoreIsotopeEnvelope(b);
+                    })) {
                 if (seen.Overlaps(ok::peaks->Select([&] (std::any b) {
-                    b::Item1;
-                }))) {
+                                b::Item1;
+                            }))) {
                     continue;
                 }
                 for (auto ah : ok::peaks->Select([&] (std::any b) {
-                    b::Item1;
-                })) {
+                            b::Item1;
+                        })) {
                     seen.insert(ah);
                 }
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
@@ -218,7 +228,7 @@ namespace MassSpectrometry {
                     for (int mm = 1; mm <= mms.size(); mm++) {
                         double diffToNextMmPeak = mms[mm - 1];
                         double theorMass = mMass + diffToNextMmPeak;
-                        auto closestpeak = GetPeak(GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMass, chargeState)));
+                        auto closestpeak = GetPeak(this->GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMass, chargeState)));
                         if (massTolerance->Within(Chemistry::ClassExtensions::ToMass(closestpeak->getMz(), chargeState), theorMass) && SatisfiesRatios(mMass, mm, peak, closestpeak, intensityRatio)) {
                             // Found a match to an isotope peak for this charge state!
                             listOfPeaksForThisChargeState.push_back(closestpeak);

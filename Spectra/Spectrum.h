@@ -38,7 +38,7 @@ namespace Spectra {
     /// <typeparam name="TPeak"></typeparam>
     template<typename TPeak>
     class Spectrum : public ISpectrum<TPeak> {
-        static_assert(std::is_base_of<IPeak, TPeak>::value, L"TPeak must inherit from IPeak");
+        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
 
     private:
         std::vector<double> privateXArray;
@@ -129,7 +129,12 @@ namespace Spectra {
 
         double getSumOfAllY() const override {
             if (!sumOfAllY.has_value()) {
-                sumOfAllY = getYArray().Sum();
+                // sumOfAllY = privateYArray.Sum();
+                double s = 0.0;
+                std::for_each(privateYArray.begin(), privateYArray.end(), [&] (double *a) {
+                        s += *a;
+                    });
+                sumOfAllY = std::make_optional(s);
             }
             return sumOfAllY.value();
         }

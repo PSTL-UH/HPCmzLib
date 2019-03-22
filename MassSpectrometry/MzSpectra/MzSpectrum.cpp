@@ -8,6 +8,13 @@ using namespace Spectra;
 
 namespace MassSpectrometry {
 
+    static std::vector<std::vector<double>> const allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    static std::vector<std::vector<double>> const allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    static std::vector<double> const mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
+    static std::vector<double> const diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
+    static std::vector<double> const mms = {1.0029, 2.0052, 3.0077, 4.01, 5.012, 6.0139, 7.0154, 8.0164};
+    static const std::vector<std::tuple<double, std::vector<double>>> intensityFractions = std::vector<std::tuple<double, std::vector<double>>>();    
+
     MzSpectrum<TPeak>::StaticConstructor::StaticConstructor() {
         // AVERAGINE
         constexpr double averageC = 4.9384;

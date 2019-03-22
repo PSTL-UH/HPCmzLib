@@ -3,7 +3,7 @@
 #include "IPeak.h"
 
 namespace Spectra {
-    class Peak : public IPeak {
+    class Peak : public virtual IPeak {
     private:
         double privateX = 0;
         double privateY = 0;

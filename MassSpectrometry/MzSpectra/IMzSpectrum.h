@@ -6,10 +6,12 @@
 #include <type_traits>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class MzRange; }
-namespace MassSpectrometry { class IsotopicEnvelope; }
-namespace MassSpectrometry { class IMzPeak; }
-namespace MzLibUtil { class Tolerance; }
+//namespace MzLibUtil { class MzRange; }
+//namespace MzLibUtil { class Tolerance; }
+//namespace MassSpectrometry { class IsotopicEnvelope; }
+#include "IsotopicEnvelope.h"
+//namespace MassSpectrometry { class IMzPeak; }
+#include "IMzPeak.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -29,6 +31,7 @@ namespace MzLibUtil { class Tolerance; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
 using namespace Spectra;
 
@@ -38,7 +41,7 @@ namespace MassSpectrometry {
 //ORIGINAL LINE: public interface IMzSpectrum<out TPeak> : ISpectrum<TPeak> where TPeak : IMzPeak
     class IMzSpectrum : public ISpectrum<TPeak>
     {
-    static_assert(std::is_base_of<IMzPeak, TPeak>::value, L"TPeak must inherit from IMzPeak");
+        static_assert(std::is_base_of<IMzPeak, TPeak>::value, "TPeak must inherit from IMzPeak");
 
     public:
         virtual MzRange *getRange() const = 0;

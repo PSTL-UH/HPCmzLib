@@ -5,7 +5,7 @@
 using namespace Spectra;
 
 namespace MassSpectrometry {
-    class IMzPeak : public IPeak {
+    class IMzPeak :  public virtual IPeak {
 
     public:
         virtual double getIntensity() const = 0;

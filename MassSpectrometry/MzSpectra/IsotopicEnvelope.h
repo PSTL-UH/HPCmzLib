@@ -2,32 +2,22 @@
 
 #include <string>
 #include <vector>
-
+#include <tuple>
 
 namespace MassSpectrometry {
     class IsotopicEnvelope {
-//        #region Public Fields
 
     public:
-        const std::vector<(double, double)*> peaks;
+        const std::vector<std::tuple<double, double>> peaks;
         const double monoisotopicMass;
         const int charge;
         const double totalIntensity;
         const double stDev;
         const int massIndex;
 
-//        #endregion Public Fields
+        IsotopicEnvelope(std::vector<std::tuple<double, double>> &bestListOfPeaks, double bestMonoisotopicMass, int bestChargeState, double bestTotalIntensity, double bestStDev, int bestMassIndex);
 
-//        #region Public Constructors
+        std::string ToString();
 
-        IsotopicEnvelope(std::vector<(double, double)*> &bestListOfPeaks, double bestMonoisotopicMass, int bestChargeState, double bestTotalIntensity, double bestStDev, int bestMassIndex);
-
-//        #endregion Public Constructors
-
-//        #region Public Methods
-
-        std::wstring ToString() override;
-
-//        #endregion Public Methods
     };
 }
