@@ -32,6 +32,7 @@ int main ( int argc, char **argv )
     Test::TestModifications::Test_modificationsHashCode();
 
 #ifdef LATER
+    // Uses PtmLoader
     std::cout << ++i << ". Test_ModificationWithNoMassWritten " << std::endl;    
     Test::TestModifications::Test_ModificationWithNoMassWritten();    
 #endif
@@ -42,12 +43,15 @@ int main ( int argc, char **argv )
     Test::TestModifications::ModificationEquality();
 
 #ifdef LATER
+    // Requires operator overloading of operator |
     std::cout << ++i << ". ModificationSitesTest " << std::endl;    
     Test::TestModifications::ModificationSitesTest();
 
     std::cout << ++i << ". Sites " << std::endl;    
     Test::TestModifications::Sites();
+#endif    
 
+#ifdef LATER    
     std::cout << ++i << ". ModificationCollectionTest " << std::endl;    
     Test::TestModifications::ModificationCollectionTest();
 
@@ -157,7 +161,9 @@ namespace Test {
         auto b = a::EnumerateActiveSites();
         Assert::IsTrue(b->Count() == 3);
     }
-
+#endif
+#ifdef LATER
+    
     void TestModifications::ModificationCollectionTest() {
         OldSchoolModification tempVar(1, "Mod1");
         ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, "Mod2")});

@@ -9,10 +9,10 @@ using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
 
-const std::unordered_map<std::string, char_t> PtmListLoader::aminoAcidCodes;
+const std::unordered_map<std::string, char> PtmListLoader::aminoAcidCodes;
 
     PtmListLoader::StaticConstructor::StaticConstructor() {
-        aminoAcidCodes = std::unordered_map<std::string, char_t> {
+        aminoAcidCodes = std::unordered_map<std::string, char> {
             {"Alanine", 'A'}, {
             {"Asparagine", 'N'}, {
             {"Aspartic Acid", 'D'}, {

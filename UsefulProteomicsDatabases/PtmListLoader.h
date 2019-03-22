@@ -6,18 +6,20 @@
 #include <optional>
 #include "stringhelper.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class Modification; }
-
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
+#include "../MzLibUtil.h"
 using namespace MzLibUtil;
+
+#include "../Proteomics/Proteomics.h"
 using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases {
     class PtmListLoader final {
 
     private:
-        static const std::unordered_map<std::string, wchar_t> aminoAcidCodes;
+        static const std::unordered_map<std::string, char> aminoAcidCodes;
 
     private:
         class StaticConstructor {
