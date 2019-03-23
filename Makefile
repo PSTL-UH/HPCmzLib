@@ -25,7 +25,9 @@ all:
 	cd MzLibUtil ; make ; cd ..
 	cd Chemistry ; make ; cd ..
 	cd Proteomics ; make ; cd ..
-
+	cd Spectra ; make ; cd ..
+	cd MassSpectrometry ; make ; cd ..
+	cd UsefulProteomicsDatabases ; make ;  cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)

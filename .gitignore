@@ -1,11 +1,11 @@
 *.o
 *.a
 *~
-*\\#
+*\#
+typescript
 Test/ChemicalFormulaTestFixture
 Test/ElementsAndIsotopesTests
 Test/TestModifications
 Test/TestAminoAcids
-Test/typescript
 Test/elements.dat
-Test/*\\#
+
