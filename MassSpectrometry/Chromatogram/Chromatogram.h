@@ -32,41 +32,10 @@ using namespace MzLibUtil;
 using namespace Spectra;
 
 namespace MassSpectrometry {
-    class Chromatogram: public AChromatogram<ChromatographicPeak> {
-
-    public:
-        Chromatogram(std::vector<double> &times, std::vector<double> &intensities, bool shouldCopy) : AChromatogram<ChromatographicPeak>(times, intensities, shouldCopy) {
-        }
-
-        Chromatogram(std::vector<std::vector<double>> &timeintensities) : AChromatogram<ChromatographicPeak>(timeintensities) {
-        }
-
-        Chromatogram(const Chromatogram<void> &other) : AChromatogram<ChromatographicPeak>(other) {
-        }
-
-        Chromatogram<void> *CreateSmoothChromatogram(SmoothingType smoothing, int points) {
-            switch (smoothing) {
-                case SmoothingType::BoxCar: {
-                    std::vector<double> newTimes = this->getXArray().BoxCarSmooth(points);
-                    std::vector<double> newIntensities = this->getYArray().BoxCarSmooth(points);
-                    return new Chromatogram(newTimes, newIntensities, false);
-
-                }
-                default:
-                    return new Chromatogram(this);
-            }
-        }
-
-    protected:
-        ChromatographicPeak *GeneratePeak(int index) override {
-            return new ChromatographicPeak(this->getXArray()[index], this->getYArray()[index]);
-        }
-
-    };
 
     template<typename TPeak>
     class AChromatogram : public Spectrum<TPeak> {
-        static_assert(std::is_base_of<IPeak, TPeak>::value, L"TPeak must inherit from IPeak");
+        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
 
     protected:
         AChromatogram(std::vector<double> &times, std::vector<double> &intensities, bool shouldCopy) : Spectrum<TPeak>(times, intensities, shouldCopy) {
@@ -75,7 +44,7 @@ namespace MassSpectrometry {
         AChromatogram(std::vector<std::vector<double>> &timeintensities) : Spectrum<TPeak>(timeintensities) {
         }
 
-        AChromatogram(const AChromatogram<TPeak> &other) : AChromatogram(other->getXArray(), other->getYArray(), true) {
+        AChromatogram(const AChromatogram<TPeak> &other) : AChromatogram(other.getXArray(), other.getYArray(), true) {
         }
 
     public:
@@ -89,13 +58,17 @@ namespace MassSpectrometry {
 
         std::vector<double> GetTimes() {
             std::vector<double> times = std::vector<double>(this->getSize());
-            Buffer::BlockCopy(this->getXArray(), 0, times, 0, sizeof(double) * this->getSize());
+            //Buffer::BlockCopy(this->getXArray(), 0, times, 0, sizeof(double) * this->getSize());
+            std::vector<double> d = this->getXArray();
+            std::copy(d.begin(), d.begin()+this->getSize(), times.begin());
             return times;
         }
 
         std::vector<double> GetIntensities() {
             std::vector<double> intensities = std::vector<double>(this->getSize());
-            Buffer::BlockCopy(this->getYArray(), 0, intensities, 0, sizeof(double) * this->getSize());
+            // Buffer::BlockCopy(this->getYArray(), 0, intensities, 0, sizeof(double) * this->getSize());
+            std::vector<double> d = this->getYArray();
+            std::copy (d.begin(), d.begin()+this->getSize(), intensities.begin() );
             return intensities;
         }
 
@@ -112,13 +85,15 @@ namespace MassSpectrometry {
         }
 
         virtual TPeak GetApex(double mintime, double maxTime) {
-            int index = Array::BinarySearch(this->getXArray(), mintime);
+            //int index = Array::BinarySearch(this->getXArray(), mintime);
+            std::vector<double> d = this->getXArray();
+            int index = std::binary_search(d.begin(), d.end(), mintime);
             if (index < 0) {
                 index = ~index;
             }
 
             if (index >= this->getSize()) {
-                return GetPeak(this->getSize() - 1);
+                return this->GetPeak(this->getSize() - 1);
             }
 
             double maxvalue = -1; // double.negative infinity?
@@ -139,7 +114,9 @@ namespace MassSpectrometry {
         }
 
         virtual ChromatographicElutionProfile<TPeak> *GetElutionProfile(double mintime, double maxTime) {
-            int index = Array::BinarySearch(this->getXArray(), mintime);
+            //int index = Array::BinarySearch(this->getXArray(), mintime);
+            std::vector<double> d = this->getXArray();
+            int index = std::binary_search(d.begin(), d.end(), mintime);
             if (index < 0) {
                 index = ~index;
             }
@@ -153,11 +130,13 @@ namespace MassSpectrometry {
         }
 
         virtual TPeak GetApex() {
-            return GetPeak(this->getIndexOfPeakWithHighesetY());
+            return this->GetPeak(this->getIndexOfPeakWithHighesetY().value());
         }
 
         TPeak FindNearestApex(double rt, int skipablePts) {
-            int index = Array::BinarySearch(this->getXArray(), rt);
+            //int index = Array::BinarySearch(this->getXArray(), rt);
+            std::vector<double> d = this->getXArray();
+            int index = std::binary_search(d.begin(), d.end(), rt);
             if (index < 0) {
                 index = ~index;
             }
@@ -208,6 +187,40 @@ namespace MassSpectrometry {
 
         std::string ToString() {
             return StringHelper::formatSimple("Count = {0:N0} TIC = {1:G4}", this->getSize(), this->getYArray().Sum());
+        }
+
+    };
+
+
+    class Chromatogram: public AChromatogram<ChromatographicPeak> {
+        using AChromatogram<ChromatographicPeak>::AChromatogram;
+        
+    public:
+        Chromatogram(std::vector<double> &times, std::vector<double> &intensities, bool shouldCopy) : AChromatogram<ChromatographicPeak>(times, intensities, shouldCopy) {
+        }
+
+        Chromatogram(std::vector<std::vector<double>> &timeintensities) : AChromatogram<ChromatographicPeak*>(timeintensities) {
+        }
+
+        Chromatogram(const Chromatogram &other) : AChromatogram<ChromatographicPeak>(other) {
+        }
+
+        Chromatogram *CreateSmoothChromatogram(SmoothingType smoothing, int points) {
+            switch (smoothing) {
+                case SmoothingType::BoxCar: {
+                    std::vector<double> newTimes = this->getXArray().BoxCarSmooth(points);
+                    std::vector<double> newIntensities = this->getYArray().BoxCarSmooth(points);
+                    return new Chromatogram(newTimes, newIntensities, false);
+
+                }
+                default:
+                    return new Chromatogram();
+            }
+        }
+
+    protected:
+        ChromatographicPeak *GeneratePeak(int index) override {
+            return new ChromatographicPeak(this->getXArray()[index], this->getYArray()[index]);
         }
 
     };

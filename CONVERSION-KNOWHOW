@@ -66,3 +66,26 @@
 8. ICollection should be a std::vector
 9. ISet has to contain every element only once, probably std::set
 10. IEquatable
+
+11.Replace Buffer::BlockCopy with std::copy assuming you need the result in a
+   std::vector<>, e.g.
+
+   void BlockCopy (Array src, int srcOffset, Array dst, int dstOffset, int count);
+ 
+   Buffer::BlockCopy(xy, 0, getXArray(), 0, sizeof(double) * count);
+   Buffer::BlockCopy(xy, sizeof(double)*count, getYArray(), 0, sizeof(double)*count);
+
+  with
+    copy( InputIt first, InputIt last, OutputIt d_first );
+    
+    std::copy (xy.begin(), xy.begin()+count, privateXArray.begin()); 
+    std::copy (xy.begin()+count, xy.end(), privateYArray.begin()); 
+
+12. Replace Array::BinarySearch with std::binary_search, e.g. 
+
+   int index = Array::BinarySearch(getXArray(), x);
+
+  with
+  
+   int index = std::binary_search(privateXArray.begin(), privateXArray.end(), x);
+

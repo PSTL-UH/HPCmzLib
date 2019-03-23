@@ -81,13 +81,13 @@ namespace Spectra {
         std::vector<double> getXArray() const override {
             return privateXArray;
         }
-        void setXArray(const std::vector<double> &value) override {
+        void setXArray(const std::vector<double> &value)  {
             privateXArray = value;
         }
         std::vector<double> getYArray() const override {
             return privateYArray;
         }
-        void setYArray(const std::vector<double> &value) override {
+        void setYArray(const std::vector<double> &value)  {
             privateYArray = value;
         }
         double getFirstX() const override {
@@ -102,10 +102,11 @@ namespace Spectra {
             return privateXArray.size();
         }
 
-        std::optional<int> getIndexOfPeakWithHighesetY() const {
+        std::optional<int> getIndexOfPeakWithHighesetY()  {
             if (!indexOfpeakWithHighestY.has_value()) {
                 //indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
-                indexOfpeakWithHighestY = std::make_optional(std::max_element(privateYArray.begin(), privateYArray.end()));
+                int index = std::distance(privateYArray.begin(), std::max_element(privateYArray.begin(), privateYArray.end()));
+                indexOfpeakWithHighestY = std::make_optional(index);
                 return indexOfpeakWithHighestY;
             }
             return std::nullopt;
@@ -114,7 +115,7 @@ namespace Spectra {
         double getYofPeakWithHighestY() const override {
             // return getYArray()[getIndexOfPeakWithHighesetY()];
             if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return privateYArray[getIndexOfPeakWithHighesetY()];
+                return privateYArray[getIndexOfPeakWithHighesetY().value()];
             }
             return -1.0;        
         }
@@ -122,12 +123,12 @@ namespace Spectra {
         double getXofPeakWithHighestY() const override {
             //return getXArray()[getIndexOfPeakWithHighesetY()];
             if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return privateXArray[getIndexOfPeakWithHighesetY()];
+                return privateXArray[getIndexOfPeakWithHighesetY().value()];
             }
             return -1.0;        
         }
 
-        double getSumOfAllY() const override {
+        double getSumOfAllY() {
             if (!sumOfAllY.has_value()) {
                 // sumOfAllY = privateYArray.Sum();
                 double s = 0.0;
@@ -210,8 +211,8 @@ namespace Spectra {
 
         std::vector<TPeak> FilterByNumberOfMostIntense(int topNPeaks) override {
             auto quantile = 1.0 - static_cast<double>(topNPeaks) / getSize();
-            quantile = std::max(0, quantile);
-            quantile = std::min(1, quantile);
+            quantile = std::max((double)0.0, quantile);
+            quantile = std::min((double)1.0, quantile);
             double cutoffYvalue = getYArray().Quantile(quantile);
             std::vector<TPeak> t;
             
