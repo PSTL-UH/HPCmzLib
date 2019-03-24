@@ -1,5 +1,8 @@
+#pragma once
+
 #include <cmath>
 #include <vector>
+#include <iostream>
 
 class Math {
 public:
@@ -22,5 +25,17 @@ public:
         }
         
         return variance / (size - 1);
+    }
+
+    static double Quantile ( std::vector<double> vec, double quantile ) {
+        double val = (double) 0.0;
+        std::cout << " Math::Quantile: function is not correctly implemented. Please revisit if nevessary" << std::endl;
+        return val;
+    }
+
+    static  std::vector<double> BoxCarSmooth ( std::vector<double> vec, int points) {
+        std::vector<double> *d = new std::vector<double>();
+        std::cout << " Math::BoxCarSmooth: function is not correctly implemented. Please revisit if nevessary" << std::endl;
+        return *d;
     }
 };

@@ -30,6 +30,7 @@
 #include "RectangularVectors.h"
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
+#include "Math.h"
 
 namespace Spectra {
     /// <summary>
@@ -45,11 +46,11 @@ namespace Spectra {
         std::vector<double> privateYArray;
         
         std::vector<TPeak> peakList;
-        std::optional<int> indexOfpeakWithHighestY;
+        mutable std::optional<int> indexOfpeakWithHighestY;
         std::optional<double> sumOfAllY;
 
     protected:
-        Spectrum(std::vector<double> &x, std::vector<double> &y, bool shouldCopy) {
+        Spectrum(std::vector<double> x, std::vector<double> y, bool shouldCopy) {
             if (shouldCopy) {
                 setXArray(std::vector<double>(x.size()));
                 setYArray(std::vector<double>(y.size()));
@@ -65,15 +66,15 @@ namespace Spectra {
             peakList = std::vector<TPeak>(getSize());
         }
 
-        Spectrum(std::vector<std::vector<double>> &xy) {
-            auto count = (xy.size() == 0 ? 0 : xy[0].size());
+        Spectrum(std::vector<std::vector<double>> xy) {
+            auto count = (xy.size() == 0 ? 0 : xy[1].size());
 
             setXArray(std::vector<double>(count));
             setYArray(std::vector<double>(count));
             // Buffer::BlockCopy(xy, 0, getXArray(), 0, sizeof(double) * count);
             // Buffer::BlockCopy(xy, sizeof(double)*count, getYArray(), 0, sizeof(double)*count);
-            std::copy (xy.begin(), xy.begin()+count, privateXArray.begin()); 
-            std::copy (xy.begin()+count, xy.end(), privateYArray.begin()); 
+            std::copy (xy[0].begin(), xy[0].end(), privateXArray.begin()); 
+            std::copy (xy[1].begin(), xy[1].end(), privateYArray.begin()); 
             peakList = std::vector<TPeak>(getSize());
         }
 
@@ -112,18 +113,20 @@ namespace Spectra {
             return std::nullopt;
         }
 
-        double getYofPeakWithHighestY() const override {
+        //double getYofPeakWithHighestY() const override {
+        double getYofPeakWithHighestY() override {
             // return getYArray()[getIndexOfPeakWithHighesetY()];
             if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return privateYArray[getIndexOfPeakWithHighesetY().value()];
+                return getYArray()[getIndexOfPeakWithHighesetY().value()];
             }
             return -1.0;        
         }
 
-        double getXofPeakWithHighestY() const override {
+        //double getXofPeakWithHighestY() const override {
+        double getXofPeakWithHighestY() override {
             //return getXArray()[getIndexOfPeakWithHighesetY()];
             if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return privateXArray[getIndexOfPeakWithHighesetY().value()];
+                return getXArray()[getIndexOfPeakWithHighesetY().value()];
             }
             return -1.0;        
         }
@@ -132,8 +135,8 @@ namespace Spectra {
             if (!sumOfAllY.has_value()) {
                 // sumOfAllY = privateYArray.Sum();
                 double s = 0.0;
-                std::for_each(privateYArray.begin(), privateYArray.end(), [&] (double *a) {
-                        s += *a;
+                std::for_each(privateYArray.begin(), privateYArray.end(), [&] (double a) {
+                        s += a;
                     });
                 sumOfAllY = std::make_optional(s);
             }
@@ -144,22 +147,23 @@ namespace Spectra {
             return new DoubleRange(getFirstX(), getLastX());
         }
 
-        void ReplaceXbyApplyingFunction(std::function<double(IPeak*)> convertor) override {
+        void ReplaceXbyApplyingFunction(std::function<double(IPeak *)> convertor) override {
             for (int i = 0; i < getSize(); i++) {
-                getXArray()[i] = convertor(GetPeak(i));
+                TPeak t = GetPeak(i);
+                getXArray()[i] = convertor(&t);
             }
             peakList = std::vector<TPeak>(getSize());
         }
 
         std::vector<std::vector<double>> CopyTo2DArray() override {
-//C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper class reproduces the rectangular array initialization that is automatic in C#:
-//ORIGINAL LINE: double[,] data = new double[2, Size];
+            //C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper
+            // class reproduces the rectangular array initialization that is automatic in C#:
+            //ORIGINAL LINE: double[,] data = new double[2, Size];
             std::vector<std::vector<double>> data = RectangularVectors::ReturnRectangularDoubleVector(2, getSize());
-            constexpr int size = sizeof(double);
             // Buffer::BlockCopy(getXArray(), 0, data, 0, size * getSize());
             // Buffer::BlockCopy(getYArray(), 0, data, size * getSize(), size * getSize());
-            std::copy(data.begin(), data.begin()+getSize(), privateXArray.begin());
-            std::copy(data.begin()+getSize(), data.begin()+(2*getSize()), privateYArray.begin());
+            std::copy(data[0].begin(), data[0].begin()+getSize(), privateXArray.begin());
+            std::copy(data[1].begin(), data[1].begin()+getSize(), privateYArray.begin());
             return data;
         }
 
@@ -213,7 +217,8 @@ namespace Spectra {
             auto quantile = 1.0 - static_cast<double>(topNPeaks) / getSize();
             quantile = std::max((double)0.0, quantile);
             quantile = std::min((double)1.0, quantile);
-            double cutoffYvalue = getYArray().Quantile(quantile);
+            //double cutoffYvalue = getYArray().Quantile(quantile);
+            double cutoffYvalue = Math::Quantile(getYArray(), quantile);
             std::vector<TPeak> t;
             
             for (int i = 0; i < getSize(); i++) {
@@ -278,7 +283,7 @@ namespace Spectra {
         virtual TPeak GeneratePeak(int index) = 0;
 
         TPeak GetPeak(int index) {
-            if (peakList[index] == nullptr) {
+            if (peakList[index].getX() ==  (double)0 && peakList[index].getY() == (double)0 ) {
                 peakList[index] = GeneratePeak(index);
             }
             return peakList[index];

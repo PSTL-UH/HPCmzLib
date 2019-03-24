@@ -28,6 +28,7 @@ namespace MassSpectrometry {
     //class ChromatographicPeak final : public Peak {
     class ChromatographicPeak : public Peak {
     public:
+        ChromatographicPeak();
         ChromatographicPeak(double time, double intensity);
 
         double getIntensity() const;

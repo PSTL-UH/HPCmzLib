@@ -7,6 +7,8 @@ namespace MassSpectrometry {
 
     ChromatographicPeak::ChromatographicPeak(double time, double intensity) : Peak(time, intensity) {
     }
+    ChromatographicPeak::ChromatographicPeak() : Peak((double)0, (double)0) {
+    }
 
     double ChromatographicPeak::getIntensity() const {
         return getY();
