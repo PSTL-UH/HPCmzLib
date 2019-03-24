@@ -102,7 +102,7 @@ namespace MassSpectrometry {
             return Get64Bitarray(this->getXArray());
         }
 
-        std::string ToString() override {
+        std::string ToString() {
             return StringHelper::formatSimple("{0} (Peaks {1})", getRange(), this->getSize());
         }
 

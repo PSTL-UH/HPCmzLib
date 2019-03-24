@@ -30,12 +30,13 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace MassSpectrometry {
     template<typename TSpectrum>
     class MsDataScan : public IMsDataScan<TSpectrum> {
-        static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, L"TSpectrum must inherit from IMzSpectrum<IMzPeak>");
+        static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "TSpectrum must inherit from IMzSpectrum<IMzPeak>");
 
     private:
         TSpectrum privateMassSpectrum;
@@ -54,19 +55,19 @@ namespace MassSpectrometry {
 
     public:
         MsDataScan(TSpectrum massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId) {
-            OneBasedScanNumber = oneBasedScanNumber;
-            MsnOrder = msnOrder;
-            IsCentroid = isCentroid;
-            Polarity = polarity;
-            RetentionTime = retentionTime;
-            ScanWindowRange = scanWindowRange;
-            ScanFilter = scanFilter;
-            MzAnalyzer = mzAnalyzer;
-            TotalIonCurrent = totalIonCurrent;
-            InjectionTime = injectionTime;
-            NoiseData = noiseData;
+            privateOneBasedScanNumber = oneBasedScanNumber;
+            privateMsnOrder = msnOrder;
+            privateIsCentroid = isCentroid;
+            privatePolarity = polarity;
+            privateRetentionTime = retentionTime;
+            privateScanWindowRange = scanWindowRange;
+            privateScanFilter = scanFilter;
+            privateMzAnalyzer = mzAnalyzer;
+            privateTotalIonCurrent = totalIonCurrent;
+            privateInjectionTime = injectionTime;
+            privateNoiseData = noiseData;
             setMassSpectrum(massSpectrum);
-            NativeId = nativeId;
+            privateNativeId = nativeId;
         }
 
         /// <summary>
@@ -144,24 +145,33 @@ namespace MassSpectrometry {
 
     private:
         std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> &noiseData) {
+            std::vector<double> v;
             for (int i = 0; i < noiseData.size() / 3; i++) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return noiseData[0][i];
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return noiseData[0][i];
+                v.push_back (noiseData[0][i]);
             }
+            return v;
         }
 
         std::vector<double> GetNoiseDataNoise(std::vector<std::vector<double>> &noiseData) {
+            std::vector<double> v;
             for (int i = 0; i < noiseData.size() / 3; i++) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return noiseData[1][i];
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return noiseData[1][i];
+                v.push_back(noiseData[1][i]); 
             }
+            return v;
         }
 
         std::vector<double> GetNoiseDataBaseline(std::vector<std::vector<double>> &noiseData) {
+            std::vector<double> v;
             for (int i = 0; i < noiseData.size() / 3; i++) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return noiseData[2][i];
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return noiseData[2][i];
+                v.push_back(noiseData[2][i]);
             }
+            return v;
         }
 
     };

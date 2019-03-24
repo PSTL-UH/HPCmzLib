@@ -2,12 +2,14 @@
 
 #include "../Enums/Polarity.h"
 #include "../Enums/MzAnalyzerType.h"
+#include "../MzSpectra/IMzSpectrum.h"
 #include <string>
 #include <vector>
 #include <type_traits>
+#include "Nullable.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class MzRange; }
+//namespace MzLibUtil { class MzRange; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -26,16 +28,17 @@ namespace MzLibUtil { class MzRange; }
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
-
+#include "../../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace MassSpectrometry {
     template<typename TSpectrum>
-//C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance or contravariance in a generic type list:
-//ORIGINAL LINE: public interface IMsDataScan<out TSpectrum> where TSpectrum : IMzSpectrum<IMzPeak>
+    //C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance
+    // or contravariance in a generic type list:
+    //ORIGINAL LINE: public interface IMsDataScan<out TSpectrum> where TSpectrum : IMzSpectrum<IMzPeak>
     class IMsDataScan
     {
-    static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, L"TSpectrum must inherit from IMzSpectrum<IMzPeak>");
+    static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "TSpectrum must inherit from IMzSpectrum<IMzPeak>");
 
     public:
         virtual TSpectrum getMassSpectrum() const = 0;
