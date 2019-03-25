@@ -49,8 +49,10 @@ using namespace Spectra;
 namespace MassSpectrometry {
     template<typename TPeak>
     class MzSpectrum : public Spectrum<TPeak>, public IMzSpectrum<TPeak> {
+#ifndef NDEBUG
         static_assert(std::is_base_of<IMzPeak, TPeak>::value, "TPeak must inherit from IMzPeak");
-
+#endif
+        
     private:
 //        static constexpr int numAveraginesToGenerate = 1500;
         static std::vector<std::vector<double>> const allMasses;

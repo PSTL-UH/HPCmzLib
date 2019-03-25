@@ -37,12 +37,14 @@ using namespace Spectra;
 
 namespace MassSpectrometry {
     template<typename TPeak>
-//C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance or contravariance in a generic type list:
-//ORIGINAL LINE: public interface IMzSpectrum<out TPeak> : ISpectrum<TPeak> where TPeak : IMzPeak
+    //C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance
+    //or contravariance in a generic type list:
+    //ORIGINAL LINE: public interface IMzSpectrum<out TPeak>:ISpectrum<TPeak> where TPeak:IMzPeak
     class IMzSpectrum : public ISpectrum<TPeak>
     {
-        static_assert(std::is_base_of<IMzPeak, TPeak>::value, "TPeak must inherit from IMzPeak");
-
+#ifndef NDEBUG        
+        static_assert(std::is_base_of<IMzPeak, TPeak>::value, "IMzSpectrum: TPeak must inherit from IMzPeak");
+#endif
     public:
         virtual MzRange *getRange() const = 0;
 

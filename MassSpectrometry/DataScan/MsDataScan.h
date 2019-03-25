@@ -36,7 +36,7 @@ using namespace MzLibUtil;
 namespace MassSpectrometry {
     template<typename TSpectrum>
     class MsDataScan : public IMsDataScan<TSpectrum> {
-        static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "TSpectrum must inherit from IMzSpectrum<IMzPeak>");
+        // static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "TSpectrum must inherit from IMzSpectrum<IMzPeak>");
 
     private:
         TSpectrum privateMassSpectrum;

@@ -26,5 +26,6 @@ CFLAGS      = -g -O0
 
 CXX         = g++
 CXXFLAGS    = -Wall -g -O0 -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -std=c++17
+CXXLOCALFLAGS = -DNDEBUG
 LDFLAGS     = -L$(MZLIB_LIB_DIR) -lmzlib
 

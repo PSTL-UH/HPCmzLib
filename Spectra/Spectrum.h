@@ -39,8 +39,10 @@ namespace Spectra {
     /// <typeparam name="TPeak"></typeparam>
     template<typename TPeak>
     class Spectrum : public ISpectrum<TPeak> {
+#ifndef NDEBUG
         static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
-
+#endif
+        
     private:
         std::vector<double> privateXArray;
         std::vector<double> privateYArray;

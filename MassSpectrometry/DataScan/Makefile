@@ -14,23 +14,26 @@ HEADER = IMsDataScan.h             \
 	MsDataScanWithPrecursor.h
 
 OBJ = 	IMsDataScan.o              \
-	IMsDataScanWithPrecursor.o \
-	MsDataScan.o               \
+	IMsDataScanWithPrecursor.o 
+
+LOCALOBJ = MsDataScan.o              \
 	MsDataScanWithPrecursor.o
 
 
 .SUFFIXES: .o.cpp
 
 all:    
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScan.cpp
+#	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScanWithPrecursor.cpp
 	make $(MZLIB_LIB) 
 
 
-$(MZLIB_LIB): $(HEADER) $(OBJ) 
-	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
+$(MZLIB_LIB): $(HEADER) $(OBJ) $(LOCALOBJ)
+	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ) $(LOCALOBJ)
 
-$(OBJ):	$(HEADER)
-.cpp.o:	$(HEADER)
-	$(CXX) $(CXXFLAGS) -c $<
+#$(OBJ):	$(HEADER)
+#.cpp.o:	$(HEADER)
+#	$(CXX) $(CXXFLAGS) -c $<
 
 clean:  
 	rm -rf *.o *~

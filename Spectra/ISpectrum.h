@@ -39,8 +39,9 @@ namespace Spectra {
     //ORIGINAL LINE: public interface ISpectrum<out TPeak> where TPeak : IPeak
     class ISpectrum
     {
+#ifndef NDEBUG        
         static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
-
+#endif
     public:
         virtual std::vector<double> getXArray() const = 0;
         virtual std::vector<double> getYArray() const = 0;
