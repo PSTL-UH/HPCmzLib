@@ -23,17 +23,22 @@ LOCALOBJ = MsDataScan.o              \
 .SUFFIXES: .o.cpp
 
 all:    
-	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScan.cpp
-#	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScanWithPrecursor.cpp
 	make $(MZLIB_LIB) 
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) $(LOCALOBJ)
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ) $(LOCALOBJ)
 
-#$(OBJ):	$(HEADER)
-#.cpp.o:	$(HEADER)
-#	$(CXX) $(CXXFLAGS) -c $<
+
+MsDataScan.o: MsDataScan.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScan.cpp	
+
+MsDataScanWithPrecursor.o: MsDataScanWithPrecursor.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c MsDataScanWithPrecursor.cpp	
+
+$(OBJ):	$(HEADER)
+.cpp.o:	$(HEADER)
+	$(CXX) $(CXXFLAGS) -c $<
 
 clean:  
 	rm -rf *.o *~

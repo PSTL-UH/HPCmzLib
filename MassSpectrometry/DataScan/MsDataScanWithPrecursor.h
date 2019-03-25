@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <algorithm>
 #include <tuple>
 #include <optional>
 #include <type_traits>
@@ -132,32 +133,58 @@ namespace MassSpectrometry {
             return isolationRange;
         }
 
-        std::vector<IsotopicEnvelope*> GetIsolatedMassesAndCharges(IMzSpectrum<IMzPeak*> *precursorSpectrum, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatio) override {
+        std::vector<IsotopicEnvelope*> GetIsolatedMassesAndCharges(IMzSpectrum<IMzPeak*> *precursorSpectrum,
+                                                                   int maxAssumedChargeState,
+                                                                   double deconvolutionTolerancePpm,
+                                                                   double intensityRatio) override {
+            std::vector<IsotopicEnvelope*> v;
             if (getIsolationRange() == nullptr) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield break;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield break;
+                return v;
             }
 
-            for (auto haha : precursorSpectrum->Deconvolute(new MzRange(getIsolationRange()->Minimum - 8.5, getIsolationRange()->Maximum + 8.5), maxAssumedChargeState, deconvolutionTolerancePpm, intensityRatio).Where([&] (std::any b) {
+            MzRange *m = new MzRange(getIsolationRange()->getMinimum() - 8.5, getIsolationRange()->getMaximum() + 8.5);
+            std::vector<IsotopicEnvelope*> vIE = precursorSpectrum->Deconvolute(m, maxAssumedChargeState,
+                                                                                deconvolutionTolerancePpm,
+                                                                                intensityRatio);
+#ifdef ORIG
+            for (auto haha : vIE.Where([&] (std::any b) {
                 b::peaks::Any([&] (std::any cc) {
                 isolationRange->Contains(cc::Item1);
                 });
-            })) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    })) {
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 yield return haha;
             }
         }
+#endif
+            for (IsotopicEnvelope* haha : vIE ) {
+                bool found =false;
+                std::for_each (haha->peaks.begin(), haha->peaks.end(), [&] (std::tuple<double, double> cc) {
+                        if ( isolationRange->Contains(std::get<0>(cc) )) {
+                                found = true;
+                        };
+                    });
+                if ( found ) {
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    //yield return haha;
+                    v.push_back(haha);
+                }
+            }
+            return v;
+        }
 
         void TransformMzs(std::function<double(IPeak*)> convertorForSpectrum, std::function<double(IPeak*)> convertorForPrecursor) override {
-            getMassSpectrum()->ReplaceXbyApplyingFunction(convertorForSpectrum);
+            this->getMassSpectrum()->ReplaceXbyApplyingFunction(convertorForSpectrum);
             MzPeak tempVar(getSelectedIonMZ(), getSelectedIonIntensity().Value);
             this->setSelectedIonMZ(convertorForPrecursor(&tempVar));
             if (getSelectedIonMonoisotopicGuessMz().HasValue) {
                 MzPeak tempVar2(getSelectedIonMonoisotopicGuessMz().Value, getSelectedIonMonoisotopicGuessIntensity().Value);
                 this->setSelectedIonMonoisotopicGuessMz(convertorForPrecursor(&tempVar2));
             }
-            if (getIsolationMz().HasValue) {
-                MzPeak tempVar3(getIsolationMz().Value, getSelectedIonIntensity().Value);
+            if (getIsolationMz().has_value()) {
+                MzPeak tempVar3(getIsolationMz().value(), getSelectedIonIntensity().value());
                 this->setIsolationMz(convertorForPrecursor(&tempVar3));
             }
 
@@ -166,39 +193,64 @@ namespace MassSpectrometry {
         }
 
         void RefineSelectedMzAndIntensity(IMzSpectrum<IMzPeak*> *precursorSpectrum) override {
-            if (getIsolationMz().HasValue) {
-                auto thePeak = precursorSpectrum->GetClosestPeakIndex(getIsolationMz().Value);
-                setSelectedIonIntensity(precursorSpectrum->YArray[thePeak]);
-                setSelectedIonMZ(precursorSpectrum->XArray[thePeak]);
+            if (getIsolationMz().has_value()) {
+                auto thePeak = precursorSpectrum->GetClosestPeakIndex(getIsolationMz().value());
+                setSelectedIonIntensity(precursorSpectrum->getYArray()[thePeak]);
+                setSelectedIonMZ(precursorSpectrum->getXArray()[thePeak]);
             }
         }
 
         void ComputeSelectedPeakIntensity(IMzSpectrum<IMzPeak*> *precursorSpectrum) override {
             auto thePeak = precursorSpectrum->GetClosestPeakIndex(getSelectedIonMZ());
-            setSelectedIonIntensity(precursorSpectrum->YArray[thePeak]);
-            setSelectedIonMZ(precursorSpectrum->XArray[thePeak]);
+            setSelectedIonIntensity(precursorSpectrum->getYArray()[thePeak]);
+            setSelectedIonMZ(precursorSpectrum->getXArray()[thePeak]);
         }
 
         void ComputeMonoisotopicPeakIntensity(IMzSpectrum<IMzPeak*> *precursorSpectrum) override {
             auto thePeak = precursorSpectrum->GetClosestPeakIndex(getSelectedIonMonoisotopicGuessMz().Value);
-            setSelectedIonMonoisotopicGuessIntensity(precursorSpectrum->YArray[thePeak]);
-            setSelectedIonMonoisotopicGuessMz(precursorSpectrum->XArray[thePeak]);
+            setSelectedIonMonoisotopicGuessIntensity(precursorSpectrum->getYArray()[thePeak]);
+            setSelectedIonMonoisotopicGuessMz(precursorSpectrum->getXArray()[thePeak]);
         }
 
         std::vector<std::tuple<std::vector<IMzPeak*>, int>> GetIsolatedMassesAndChargesOld(IMzSpectrum<IMzPeak*> *precursorSpectrum, int maxAssumedChargeState, Tolerance *massTolerance, double intensityRatio) override {
+            std::vector<std::tuple<std::vector<IMzPeak*>, int>> v;
             if (getIsolationRange() == nullptr) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield break;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield break;
+                return v;
             }
-
+#ifdef ORIG
             for (auto haha : precursorSpectrum->DeconvoluteOld(new MzRange(getIsolationRange()->Minimum - 8.5, getIsolationRange()->Maximum + 8.5), maxAssumedChargeState, massTolerance, intensityRatio).Where([&] (std::any b) {
                 b::Item1->Any([&] (std::any cc) {
                 isolationRange->Contains(cc::Mz);
                 });
             })) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return haha;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return haha;
+                v.push_back (haha);
             }
+#endif
+            MzRange *m = new MzRange(getIsolationRange()->getMinimum() - 8.5, getIsolationRange()->getMaximum() + 8.5);
+            std::vector<std::tuple<std::vector<IMzPeak*>, int>> vtIe = precursorSpectrum->DeconvoluteOld(m,
+                                                                                maxAssumedChargeState,
+                                                                                massTolerance,
+                                                                                intensityRatio);
+
+            for ( std::tuple<std::vector<IMzPeak*>, int> haha : vtIe ) {
+                std::vector<IMzPeak*> vIP = std::get<0>(haha);
+                bool found =false;
+                std::for_each (vIP.begin(), vIP.end(), [&] (IMzPeak* cc) {
+                        if ( isolationRange->Contains(cc->getMz()) ) {
+                                found = true;
+                        };
+                    });
+                if ( found ) {
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    //yield return haha;
+                    v.push_back(haha);
+                }
+            }
+            return v;
         }
 
     };
