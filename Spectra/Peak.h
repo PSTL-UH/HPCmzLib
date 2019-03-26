@@ -9,6 +9,7 @@ namespace Spectra {
         double privateY = 0;
 
     public:
+        Peak();
         Peak(double x, double y);
 
         double getX() const override;

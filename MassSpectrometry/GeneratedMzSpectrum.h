@@ -8,7 +8,7 @@ namespace MassSpectrometry { class IMzPeak; }
 
 namespace MassSpectrometry {
     class GeneratedMzSpectrum : public MzSpectrum<IMzPeak*> {
-
+        
     public:
         GeneratedMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy);
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../../Spectra/ISpectrum.h"
+#include "../../Spectra/Spectrum.h"
 #include <vector>
 #include <tuple>
 #include <type_traits>
@@ -36,16 +36,24 @@ using namespace MzLibUtil;
 using namespace Spectra;
 
 namespace MassSpectrometry {
-    template<typename TPeak>
     //C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance
     //or contravariance in a generic type list:
     //ORIGINAL LINE: public interface IMzSpectrum<out TPeak>:ISpectrum<TPeak> where TPeak:IMzPeak
-    class IMzSpectrum : public ISpectrum<TPeak>
-    {
+//    template<typename TPeak>
+//    class IMzSpectrum : public ISpectrum<TPeak>
+
+    template<typename TPeak>
+    class IMzSpectrum : public Spectrum<TPeak>  {
 #ifndef NDEBUG        
         static_assert(std::is_base_of<IMzPeak, TPeak>::value, "IMzSpectrum: TPeak must inherit from IMzPeak");
 #endif
     public:
+        IMzSpectrum(std::vector<std::vector<double>> &mzintensities) : Spectrum<TPeak>(mzintensities) {
+        }
+
+        IMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy) : Spectrum<TPeak>(mz, intensities, shouldCopy) {
+        }
+
         virtual MzRange *getRange() const = 0;
 
         virtual std::vector<unsigned char> Get64BitXarray() = 0;

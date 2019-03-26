@@ -43,9 +43,15 @@ all:
 	cd Enums ; make ; cd ..
 	cd MzSpectra ; make ; cd ..
 
+GeneratedMzSpectrum.o: 	GeneratedMzSpectrum.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c GeneratedMzSpectrum.cpp	
+
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
+
+
+
 
 $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)

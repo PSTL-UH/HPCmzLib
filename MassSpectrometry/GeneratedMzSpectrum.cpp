@@ -4,7 +4,7 @@
 
 namespace MassSpectrometry {
 
-    GeneratedMzSpectrum::GeneratedMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy) : MzSpectrum<IMzPeak>(mz, intensities, shouldCopy) {
+    GeneratedMzSpectrum::GeneratedMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy) : MzSpectrum<IMzPeak*>(mz, intensities, shouldCopy) {
     }
 
     IMzPeak *GeneratedMzSpectrum::GeneratePeak(int index) {

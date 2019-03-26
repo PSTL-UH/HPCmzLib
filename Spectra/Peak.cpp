@@ -2,6 +2,11 @@
 
 namespace Spectra {
 
+    Peak::Peak() {
+        setX((double)0);
+        setY((double)0);
+    }
+
     Peak::Peak(double x, double y) {
         setX(x);
         setY(y);
