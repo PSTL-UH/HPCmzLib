@@ -85,7 +85,7 @@ namespace Spectra {
         void ReplaceXbyApplyingFunction(std::function<double(IPeak *)> convertor) override {
             for (int i = 0; i < this->getSize(); i++) {
                 TPeak t = GetPeak(i);
-                this->getXArray()[i] = convertor(&t);
+                this->getXArray()[i] = convertor(t);
             }
             peakList = std::vector<TPeak>(this->getSize());
         }
