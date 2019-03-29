@@ -1,4 +1,7 @@
-﻿#include "DeconvolutionFeatureWithMassesAndScans.h"
+﻿#include <algorithm>
+#include <string>
+
+#include "DeconvolutionFeatureWithMassesAndScans.h"
 #include "DeconvolutionFeature.h"
 #include "MzSpectra/IsotopicEnvelope.h"
 
@@ -39,9 +42,16 @@ namespace MassSpectrometry {
     }
 
     int DeconvolutionFeatureWithMassesAndScans::getNumPeaks() const {
+#ifdef ORIG
         return groups.Select([&] (std::any b) {
             b::NumPeaks;
         }).Sum();
+#endif
+        int sum=0;
+        std::for_each(groups.begin(), groups.end(), [&] ( DeconvolutionFeature *b ){
+                sum +=  b->getNumPeaks();
+            });
+        return sum;
     }
 
     double DeconvolutionFeatureWithMassesAndScans::getMinElutionTime() const {
@@ -71,12 +81,21 @@ namespace MassSpectrometry {
     std::string DeconvolutionFeatureWithMassesAndScans::ToString() {
         StringBuilder *sb = new StringBuilder();
         sb->append(OneLineString());
+#ifdef ORIG
         for (auto heh : groups.OrderBy([&] (std::any b) {
             -b::NumPeaks;
-        })) {
+                }));
+        
+#endif
+        std::sort (groups.begin(), groups.end(), [&](DeconvolutionFeature *l, DeconvolutionFeature *r ){
+                // C++ note: using > instead of < to account for the minus in the
+                // original code. 
+                return l->getNumPeaks() > r->getNumPeaks();
+            });
+        for (auto heh: groups) {
             sb->appendLine();
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            sb->append("  " + heh.ToString());
+            //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+            sb->append("  " + heh->ToString());
         }
 
         delete sb;
@@ -84,24 +103,45 @@ namespace MassSpectrometry {
     }
 
     std::string DeconvolutionFeatureWithMassesAndScans::OneLineString() {
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        return getMass().ToString("G8") + "\t"
-            + getNumPeaks() + "\t"
-            + (getMaxScanIndex() - getMinScanIndex() + 1) + "\t"
-            + getMinScanIndex() + "\t"
-            + getMaxScanIndex() + "\t"
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + ((getMinElutionTime() + getMaxElutionTime()) / 2).ToString("F2") + "\t"
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + getTotalIntensity().ToString("E5") + "\t"
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            + std::wstring::Join(",", (std::unordered_set<int>(groups.SelectMany([&] (std::any b) {
+        std::string s1 =  std::to_string(getMass()) + "\t"
+            + std::to_string(getNumPeaks()) + "\t"
+            + std::to_string((getMaxScanIndex() - getMinScanIndex() + 1)) + "\t"
+            + std::to_string(getMinScanIndex()) + "\t"
+            + std::to_string(getMaxScanIndex()) + "\t"
+            + std::to_string(((getMinElutionTime() + getMaxElutionTime()) / 2)) + "\t"
+            + std::to_string(getTotalIntensity()) + "\t";
+
+#ifdef ORIG        
+        std::string s2 = std::string::Join(",", (std::unordered_set<int>(groups.SelectMany([&] (std::any b) {
                 b::AllCharges;
-            })))->OrderBy([&] (std::any b) {
+                        })))->OrderBy([&] (std::any b) {
                 return b;
-            })) + "\t" + groups.OrderByDescending([&] (std::any b) {
+                 })) + "\t";
+#endif
+        std::vector<int> v;
+        for ( auto g: groups ) {
+            std::vector<int> w = g->getAllCharges();
+            for ( int  x : w ) {
+                v.push_back(x);
+            }
+        }
+        std::sort (v.begin(), v.end());
+        std::string s2;
+        for ( auto ve : v) {
+            s2 += std::to_string(ve) + "\t";
+        }
+        
+#ifdef ORIG
+        std:: string s3 = groups.OrderByDescending([&] (std::any b) {
                 b::MostIntenseEnvelope::totalIntensity;
             }).First().MostIntenseEnvelope.ToString();
+#endif
+        std::sort (groups.begin(), groups.end(), [&](DeconvolutionFeature *l, DeconvolutionFeature *r ){
+                return l->getMostIntenseEnvelope()->totalIntensity < r->getMostIntenseEnvelope()->totalIntensity;
+            });
+        std::string s3 = groups[0]->getMostIntenseEnvelope()->ToString();
+        
+        return s1+s2+s3;
     }
 
     void DeconvolutionFeatureWithMassesAndScans::AddEnvelope(IsotopicEnvelope *isotopicEnvelope, int scanIndex, double elutionTime) {
@@ -122,14 +162,32 @@ namespace MassSpectrometry {
             newMassGroup->AddEnvelope(isotopicEnvelope);
             groups.push_back(newMassGroup);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete newMassGroup' statement was not added since newMassGroup was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete newMassGroup' statement
+            // was not added since newMassGroup was passed to a method or constructor.
+            // Handle memory management manually.
         }
 
+#ifdef ORIG
         setMass(groups.OrderBy([&] (std::any b) {
             -b::NumPeaks;
         }).First().Mass);
+#endif
+        std::sort (groups.begin(), groups.end(), [&](DeconvolutionFeature *l, DeconvolutionFeature *r ){
+                // C++ note: using > instead of < to account for the minus in the
+                // original code. 
+                return l->getNumPeaks() > r->getNumPeaks();
+            });
+        setMass ( groups[0]->getMass());
+        
+#ifdef ORIG        
         setTotalIntensity(getTotalIntensity() + isotopicEnvelope->peaks.Sum([&] (std::any b) {
             b::Item2;
         }));
+#endif
+        double sum=0.0;
+        std::for_each(isotopicEnvelope->peaks.begin(), isotopicEnvelope->peaks.end(), [&] (std::tuple<double,double> b) {
+                sum += std::get<1>(b);
+            });
+        setTotalIntensity(getTotalIntensity() + sum);
     }
 }
