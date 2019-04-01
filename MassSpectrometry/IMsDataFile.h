@@ -6,7 +6,10 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace MassSpectrometry { class SourceFile; }
-namespace MassSpectrometry { class DeconvolutionFeatureWithMassesAndScans; }
+//namespace MassSpectrometry { class DeconvolutionFeatureWithMassesAndScans; }
+#include "DeconvolutionFeatureWithMassesAndScans.h"
+#include "MzSpectra/IMzPeak.h"
+#include "DataScan/IMsDataScan.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -46,6 +49,5 @@ namespace MassSpectrometry {
         virtual std::vector<TScan> GetMsScansInTimeRange(double firstRT, double lastRT) = 0;
 
         virtual int GetClosestOneBasedSpectrumNumber(double retentionTime) = 0;
-
     };
 }

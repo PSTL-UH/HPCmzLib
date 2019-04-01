@@ -4,6 +4,9 @@
 #include "SourceFile.h"
 #include "DeconvolutionFeatureWithMassesAndScans.h"
 #include "MzSpectra/IsotopicEnvelope.h"
+#include "MzSpectra/IMzSpectrum.h"
+#include "MzSpectra/IMzPeak.h"
+
 #include <vector>
 #include <cmath>
 #include <limits>
@@ -37,7 +40,7 @@ namespace MassSpectrometry {
     /// </summary>
     template<typename TScan>
     class MsDataFile : public IMsDataFile<TScan> {
-        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, L"TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
+        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, "TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
 
     private:
         MassSpectrometry::SourceFile *privateSourceFile;
@@ -70,14 +73,19 @@ namespace MassSpectrometry {
         virtual TScan GetOneBasedScan(int scanNumber) = 0;
 
         std::vector<TScan> GetMsScansInIndexRange(int FirstSpectrumNumber, int LastSpectrumNumber) {
+            std::vector<TScan> v;
             for (int oneBasedSpectrumNumber = FirstSpectrumNumber; oneBasedSpectrumNumber <= LastSpectrumNumber; oneBasedSpectrumNumber++) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return GetOneBasedScan(oneBasedSpectrumNumber);
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent
+                // to the C# 'yield' keyword:
+                //yield return GetOneBasedScan(oneBasedSpectrumNumber);
+                v.push_back(GetOneBasedScan(oneBasedSpectrumNumber));
             }
+            return v;
         }
 
         std::vector<TScan> GetMsScansInTimeRange(double firstRT, double lastRT) override {
             int oneBasedSpectrumNumber = GetClosestOneBasedSpectrumNumber(firstRT);
+            std::vector<TScan> v;
             while (oneBasedSpectrumNumber <= getNumSpectra()) {
                 TScan scan = GetOneBasedScan(oneBasedSpectrumNumber);
                 double rt = scan->getRetentionTime();
@@ -86,17 +94,23 @@ namespace MassSpectrometry {
                     continue;
                 }
                 if (rt > lastRT) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield break;
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an
+                    // equivalent to the C# 'yield' keyword:
+                    //yield break;
+                    return v;
                 }
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return scan;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an
+                // equivalent to the C# 'yield' keyword:
+                //yield return scan;
+                v.push_back (scan);
                 oneBasedSpectrumNumber++;
             }
+            return v;
         }
 
         int GetClosestOneBasedSpectrumNumber(double retentionTime) override {
-            // TODO need to convert this to a binary search of some sort. Or if the data is indexedMZML see if the indices work better.
+            // TODO need to convert this to a binary search of some sort. Or if
+            // the data is indexedMZML see if the indices work better.
             double bestDiff = std::numeric_limits<double>::max();
             for (int i = 0; i < getNumSpectra(); i++) {
                 double diff = std::abs(GetOneBasedScan(i + 1)->getRetentionTime() - retentionTime);
@@ -108,6 +122,8 @@ namespace MassSpectrometry {
             return getNumSpectra();
         }
 
+#ifdef LATER
+        // don't know how to translate these, will have to see how it is used later.
         System::Collections::IEnumerator *IEnumerable_GetEnumerator() override {
             return GetMsScansInIndexRange(1, getNumSpectra()).begin();
         }
@@ -115,21 +131,35 @@ namespace MassSpectrometry {
         IEnumerator<TScan> *GetEnumerator() {
             return GetMsScansInIndexRange(1, getNumSpectra()).begin();
         }
+#endif
 
-        std::vector<DeconvolutionFeatureWithMassesAndScans*> Deconvolute(std::optional<int> &minScan, std::optional<int> &maxScan, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatioLimit, double aggregationTolerancePpm, std::function<bool(TScan)> scanFilterFunc) override {
-            minScan = std::make_optional(minScan ? minScan : 1);
-            maxScan = std::make_optional(maxScan ? maxScan : getNumSpectra());
+        std::vector<DeconvolutionFeatureWithMassesAndScans*> Deconvolute(std::optional<int> &minScan,
+                                                                         std::optional<int> &maxScan,
+                                                                         int maxAssumedChargeState,
+                                                                         double deconvolutionTolerancePpm,
+                                                                         double intensityRatioLimit,
+                                                                         double aggregationTolerancePpm,
+                                                                         std::function<bool(TScan)> scanFilterFunc) override {
+            if ( !minScan.has_value()) {
+                minScan = std::make_optional(1);
+            }
+            if ( !maxScan.has_value() ) {
+                maxScan = std::make_optional( getNumSpectra());
+            }
 
             auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-            Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), [&] (std::any fff) {
-                for (int scanIndex = fff::Item1; scanIndex < fff::Item2; scanIndex++) {
-                    auto theScan = GetOneBasedScan(scanIndex);
-                    if (scanFilterFunc(theScan)) {
-                        MzRange tempVar(0, std::numeric_limits<double>::infinity());
-                        allAggregateGroups[scanIndex - minScan.value()] = theScan->getMassSpectrum()->Deconvolute(&tempVar, maxAssumedChargeState, deconvolutionTolerancePpm, intensityRatioLimit).ToList();
-                    }
-                }
-            });
+#ifdef ORIG
+            Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), [&] (std::any fff)
+                );
+#endif
+            for ( int scanIndex = minScan.value(); scanIndex < maxScan.value()+1; scanIndex++)  {
+                auto theScan = GetOneBasedScan(scanIndex);
+                if (scanFilterFunc(theScan)) {
+                    MzRange tempVar(0, std::numeric_limits<double>::infinity());
+                    allAggregateGroups[scanIndex - minScan.value()] = theScan->getMassSpectrum()->Deconvolute(&tempVar,
+                                          maxAssumedChargeState, deconvolutionTolerancePpm, intensityRatioLimit); //.toList()
+                }               
+            }
 
             std::vector<DeconvolutionFeatureWithMassesAndScans*> currentListOfGroups = std::vector<DeconvolutionFeatureWithMassesAndScans*>();
             for (int scanIndex = minScan.value(); scanIndex <= maxScan.value(); scanIndex++) {
@@ -153,32 +183,44 @@ namespace MassSpectrometry {
                         newGroupScans->AddEnvelope(isotopicEnvelope, scanIndex, GetOneBasedScan(scanIndex)->getRetentionTime());
                         currentListOfGroups.push_back(newGroupScans);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete newGroupScans' statement was not added since newGroupScans was passed to a method or constructor. Handle memory management manually.
+                        //C# TO C++ CONVERTER TODO TASK: A 'delete newGroupScans' statement was not added since
+                        // newGroupScans was passed to a method or constructor. Handle memory management manually.
                     }
                 }
+                std::vector<DeconvolutionFeatureWithMassesAndScans*> v;
+#ifdef ORIG
                 for (auto ok : currentListOfGroups.Where([&] (std::any b) {
                     return b::MaxScanIndex < scanIndex;
-                })) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return ok;
+                        }));
+#endif
+                std::vector<MassSpectrometry::DeconvolutionFeatureWithMassesAndScans*>::const_iterator ok;
+                for ( ok = currentListOfGroups.begin(); ok != currentListOfGroups.end(); ++ok )  {
+                    auto okk = *ok;
+                    if (okk->getMaxScanIndex() < scanIndex ) {
+                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                        //yield return ok;
+                        v.push_back (okk);
+                        currentListOfGroups.erase (ok);
+                    }                        
+#ifdef ORIG
+//                    currentListOfGroups.RemoveAll([&] (std::any b) {
+//                            return b::MaxScanIndex < scanIndex;
+//                        });
+#endif
                 }
-                currentListOfGroups.RemoveAll([&] (std::any b) {
-                    return b::MaxScanIndex < scanIndex;
-                });
-            }
-            for (auto ok : currentListOfGroups) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return ok;
+
+                for (auto ok : currentListOfGroups) {
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    //yield return ok;
+                    v.push_back (ok);
+                }
+                return v;
             }
         }
 
-    protected:
-        class ReverseComparer : public IComparer<double> {
-
+        class ReverseComparer {
         public:
-            int Compare(double x, double y) override;
-
+            int Compare(double x, double y);
         };
-
     };
 }

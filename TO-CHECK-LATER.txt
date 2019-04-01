@@ -1,4 +1,5 @@
 Proteomics/ModificationWithMass.cpp:
   - check the ToString() method if required. There is some unclear aspects of how to construct the strings
 
-
+Parallel Processing found in the following files:
+ - MassSpectrometry/MsDataFile.h: uses Parallel::ForEach. converted to sequential std::for_each for now.

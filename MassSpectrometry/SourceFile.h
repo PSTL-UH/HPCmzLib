@@ -2,6 +2,7 @@
 
 #include <string>
 #include "tangible_filesystem.h"
+#include "Uri.h"
 
 // Copyright 2017 Stefan Solntsev
 //
@@ -28,7 +29,7 @@ namespace MassSpectrometry {
         std::string privateMassSpectrometerFileFormat;
         std::string privateCheckSum;
         std::string privateFileChecksumType;
-        System::Uri *privateUri;
+        Uri *privateUri;
         std::string privateFileName;
         std::string privateId;
 
@@ -38,14 +39,14 @@ namespace MassSpectrometry {
 
         SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &filePath, const std::string &id);
 
-        SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, System::Uri *uri, const std::string &id, const std::string &fileName);
+        SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, Uri *uri, const std::string &id, const std::string &fileName);
 
 
         std::string getNativeIdFormat() const;
         std::string getMassSpectrometerFileFormat() const;
         std::string getCheckSum() const;
         std::string getFileChecksumType() const;
-        System::Uri *getUri() const;
+        Uri *getUri() const;
 
         std::string getFileName() const;
         std::string getId() const;
