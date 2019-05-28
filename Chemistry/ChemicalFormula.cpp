@@ -183,15 +183,12 @@ namespace Chemistry {
                 std::string chemsym = res[1].str(); // Group 1: Chemical Symbol
 
                 Element *element = PeriodicTable::GetElement(chemsym);
-                int sign =-1;
 
-                try {
-                    std::stoi(res[3].str());
+                int sign = 1;
+                if ( res[3].str() == "-" ) {
+                    sign = -1;
                 }
-                catch (std::invalid_argument& e) {
-                    sign = 1;
-                }
-                    
+                
                 int numofelem = 0;
                 try {
                     numofelem = std::stoi(res[4].str());
