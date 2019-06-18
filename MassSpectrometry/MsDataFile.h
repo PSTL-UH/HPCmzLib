@@ -40,8 +40,11 @@ namespace MassSpectrometry {
     /// </summary>
     template<typename TScan>
     class MsDataFile : public IMsDataFile<TScan> {
-        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, "TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
 
+#ifndef NDEBUG
+        static_assert(std::is_base_of<IMsDataScan<IMzSpectrum<IMzPeak>>, TScan>::value, "TScan must inherit from IMsDataScan<IMzSpectrum<IMzPeak>>");
+#endif
+        
     private:
         MassSpectrometry::SourceFile *privateSourceFile;
 

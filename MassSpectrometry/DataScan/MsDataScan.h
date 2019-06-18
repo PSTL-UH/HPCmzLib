@@ -127,8 +127,8 @@ namespace MassSpectrometry {
             return privateNoiseData;
         }
 
-        std::string ToString() override {
-            return StringHelper::formatSimple(L"Scan #{0}", getOneBasedScanNumber());
+        std::string ToString() {
+            return StringHelper::formatSimple("Scan #{0}", getOneBasedScanNumber());
         }
 
         std::vector<unsigned char> Get64BitNoiseDataMass() override {

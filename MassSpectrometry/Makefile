@@ -46,6 +46,9 @@ all:
 GeneratedMzSpectrum.o: 	GeneratedMzSpectrum.cpp $(HEADER)
 	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c GeneratedMzSpectrum.cpp	
 
+SummedMsDataFile.o: 	SummedMsDataFile.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c SummedMsDataFile.cpp	
+
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)

@@ -6,11 +6,16 @@
 #include <limits>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { template<typename TSpectrum>class IMsDataScan; }
-namespace MassSpectrometry { class IMzPeak; }
-namespace MassSpectrometry { template<typename TPeak>class IMzSpectrum; }
-namespace MassSpectrometry { template<typename TScan>class IMsDataFile; }
+//namespace MassSpectrometry { template<typename TSpectrum>class IMsDataScan; }
+//namespace MassSpectrometry { class IMzPeak; }
+//namespace MassSpectrometry { template<typename TPeak>class IMzSpectrum; }
+//namespace MassSpectrometry { template<typename TScan>class IMsDataFile; }
+#include "MzSpectra/IMzSpectrum.h"
+#include "MzSpectra/IMzPeak.h"
+#include "DataScan/IMsDataScan.h"
 
+
+#include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace MassSpectrometry {

@@ -56,9 +56,7 @@ namespace MassSpectrometry {
         virtual std::vector<std::vector<double>> getNoiseData() const = 0;
 
         virtual std::vector<unsigned char> Get64BitNoiseDataMass() = 0;
-
         virtual std::vector<unsigned char> Get64BitNoiseDataNoise() = 0;
-
         virtual std::vector<unsigned char> Get64BitNoiseDataBaseline() = 0;
 
     };

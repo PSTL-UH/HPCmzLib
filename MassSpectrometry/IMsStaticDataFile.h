@@ -1,6 +1,9 @@
 ﻿#pragma once
 
 #include <type_traits>
+#include "MzSpectra/IMzSpectrum.h"
+#include "MzSpectra/IMzPeak.h"
+#include "DataScan/IMsDataScan.h"
 
 namespace MassSpectrometry {
     template<typename TScan>
