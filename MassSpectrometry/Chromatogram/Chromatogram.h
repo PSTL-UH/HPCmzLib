@@ -36,7 +36,10 @@ namespace MassSpectrometry {
 
     template<typename TPeak>
     class AChromatogram : public Spectrum<TPeak> {
+
+#ifndef NDEBUG
         static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+#endif
 
     protected:
         AChromatogram(std::vector<double> times, std::vector<double> intensities, bool shouldCopy) : Spectrum<TPeak>(times, intensities, shouldCopy) {
@@ -199,17 +202,17 @@ namespace MassSpectrometry {
     };
 
 
-    class Chromatogram: public AChromatogram<ChromatographicPeak> {
-        using AChromatogram<ChromatographicPeak>::AChromatogram;
+    class Chromatogram: public AChromatogram<ChromatographicPeak *> {
+        using AChromatogram<ChromatographicPeak*>::AChromatogram;
         
     public:
-        Chromatogram(std::vector<double> times, std::vector<double> intensities, bool shouldCopy) : AChromatogram<ChromatographicPeak>(times, intensities, shouldCopy) {
+        Chromatogram(std::vector<double> times, std::vector<double> intensities, bool shouldCopy) : AChromatogram<ChromatographicPeak*>(times, intensities, shouldCopy) {
         }
 
-        Chromatogram(std::vector<std::vector<double>> timeintensities) : AChromatogram<ChromatographicPeak>(timeintensities) {
+        Chromatogram(std::vector<std::vector<double>> timeintensities) : AChromatogram<ChromatographicPeak*>(timeintensities) {
         }
 
-        Chromatogram(const Chromatogram& other) : AChromatogram<ChromatographicPeak>(other) {
+        Chromatogram(const Chromatogram& other) : AChromatogram<ChromatographicPeak*>(other) {
         }
 
         Chromatogram *CreateSmoothChromatogram(SmoothingType smoothing, int points) {
@@ -230,10 +233,10 @@ namespace MassSpectrometry {
 
         
     protected:
-        ChromatographicPeak GeneratePeak(int index) override {
+        ChromatographicPeak* GeneratePeak(int index) override {
             ChromatographicPeak *cp = new ChromatographicPeak(this->getXArray()[index],
                                                               this->getYArray()[index]);
-            return *cp;
+            return cp;
         }
 
     };

@@ -20,8 +20,10 @@ OBJ = 	Chromatogram.o                   \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB) 
+	make $(MZLIB_LIB)
 
+Chromatogram.o:  Chromatogram.cpp $(HEADER)
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c Chromatogram.cpp  
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
