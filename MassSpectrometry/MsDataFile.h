@@ -55,15 +55,23 @@ namespace MassSpectrometry {
             Scans = std::vector<TScan>(numSpectra);
         }
 
+        MsDataFile(int numSpectra, MassSpectrometry::SourceFile sourceFile) : MsDataFile(sourceFile) {
+            Scans = std::vector<TScan>(numSpectra);
+        }
+
         MsDataFile(std::vector<TScan> &scans, MassSpectrometry::SourceFile *sourceFile) : MsDataFile(sourceFile) {
             Scans = scans;
         }
 
     private:
         MsDataFile(MassSpectrometry::SourceFile *sourceFile) {
-            this->SourceFile = sourceFile;
+            this->privateSourceFile = sourceFile;
         }
 
+        MsDataFile(MassSpectrometry::SourceFile sourceFile) {
+            this->privateSourceFile = &sourceFile;
+        }
+        
     public:
         MassSpectrometry::SourceFile *getSourceFile() const override {
             return privateSourceFile;
@@ -143,13 +151,15 @@ namespace MassSpectrometry {
                                                                          double intensityRatioLimit,
                                                                          double aggregationTolerancePpm,
                                                                          std::function<bool(TScan)> scanFilterFunc) override {
+            std::vector<DeconvolutionFeatureWithMassesAndScans*> v;
+
             if ( !minScan.has_value()) {
                 minScan = std::make_optional(1);
             }
             if ( !maxScan.has_value() ) {
                 maxScan = std::make_optional( getNumSpectra());
             }
-
+            
             auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
 #ifdef ORIG
             Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), [&] (std::any fff)
@@ -160,10 +170,12 @@ namespace MassSpectrometry {
                 if (scanFilterFunc(theScan)) {
                     MzRange tempVar(0, std::numeric_limits<double>::infinity());
                     allAggregateGroups[scanIndex - minScan.value()] = theScan->getMassSpectrum()->Deconvolute(&tempVar,
-                                          maxAssumedChargeState, deconvolutionTolerancePpm, intensityRatioLimit); //.toList()
+                                                                                                              maxAssumedChargeState,
+                                                                                                              deconvolutionTolerancePpm,
+                                                                                                              intensityRatioLimit); //.toList()
                 }               
             }
-
+            
             std::vector<DeconvolutionFeatureWithMassesAndScans*> currentListOfGroups = std::vector<DeconvolutionFeatureWithMassesAndScans*>();
             for (int scanIndex = minScan.value(); scanIndex <= maxScan.value(); scanIndex++) {
                 if (allAggregateGroups[scanIndex - minScan.value()].empty()) {
@@ -174,27 +186,32 @@ namespace MassSpectrometry {
                     auto mass = isotopicEnvelope->monoisotopicMass;
                     for (auto possibleGroup : currentListOfGroups) {
                         auto possibleGroupMass = possibleGroup->getMass();
-                        if (std::abs(mass - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass + 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass + 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass + 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass - 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass - 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm || std::abs(mass - 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm) {
+                        if (std::abs(mass - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass + 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass + 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass + 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass - 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass - 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+                            std::abs(mass - 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm) {
                             matchingGroup = possibleGroup;
                             matchingGroup->AddEnvelope(isotopicEnvelope, scanIndex, GetOneBasedScan(scanIndex)->getRetentionTime());
                             break;
                         }
                     }
-
+                    
                     if (matchingGroup == nullptr) {
                         auto newGroupScans = new DeconvolutionFeatureWithMassesAndScans();
                         newGroupScans->AddEnvelope(isotopicEnvelope, scanIndex, GetOneBasedScan(scanIndex)->getRetentionTime());
                         currentListOfGroups.push_back(newGroupScans);
-
+                        
                         //C# TO C++ CONVERTER TODO TASK: A 'delete newGroupScans' statement was not added since
                         // newGroupScans was passed to a method or constructor. Handle memory management manually.
                     }
                 }
-                std::vector<DeconvolutionFeatureWithMassesAndScans*> v;
 #ifdef ORIG
-                for (auto ok : currentListOfGroups.Where([&] (std::any b) {
-                    return b::MaxScanIndex < scanIndex;
-                        }));
+//                for (auto ok : currentListOfGroups.Where([&] (std::any b) {
+//                    return b::MaxScanIndex < scanIndex;
+//                        }));
 #endif
                 std::vector<MassSpectrometry::DeconvolutionFeatureWithMassesAndScans*>::const_iterator ok;
                 for ( ok = currentListOfGroups.begin(); ok != currentListOfGroups.end(); ++ok )  {
@@ -217,8 +234,8 @@ namespace MassSpectrometry {
                     //yield return ok;
                     v.push_back (ok);
                 }
-                return v;
             }
+            return v;
         }
 
         class ReverseComparer {

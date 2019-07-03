@@ -1,4 +1,5 @@
 ﻿#include "SummedMsDataFile.h"
+
 #include "DataScan/IMsDataScan.h"
 #include "MzSpectra/IMzPeak.h"
 #include "MzSpectra/IMzSpectrum.h"
@@ -15,7 +16,16 @@
 
 namespace MassSpectrometry {
 
-    SummedMsDataFile::SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>>(R"(scan number only nativeID format)", raw->getSourceFile()->getMassSpectrometerFileFormat(), raw->getSourceFile()->getCheckSum(), raw->getSourceFile()->getFileChecksumType(), raw->getSourceFile()->getUri(), raw->getSourceFile()->getId(), raw->getSourceFile()->getFileName()), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination) {
+    SummedMsDataFile::SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination) :
+        MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*>(1, MassSpectrometry::SourceFile("(scan number only nativeID format)",
+                                           raw->getSourceFile()->getMassSpectrometerFileFormat(),
+                                           raw->getSourceFile()->getCheckSum(),
+                                           raw->getSourceFile()->getFileChecksumType(),
+                                           raw->getSourceFile()->getUri(),
+                                           raw->getSourceFile()->getId(),
+                                           raw->getSourceFile()->getFileName())),
+        raw(raw), numScansToAverage(numScansToAverage),
+        ppmToleranceForPeakCombination(ppmToleranceForPeakCombination) {
     }
 
     IMsDataScan<IMzSpectrum<IMzPeak*>*> *SummedMsDataFile::GetOneBasedScan(int oneBasedScanNumber) {
@@ -33,8 +43,8 @@ namespace MassSpectrometry {
             bool isCentroid = true;
             double retentionTime = representative->getRetentionTime();
             MZAnalyzerType mzAnalyzer = representative->getMzAnalyzer();
+
 #ifdef ORIG
-            
             IMzSpectrum<IMzPeak*> *peaks = CombinePeaks(raw->Where([&] (std::any b) {
                 return b::OneBasedScanNumber >= oneBasedScanNumber &&
                 b::OneBasedScanNumber <= oneBasedScanNumber + numScansToAverage - 1;
@@ -43,20 +53,22 @@ namespace MassSpectrometry {
             }).ToList(), ppmToleranceForPeakCombination);
 #endif
             std::vector<IMzSpectrum<IMzPeak*>*> v;
-            for ( auto b : raw) {
-                if (b->OneBasedScanNumber >= oneBasedScanNumber &&
-                    b->OneBasedScanNumber <= oneBasedScanNumber + numScansToAverage - 1) {
-                    v.push_back(b->MassSpectrum);
+            for ( auto b : *raw) {
+                if (b->getOneBasedScanNumber() >= oneBasedScanNumber &&
+                    b->getOneBasedScanNumber() <= oneBasedScanNumber + numScansToAverage - 1) {
+                    v.push_back(b->getMassSpectrum());
                 }
             }
             IMzSpectrum<IMzPeak*> *peaks = CombinePeaks( v, ppmToleranceForPeakCombination);
+
             MzRange *scanWindowRange = representative->getScanWindowRange();
 
             double totalIonCurrent = peaks->sumOfAllY.value();
-            double injectionTime = NAN;
+            Nullable<double> injectionTime = NAN;
+            Nullable<double>& ijTime= injectionTime;
             std::vector<std::vector<double>> noiseData;
 
-            Scans[oneBasedScanNumber - 1] = new MsDataScan<IMzSpectrum<IMzPeak*>*>(peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, std::make_optional(injectionTime), noiseData, "scan=" + std::to_string(oneBasedScanNumber));
+            Scans[oneBasedScanNumber - 1] = new MsDataScan<IMzSpectrum<IMzPeak*>*>(peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData, "scan=" + std::to_string(oneBasedScanNumber));
         }
         return Scans[oneBasedScanNumber - 1];
     }
@@ -93,7 +105,7 @@ namespace MassSpectrometry {
         for ( auto b : spectraToCombine ) {
             nextPeakMzs.push_back(b->XArray[0]);
         }
-
+    
 #ifdef ORIG
         std::vector<double> nextPeaksIntensites = spectraToCombine.Select([&] (std::any b) {
             b::YArray[0];
@@ -112,7 +124,8 @@ namespace MassSpectrometry {
         double nextMz = *it;
         int index=std::distance(nextPeakMzs.begin(), it);
         GeneratedPeak *lastPeak = new GeneratedPeak(nextMz, nextPeaksIntensites[index]);
-
+    
+        bool cont=true;
         do {
 #ifdef ORIG
             nextMz = nextPeakMzs.Min();
@@ -131,7 +144,7 @@ namespace MassSpectrometry {
                 finalizedPeaks.push_back(lastPeak);
                 lastPeak = new GeneratedPeak(nextMz, nextPeaksIntensites[index]);
             }
-
+   
             peaksLeft[index]--;
             if (peaksLeft[index] == 0) {
                 nextPeakMzs[index] = std::numeric_limits<double>::max();
@@ -140,36 +153,41 @@ namespace MassSpectrometry {
                 nextPeakMzs[index] = spectraToCombine[index]->XArray[totalPeaks[index] - peaksLeft[index]];
                 nextPeaksIntensites[index] = spectraToCombine[index]->YArray[totalPeaks[index] - peaksLeft[index]];
             }
+            
 #ifdef ORIG
-        } while (peaksLeft.Any([&] (std::any b) {
-                    //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement
-                    // was not added since lastPeak was passed to a method or constructor.
-                    // Handle memory management manually.
-            return b > 0;
-        }));
+//        } while (peaksLeft.Any([&] (std::any b) {
+//                    //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement
+//                    // was not added since lastPeak was passed to a method or constructor.
+//                    // Handle memory management manually.
+//                    return b > 0;
+//                }));
 #endif
-        } while ([&]() ->bool {
-                for ( auto b: peaksLeft) if ( b>0 ) return true;
-                return false;
-            }());
-
+            cont = false;
+            for ( auto b : peaksLeft ) {
+                if ( b > 0 ) {
+                    cont = true;
+                    break;
+                }
+            }
+        } while (cont);
+        
         finalizedPeaks.push_back(lastPeak);
-
+    
     //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement was not added
     // since lastPeak was passed to a method or constructor. Handle memory management manually.
 #ifdef ORIG
-    return new GeneratedMzSpectrum(finalizedPeaks.Select([&] (std::any b) {
-            b::Mz;
-        })->ToArray(), finalizedPeaks.Select([&] (std::any b) {
-            b::Intensity;
-        })->ToArray(), false);
+        return new GeneratedMzSpectrum(finalizedPeaks.Select([&] (std::any b) {
+                    b::Mz;
+                })->ToArray(), finalizedPeaks.Select([&] (std::any b) {
+                        b::Intensity;
+                    })->ToArray(), false);
 #endif
-    std::vector<double> Mzv, Inv;
-    for ( auto f :finalizedPeaks ) {
-        Mzv.push_back(f->getMz());
-        Inv.push_back(f->getIntensity());
-    }
-    return new GeneratedMzSpectrum (Mzv, Inv, false);
+        std::vector<double> Mzv, Inv;
+        for ( auto f :finalizedPeaks ) {
+            Mzv.push_back(f->getMz());
+            Inv.push_back(f->getIntensity());
+        }
+        return new GeneratedMzSpectrum (Mzv, Inv, false);
         //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement was not added
         // since lastPeak was passed to a method or constructor. Handle memory management manually.
     }

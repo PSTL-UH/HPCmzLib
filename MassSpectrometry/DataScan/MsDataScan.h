@@ -50,11 +50,12 @@ namespace MassSpectrometry {
         std::string privateNativeId;
         bool privateIsCentroid = false;
         double privateTotalIonCurrent = 0;
-        std::optional<double> privateInjectionTime;
+        Nullable<double> privateInjectionTime;
         std::vector<std::vector<double>> privateNoiseData;
 
     public:
-        MsDataScan(TSpectrum massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId) {
+
+        MsDataScan(TSpectrum massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, Nullable<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId) {
             privateOneBasedScanNumber = oneBasedScanNumber;
             privateMsnOrder = msnOrder;
             privateIsCentroid = isCentroid;
@@ -76,7 +77,7 @@ namespace MassSpectrometry {
         TSpectrum getMassSpectrum() const override {
             return privateMassSpectrum;
         }
-        void setMassSpectrum(TSpectrum value) override {
+        void setMassSpectrum(TSpectrum value) {
             privateMassSpectrum = value;
         }
 
@@ -120,7 +121,8 @@ namespace MassSpectrometry {
             return privateTotalIonCurrent;
         }
 
-        std::optional<double> getInjectionTime() const override {
+//        std::optional<double> getInjectionTime() const override {
+        Nullable<double> getInjectionTime() const override {
             return privateInjectionTime;
         }
         std::vector<std::vector<double>> getNoiseData() const override {
@@ -144,9 +146,9 @@ namespace MassSpectrometry {
         }
 
     private:
-        std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> &noiseData) {
+        std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> noiseData) {
             std::vector<double> v;
-            for (int i = 0; i < noiseData.size() / 3; i++) {
+            for (long unsigned int i = 0; i < noiseData.size() / 3; i++) {
                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return noiseData[0][i];
                 v.push_back (noiseData[0][i]);
@@ -154,9 +156,9 @@ namespace MassSpectrometry {
             return v;
         }
 
-        std::vector<double> GetNoiseDataNoise(std::vector<std::vector<double>> &noiseData) {
+        std::vector<double> GetNoiseDataNoise(std::vector<std::vector<double>> noiseData) {
             std::vector<double> v;
-            for (int i = 0; i < noiseData.size() / 3; i++) {
+            for (long unsigned int i = 0; i < noiseData.size() / 3; i++) {
                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return noiseData[1][i];
                 v.push_back(noiseData[1][i]); 
@@ -164,9 +166,9 @@ namespace MassSpectrometry {
             return v;
         }
 
-        std::vector<double> GetNoiseDataBaseline(std::vector<std::vector<double>> &noiseData) {
+        std::vector<double> GetNoiseDataBaseline(std::vector<std::vector<double>> noiseData) {
             std::vector<double> v;
-            for (int i = 0; i < noiseData.size() / 3; i++) {
+            for (long unsigned int i = 0; i < noiseData.size() / 3; i++) {
                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return noiseData[2][i];
                 v.push_back(noiseData[2][i]);

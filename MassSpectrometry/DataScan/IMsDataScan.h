@@ -38,7 +38,9 @@ namespace MassSpectrometry {
     //ORIGINAL LINE: public interface IMsDataScan<out TSpectrum> where TSpectrum : IMzSpectrum<IMzPeak>
     class IMsDataScan
     {
-     static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "IMsDataScan: TSpectrum must inherit from IMzSpectrum<IMzPeak>");
+#ifndef NDEBUG
+        static_assert(std::is_base_of<IMzSpectrum<IMzPeak>, TSpectrum>::value, "IMsDataScan: TSpectrum must inherit from IMzSpectrum<IMzPeak>");
+#endif
 
     public:
         virtual TSpectrum getMassSpectrum() const = 0;

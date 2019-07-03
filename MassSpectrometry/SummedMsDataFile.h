@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include "MsDataFile.h"
 #include <vector>
 #include <cmath>
 #include <limits>
+
+#include "../MzLibUtil/MzLibUtil.h"
+using namespace MzLibUtil;
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 //namespace MassSpectrometry { template<typename TSpectrum>class IMsDataScan; }
@@ -13,13 +15,10 @@
 #include "MzSpectra/IMzSpectrum.h"
 #include "MzSpectra/IMzPeak.h"
 #include "DataScan/IMsDataScan.h"
-
-
-#include "../MzLibUtil/MzLibUtil.h"
-using namespace MzLibUtil;
+#include "MsDataFile.h"
 
 namespace MassSpectrometry {
-    class SummedMsDataFile : public MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> {
+   class SummedMsDataFile : public MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> {
 
     private:
         IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *const raw;
@@ -38,5 +37,5 @@ namespace MassSpectrometry {
     private:
         IMzSpectrum<IMzPeak*> *CombinePeaks(std::vector<IMzSpectrum<IMzPeak*>*> &spectraToCombine, double ppmTolerance);
 
-    };
+   };
 }
