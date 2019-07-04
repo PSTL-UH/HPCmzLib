@@ -28,12 +28,10 @@ namespace IO {
         /// A peak in a mass spectrum that has a well defined m/z and intenisty value
         /// </summary>
         class MzmlPeak : public MzPeak {
-    //        #region Public Constructors
 
         public:
             MzmlPeak(double mz, double intensity);
 
-    //        #endregion Public Constructors
         };
     }
 }

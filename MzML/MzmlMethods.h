@@ -23,45 +23,36 @@ using namespace MzLibUtil;
 namespace IO {
     namespace MzML {
         class MzmlMethods final {
-    //        #region Internal Fields
 
         public:
             static XmlSerializer *const indexedSerializer;
             static XmlSerializer *const mzmlSerializer;
 
-    //        #endregion Internal Fields
-
-    //        #region Private Fields
-
         private:
-            static const std::unordered_map<DissociationType, std::wstring> DissociationTypeAccessions;
+            static const std::unordered_map<DissociationType, std::string> DissociationTypeAccessions;
 
-            static const std::unordered_map<DissociationType, std::wstring> DissociationTypeNames;
+            static const std::unordered_map<DissociationType, std::string> DissociationTypeNames;
 
-            static const std::unordered_map<MZAnalyzerType, std::wstring> analyzerDictionary;
+            static const std::unordered_map<MZAnalyzerType, std::string> analyzerDictionary;
 
-            static const std::unordered_map<std::wstring, std::wstring> nativeIdFormatAccessions;
+            static const std::unordered_map<std::string, std::string> nativeIdFormatAccessions;
 
-            static const std::unordered_map<std::wstring, std::wstring> MassSpectrometerFileFormatAccessions;
+            static const std::unordered_map<std::string, std::string> MassSpectrometerFileFormatAccessions;
 
-            static const std::unordered_map<std::wstring, std::wstring> FileChecksumAccessions;
+            static const std::unordered_map<std::string, std::string> FileChecksumAccessions;
 
-            static const std::unordered_map<bool, std::wstring> CentroidAccessions;
+            static const std::unordered_map<bool, std::string> CentroidAccessions;
 
-            static const std::unordered_map<bool, std::wstring> CentroidNames;
+            static const std::unordered_map<bool, std::string> CentroidNames;
 
-            static const std::unordered_map<Polarity, std::wstring> PolarityAccessions;
+            static const std::unordered_map<Polarity, std::string> PolarityAccessions;
 
-            static const std::unordered_map<Polarity, std::wstring> PolarityNames;
+            static const std::unordered_map<Polarity, std::string> PolarityNames;
 
-    //        #endregion Private Fields
-
-    //        #region Public Methods
 
         public:
-            static void CreateAndWriteMyMzmlWithCalibratedSpectra(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *myMsDataFile, const std::wstring &outputFile, bool writeIndexed);
+            static void CreateAndWriteMyMzmlWithCalibratedSpectra(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *myMsDataFile, const std::string &outputFile, bool writeIndexed);
 
-    //        #endregion Public Methods
         };
     }
 }

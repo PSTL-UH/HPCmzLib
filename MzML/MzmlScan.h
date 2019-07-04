@@ -8,20 +8,19 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace IO { namespace MzML { class MzmlMzSpectrum; } }
-namespace MzLibUtil { class MzRange; }
 
 using namespace MassSpectrometry;
+
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace IO {
     namespace MzML {
         class MzmlScan : public MsDataScan<MzmlMzSpectrum*>, public IMzmlScan {
-    //        #region Public Constructors
 
         public:
-            MzmlScan(int oneBasedScanNumber, MzmlMzSpectrum *massSpectrum, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::wstring &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, Nullable<double> injectionTime, const std::wstring &nativeId);
+            MzmlScan(int oneBasedScanNumber, MzmlMzSpectrum *massSpectrum, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, Nullable<double> injectionTime, const std::string &nativeId);
 
-    //        #endregion Public Constructors
         };
     }
 }

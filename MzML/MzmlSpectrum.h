@@ -29,19 +29,12 @@ using namespace MassSpectrometry;
 namespace IO {
     namespace MzML {
         class MzmlMzSpectrum : public MzSpectrum<MzmlPeak*> {
-    //        #region Public Constructors
 
         public:
             MzmlMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy);
-
-    //        #endregion Public Constructors
-
-    //        #region Protected Methods
-
         protected:
             MzmlPeak *GeneratePeak(int index) override;
 
-    //        #endregion Protected Methods
         };
     }
 }

@@ -18,47 +18,47 @@ using namespace MzLibUtil;
 namespace IO {
     namespace MzML {
 
-const std::wstring Mzml::_zlibCompression = L"MS:1000574";
-const std::wstring Mzml::_64bit = L"MS:1000523";
-const std::wstring Mzml::_32bit = L"MS:1000521";
-const std::wstring Mzml::_filterString = L"MS:1000512";
-const std::wstring Mzml::_centroidSpectrum = L"MS:1000127";
-const std::wstring Mzml::_profileSpectrum = L"MS:1000128";
-const std::wstring Mzml::_peakIntensity = L"MS:1000042";
-const std::wstring Mzml::_totalIonCurrent = L"MS:1000285";
-const std::wstring Mzml::_scanWindowLowerLimit = L"MS:1000501";
-const std::wstring Mzml::_scanWindowUpperLimit = L"MS:1000500";
-const std::wstring Mzml::_msnOrderAccession = L"MS:1000511";
-const std::wstring Mzml::_precursorCharge = L"MS:1000041";
-const std::wstring Mzml::_selectedIonMz = L"MS:1000744";
-const std::wstring Mzml::_isolationWindowTargetMZ = L"MS:1000827";
-const std::wstring Mzml::_isolationWindowLowerOffset = L"MS:1000828";
-const std::wstring Mzml::_isolationWindowUpperOffset = L"MS:1000829";
-const std::wstring Mzml::_retentionTime = L"MS:1000016";
-const std::wstring Mzml::_ionInjectionTime = L"MS:1000927";
-const std::wstring Mzml::_mzArray = L"MS:1000514";
-const std::wstring Mzml::_intensityArray = L"MS:1000515";
+const std::string Mzml::_zlibCompression = "MS:1000574";
+const std::string Mzml::_64bit = "MS:1000523";
+const std::string Mzml::_32bit = "MS:1000521";
+const std::string Mzml::_filterString = "MS:1000512";
+const std::string Mzml::_centroidSpectrum = "MS:1000127";
+const std::string Mzml::_profileSpectrum = "MS:1000128";
+const std::string Mzml::_peakIntensity = "MS:1000042";
+const std::string Mzml::_totalIonCurrent = "MS:1000285";
+const std::string Mzml::_scanWindowLowerLimit = "MS:1000501";
+const std::string Mzml::_scanWindowUpperLimit = "MS:1000500";
+const std::string Mzml::_msnOrderAccession = "MS:1000511";
+const std::string Mzml::_precursorCharge = "MS:1000041";
+const std::string Mzml::_selectedIonMz = "MS:1000744";
+const std::string Mzml::_isolationWindowTargetMZ = "MS:1000827";
+const std::string Mzml::_isolationWindowLowerOffset = "MS:1000828";
+const std::string Mzml::_isolationWindowUpperOffset = "MS:1000829";
+const std::string Mzml::_retentionTime = "MS:1000016";
+const std::string Mzml::_ionInjectionTime = "MS:1000927";
+const std::string Mzml::_mzArray = "MS:1000514";
+const std::string Mzml::_intensityArray = "MS:1000515";
 Regex *const Mzml::MZAnalyzerTypeRegex = new Regex(LR"(^[a-zA-Z]*)", RegexOptions::Compiled);
-const std::unordered_map<std::wstring, Polarity> Mzml::polarityDictionary = std::unordered_map<std::wstring, Polarity> {
-    {L"MS:1000129",Polarity::Negative}, {
+const std::unordered_map<std::string, Polarity> Mzml::polarityDictionary = std::unordered_map<std::string, Polarity> {
+    {"MS:1000129",Polarity::Negative}, {
     };
-const std::unordered_map<std::wstring, MZAnalyzerType> Mzml::analyzerDictionary = std::unordered_map<std::wstring, MZAnalyzerType> {
-    {L"MS:1000443", MZAnalyzerType::Unknown}, {
-    {L"MS:1000291",MZAnalyzerType::IonTrap2D}, {
-    {L"MS:1000484",MZAnalyzerType::Orbitrap}, {
-    {L"MS:1000079",MZAnalyzerType::FTICR}, {
+const std::unordered_map<std::string, MZAnalyzerType> Mzml::analyzerDictionary = std::unordered_map<std::string, MZAnalyzerType> {
+    {"MS:1000443", MZAnalyzerType::Unknown}, {
+    {"MS:1000291",MZAnalyzerType::IonTrap2D}, {
+    {"MS:1000484",MZAnalyzerType::Orbitrap}, {
+    {"MS:1000079",MZAnalyzerType::FTICR}, {
     };
-const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDictionary = std::unordered_map<std::wstring, DissociationType> {
-    {L"MS:1000133",DissociationType::CID}, {
-    {L"MS:1000422",DissociationType::HCD}, {
-    {L"MS:1000435",DissociationType::MPD}, {
-    {L"MS:1000044",DissociationType::Unknown}
+const std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary = std::unordered_map<std::string, DissociationType> {
+    {"MS:1000133",DissociationType::CID}, {
+    {"MS:1000422",DissociationType::HCD}, {
+    {"MS:1000435",DissociationType::MPD}, {
+    {"MS:1000044",DissociationType::Unknown}
     };
 
         Mzml::Mzml(std::vector<IMzmlScan*> &scans, MassSpectrometry::SourceFile *sourceFile) : MsDataFile<IMzmlScan>(scans, sourceFile) {
         }
 
-        Mzml *Mzml::LoadAllStaticData(const std::wstring &filePath, std::optional<int> &topNpeaks, std::optional<double> &minRatio, bool trimMs1Peaks, bool trimMsMsPeaks) {
+        Mzml *Mzml::LoadAllStaticData(const std::string &filePath, std::optional<int> &topNpeaks, std::optional<double> &minRatio, bool trimMs1Peaks, bool trimMsMsPeaks) {
             Generated::mzMLType *_mzMLConnection;
 
             try {
@@ -82,35 +82,35 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
             MassSpectrometry::SourceFile *sourceFile;
             if (_mzMLConnection->getfileDescription()->getsourceFileList() != nullptr && _mzMLConnection->getfileDescription()->getsourceFileList()->getsourceFile().size() > 0 && _mzMLConnection->getfileDescription()->getsourceFileList()->getsourceFile()[0] != nullptr && _mzMLConnection->getfileDescription()->getsourceFileList()->getsourceFile()[0]->cvParam != nullptr) {
                 auto simpler = _mzMLConnection->getfileDescription()->getsourceFileList()->getsourceFile()[0];
-                std::wstring nativeIdFormat = L"";
-                std::wstring fileFormat = L"";
-                std::wstring checkSum = L"";
-                std::wstring checkSumType = L"";
+                std::string nativeIdFormat = "";
+                std::string fileFormat = "";
+                std::string checkSum = "";
+                std::string checkSumType = "";
                 for (auto cv : simpler->cvParam) {
                     if (cv->accession->Equals(LR"(MS:1000563)")) {
-                        fileFormat = L"Thermo RAW format";
+                        fileFormat = "Thermo RAW format";
                     }
                     if (cv->accession->Equals(LR"(MS:1000584)")) {
-                        fileFormat = L"mzML format";
+                        fileFormat = "mzML format";
                     }
 
                     if (cv->accession->Equals(LR"(MS:1000768)")) {
-                        nativeIdFormat = L"Thermo nativeID format";
+                        nativeIdFormat = "Thermo nativeID format";
                     }
                     if (cv->accession->Equals(LR"(MS:1000776)")) {
-                        nativeIdFormat = L"scan number only nativeID format";
+                        nativeIdFormat = "scan number only nativeID format";
                     }
                     if (cv->accession->Equals(LR"(MS:1000824)")) {
-                        nativeIdFormat = L"no nativeID format";
+                        nativeIdFormat = "no nativeID format";
                     }
 
                     if (cv->accession->Equals(LR"(MS:1000568)")) {
                         checkSum = cv->value;
-                        checkSumType = L"MD5";
+                        checkSumType = "MD5";
                     }
                     if (cv->accession->Equals(LR"(MS:1000569)")) {
                         checkSum = cv->value;
-                        checkSumType = L"SHA-1";
+                        checkSumType = "SHA-1";
                     }
                 }
 
@@ -118,7 +118,7 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
                 sourceFile = new SourceFile(nativeIdFormat, fileFormat, checkSum, checkSumType, &tempVar, simpler->id, simpler->name);
             }
             else {
-                std::wstring sendCheckSum;
+                std::string sendCheckSum;
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream stream = File.OpenRead(filePath))
                 {
@@ -129,7 +129,7 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
                         SHA1Managed sha = SHA1Managed();
                         std::vector<unsigned char> checksum = sha.ComputeHash(stream);
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        sendCheckSum = BitConverter::ToString(checksum)->Replace(L"-", L"");
+                        sendCheckSum = BitConverter::ToString(checksum)->Replace("-", "");
                     }
                 }
                 sourceFile = new SourceFile(LR"(no nativeID format)", LR"(mzML format)", sendCheckSum, LR"(SHA-1)", FileSystem::getFullPath(filePath), Path::GetFileNameWithoutExtension(filePath));
@@ -172,7 +172,7 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
                 }
                 else {
                     MZAnalyzerType returnVal;
-                    std::unordered_map<std::wstring, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[0].componentList.analyzer[0].cvParam[0].accession);
+                    std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[0].componentList.analyzer[0].cvParam[0].accession);
                     if (analyzerDictionary_iterator != analyzerDictionary.end()) {
                     returnVal = analyzerDictionary_iterator->second;
                         analyzer = returnVal;
@@ -187,14 +187,14 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
                 for (int i = 0; i < _mzMLConnection->getinstrumentConfigurationList()->getinstrumentConfiguration().size(); i++) {
                     if (configs[i]->getid() == scanSpecificInsturmentConfig) {
                         MZAnalyzerType returnVal;
-                        std::unordered_map<std::wstring, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[i]->getcomponentList().getanalyzer()[0].cvParam[0].accession);
+                        std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[i]->getcomponentList().getanalyzer()[0].cvParam[0].accession);
                         returnVal = analyzerDictionary_iterator->second;
                         analyzer = returnVal;
                     }
                 }
             }
 
-            std::wstring nativeId = _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->id;
+            std::string nativeId = _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->id;
 
             std::optional<int> msOrder = std::nullopt;
             std::optional<bool> isCentroid = std::nullopt;
@@ -215,13 +215,13 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
                     tic = std::stod(cv->getvalue());
                 }
                 if (polarity.Equals(Polarity::Unknown)) {
-                    std::unordered_map<std::wstring, Polarity>::const_iterator polarityDictionary_iterator = polarityDictionary.find(cv->getaccession());
+                    std::unordered_map<std::string, Polarity>::const_iterator polarityDictionary_iterator = polarityDictionary.find(cv->getaccession());
                     polarity = polarityDictionary_iterator->second;
                 }
             }
 
             if (!msOrder || !isCentroid) {
-                throw MzLibException(L"!msOrder.HasValue || !isCentroid.HasValue");
+                throw MzLibException("!msOrder.HasValue || !isCentroid.HasValue");
             }
 
             std::vector<double> masses(0);
@@ -277,13 +277,13 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
             auto mzmlMzSpectrum = new MzmlMzSpectrum(masses, intensities, false);
 
             double rtInMinutes = NAN;
-            std::wstring scanFilter = L"";
+            std::string scanFilter = "";
             std::optional<double> injectionTime = std::nullopt;
             if (_mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->scanList.scan[0].cvParam != nullptr) {
                 for (Generated::CVParamType *cv : _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->scanList.scan[0].cvParam) {
                     if (cv->getaccession() == _retentionTime) {
                         rtInMinutes = std::stod(cv->getvalue());
-                        if (cv->getunitName() == L"second") {
+                        if (cv->getunitName() == "second") {
                             rtInMinutes /= 60;
                         }
                     }
@@ -351,14 +351,14 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
             DissociationType dissociationType = DissociationType::Unknown;
             if (_mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->precursorList.precursor[0].activation.cvParam != nullptr) {
                 for (Generated::CVParamType *cv : _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->precursorList.precursor[0].activation.cvParam) {
-                    std::unordered_map<std::wstring, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv->getaccession());
+                    std::unordered_map<std::string, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv->getaccession());
                     dissociationType = dissociationDictionary_iterator->second;
                 }
             }
             std::optional<double> monoisotopicMz = std::nullopt;
             if (_mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->scanList.scan[0].userParam != nullptr) {
                 for (auto userParam : _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->scanList.scan[0].userParam) {
-                    if (userParam->name->EndsWith(L"Monoisotopic M/Z:")) {
+                    if (userParam->name->EndsWith("Monoisotopic M/Z:")) {
                         monoisotopicMz = std::make_optional(std::stod(userParam->value));
                     }
                 }
@@ -418,7 +418,7 @@ const std::unordered_map<std::wstring, DissociationType> Mzml::dissociationDicti
         }
 
         int Mzml::GetOneBasedPrecursorScanNumber(Generated::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber) {
-            std::wstring precursorID = _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->precursorList.precursor[0].spectrumRef;
+            std::string precursorID = _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->precursorList.precursor[0].spectrumRef;
             do {
                 oneBasedSpectrumNumber--;
             } while (precursorID != _mzMLConnection->getrun()->getspectrumList()->getspectrum()[oneBasedSpectrumNumber - 1]->id);

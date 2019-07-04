@@ -36,60 +36,48 @@ namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 // License along with MassSpecFiles. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace MassSpectrometry;
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace IO {
     namespace MzML {
         class Mzml : public MsDataFile<IMzmlScan*>, public IMsStaticDataFile<IMzmlScan*> {
-    //        #region Private Fields
 
         private:
-            static const std::wstring _zlibCompression;
-            static const std::wstring _64bit;
-            static const std::wstring _32bit;
-            static const std::wstring _filterString;
-            static const std::wstring _centroidSpectrum;
-            static const std::wstring _profileSpectrum;
-            static const std::wstring _peakIntensity;
-            static const std::wstring _totalIonCurrent;
-            static const std::wstring _scanWindowLowerLimit;
-            static const std::wstring _scanWindowUpperLimit;
-            static const std::wstring _msnOrderAccession;
-            static const std::wstring _precursorCharge;
-            static const std::wstring _selectedIonMz;
-            static const std::wstring _isolationWindowTargetMZ;
-            static const std::wstring _isolationWindowLowerOffset;
-            static const std::wstring _isolationWindowUpperOffset;
-            static const std::wstring _retentionTime;
-            static const std::wstring _ionInjectionTime;
-            static const std::wstring _mzArray;
-            static const std::wstring _intensityArray;
+            static const std::string _zlibCompression;
+            static const std::string _64bit;
+            static const std::string _32bit;
+            static const std::string _filterString;
+            static const std::string _centroidSpectrum;
+            static const std::string _profileSpectrum;
+            static const std::string _peakIntensity;
+            static const std::string _totalIonCurrent;
+            static const std::string _scanWindowLowerLimit;
+            static const std::string _scanWindowUpperLimit;
+            static const std::string _msnOrderAccession;
+            static const std::string _precursorCharge;
+            static const std::string _selectedIonMz;
+            static const std::string _isolationWindowTargetMZ;
+            static const std::string _isolationWindowLowerOffset;
+            static const std::string _isolationWindowUpperOffset;
+            static const std::string _retentionTime;
+            static const std::string _ionInjectionTime;
+            static const std::string _mzArray;
+            static const std::string _intensityArray;
             static Regex *const MZAnalyzerTypeRegex;
 
-            static const std::unordered_map<std::wstring, Polarity> polarityDictionary;
+            static const std::unordered_map<std::string, Polarity> polarityDictionary;
 
-            static const std::unordered_map<std::wstring, MZAnalyzerType> analyzerDictionary;
+            static const std::unordered_map<std::string, MZAnalyzerType> analyzerDictionary;
 
-            static const std::unordered_map<std::wstring, DissociationType> dissociationDictionary;
-
-    //        #endregion Private Fields
-
-    //        #region Private Constructors
+            static const std::unordered_map<std::string, DissociationType> dissociationDictionary;
 
             Mzml(std::vector<IMzmlScan*> &scans, MassSpectrometry::SourceFile *sourceFile);
 
-    //        #endregion Private Constructors
-
-    //        #region Public Methods
-
         public:
-            static Mzml *LoadAllStaticData(const std::wstring &filePath, std::optional<int> &topNpeaks = std::nullopt, std::optional<double> &minRatio = std::nullopt, bool trimMs1Peaks = true, bool trimMsMsPeaks = true);
+            static Mzml *LoadAllStaticData(const std::string &filePath, std::optional<int> &topNpeaks = std::nullopt, std::optional<double> &minRatio = std::nullopt, bool trimMs1Peaks = true, bool trimMsMsPeaks = true);
 
             IMzmlScan *GetOneBasedScan(int scanNumber) override;
-
-    //        #endregion Public Methods
-
-    //        #region Private Methods
 
         private:
             static IMzmlScan *GetMsDataOneBasedScanFromConnection(Generated::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber, std::optional<int> &topNpeaks, std::optional<double> &minRatio, bool trimMs1Peaks, bool trimMsMsPeaks);
@@ -104,7 +92,6 @@ namespace IO {
 
             static int GetOneBasedPrecursorScanNumber(Generated::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber);
 
-    //        #endregion Private Methods
         };
     }
 }
