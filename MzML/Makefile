@@ -36,7 +36,7 @@ $(MZLIB_LIB): $(HEADER) $(OBJ)
 
 $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
-	$(CXX) $(CXXFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c $<
 
 clean:  
 	rm -rf *.o *~
