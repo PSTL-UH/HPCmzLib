@@ -17,39 +17,43 @@ namespace IO { namespace MzML { namespace Generated { class ChromatogramType; } 
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class ChromatogramListType
-        class ChromatogramListType {
+        class ChromatogramListType
+        {
 
         private:
             std::vector<ChromatogramType*> chromatogramField;
 
-            std::wstring countField;
+            std::string countField;
 
-            std::wstring defaultDataProcessingRefField;
+            std::string defaultDataProcessingRefField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("chromatogram")] public ChromatogramType[] chromatogram
             std::vector<ChromatogramType*> getchromatogram() const;
             void setchromatogram(const std::vector<ChromatogramType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string count
-            std::wstring getcount() const;
-            void setcount(const std::wstring &value);
+            std::string getcount() const;
+            void setcount(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string defaultDataProcessingRef
-            std::wstring getdefaultDataProcessingRef() const;
-            void setdefaultDataProcessingRef(const std::wstring &value);
+            std::string getdefaultDataProcessingRef() const;
+            void setdefaultDataProcessingRef(const std::string &value);
         };
         }
     }

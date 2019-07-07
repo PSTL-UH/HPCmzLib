@@ -1,23 +1,30 @@
 ﻿#include "IO.MzML.Generated.ProductListType.h"
 #include "IO.MzML.Generated.ProductType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::vector<ProductType*> ProductListType::getproduct() const {
+            std::vector<ProductType*> ProductListType::getproduct() const
+            {
                 return this->productField;
             }
 
-            void ProductListType::setproduct(const std::vector<ProductType*> &value) {
+            void ProductListType::setproduct(const std::vector<ProductType*> &value)
+            {
                 this->productField = value;
             }
 
-            std::wstring ProductListType::getcount() const {
+            std::string ProductListType::getcount() const
+            {
                 return this->countField;
             }
 
-            void ProductListType::setcount(const std::wstring &value) {
+            void ProductListType::setcount(const std::string &value)
+            {
                 this->countField = value;
             }
         }

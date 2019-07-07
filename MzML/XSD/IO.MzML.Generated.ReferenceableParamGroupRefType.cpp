@@ -1,14 +1,19 @@
 ﻿#include "IO.MzML.Generated.ReferenceableParamGroupRefType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring ReferenceableParamGroupRefType::getref() const {
+            std::string ReferenceableParamGroupRefType::getref() const
+            {
                 return this->refField;
             }
 
-            void ReferenceableParamGroupRefType::setref(const std::wstring &value) {
+            void ReferenceableParamGroupRefType::setref(const std::string &value)
+            {
                 this->refField = value;
             }
         }

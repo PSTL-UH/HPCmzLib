@@ -1,22 +1,29 @@
 ﻿#include "IO.MzML.Generated.SoftwareType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring SoftwareType::getid() const {
+            std::string SoftwareType::getid() const
+            {
                 return this->idField;
             }
 
-            void SoftwareType::setid(const std::wstring &value) {
+            void SoftwareType::setid(const std::string &value)
+            {
                 this->idField = value;
             }
 
-            std::wstring SoftwareType::getversion() const {
+            std::string SoftwareType::getversion() const
+            {
                 return this->versionField;
             }
 
-            void SoftwareType::setversion(const std::wstring &value) {
+            void SoftwareType::setversion(const std::string &value)
+            {
                 this->versionField = value;
             }
         }

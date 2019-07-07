@@ -18,13 +18,17 @@ namespace IO { namespace MzML { namespace Generated { class IndexListType; } } }
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://psi.hupo.org/ms/mzml")][System.Xml.Serialization.XmlRootAttribute(Namespace="http://psi.hupo.org/ms/mzml", IsNullable=false)] public partial class indexedmzML
-        class indexedmzML {
+        class indexedmzML
+        {
 
         private:
             mzMLType *mzMLField;
@@ -33,11 +37,12 @@ namespace IO {
 
             std::optional<long long> indexListOffsetField;
 
-            std::wstring fileChecksumField;
+            std::string fileChecksumField;
 
             /// <remarks/>
         public:
-            virtual ~indexedmzML() {
+            virtual ~indexedmzML()
+            {
                 delete mzMLField;
                 delete indexListField;
             }
@@ -50,14 +55,14 @@ namespace IO {
             void setindexList(IndexListType *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute(IsNullable=true)] public System.Nullable<long> indexListOffset
             std::optional<long long> getindexListOffset() const;
             void setindexListOffset(const std::optional<long long> &value);
 
             /// <remarks/>
-            std::wstring getfileChecksum() const;
-            void setfileChecksum(const std::wstring &value);
+            std::string getfileChecksum() const;
+            void setfileChecksum(const std::string &value);
         };
         }
     }

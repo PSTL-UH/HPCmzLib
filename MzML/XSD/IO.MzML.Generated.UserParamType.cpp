@@ -1,54 +1,69 @@
 ﻿#include "IO.MzML.Generated.UserParamType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring UserParamType::getname() const {
+            std::string UserParamType::getname() const
+            {
                 return this->nameField;
             }
 
-            void UserParamType::setname(const std::wstring &value) {
+            void UserParamType::setname(const std::string &value)
+            {
                 this->nameField = value;
             }
 
-            std::wstring UserParamType::gettype() const {
+            std::string UserParamType::gettype() const
+            {
                 return this->typeField;
             }
 
-            void UserParamType::settype(const std::wstring &value) {
+            void UserParamType::settype(const std::string &value)
+            {
                 this->typeField = value;
             }
 
-            std::wstring UserParamType::getvalue() const {
+            std::string UserParamType::getvalue() const
+            {
                 return this->valueField;
             }
 
-            void UserParamType::setvalue(const std::wstring &value) {
+            void UserParamType::setvalue(const std::string &value)
+            {
                 this->valueField = value;
             }
 
-            std::wstring UserParamType::getunitAccession() const {
+            std::string UserParamType::getunitAccession() const
+            {
                 return this->unitAccessionField;
             }
 
-            void UserParamType::setunitAccession(const std::wstring &value) {
+            void UserParamType::setunitAccession(const std::string &value)
+            {
                 this->unitAccessionField = value;
             }
 
-            std::wstring UserParamType::getunitName() const {
+            std::string UserParamType::getunitName() const
+            {
                 return this->unitNameField;
             }
 
-            void UserParamType::setunitName(const std::wstring &value) {
+            void UserParamType::setunitName(const std::string &value)
+            {
                 this->unitNameField = value;
             }
 
-            std::wstring UserParamType::getunitCvRef() const {
+            std::string UserParamType::getunitCvRef() const
+            {
                 return this->unitCvRefField;
             }
 
-            void UserParamType::setunitCvRef(const std::wstring &value) {
+            void UserParamType::setunitCvRef(const std::string &value)
+            {
                 this->unitCvRefField = value;
             }
         }

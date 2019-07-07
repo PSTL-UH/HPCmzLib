@@ -3,63 +3,80 @@
 #include "IO.MzML.Generated.ProductType.h"
 #include "IO.MzML.Generated.BinaryDataArrayListType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            PrecursorType *ChromatogramType::getprecursor() const {
+            PrecursorType *ChromatogramType::getprecursor() const
+            {
                 return this->precursorField;
             }
 
-            void ChromatogramType::setprecursor(PrecursorType *value) {
+            void ChromatogramType::setprecursor(PrecursorType *value)
+            {
                 this->precursorField = value;
             }
 
-            ProductType *ChromatogramType::getproduct() const {
+            ProductType *ChromatogramType::getproduct() const
+            {
                 return this->productField;
             }
 
-            void ChromatogramType::setproduct(ProductType *value) {
+            void ChromatogramType::setproduct(ProductType *value)
+            {
                 this->productField = value;
             }
 
-            BinaryDataArrayListType *ChromatogramType::getbinaryDataArrayList() const {
+            BinaryDataArrayListType *ChromatogramType::getbinaryDataArrayList() const
+            {
                 return this->binaryDataArrayListField;
             }
 
-            void ChromatogramType::setbinaryDataArrayList(BinaryDataArrayListType *value) {
+            void ChromatogramType::setbinaryDataArrayList(BinaryDataArrayListType *value)
+            {
                 this->binaryDataArrayListField = value;
             }
 
-            std::wstring ChromatogramType::getid() const {
+            std::string ChromatogramType::getid() const
+            {
                 return this->idField;
             }
 
-            void ChromatogramType::setid(const std::wstring &value) {
+            void ChromatogramType::setid(const std::string &value)
+            {
                 this->idField = value;
             }
 
-            std::wstring ChromatogramType::getindex() const {
+            std::string ChromatogramType::getindex() const
+            {
                 return this->indexField;
             }
 
-            void ChromatogramType::setindex(const std::wstring &value) {
+            void ChromatogramType::setindex(const std::string &value)
+            {
                 this->indexField = value;
             }
 
-            int ChromatogramType::getdefaultArrayLength() const {
+            int ChromatogramType::getdefaultArrayLength() const
+            {
                 return this->defaultArrayLengthField;
             }
 
-            void ChromatogramType::setdefaultArrayLength(int value) {
+            void ChromatogramType::setdefaultArrayLength(int value)
+            {
                 this->defaultArrayLengthField = value;
             }
 
-            std::wstring ChromatogramType::getdataProcessingRef() const {
+            std::string ChromatogramType::getdataProcessingRef() const
+            {
                 return this->dataProcessingRefField;
             }
 
-            void ChromatogramType::setdataProcessingRef(const std::wstring &value) {
+            void ChromatogramType::setdataProcessingRef(const std::string &value)
+            {
                 this->dataProcessingRefField = value;
             }
         }

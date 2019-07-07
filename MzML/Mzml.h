@@ -1,20 +1,23 @@
 ﻿#pragma once
 
-#include "../MassSpectrometry/IMsStaticDataFile.h"
 #include "../MassSpectrometry/MsDataFile.h"
 #include "../MassSpectrometry/Enums/Polarity.h"
 #include "../MassSpectrometry/Enums/MzAnalyzerType.h"
 #include "../MassSpectrometry/Enums/DissociationType.h"
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <cmath>
 #include <optional>
+#include "exceptionhelper.h"
 #include "tangible_filesystem.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace IO { namespace MzML { class IMzmlScan; } }
+namespace MassSpectrometry { class MsDataScan; }
 namespace MassSpectrometry { class SourceFile; }
+namespace MassSpectrometry { class FilteringParams; }
+namespace MassSpectrometry { class IFilteringParams; }
 namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
@@ -36,13 +39,14 @@ namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 // License along with MassSpecFiles. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace MassSpectrometry;
-#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
-namespace IO {
-    namespace MzML {
-        class Mzml : public MsDataFile<IMzmlScan*>, public IMsStaticDataFile<IMzmlScan*> {
-
+namespace IO
+{
+    namespace MzML
+    {
+        class Mzml : public MsDataFile
+        {
         private:
             static const std::string _zlibCompression;
             static const std::string _64bit;
@@ -60,27 +64,32 @@ namespace IO {
             static const std::string _isolationWindowTargetMZ;
             static const std::string _isolationWindowLowerOffset;
             static const std::string _isolationWindowUpperOffset;
+            static const std::string _oneBasedScanNumber;
             static const std::string _retentionTime;
             static const std::string _ionInjectionTime;
             static const std::string _mzArray;
             static const std::string _intensityArray;
             static Regex *const MZAnalyzerTypeRegex;
 
-            static const std::unordered_map<std::string, Polarity> polarityDictionary;
+//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
+//ORIGINAL LINE: private static readonly Dictionary<string, Polarity> polarityDictionary = new Dictionary<string, Polarity> { {"MS:1000129",Polarity.Negative}, {"MS:1000130",Polarity.Positive} };
+            static std::unordered_map<std::string, Polarity> polarityDictionary;
 
-            static const std::unordered_map<std::string, MZAnalyzerType> analyzerDictionary;
+//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
+//ORIGINAL LINE: private static readonly Dictionary<string, MZAnalyzerType> analyzerDictionary = new Dictionary<string, MZAnalyzerType> { { "MS:1000443", MZAnalyzerType.Unknown}, { "MS:1000081",MZAnalyzerType.Quadrupole}, { "MS:1000291",MZAnalyzerType.IonTrap2D}, { "MS:1000082",MZAnalyzerType.IonTrap3D}, { "MS:1000484",MZAnalyzerType.Orbitrap}, { "MS:1000084",MZAnalyzerType.TOF}, { "MS:1000079",MZAnalyzerType.FTICR}, { "MS:1000080",MZAnalyzerType.Sector} };
+            static std::unordered_map<std::string, MZAnalyzerType> analyzerDictionary;
 
-            static const std::unordered_map<std::string, DissociationType> dissociationDictionary;
+//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
+//ORIGINAL LINE: private static readonly Dictionary<string, DissociationType> dissociationDictionary = new Dictionary<string, DissociationType> { { "MS:1000133",DissociationType.CID}, { "MS:1001880",DissociationType.ISCID}, { "MS:1000422",DissociationType.HCD}, { "MS:1000598",DissociationType.ETD}, { "MS:1000435",DissociationType.IRMPD}, { "MS:1000599",DissociationType.PQD}, { "MS:1000044",DissociationType.Unknown} };
+            static std::unordered_map<std::string, DissociationType> dissociationDictionary;
 
-            Mzml(std::vector<IMzmlScan*> &scans, MassSpectrometry::SourceFile *sourceFile);
+            Mzml(std::vector<MsDataScan*> &scans, MassSpectrometry::SourceFile *sourceFile);
 
         public:
-            static Mzml *LoadAllStaticData(const std::string &filePath, std::optional<int> &topNpeaks = std::nullopt, std::optional<double> &minRatio = std::nullopt, bool trimMs1Peaks = true, bool trimMsMsPeaks = true);
-
-            IMzmlScan *GetOneBasedScan(int scanNumber) override;
+            static Mzml *LoadAllStaticData(const std::string &filePath, FilteringParams *filterParams = nullptr, int maxThreads = -1);
 
         private:
-            static IMzmlScan *GetMsDataOneBasedScanFromConnection(Generated::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber, std::optional<int> &topNpeaks, std::optional<double> &minRatio, bool trimMs1Peaks, bool trimMsMsPeaks);
+            static MsDataScan *GetMsDataOneBasedScanFromConnection(Generated::mzMLType *_mzMLConnection, int oneBasedIndex, IFilteringParams *filterParams);
 
             /// <summary>
             /// Converts a 64-based encoded byte array into an double[]
@@ -91,7 +100,6 @@ namespace IO {
             static std::vector<double> ConvertBase64ToDoubles(std::vector<unsigned char> &bytes, bool zlibCompressed = false, bool is32bit = true);
 
             static int GetOneBasedPrecursorScanNumber(Generated::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber);
-
         };
     }
 }

@@ -17,13 +17,17 @@ namespace IO { namespace MzML { namespace Generated { class OffsetType; } } }
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class IndexType
-        class IndexType {
+        class IndexType
+        {
 
         private:
             std::vector<OffsetType*> offsetField;
@@ -32,13 +36,13 @@ namespace IO {
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("offset")] public OffsetType[] offset
             std::vector<OffsetType*> getoffset() const;
             void setoffset(const std::vector<OffsetType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public IndexTypeName name
             IndexTypeName getname() const;
             void setname(IndexTypeName value);

@@ -15,47 +15,51 @@
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class BinaryDataArrayType: ParamGroupType
-        class BinaryDataArrayType : public ParamGroupType {
+        class BinaryDataArrayType : public ParamGroupType
+        {
 
         private:
             std::vector<unsigned char> binaryField;
 
-            std::wstring arrayLengthField;
+            std::string arrayLengthField;
 
-            std::wstring dataProcessingRefField;
+            std::string dataProcessingRefField;
 
-            std::wstring encodedLengthField;
+            std::string encodedLengthField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] public byte[] binary
             std::vector<unsigned char> getbinary() const;
             void setbinary(const std::vector<unsigned char> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string arrayLength
-            std::wstring getarrayLength() const;
-            void setarrayLength(const std::wstring &value);
+            std::string getarrayLength() const;
+            void setarrayLength(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string dataProcessingRef
-            std::wstring getdataProcessingRef() const;
-            void setdataProcessingRef(const std::wstring &value);
+            std::string getdataProcessingRef() const;
+            void setdataProcessingRef(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string encodedLength
-            std::wstring getencodedLength() const;
-            void setencodedLength(const std::wstring &value);
+            std::string getencodedLength() const;
+            void setencodedLength(const std::string &value);
         };
         }
     }

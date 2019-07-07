@@ -14,39 +14,43 @@
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class SourceFileType: ParamGroupType
-        class SourceFileType : public ParamGroupType {
+        class SourceFileType : public ParamGroupType
+        {
 
         private:
-            std::wstring idField;
+            std::string idField;
 
-            std::wstring nameField;
+            std::string nameField;
 
-            std::wstring locationField;
+            std::string locationField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="ID")] public string id
-            std::wstring getid() const;
-            void setid(const std::wstring &value);
+            std::string getid() const;
+            void setid(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string name
-            std::wstring getname() const;
-            void setname(const std::wstring &value);
+            std::string getname() const;
+            void setname(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="anyURI")] public string location
-            std::wstring getlocation() const;
-            void setlocation(const std::wstring &value);
+            std::string getlocation() const;
+            void setlocation(const std::string &value);
         };
         }
     }

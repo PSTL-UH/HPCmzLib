@@ -18,26 +18,30 @@ namespace IO { namespace MzML { namespace Generated { class ChromatogramListType
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class RunType: ParamGroupType
-        class RunType : public ParamGroupType {
+        class RunType : public ParamGroupType
+        {
 
         private:
             SpectrumListType *spectrumListField;
 
             ChromatogramListType *chromatogramListField;
 
-            std::wstring idField;
+            std::string idField;
 
-            std::wstring defaultInstrumentConfigurationRefField;
+            std::string defaultInstrumentConfigurationRefField;
 
-            std::wstring defaultSourceFileRefField;
+            std::string defaultSourceFileRefField;
 
-            std::wstring sampleRefField;
+            std::string sampleRefField;
 
             DateTime startTimeStampField;
 
@@ -45,7 +49,8 @@ namespace IO {
 
             /// <remarks/>
         public:
-            virtual ~RunType() {
+            virtual ~RunType()
+            {
                 delete spectrumListField;
                 delete chromatogramListField;
             }
@@ -58,37 +63,37 @@ namespace IO {
             void setchromatogramList(ChromatogramListType *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="ID")] public string id
-            std::wstring getid() const;
-            void setid(const std::wstring &value);
+            std::string getid() const;
+            void setid(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string defaultInstrumentConfigurationRef
-            std::wstring getdefaultInstrumentConfigurationRef() const;
-            void setdefaultInstrumentConfigurationRef(const std::wstring &value);
+            std::string getdefaultInstrumentConfigurationRef() const;
+            void setdefaultInstrumentConfigurationRef(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string defaultSourceFileRef
-            std::wstring getdefaultSourceFileRef() const;
-            void setdefaultSourceFileRef(const std::wstring &value);
+            std::string getdefaultSourceFileRef() const;
+            void setdefaultSourceFileRef(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string sampleRef
-            std::wstring getsampleRef() const;
-            void setsampleRef(const std::wstring &value);
+            std::string getsampleRef() const;
+            void setsampleRef(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public System.DateTime startTimeStamp
             DateTime getstartTimeStamp() const;
             void setstartTimeStamp(DateTime value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool startTimeStampSpecified
             bool getstartTimeStampSpecified() const;
             void setstartTimeStampSpecified(bool value);

@@ -14,31 +14,35 @@
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class ProcessingMethodType: ParamGroupType
-        class ProcessingMethodType : public ParamGroupType {
+        class ProcessingMethodType : public ParamGroupType
+        {
 
         private:
-            std::wstring orderField;
+            std::string orderField;
 
-            std::wstring softwareRefField;
+            std::string softwareRefField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string order
-            std::wstring getorder() const;
-            void setorder(const std::wstring &value);
+            std::string getorder() const;
+            void setorder(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string softwareRef
-            std::wstring getsoftwareRef() const;
-            void setsoftwareRef(const std::wstring &value);
+            std::string getsoftwareRef() const;
+            void setsoftwareRef(const std::string &value);
         };
         }
     }

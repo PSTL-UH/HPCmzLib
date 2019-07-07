@@ -1,38 +1,49 @@
 ﻿#include "IO.MzML.Generated.BinaryDataArrayType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::vector<unsigned char> BinaryDataArrayType::getbinary() const {
+            std::vector<unsigned char> BinaryDataArrayType::getbinary() const
+            {
                 return this->binaryField;
             }
 
-            void BinaryDataArrayType::setbinary(const std::vector<unsigned char> &value) {
+            void BinaryDataArrayType::setbinary(const std::vector<unsigned char> &value)
+            {
                 this->binaryField = value;
             }
 
-            std::wstring BinaryDataArrayType::getarrayLength() const {
+            std::string BinaryDataArrayType::getarrayLength() const
+            {
                 return this->arrayLengthField;
             }
 
-            void BinaryDataArrayType::setarrayLength(const std::wstring &value) {
+            void BinaryDataArrayType::setarrayLength(const std::string &value)
+            {
                 this->arrayLengthField = value;
             }
 
-            std::wstring BinaryDataArrayType::getdataProcessingRef() const {
+            std::string BinaryDataArrayType::getdataProcessingRef() const
+            {
                 return this->dataProcessingRefField;
             }
 
-            void BinaryDataArrayType::setdataProcessingRef(const std::wstring &value) {
+            void BinaryDataArrayType::setdataProcessingRef(const std::string &value)
+            {
                 this->dataProcessingRefField = value;
             }
 
-            std::wstring BinaryDataArrayType::getencodedLength() const {
+            std::string BinaryDataArrayType::getencodedLength() const
+            {
                 return this->encodedLengthField;
             }
 
-            void BinaryDataArrayType::setencodedLength(const std::wstring &value) {
+            void BinaryDataArrayType::setencodedLength(const std::string &value)
+            {
                 this->encodedLengthField = value;
             }
         }

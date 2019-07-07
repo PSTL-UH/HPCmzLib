@@ -1,30 +1,39 @@
 ﻿#include "IO.MzML.Generated.SourceFileType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring SourceFileType::getid() const {
+            std::string SourceFileType::getid() const
+            {
                 return this->idField;
             }
 
-            void SourceFileType::setid(const std::wstring &value) {
+            void SourceFileType::setid(const std::string &value)
+            {
                 this->idField = value;
             }
 
-            std::wstring SourceFileType::getname() const {
+            std::string SourceFileType::getname() const
+            {
                 return this->nameField;
             }
 
-            void SourceFileType::setname(const std::wstring &value) {
+            void SourceFileType::setname(const std::string &value)
+            {
                 this->nameField = value;
             }
 
-            std::wstring SourceFileType::getlocation() const {
+            std::string SourceFileType::getlocation() const
+            {
                 return this->locationField;
             }
 
-            void SourceFileType::setlocation(const std::wstring &value) {
+            void SourceFileType::setlocation(const std::string &value)
+            {
                 this->locationField = value;
             }
         }

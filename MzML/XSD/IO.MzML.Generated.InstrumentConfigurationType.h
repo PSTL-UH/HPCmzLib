@@ -18,26 +18,31 @@ namespace IO { namespace MzML { namespace Generated { class SoftwareRefType; } }
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class InstrumentConfigurationType: ParamGroupType
-        class InstrumentConfigurationType : public ParamGroupType {
+        class InstrumentConfigurationType : public ParamGroupType
+        {
 
         private:
             ComponentListType *componentListField;
 
             SoftwareRefType *softwareRefField;
 
-            std::wstring idField;
+            std::string idField;
 
-            std::wstring scanSettingsRefField;
+            std::string scanSettingsRefField;
 
             /// <remarks/>
         public:
-            virtual ~InstrumentConfigurationType() {
+            virtual ~InstrumentConfigurationType()
+            {
                 delete componentListField;
                 delete softwareRefField;
             }
@@ -50,16 +55,16 @@ namespace IO {
             void setsoftwareRef(SoftwareRefType *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="ID")] public string id
-            std::wstring getid() const;
-            void setid(const std::wstring &value);
+            std::string getid() const;
+            void setid(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string scanSettingsRef
-            std::wstring getscanSettingsRef() const;
-            void setscanSettingsRef(const std::wstring &value);
+            std::string getscanSettingsRef() const;
+            void setscanSettingsRef(const std::string &value);
         };
         }
     }

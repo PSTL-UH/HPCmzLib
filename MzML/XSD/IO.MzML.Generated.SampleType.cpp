@@ -1,22 +1,29 @@
 ﻿#include "IO.MzML.Generated.SampleType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring SampleType::getid() const {
+            std::string SampleType::getid() const
+            {
                 return this->idField;
             }
 
-            void SampleType::setid(const std::wstring &value) {
+            void SampleType::setid(const std::string &value)
+            {
                 this->idField = value;
             }
 
-            std::wstring SampleType::getname() const {
+            std::string SampleType::getname() const
+            {
                 return this->nameField;
             }
 
-            void SampleType::setname(const std::wstring &value) {
+            void SampleType::setname(const std::string &value)
+            {
                 this->nameField = value;
             }
         }

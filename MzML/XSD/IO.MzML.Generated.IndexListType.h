@@ -17,9 +17,12 @@ namespace IO { namespace MzML { namespace Generated { class IndexType; } } }
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
 
             /// <remarks/>
@@ -27,27 +30,28 @@ namespace IO {
             /// <remarks/>
 
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class IndexListType
-        class IndexListType {
+        class IndexListType
+        {
 
         private:
             std::vector<IndexType*> indexField;
 
-            std::wstring countField;
+            std::string countField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("index")] public IndexType[] index
             std::vector<IndexType*> getindex() const;
             void setindex(const std::vector<IndexType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string count
-            std::wstring getcount() const;
-            void setcount(const std::wstring &value);
+            std::string getcount() const;
+            void setcount(const std::string &value);
         };
         }
     }

@@ -1,47 +1,60 @@
 ﻿#include "IO.MzML.Generated.ScanType.h"
 #include "IO.MzML.Generated.ScanWindowListType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            ScanWindowListType *ScanType::getscanWindowList() const {
+            ScanWindowListType *ScanType::getscanWindowList() const
+            {
                 return this->scanWindowListField;
             }
 
-            void ScanType::setscanWindowList(ScanWindowListType *value) {
+            void ScanType::setscanWindowList(ScanWindowListType *value)
+            {
                 this->scanWindowListField = value;
             }
 
-            std::wstring ScanType::getspectrumRef() const {
+            std::string ScanType::getspectrumRef() const
+            {
                 return this->spectrumRefField;
             }
 
-            void ScanType::setspectrumRef(const std::wstring &value) {
+            void ScanType::setspectrumRef(const std::string &value)
+            {
                 this->spectrumRefField = value;
             }
 
-            std::wstring ScanType::getsourceFileRef() const {
+            std::string ScanType::getsourceFileRef() const
+            {
                 return this->sourceFileRefField;
             }
 
-            void ScanType::setsourceFileRef(const std::wstring &value) {
+            void ScanType::setsourceFileRef(const std::string &value)
+            {
                 this->sourceFileRefField = value;
             }
 
-            std::wstring ScanType::getexternalSpectrumID() const {
+            std::string ScanType::getexternalSpectrumID() const
+            {
                 return this->externalSpectrumIDField;
             }
 
-            void ScanType::setexternalSpectrumID(const std::wstring &value) {
+            void ScanType::setexternalSpectrumID(const std::string &value)
+            {
                 this->externalSpectrumIDField = value;
             }
 
-            std::wstring ScanType::getinstrumentConfigurationRef() const {
+            std::string ScanType::getinstrumentConfigurationRef() const
+            {
                 return this->instrumentConfigurationRefField;
             }
 
-            void ScanType::setinstrumentConfigurationRef(const std::wstring &value) {
+            void ScanType::setinstrumentConfigurationRef(const std::string &value)
+            {
                 this->instrumentConfigurationRefField = value;
             }
         }

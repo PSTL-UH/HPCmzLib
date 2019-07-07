@@ -2,31 +2,40 @@
 #include "IO.MzML.Generated.SourceFileRefListType.h"
 #include "IO.MzML.Generated.TargetListType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            SourceFileRefListType *ScanSettingsType::getsourceFileRefList() const {
+            SourceFileRefListType *ScanSettingsType::getsourceFileRefList() const
+            {
                 return this->sourceFileRefListField;
             }
 
-            void ScanSettingsType::setsourceFileRefList(SourceFileRefListType *value) {
+            void ScanSettingsType::setsourceFileRefList(SourceFileRefListType *value)
+            {
                 this->sourceFileRefListField = value;
             }
 
-            TargetListType *ScanSettingsType::gettargetList() const {
+            TargetListType *ScanSettingsType::gettargetList() const
+            {
                 return this->targetListField;
             }
 
-            void ScanSettingsType::settargetList(TargetListType *value) {
+            void ScanSettingsType::settargetList(TargetListType *value)
+            {
                 this->targetListField = value;
             }
 
-            std::wstring ScanSettingsType::getid() const {
+            std::string ScanSettingsType::getid() const
+            {
                 return this->idField;
             }
 
-            void ScanSettingsType::setid(const std::wstring &value) {
+            void ScanSettingsType::setid(const std::string &value)
+            {
                 this->idField = value;
             }
         }

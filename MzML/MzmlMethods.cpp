@@ -1,8 +1,5 @@
 ﻿#include "MzmlMethods.h"
-#include "../MassSpectrometry/IMsDataFile.h"
-#include "../MassSpectrometry/DataScan/IMsDataScan.h"
-#include "../MassSpectrometry/MzSpectra/IMzPeak.h"
-#include "../MassSpectrometry/MzSpectra/IMzSpectrum.h"
+#include "../MassSpectrometry/MsDataFile.h"
 #include "XSD/IO.MzML.Generated.mzMLType.h"
 #include "XSD/IO.MzML.Generated.CVListType.h"
 #include "XSD/IO.MzML.Generated.CVType.h"
@@ -27,13 +24,11 @@
 #include "XSD/IO.MzML.Generated.ChromatogramType.h"
 #include "XSD/IO.MzML.Generated.BinaryDataArrayListType.h"
 #include "XSD/IO.MzML.Generated.BinaryDataArrayType.h"
-#include "../MassSpectrometry/MzSpectra/MzPeak.h"
 #include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "XSD/IO.MzML.Generated.SpectrumListType.h"
 #include "XSD/IO.MzML.Generated.SpectrumType.h"
 #include "XSD/IO.MzML.Generated.ScanListType.h"
 #include "XSD/IO.MzML.Generated.ScanType.h"
-#include "../MassSpectrometry/DataScan/IMsDataScanWithPrecursor.h"
 #include "XSD/IO.MzML.Generated.PrecursorListType.h"
 #include "XSD/IO.MzML.Generated.PrecursorType.h"
 #include "XSD/IO.MzML.Generated.SelectedIonListType.h"
@@ -48,74 +43,105 @@
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
-namespace IO {
-    namespace MzML {
+namespace IO
+{
+    namespace MzML
+    {
 
-XmlSerializer *const MzmlMethods::indexedSerializer = new XmlSerializer(Generated::indexedmzML::typeid);
-XmlSerializer *const MzmlMethods::mzmlSerializer = new XmlSerializer(Generated::mzMLType::typeid);
-const std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeAccessions = std::unordered_map<DissociationType, std::string> {
-    {DissociationType::CID, "MS:1000133"}, {
-    {DissociationType::HCD, "MS:1000422"}, {
-    {DissociationType::MPD, "MS:1000435"}, {
+XmlSerializer *const MzmlMethods::indexedSerializer = new XmlSerializer(typeof(Generated::indexedmzML));
+XmlSerializer *const MzmlMethods::mzmlSerializer = new XmlSerializer(typeof(Generated::mzMLType));
+std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeAccessions =
+{
+    {DissociationType::CID, "MS:1000133"},
+    {DissociationType::ISCID, "MS:1001880"},
+    {DissociationType::HCD, "MS:1000422"},
+    {DissociationType::ETD, "MS:1000598"},
+    {DissociationType::IRMPD, "MS:1000435"},
+    {DissociationType::PQD, "MS:1000599"},
     {DissociationType::Unknown, "MS:1000044"}
-    };
-const std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeNames = std::unordered_map<DissociationType, std::string> {
-    {DissociationType::CID, "collision-induced dissociation"}, {
-    {DissociationType::HCD, "beam-type collision-induced dissociation"}, {
-    {DissociationType::MPD, "photodissociation"}, {
+};
+std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeNames =
+{
+    {DissociationType::CID, "collision-induced dissociation"},
+    {DissociationType::ISCID, "in-source collision-induced dissociation"},
+    {DissociationType::HCD, "beam-type collision-induced dissociation"},
+    {DissociationType::ETD, "electron transfer dissociation"},
+    {DissociationType::IRMPD, "photodissociation"},
+    {DissociationType::PQD, "pulsed q dissociation"},
     {DissociationType::Unknown, "dissociation method"}
-    };
-const std::unordered_map<MZAnalyzerType, std::string> MzmlMethods::analyzerDictionary = std::unordered_map<MZAnalyzerType, std::string> {
-    {MZAnalyzerType::Unknown, "MS:1000443"}, {
-    {MZAnalyzerType::IonTrap2D, "MS:1000291"}, {
-    {MZAnalyzerType::Orbitrap,"MS:1000484"}, {
-    {MZAnalyzerType::FTICR,"MS:1000079"}, {
-    };
-const std::unordered_map<std::string, std::string> MzmlMethods::nativeIdFormatAccessions = std::unordered_map<std::string, std::string> {
-    {"scan number only nativeID format", "MS:1000776"}, {
+};
+std::unordered_map<MZAnalyzerType, std::string> MzmlMethods::analyzerDictionary =
+{
+    {MZAnalyzerType::Unknown, "MS:1000443"},
+    {MZAnalyzerType::Quadrupole, "MS:1000081"},
+    {MZAnalyzerType::IonTrap2D, "MS:1000291"},
+    {MZAnalyzerType::IonTrap3D,"MS:1000082"},
+    {MZAnalyzerType::Orbitrap,"MS:1000484"},
+    {MZAnalyzerType::TOF,"MS:1000084"},
+    {MZAnalyzerType::FTICR,"MS:1000079"},
+    {MZAnalyzerType::Sector,"MS:1000080"}
+};
+std::unordered_map<std::string, std::string> MzmlMethods::nativeIdFormatAccessions =
+{
+    {"scan number only nativeID format", "MS:1000776"},
+    {"Thermo nativeID format", "MS:1000768"},
     {"no nativeID format", "MS:1000824"}
-    };
-const std::unordered_map<std::string, std::string> MzmlMethods::MassSpectrometerFileFormatAccessions = std::unordered_map<std::string, std::string> {
-    {"Thermo RAW format", "MS:1000563"}, {
-    };
-const std::unordered_map<std::string, std::string> MzmlMethods::FileChecksumAccessions = std::unordered_map<std::string, std::string> {
-    {"MD5", "MS:1000568"}, {
-    };
-const std::unordered_map<bool, std::string> MzmlMethods::CentroidAccessions = std::unordered_map<bool, std::string> {
-    {true, "MS:1000127"}, {
-    };
-const std::unordered_map<bool, std::string> MzmlMethods::CentroidNames = std::unordered_map<bool, std::string> {
-    {true, "centroid spectrum"}, {
-    };
-const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityAccessions = std::unordered_map<Polarity, std::string> {
-    {Polarity::Negative, "MS:1000129"}, {
-    };
-const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std::unordered_map<Polarity, std::string> {
-    {Polarity::Negative, "negative scan"}, {
-    };
+};
+std::unordered_map<std::string, std::string> MzmlMethods::MassSpectrometerFileFormatAccessions =
+{
+    {"Thermo RAW format", "MS:1000563"},
+    {"mzML format", "MS:1000584"}
+};
+std::unordered_map<std::string, std::string> MzmlMethods::FileChecksumAccessions =
+{
+    {"MD5", "MS:1000568"},
+    {"SHA-1", "MS:1000569"}
+};
+std::unordered_map<bool, std::string> MzmlMethods::CentroidAccessions =
+{
+    {true, "MS:1000127"},
+    {false, "MS:1000128"}
+};
+std::unordered_map<bool, std::string> MzmlMethods::CentroidNames =
+{
+    {true, "centroid spectrum"},
+    {false, "profile spectrum"}
+};
+std::unordered_map<Polarity, std::string> MzmlMethods::PolarityAccessions =
+{
+    {Polarity::Negative, "MS:1000129"},
+    {Polarity::Positive, "MS:1000130"}
+};
+std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
+{
+    {Polarity::Negative, "negative scan"},
+    {Polarity::Positive, "positive scan"}
+};
 
-        void MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *myMsDataFile, const std::string &outputFile, bool writeIndexed) {
-            std::string title = System::IO::Path::GetFileNameWithoutExtension(outputFile);
+        void MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(MsDataFile *myMsDataFile, const std::string &outputFile, bool writeIndexed)
+        {
+            std::string title = Path::GetFileNameWithoutExtension(outputFile);
+            std::string idTitle = char::IsNumber(title[0]) ? "id:" + title : title;
 
             auto mzML = new Generated::mzMLType();
             mzML->setversion("1.1.0");
             Generated::CVListType tempVar();
             mzML->setcvList(&tempVar);
-            mzML->setid(title);
+            mzML->setid(idTitle);
 
             Generated::CVListType tempVar2();
             mzML->setcvList(&tempVar2);
             mzML->getcvList()->setcount("2");
             mzML->getcvList()->setcv(std::vector<Generated::CVType*>(2));
             Generated::CVType *tempVar3 = new Generated::CVType();
-            tempVar3->setURI(LR"(https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo)");
+            tempVar3->setURI(R"(https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo)");
             tempVar3->setfullName("Proteomics Standards Initiative Mass Spectrometry Ontology");
             tempVar3->setid("MS");
             tempVar3->setversion("4.0.1");
             mzML->getcvList()->getcv()[0] = tempVar3;
 
             Generated::CVType *tempVar4 = new Generated::CVType();
-            tempVar4->setURI(LR"(http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo)");
+            tempVar4->setURI(R"(http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo)");
             tempVar4->setfullName("Unit Ontology");
             tempVar4->setid("UO");
             tempVar4->setversion("12:10:2011");
@@ -128,16 +154,18 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
             Generated::SourceFileListType tempVar7();
             mzML->getfileDescription()->setsourceFileList(&tempVar7);
 
-            if (myMsDataFile->getSourceFile()->getNativeIdFormat() != "" && myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat() != "" && myMsDataFile->getSourceFile()->getFileChecksumType() != "") {
+            if (myMsDataFile->getSourceFile()->getNativeIdFormat() != "" && myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat() != "" && myMsDataFile->getSourceFile()->getFileChecksumType() != "")
+            {
                 Generated::SourceFileListType tempVar8();
                 mzML->getfileDescription()->setsourceFileList(&tempVar8);
                 mzML->getfileDescription()->getsourceFileList()->setcount("1");
                 mzML->getfileDescription()->getsourceFileList()->setsourceFile(std::vector<Generated::SourceFileType*>(1));
 
+                std::string idName = char::IsNumber(myMsDataFile->getSourceFile()->getFileName()[0]) ? "id:" + myMsDataFile->getSourceFile()->getFileName()[0] : myMsDataFile->getSourceFile()->getFileName();
                 Generated::SourceFileType *tempVar9 = new Generated::SourceFileType();
-                tempVar9->setid(myMsDataFile->getSourceFile()->getFileName());
+                tempVar9->setid(idName);
                 tempVar9->setname(myMsDataFile->getSourceFile()->getFileName());
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 tempVar9->setlocation(myMsDataFile->getSourceFile()->getUri()->ToString());
                 mzML->getfileDescription()->getsourceFileList()->getsourceFile()[0] = tempVar9;
 
@@ -161,6 +189,11 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 std::string tempVar13 = myMsDataFile.getSourceFile().getCheckSum();
                 tempVar12->setvalue((tempVar13 != nullptr) ? tempVar13 : "");
                 mzML->getfileDescription()->getsourceFileList()->getsourceFile()[0]->cvParam[2] = tempVar12;
+
+                delete tempVar12;
+                delete tempVar11;
+                delete tempVar10;
+                delete tempVar9;
             }
 
             mzML->getfileDescription()->getfileContent()->setcvParam(std::vector<Generated::CVParamType*>(2));
@@ -195,8 +228,8 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
             tempVar18->setname("custom unreleased software tool");
             tempVar18->setcvRef("MS");
             mzML->getsoftwareList()->getsoftware()[0]->cvParam[0] = tempVar18;
-
-            std::vector<MZAnalyzerType> analyzersInThisFile = (std::unordered_set<MZAnalyzerType>(myMsDataFile->Select([&] (std::any b) {
+            std::vector<MZAnalyzerType> analyzersInThisFile = (std::unordered_set<MZAnalyzerType>(myMsDataFile->GetAllScansList().Select([&] (std::any b)
+            {
                 b::MzAnalyzer;
             })))->ToList();
             std::unordered_map<MZAnalyzerType, std::string> analyzersInThisFileDict;
@@ -210,7 +243,8 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
             // Write the analyzers, also the default, also in the scans if needed
 
-            for (int i = 0; i < mzML->getinstrumentConfigurationList()->getinstrumentConfiguration().size(); i++) {
+            for (int i = 0; i < mzML->getinstrumentConfigurationList()->getinstrumentConfiguration().size(); i++)
+            {
                 analyzersInThisFileDict[analyzersInThisFile[i]] = "IC" + std::to_string(i + 1);
                 Generated::InstrumentConfigurationType *tempVar20 = new Generated::InstrumentConfigurationType();
                 tempVar20->setid("IC" + std::to_string(i + 1));
@@ -247,12 +281,21 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 tempVar25->setorder(2);
                 tempVar25->setcvParam(std::vector<Generated::CVParamType*>(1));
                 mzML->getinstrumentConfigurationList()->getinstrumentConfiguration()[i]->componentList.analyzer[0] = tempVar25;
-
+                std::string anName = "";
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                if (analyzersInThisFile[i].ToString()->ToLower() == "unknown")
+                {
+                    anName = "mass analyzer type";
+                }
+                else
+                {
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    anName = analyzersInThisFile[i].ToString()->ToLower();
+                }
                 Generated::CVParamType *tempVar26 = new Generated::CVParamType();
                 tempVar26->setcvRef("MS");
                 tempVar26->setaccession(analyzerDictionary[analyzersInThisFile[i]]);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                tempVar26->setname(analyzersInThisFile[i].ToString()->ToLower());
+                tempVar26->setname(anName);
                 tempVar26->setvalue("");
                 mzML->getinstrumentConfigurationList()->getinstrumentConfiguration()[i]->componentList.analyzer[0].cvParam[0] = tempVar26;
 
@@ -266,6 +309,15 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 tempVar28->setname("detector type");
                 tempVar28->setvalue("");
                 mzML->getinstrumentConfigurationList()->getinstrumentConfiguration()[i]->componentList.detector[0].cvParam[0] = tempVar28;
+
+                delete tempVar28;
+                delete tempVar27;
+                delete tempVar26;
+                delete tempVar25;
+                delete tempVar24;
+                delete tempVar23;
+                delete tempVar22;
+                delete tempVar20;
             }
 
             Generated::DataProcessingListType tempVar29();
@@ -287,15 +339,16 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
             mzML->getdataProcessingList()->getdataProcessing()[0]->processingMethod[0] = tempVar31;
 
             Generated::CVParamType *tempVar32 = new Generated::CVParamType();
-            tempVar32->setaccession("MS:1000452");
+            tempVar32->setaccession("MS:1000544");
             tempVar32->setcvRef("MS");
-            tempVar32->setname("data transformation");
+            tempVar32->setname("Conversion to mzML");
             tempVar32->setvalue("");
             mzML->getdataProcessingList()->getdataProcessing()[0]->processingMethod[0].cvParam[0] = tempVar32;
+
             Generated::RunType tempVar33();
             mzML->setrun(&tempVar33);
             mzML->getrun()->setdefaultInstrumentConfigurationRef(analyzersInThisFileDict[analyzersInThisFile[0]]);
-            mzML->getrun()->setid(title);
+            mzML->getrun()->setid(idTitle);
 
             Generated::ChromatogramListType tempVar34();
             mzML->getrun()->setchromatogramList(&tempVar34);
@@ -326,17 +379,18 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
             std::vector<double> times(myMsDataFile->getNumSpectra());
             std::vector<double> intensities(myMsDataFile->getNumSpectra());
 
-            for (int i = 1; i <= myMsDataFile->getNumSpectra(); i++) {
+            for (int i = 1; i <= myMsDataFile->getNumSpectra(); i++)
+            {
                 times[i - 1] = myMsDataFile->GetOneBasedScan(i)->getRetentionTime();
-                intensities[i - 1] = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->SumOfAllY;
+                intensities[i - 1] = myMsDataFile->GetOneBasedScan(i)->MassSpectrum.SumOfAllY;
             }
 
             //Chromatofram X axis (time)
             Generated::BinaryDataArrayType *tempVar38 = new Generated::BinaryDataArrayType();
-            tempVar38->setbinary(MzSpectrum<MzPeak*>::Get64Bitarray(times));
+            tempVar38->setbinary(MzSpectrum::Get64Bitarray(times));
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[0] = tempVar38;
 
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[0]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[0].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[0]->cvParam = std::vector<Generated::CVParamType*>(3);
@@ -367,10 +421,10 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
             //Chromatogram Y axis (total intensity)
             Generated::BinaryDataArrayType *tempVar42 = new Generated::BinaryDataArrayType();
-            tempVar42->setbinary(MzSpectrum<MzPeak*>::Get64Bitarray(intensities));
+            tempVar42->setbinary(MzSpectrum::Get64Bitarray(intensities));
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[1] = tempVar42;
 
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[1]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
             mzML->getrun()->getchromatogramList()->getchromatogram()[0]->binaryDataArrayList.binaryDataArray[1]->cvParam = std::vector<Generated::CVParamType*>(3);
@@ -401,16 +455,17 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
             Generated::SpectrumListType tempVar46();
             mzML->getrun()->setspectrumList(&tempVar46);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
             mzML->getrun()->getspectrumList()->setcount((myMsDataFile->getNumSpectra()).ToString(CultureInfo::InvariantCulture));
             mzML->getrun()->getspectrumList()->setdefaultDataProcessingRef("mzLibProcessing");
             mzML->getrun()->getspectrumList()->setspectrum(std::vector<Generated::SpectrumType*>(myMsDataFile->getNumSpectra()));
 
             // Loop over all spectra
-            for (int i = 1; i <= myMsDataFile->getNumSpectra(); i++) {
+            for (int i = 1; i <= myMsDataFile->getNumSpectra(); i++)
+            {
                 Generated::SpectrumType *tempVar47 = new Generated::SpectrumType();
-                tempVar47->setdefaultArrayLength(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->YArray->Length);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+                tempVar47->setdefaultArrayLength(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.YArray->Length);
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 tempVar47->setindex((i - 1).ToString(CultureInfo::InvariantCulture));
                 tempVar47->setid(myMsDataFile->GetOneBasedScan(i)->getNativeId());
                 tempVar47->setcvParam(std::vector<Generated::CVParamType*>(9));
@@ -422,223 +477,251 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 .scanList->count = std::to_string(1);
                 .scanList->scan = std::vector<Generated::ScanType*>(1);
                 .scanList->cvParam = std::vector<Generated::CVParamType*>(1);
-                Generated::CVParamType *tempVar49 = new Generated::CVParamType();
-                tempVar49->setcvRef("MS");
-                tempVar49->setaccession("MS:1000570");
-                tempVar49->setname("spectra combination");
-                tempVar49->setvalue("");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.cvParam[0] = tempVar49;
-                auto h = myMsDataFile->GetOneBasedScan(i)->getMzAnalyzer();
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0] = new Generated::ScanType { };
 
-                if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() == 1) {
+                if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() == 1)
+                {
+                    Generated::CVParamType *tempVar49 = new Generated::CVParamType();
+                    tempVar49->setaccession("MS:1000579");
+                    tempVar49->setcvRef("MS");
+                    tempVar49->setname("MS1 spectrum");
+                    tempVar49->setvalue("");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[0] = tempVar49;
+
+                    delete tempVar49;
+                }
+                else if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() != 1)
+                {
+                    auto scanWithPrecursor = myMsDataFile->GetOneBasedScan(i);
                     Generated::CVParamType *tempVar50 = new Generated::CVParamType();
-                    tempVar50->setaccession("MS:1000579");
+                    tempVar50->setaccession("MS:1000580");
                     tempVar50->setcvRef("MS");
-                    tempVar50->setname("MS1 spectrum");
+                    tempVar50->setname("MSn spectrum");
                     tempVar50->setvalue("");
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[0] = tempVar50;
-                }
-                else if (dynamic_cast<IMsDataScanWithPrecursor<IMzSpectrum<IMzPeak*>*>*>(myMsDataFile->GetOneBasedScan(i)) != nullptr) {
-                    auto scanWithPrecursor = dynamic_cast<IMsDataScanWithPrecursor<IMzSpectrum<IMzPeak*>*>*>(myMsDataFile->GetOneBasedScan(i));
-                    Generated::CVParamType *tempVar51 = new Generated::CVParamType();
-                    tempVar51->setaccession("MS:1000580");
-                    tempVar51->setcvRef("MS");
-                    tempVar51->setname("MSn spectrum");
-                    tempVar51->setvalue("");
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[0] = tempVar51;
 
                     // So needs a precursor!
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList = new Generated::PrecursorListType();
                     .precursorList->count = std::to_string(1);
                     .precursorList->precursor = std::vector<Generated::PrecursorType*>(1);
-                    Generated::PrecursorType *tempVar52 = new Generated::PrecursorType();
-                    Generated::SelectedIonListType tempVar53();
-                    tempVar52->setselectedIonList(&tempVar53);
-                    tempVar52->getselectedIonList()->setcount(std::to_string(1));
-                    tempVar52->getselectedIonList()->setselectedIon(std::vector<Generated::ParamGroupType*>(1));
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0] = tempVar52;
+                    Generated::PrecursorType *tempVar51 = new Generated::PrecursorType();
+                    Generated::SelectedIonListType tempVar52();
+                    tempVar51->setselectedIonList(&tempVar52);
+                    tempVar51->getselectedIonList()->setcount(std::to_string(1));
+                    tempVar51->getselectedIonList()->setselectedIon(std::vector<Generated::ParamGroupType*>(1));
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0] = tempVar51;
 
-                    if (scanWithPrecursor->getOneBasedPrecursorScanNumber().HasValue) {
-                        auto precursorID = myMsDataFile->GetOneBasedScan(scanWithPrecursor->getOneBasedPrecursorScanNumber().Value)->getNativeId();
+                    if (scanWithPrecursor->getOneBasedPrecursorScanNumber())
+                    {
+                        std::string precursorID = myMsDataFile->GetOneBasedScan(scanWithPrecursor->getOneBasedPrecursorScanNumber().value())->getNativeId();
                         mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0]->spectrumRef = precursorID;
                     }
 
-                    Generated::ParamGroupType *tempVar54 = new Generated::ParamGroupType();
-                    tempVar54->setcvParam(std::vector<Generated::CVParamType*>(3));
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0] = tempVar54;
+                    Generated::ParamGroupType *tempVar53 = new Generated::ParamGroupType();
+                    tempVar53->setcvParam(std::vector<Generated::CVParamType*>(3));
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0] = tempVar53;
 
                     // Selected ion MZ
-                    Generated::CVParamType *tempVar55 = new Generated::CVParamType();
-                    tempVar55->setname("selected ion m/z");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    tempVar55->setvalue(scanWithPrecursor->getSelectedIonMZ().ToString(CultureInfo::InvariantCulture));
-                    tempVar55->setaccession("MS:1000744");
-                    tempVar55->setcvRef("MS");
-                    tempVar55->setunitCvRef("MS");
-                    tempVar55->setunitAccession("MS:1000040");
-                    tempVar55->setunitName("m/z");
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[0] = tempVar55;
+                    Generated::CVParamType *tempVar54 = new Generated::CVParamType();
+                    tempVar54->setname("selected ion m/z");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar54->setvalue(scanWithPrecursor->getSelectedIonMZ().value().ToString(CultureInfo::InvariantCulture));
+                    tempVar54->setaccession("MS:1000744");
+                    tempVar54->setcvRef("MS");
+                    tempVar54->setunitCvRef("MS");
+                    tempVar54->setunitAccession("MS:1000040");
+                    tempVar54->setunitName("m/z");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[0] = tempVar54;
 
                     // Charge State
-                    if (scanWithPrecursor->getSelectedIonChargeStateGuess().HasValue) {
-                        Generated::CVParamType *tempVar56 = new Generated::CVParamType();
-                        tempVar56->setname("charge state");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        tempVar56->setvalue(scanWithPrecursor->getSelectedIonChargeStateGuess().Value.ToString(CultureInfo::InvariantCulture));
-                        tempVar56->setaccession("MS:1000041");
-                        tempVar56->setcvRef("MS");
-                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[1] = tempVar56;
+                    if (scanWithPrecursor->getSelectedIonChargeStateGuess())
+                    {
+                        Generated::CVParamType *tempVar55 = new Generated::CVParamType();
+                        tempVar55->setname("charge state");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        tempVar55->setvalue(scanWithPrecursor->getSelectedIonChargeStateGuess().value().ToString(CultureInfo::InvariantCulture));
+                        tempVar55->setaccession("MS:1000041");
+                        tempVar55->setcvRef("MS");
+                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[1] = tempVar55;
+
+                        delete tempVar55;
                     }
 
                     // Selected ion intensity
-                    if (scanWithPrecursor->getSelectedIonIntensity().HasValue) {
-                        Generated::CVParamType *tempVar57 = new Generated::CVParamType();
-                        tempVar57->setname("peak intensity");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        tempVar57->setvalue(scanWithPrecursor->getSelectedIonIntensity().Value.ToString(CultureInfo::InvariantCulture));
-                        tempVar57->setaccession("MS:1000042");
-                        tempVar57->setcvRef("MS");
-                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[2] = tempVar57;
+                    if (scanWithPrecursor->getSelectedIonIntensity())
+                    {
+                        Generated::CVParamType *tempVar56 = new Generated::CVParamType();
+                        tempVar56->setname("peak intensity");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        tempVar56->setvalue(scanWithPrecursor->getSelectedIonIntensity().value().ToString(CultureInfo::InvariantCulture));
+                        tempVar56->setaccession("MS:1000042");
+                        tempVar56->setcvRef("MS");
+                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam[2] = tempVar56;
+
+                        delete tempVar56;
                     }
-                    if (scanWithPrecursor->getIsolationMz().HasValue) {
+                    if (scanWithPrecursor->getIsolationMz())
+                    {
                         MzRange *isolationRange = scanWithPrecursor->getIsolationRange();
                         mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0]->isolationWindow = new Generated::ParamGroupType();
                         .isolationWindow->cvParam = std::vector<Generated::CVParamType*>(3);
+                        Generated::CVParamType *tempVar57 = new Generated::CVParamType();
+                        tempVar57->setaccession("MS:1000827");
+                        tempVar57->setname("isolation window target m/z");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        tempVar57->setvalue(isolationRange->getMean().ToString(CultureInfo::InvariantCulture));
+                        tempVar57->setcvRef("MS");
+                        tempVar57->setunitCvRef("MS");
+                        tempVar57->setunitAccession("MS:1000040");
+                        tempVar57->setunitName("m/z");
+                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[0] = tempVar57;
                         Generated::CVParamType *tempVar58 = new Generated::CVParamType();
-                        tempVar58->setaccession("MS:1000827");
-                        tempVar58->setname("isolation window target m/z");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        tempVar58->setvalue(isolationRange->getMean().ToString(CultureInfo::InvariantCulture));
+                        tempVar58->setaccession("MS:1000828");
+                        tempVar58->setname("isolation window lower offset");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        tempVar58->setvalue((isolationRange->getWidth() / 2).ToString(CultureInfo::InvariantCulture));
                         tempVar58->setcvRef("MS");
                         tempVar58->setunitCvRef("MS");
                         tempVar58->setunitAccession("MS:1000040");
                         tempVar58->setunitName("m/z");
-                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[0] = tempVar58;
+                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[1] = tempVar58;
                         Generated::CVParamType *tempVar59 = new Generated::CVParamType();
-                        tempVar59->setaccession("MS:1000828");
-                        tempVar59->setname("isolation window lower offset");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+                        tempVar59->setaccession("MS:1000829");
+                        tempVar59->setname("isolation window upper offset");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                         tempVar59->setvalue((isolationRange->getWidth() / 2).ToString(CultureInfo::InvariantCulture));
                         tempVar59->setcvRef("MS");
                         tempVar59->setunitCvRef("MS");
                         tempVar59->setunitAccession("MS:1000040");
                         tempVar59->setunitName("m/z");
-                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[1] = tempVar59;
-                        Generated::CVParamType *tempVar60 = new Generated::CVParamType();
-                        tempVar60->setaccession("MS:1000829");
-                        tempVar60->setname("isolation window upper offset");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        tempVar60->setvalue((isolationRange->getWidth() / 2).ToString(CultureInfo::InvariantCulture));
-                        tempVar60->setcvRef("MS");
-                        tempVar60->setunitCvRef("MS");
-                        tempVar60->setunitAccession("MS:1000040");
-                        tempVar60->setunitName("m/z");
-                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[2] = tempVar60;
+                        mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].isolationWindow.cvParam[2] = tempVar59;
+
+                        delete tempVar59;
+                        delete tempVar58;
+                        delete tempVar57;
                     }
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0]->activation = new Generated::ParamGroupType();
                     .activation->cvParam = std::vector<Generated::CVParamType*>(1);
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].activation.cvParam[0] = new Generated::CVParamType();
 
-                    DissociationType dissociationType = scanWithPrecursor->getDissociationType();
+                    DissociationType dissociationType = scanWithPrecursor->getDissociationType().value();
 
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].activation.cvParam[0]->accession = DissociationTypeAccessions[dissociationType];
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].activation.cvParam[0]->name = DissociationTypeNames[dissociationType];
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].activation.cvParam[0]->cvRef = "MS";
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->precursorList.precursor[0].activation.cvParam[0]->value = "";
+
+                    delete tempVar54;
+                    delete tempVar53;
+                    delete tempVar51;
+                    delete tempVar50;
                 }
 
+                Generated::CVParamType *tempVar60 = new Generated::CVParamType();
+                tempVar60->setname("ms level");
+                tempVar60->setaccession("MS:1000511");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                tempVar60->setvalue(myMsDataFile->GetOneBasedScan(i)->getMsnOrder().ToString(CultureInfo::InvariantCulture));
+                tempVar60->setcvRef("MS");
+                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[1] = tempVar60;
                 Generated::CVParamType *tempVar61 = new Generated::CVParamType();
-                tempVar61->setname("ms level");
-                tempVar61->setaccession("MS:1000511");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                tempVar61->setvalue(myMsDataFile->GetOneBasedScan(i)->getMsnOrder().ToString(CultureInfo::InvariantCulture));
+                tempVar61->setname(CentroidNames[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()]);
+                tempVar61->setaccession(CentroidAccessions[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()]);
                 tempVar61->setcvRef("MS");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[1] = tempVar61;
-                Generated::CVParamType *tempVar62 = new Generated::CVParamType();
-                tempVar62->setname(CentroidNames[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()]);
-                tempVar62->setaccession(CentroidAccessions[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()]);
-                tempVar62->setcvRef("MS");
-                tempVar62->setvalue("");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[2] = tempVar62;
+                tempVar61->setvalue("");
+                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[2] = tempVar61;
                 string polarityName;
                 string polarityAccession;
                 std::unordered_map<Polarity, std::string>::const_iterator PolarityAccessions_iterator = PolarityAccessions.find(myMsDataFile.GetOneBasedScan(i).Polarity);
                 std::unordered_map<Polarity, std::string>::const_iterator PolarityNames_iterator = PolarityNames.find(myMsDataFile.GetOneBasedScan(i).Polarity);
-                if (PolarityNames_iterator != PolarityNames.end() && PolarityAccessions_iterator != PolarityAccessions.end()) {
+                if (PolarityNames_iterator != PolarityNames.end() && PolarityAccessions_iterator != PolarityAccessions.end())
+                {
                     polarityName = PolarityNames_iterator->second;
                     polarityAccession = PolarityAccessions_iterator->second;
-                    Generated::CVParamType *tempVar63 = new Generated::CVParamType();
-                    tempVar63->setname(polarityName);
-                    tempVar63->setaccession(polarityAccession);
-                    tempVar63->setcvRef("MS");
-                    tempVar63->setvalue("");
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[3] = tempVar63;
+                    Generated::CVParamType *tempVar62 = new Generated::CVParamType();
+                    tempVar62->setname(polarityName);
+                    tempVar62->setaccession(polarityAccession);
+                    tempVar62->setcvRef("MS");
+                    tempVar62->setvalue("");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[3] = tempVar62;
+
+                    delete tempVar62;
                 }
-                else {
+                else
+                {
                     polarityName = PolarityNames_iterator->second;
                     polarityAccession = PolarityAccessions_iterator->second;
                 }
                 // Spectrum title
                 //string title = System.IO.Path.GetFileNameWithoutExtension(outputFile);
 
-                if ((myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Size) > 0) {
+                if ((myMsDataFile->GetOneBasedScan(i)->MassSpectrum.Size) > 0)
+                {
                     // Lowest observed mz
-                    Generated::CVParamType *tempVar64 = new Generated::CVParamType();
-                    tempVar64->setname("lowest observed m/z");
-                    tempVar64->setaccession("MS:1000528");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    tempVar64->setvalue(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->FirstX.ToString(CultureInfo::InvariantCulture));
-                    tempVar64->setunitCvRef("MS");
-                    tempVar64->setunitAccession("MS:1000040");
-                    tempVar64->setunitName("m/z");
-                    tempVar64->setcvRef("MS");
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[4] = tempVar64;
+                    Generated::CVParamType *tempVar63 = new Generated::CVParamType();
+                    tempVar63->setname("lowest observed m/z");
+                    tempVar63->setaccession("MS:1000528");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar63->setvalue(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.FirstX->Value->ToString(CultureInfo::InvariantCulture));
+                    tempVar63->setunitCvRef("MS");
+                    tempVar63->setunitAccession("MS:1000040");
+                    tempVar63->setunitName("m/z");
+                    tempVar63->setcvRef("MS");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[4] = tempVar63;
 
                     // Highest observed mz
-                    Generated::CVParamType *tempVar65 = new Generated::CVParamType();
-                    tempVar65->setname("highest observed m/z");
-                    tempVar65->setaccession("MS:1000527");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    tempVar65->setvalue(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->LastX.ToString(CultureInfo::InvariantCulture));
-                    tempVar65->setunitAccession("MS:1000040");
-                    tempVar65->setunitName("m/z");
-                    tempVar65->setcvRef("MS");
-                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[5] = tempVar65;
+                    Generated::CVParamType *tempVar64 = new Generated::CVParamType();
+                    tempVar64->setname("highest observed m/z");
+                    tempVar64->setaccession("MS:1000527");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar64->setvalue(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.LastX->Value->ToString(CultureInfo::InvariantCulture));
+                    tempVar64->setunitAccession("MS:1000040");
+                    tempVar64->setunitName("m/z");
+                    tempVar64->setunitCvRef("MS");
+                    tempVar64->setcvRef("MS");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[5] = tempVar64;
+
+                    delete tempVar64;
+                    delete tempVar63;
                 }
 
                 // Total ion current
-                Generated::CVParamType *tempVar66 = new Generated::CVParamType();
-                tempVar66->setname("total ion current");
-                tempVar66->setaccession("MS:1000285");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                tempVar66->setvalue(myMsDataFile->GetOneBasedScan(i)->getTotalIonCurrent().ToString(CultureInfo::InvariantCulture));
-                tempVar66->setcvRef("MS");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[6] = tempVar66;
+                Generated::CVParamType *tempVar65 = new Generated::CVParamType();
+                tempVar65->setname("total ion current");
+                tempVar65->setaccession("MS:1000285");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                tempVar65->setvalue(myMsDataFile->GetOneBasedScan(i)->getTotalIonCurrent().ToString(CultureInfo::InvariantCulture));
+                tempVar65->setcvRef("MS");
+                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[6] = tempVar65;
 
-                //base peak m/z
-                Generated::CVParamType *tempVar67 = new Generated::CVParamType();
-                tempVar67->setname("base peak m/z");
-                tempVar67->setaccession("MS:1000504");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                tempVar67->setvalue(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->XofPeakWithHighestY.ToString());
-                tempVar67->setunitCvRef("MS");
-                tempVar67->setunitName("m/z");
-                tempVar67->setunitAccession("MS:1000040");
-                tempVar67->setcvRef("MS");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[7] = tempVar67;
+                if (myMsDataFile->GetOneBasedScan(i)->MassSpectrum.Size > 0)
+                {
+                    //base peak m/z
+                    Generated::CVParamType *tempVar66 = new Generated::CVParamType();
+                    tempVar66->setname("base peak m/z");
+                    tempVar66->setaccession("MS:1000504");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar66->setvalue(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.XofPeakWithHighestY.ToString());
+                    tempVar66->setunitCvRef("MS");
+                    tempVar66->setunitName("m/z");
+                    tempVar66->setunitAccession("MS:1000040");
+                    tempVar66->setcvRef("MS");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[7] = tempVar66;
 
-                //base peak intensity
-                Generated::CVParamType *tempVar68 = new Generated::CVParamType();
-                tempVar68->setname("base peak intensity");
-                tempVar68->setaccession("MS:1000505");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                tempVar68->setvalue(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->YofPeakWithHighestY.ToString());
-                tempVar68->setunitCvRef("MS");
-                tempVar68->setunitName("number of detector");
-                tempVar68->setunitAccession("MS:1000131");
-                tempVar68->setcvRef("MS");
-                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[8] = tempVar68;
+                    //base peak intensity
+                    Generated::CVParamType *tempVar67 = new Generated::CVParamType();
+                    tempVar67->setname("base peak intensity");
+                    tempVar67->setaccession("MS:1000505");
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar67->setvalue(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.YofPeakWithHighestY.ToString());
+                    tempVar67->setunitCvRef("MS");
+                    tempVar67->setunitName("number of detector counts");
+                    tempVar67->setunitAccession("MS:1000131");
+                    tempVar67->setcvRef("MS");
+                    mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->cvParam[8] = tempVar67;
+
+                    delete tempVar67;
+                    delete tempVar66;
+                }
 
                 // Retention time
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList = new Generated::ScanListType();
@@ -646,21 +729,34 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 .scanList->scan = std::vector<Generated::ScanType*>(1);
                 .scanList->cvParam = std::vector<Generated::CVParamType*>(1);
 
-                if (myMsDataFile->GetOneBasedScan(i)->getMzAnalyzer().Equals(analyzersInThisFile[0])) {
+                Generated::CVParamType *tempVar68 = new Generated::CVParamType();
+                tempVar68->setaccession("MS:1000795");
+                tempVar68->setcvRef("MS");
+                tempVar68->setname("no combination");
+                tempVar68->setvalue("");
+                mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.cvParam[0] = tempVar68;
+
+                if (myMsDataFile->GetOneBasedScan(i)->getMzAnalyzer().Equals(analyzersInThisFile[0]))
+                {
                     Generated::ScanType *tempVar69 = new Generated::ScanType();
                     tempVar69->setcvParam(std::vector<Generated::CVParamType*>(3));
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0] = tempVar69;
+
+                    delete tempVar69;
                 }
-                else {
+                else
+                {
                     Generated::ScanType *tempVar70 = new Generated::ScanType();
                     tempVar70->setcvParam(std::vector<Generated::CVParamType*>(3));
                     tempVar70->setinstrumentConfigurationRef(analyzersInThisFileDict[myMsDataFile->GetOneBasedScan(i)->getMzAnalyzer()]);
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0] = tempVar70;
+
+                    delete tempVar70;
                 }
                 Generated::CVParamType *tempVar71 = new Generated::CVParamType();
                 tempVar71->setname("scan start time");
                 tempVar71->setaccession("MS:1000016");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 tempVar71->setvalue(myMsDataFile->GetOneBasedScan(i)->getRetentionTime().ToString(CultureInfo::InvariantCulture));
                 tempVar71->setunitCvRef("UO");
                 tempVar71->setunitAccession("UO:0000031");
@@ -673,27 +769,34 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 tempVar72->setvalue(myMsDataFile->GetOneBasedScan(i)->getScanFilter());
                 tempVar72->setcvRef("MS");
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0].cvParam[1] = tempVar72;
-                if (myMsDataFile->GetOneBasedScan(i)->getInjectionTime().HasValue) {
+                if (myMsDataFile->GetOneBasedScan(i)->getInjectionTime())
+                {
                     Generated::CVParamType *tempVar73 = new Generated::CVParamType();
                     tempVar73->setname("ion injection time");
                     tempVar73->setaccession("MS:1000927");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                    tempVar73->setvalue(myMsDataFile->GetOneBasedScan(i)->getInjectionTime().Value.ToString(CultureInfo::InvariantCulture));
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                    tempVar73->setvalue(myMsDataFile->GetOneBasedScan(i)->getInjectionTime().value().ToString(CultureInfo::InvariantCulture));
                     tempVar73->setcvRef("MS");
                     tempVar73->setunitName("millisecond");
                     tempVar73->setunitAccession("UO:0000028");
                     tempVar73->setunitCvRef("UO");
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0].cvParam[2] = tempVar73;
+
+                    delete tempVar73;
                 }
-                if (dynamic_cast<IMsDataScanWithPrecursor<IMzSpectrum<IMzPeak*>*>*>(myMsDataFile->GetOneBasedScan(i)) != nullptr) {
-                    auto scanWithPrecursor = dynamic_cast<IMsDataScanWithPrecursor<IMzSpectrum<IMzPeak*>*>*>(myMsDataFile->GetOneBasedScan(i));
-                    if (scanWithPrecursor->getSelectedIonMonoisotopicGuessMz().HasValue) {
+                if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() != 1)
+                {
+                    auto scanWithPrecursor = myMsDataFile->GetOneBasedScan(i);
+                    if (scanWithPrecursor->getSelectedIonMonoisotopicGuessMz())
+                    {
                         mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0]->userParam = std::vector<Generated::UserParamType*>(1);
                         Generated::UserParamType *tempVar74 = new Generated::UserParamType();
                         tempVar74->setname("[mzLib]Monoisotopic M/Z:");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-                        tempVar74->setvalue(scanWithPrecursor->getSelectedIonMonoisotopicGuessMz().Value.ToString(CultureInfo::InvariantCulture));
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        tempVar74->setvalue(scanWithPrecursor->getSelectedIonMonoisotopicGuessMz().value().ToString(CultureInfo::InvariantCulture));
                         mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0].userParam[0] = tempVar74;
+
+                        delete tempVar74;
                     }
                 }
 
@@ -706,7 +809,7 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 Generated::CVParamType *tempVar76 = new Generated::CVParamType();
                 tempVar76->setname("scan window lower limit");
                 tempVar76->setaccession("MS:1000501");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 tempVar76->setvalue(myMsDataFile->GetOneBasedScan(i)->getScanWindowRange()->Minimum.ToString(CultureInfo::InvariantCulture));
                 tempVar76->setcvRef("MS");
                 tempVar76->setunitCvRef("MS");
@@ -716,20 +819,22 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 Generated::CVParamType *tempVar77 = new Generated::CVParamType();
                 tempVar77->setname("scan window upper limit");
                 tempVar77->setaccession("MS:1000500");
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 tempVar77->setvalue(myMsDataFile->GetOneBasedScan(i)->getScanWindowRange()->Maximum.ToString(CultureInfo::InvariantCulture));
                 tempVar77->setcvRef("MS");
                 tempVar77->setunitCvRef("MS");
                 tempVar77->setunitAccession("MS:1000040");
                 tempVar77->setunitName("m/z");
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->scanList.scan[0].scanWindowList.scanWindow[0].cvParam[1] = tempVar77;
-                if (myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty()) {
+                if (myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty())
+                {
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList = new Generated::BinaryDataArrayListType();
                     .binaryDataArrayList->count = std::to_string(2);
                     .binaryDataArrayList->binaryDataArray = std::vector<Generated::BinaryDataArrayType*>(2);
                 }
 
-                if (myMsDataFile->GetOneBasedScan(i)->getNoiseData().size() > 0) {
+                if (!myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty())
+                {
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList = new Generated::BinaryDataArrayListType();
                     .binaryDataArrayList->count = std::to_string(5);
                     .binaryDataArrayList->binaryDataArray = std::vector<Generated::BinaryDataArrayType*>(5);
@@ -737,9 +842,9 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
                 // M/Z Data
                 Generated::BinaryDataArrayType *tempVar78 = new Generated::BinaryDataArrayType();
-                tempVar78->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray());
+                tempVar78->setbinary(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.Get64BitXarray());
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[0] = tempVar78;
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[0]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[0].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[0]->cvParam = std::vector<Generated::CVParamType*>(3);
                 Generated::CVParamType *tempVar79 = new Generated::CVParamType();
@@ -766,9 +871,9 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
                 // Intensity Data
                 Generated::BinaryDataArrayType *tempVar82 = new Generated::BinaryDataArrayType();
-                tempVar82->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitYarray());
+                tempVar82->setbinary(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.Get64BitYarray());
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1] = tempVar82;
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1]->cvParam = std::vector<Generated::CVParamType*>(3);
                 Generated::CVParamType *tempVar83 = new Generated::CVParamType();
@@ -793,13 +898,14 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 tempVar85->setvalue("");
                 mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].cvParam[2] = tempVar85;
 
-                if (myMsDataFile->GetOneBasedScan(i)->getNoiseData().size() > 0) {
+                if (!myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty())
+                {
                     // mass
                     Generated::BinaryDataArrayType *tempVar86 = new Generated::BinaryDataArrayType();
                     tempVar86->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataMass());
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2] = tempVar86;
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2]->arrayLength = std::to_string(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2]->cvParam = std::vector<Generated::CVParamType*>(3);
                     Generated::CVParamType *tempVar87 = new Generated::CVParamType();
@@ -832,7 +938,7 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                     tempVar91->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise());
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3] = tempVar91;
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->arrayLength = std::to_string(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->cvParam = std::vector<Generated::CVParamType*>(3);
                     Generated::CVParamType *tempVar92 = new Generated::CVParamType();
@@ -864,7 +970,7 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                     tempVar96->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline());
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4] = tempVar96;
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4]->arrayLength = std::to_string(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4]->encodedLength = (4 * std::ceil((static_cast<double>(mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4]->cvParam = std::vector<Generated::CVParamType*>(3);
                     Generated::CVParamType *tempVar97 = new Generated::CVParamType();
@@ -890,21 +996,58 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                     tempVar100->setname("kelleherCustomType");
                     tempVar100->setvalue("noise intensity");
                     mzML->getrun()->getspectrumList()->getspectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4].userParam[0] = tempVar100;
+
+                    delete tempVar100;
+                    delete tempVar99;
+                    delete tempVar98;
+                    delete tempVar97;
+                    delete tempVar96;
+                    delete tempVar95;
+                    delete tempVar94;
+                    delete tempVar93;
+                    delete tempVar92;
+                    delete tempVar91;
+                    delete tempVar90;
+                    delete tempVar89;
+                    delete tempVar88;
+                    delete tempVar87;
+                    delete tempVar86;
                 }
+
+                delete tempVar85;
+                delete tempVar84;
+                delete tempVar83;
+                delete tempVar82;
+                delete tempVar81;
+                delete tempVar80;
+                delete tempVar79;
+                delete tempVar78;
+                delete tempVar77;
+                delete tempVar76;
+                delete tempVar75;
+                delete tempVar72;
+                delete tempVar71;
+                delete tempVar68;
+                delete tempVar65;
+                delete tempVar61;
+                delete tempVar60;
+                delete tempVar47;
             }
 
-            if (!writeIndexed) {
+            if (!writeIndexed)
+            {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (TextWriter writer = new StreamWriter(outputFile))
-            {
+                {
                     TextWriter writer = StreamWriter(outputFile);
                     mzmlSerializer->Serialize(writer, mzML);
+                }
             }
-            }
-            else if (writeIndexed) {
+            else if (writeIndexed)
+            {
                 Generated::indexedmzML *indexedMzml = new Generated::indexedmzML();
 
-                auto inMemoryTextWriter = new System::IO::MemoryStream();
+                auto inMemoryTextWriter = new MemoryStream();
 
                 //compute total offset
                 indexedMzml->setmzML(mzML);
@@ -953,25 +1096,32 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 //indexOf search returns location fom beginning of line (3 characters short)
                 int offsetFromBeforeScanTag = 3;
                 //spectra offset loop
-                while (i < numScans) {
+                while (i < numScans)
+                {
                     index = (int)allmzMLData.find(mzML->getrun()->getspectrumList()->getspectrum()[i]->id, (a - 1));
-                    if (index != -1) {
+                    if (index != -1)
+                    {
                         a = index;
                         Generated::OffsetType *tempVar104 = new Generated::OffsetType();
                         tempVar104->setidRef(mzML->getrun()->getspectrumList()->getspectrum()[i]->id);
                         tempVar104->setValue(a + offsetFromBeforeScanTag);
                         indexedMzml->getindexList()->getindex()[0]->offset[i] = tempVar104;
                         i++;
+
+                        delete tempVar104;
                     }
                 }
                 int offsetFromBeforeChromaTag = 3;
                 index = (int)allmzMLData.find("id=\"" + mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id + "\"", (a - 1));
-                if (index != -1) {
+                if (index != -1)
+                {
                     a = index;
                     Generated::OffsetType *tempVar105 = new Generated::OffsetType();
                     tempVar105->setidRef(mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id);
                     tempVar105->setValue(a + offsetFromBeforeChromaTag);
                     indexedMzml->getindexList()->getindex()[1]->offset[0] = tempVar105;
+
+                    delete tempVar105;
                 }
                 //offset
                 int offsetFromNullIndexList = 32;
@@ -989,7 +1139,7 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
 
                 inMemoryTextWriter->Close();
                 inMemoryTextWriter = new MemoryStream(Encoding::UTF8->GetBytes(indexedMzmlwithBlankChecksumString));
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 chksum = BitConverter::ToString(System::Security::Cryptography::SHA1::Create()->ComputeHash(inMemoryTextWriter));
                 inMemoryTextWriter->Close();
 
@@ -1003,10 +1153,31 @@ const std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames = std
                 indexedSerializer->Serialize(writer, indexedMzml);
                 writer.Close();
 
+                delete tempVar103;
+                delete tempVar102;
 //C# TO C++ CONVERTER TODO TASK: A 'delete inMemoryTextWriter' statement was not added since inMemoryTextWriter was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete indexedMzml' statement was not added since indexedMzml was passed to a method or constructor. Handle memory management manually.
             }
 
+            delete tempVar45;
+            delete tempVar44;
+            delete tempVar43;
+            delete tempVar42;
+            delete tempVar41;
+            delete tempVar40;
+            delete tempVar39;
+            delete tempVar38;
+            delete tempVar37;
+            delete tempVar35;
+            delete tempVar32;
+            delete tempVar31;
+            delete tempVar30;
+            delete tempVar18;
+            delete tempVar17;
+            delete tempVar15;
+            delete tempVar14;
+            delete tempVar4;
+            delete tempVar3;
 //C# TO C++ CONVERTER TODO TASK: A 'delete mzML' statement was not added since mzML was passed to a method or constructor. Handle memory management manually.
         }
     }

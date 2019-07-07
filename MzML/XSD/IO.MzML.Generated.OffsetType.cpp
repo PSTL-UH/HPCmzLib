@@ -1,46 +1,59 @@
 ﻿#include "IO.MzML.Generated.OffsetType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring OffsetType::getidRef() const {
+            std::string OffsetType::getidRef() const
+            {
                 return this->idRefField;
             }
 
-            void OffsetType::setidRef(const std::wstring &value) {
+            void OffsetType::setidRef(const std::string &value)
+            {
                 this->idRefField = value;
             }
 
-            std::wstring OffsetType::getspotID() const {
+            std::string OffsetType::getspotID() const
+            {
                 return this->spotIDField;
             }
 
-            void OffsetType::setspotID(const std::wstring &value) {
+            void OffsetType::setspotID(const std::string &value)
+            {
                 this->spotIDField = value;
             }
 
-            double OffsetType::getscanTime() const {
+            double OffsetType::getscanTime() const
+            {
                 return this->scanTimeField;
             }
 
-            void OffsetType::setscanTime(double value) {
+            void OffsetType::setscanTime(double value)
+            {
                 this->scanTimeField = value;
             }
 
-            bool OffsetType::getscanTimeSpecified() const {
+            bool OffsetType::getscanTimeSpecified() const
+            {
                 return this->scanTimeFieldSpecified;
             }
 
-            void OffsetType::setscanTimeSpecified(bool value) {
+            void OffsetType::setscanTimeSpecified(bool value)
+            {
                 this->scanTimeFieldSpecified = value;
             }
 
-            long long OffsetType::getValue() const {
+            long long OffsetType::getValue() const
+            {
                 return this->valueField;
             }
 
-            void OffsetType::setValue(long long value) {
+            void OffsetType::setValue(long long value)
+            {
                 this->valueField = value;
             }
         }

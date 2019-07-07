@@ -19,13 +19,17 @@ namespace IO { namespace MzML { namespace Generated { class BinaryDataArrayListT
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class ChromatogramType: ParamGroupType
-        class ChromatogramType : public ParamGroupType {
+        class ChromatogramType : public ParamGroupType
+        {
 
         private:
             PrecursorType *precursorField;
@@ -34,17 +38,18 @@ namespace IO {
 
             BinaryDataArrayListType *binaryDataArrayListField;
 
-            std::wstring idField;
+            std::string idField;
 
-            std::wstring indexField;
+            std::string indexField;
 
             int defaultArrayLengthField = 0;
 
-            std::wstring dataProcessingRefField;
+            std::string dataProcessingRefField;
 
             /// <remarks/>
         public:
-            virtual ~ChromatogramType() {
+            virtual ~ChromatogramType()
+            {
                 delete precursorField;
                 delete productField;
                 delete binaryDataArrayListField;
@@ -62,28 +67,28 @@ namespace IO {
             void setbinaryDataArrayList(BinaryDataArrayListType *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string id
-            std::wstring getid() const;
-            void setid(const std::wstring &value);
+            std::string getid() const;
+            void setid(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="nonNegativeInteger")] public string index
-            std::wstring getindex() const;
-            void setindex(const std::wstring &value);
+            std::string getindex() const;
+            void setindex(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public int defaultArrayLength
             int getdefaultArrayLength() const;
             void setdefaultArrayLength(int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="IDREF")] public string dataProcessingRef
-            std::wstring getdataProcessingRef() const;
-            void setdataProcessingRef(const std::wstring &value);
+            std::string getdataProcessingRef() const;
+            void setdataProcessingRef(const std::string &value);
         };
         }
     }

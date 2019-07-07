@@ -1,62 +1,79 @@
 ﻿#include "IO.MzML.Generated.CVParamType.h"
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
 
-            std::wstring CVParamType::getcvRef() const {
+            std::string CVParamType::getcvRef() const
+            {
                 return this->cvRefField;
             }
 
-            void CVParamType::setcvRef(const std::wstring &value) {
+            void CVParamType::setcvRef(const std::string &value)
+            {
                 this->cvRefField = value;
             }
 
-            std::wstring CVParamType::getaccession() const {
+            std::string CVParamType::getaccession() const
+            {
                 return this->accessionField;
             }
 
-            void CVParamType::setaccession(const std::wstring &value) {
+            void CVParamType::setaccession(const std::string &value)
+            {
                 this->accessionField = value;
             }
 
-            std::wstring CVParamType::getvalue() const {
+            std::string CVParamType::getvalue() const
+            {
                 return this->valueField;
             }
 
-            void CVParamType::setvalue(const std::wstring &value) {
+            void CVParamType::setvalue(const std::string &value)
+            {
                 this->valueField = value;
             }
 
-            std::wstring CVParamType::getname() const {
+            std::string CVParamType::getname() const
+            {
                 return this->nameField;
             }
 
-            void CVParamType::setname(const std::wstring &value) {
+            void CVParamType::setname(const std::string &value)
+            {
                 this->nameField = value;
             }
 
-            std::wstring CVParamType::getunitAccession() const {
+            std::string CVParamType::getunitAccession() const
+            {
                 return this->unitAccessionField;
             }
 
-            void CVParamType::setunitAccession(const std::wstring &value) {
+            void CVParamType::setunitAccession(const std::string &value)
+            {
                 this->unitAccessionField = value;
             }
 
-            std::wstring CVParamType::getunitName() const {
+            std::string CVParamType::getunitName() const
+            {
                 return this->unitNameField;
             }
 
-            void CVParamType::setunitName(const std::wstring &value) {
+            void CVParamType::setunitName(const std::string &value)
+            {
                 this->unitNameField = value;
             }
 
-            std::wstring CVParamType::getunitCvRef() const {
+            std::string CVParamType::getunitCvRef() const
+            {
                 return this->unitCvRefField;
             }
 
-            void CVParamType::setunitCvRef(const std::wstring &value) {
+            void CVParamType::setunitCvRef(const std::string &value)
+            {
                 this->unitCvRefField = value;
             }
         }

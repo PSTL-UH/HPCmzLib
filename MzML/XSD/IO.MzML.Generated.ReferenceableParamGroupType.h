@@ -18,39 +18,43 @@ namespace IO { namespace MzML { namespace Generated { class UserParamType; } } }
 //------------------------------------------------------------------------------
 
 
-namespace IO {
-    namespace MzML {
-        namespace Generated {
+namespace IO
+{
+    namespace MzML
+    {
+        namespace Generated
+        {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace="http://psi.hupo.org/ms/mzml")] public partial class ReferenceableParamGroupType
-        class ReferenceableParamGroupType {
+        class ReferenceableParamGroupType
+        {
 
         private:
             std::vector<CVParamType*> cvParamField;
 
             std::vector<UserParamType*> userParamField;
 
-            std::wstring idField;
+            std::string idField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("cvParam")] public CVParamType[] cvParam
             std::vector<CVParamType*> getcvParam() const;
             void setcvParam(const std::vector<CVParamType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("userParam")] public UserParamType[] userParam
             std::vector<UserParamType*> getuserParam() const;
             void setuserParam(const std::vector<UserParamType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType="ID")] public string id
-            std::wstring getid() const;
-            void setid(const std::wstring &value);
+            std::string getid() const;
+            void setid(const std::string &value);
         };
         }
     }
