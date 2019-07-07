@@ -8,15 +8,11 @@
 #
 include ../../Makefile.defs
 
-HEADER = IMzPeak.h    \
-	IMzSpectrum.h \
-	IsotopicEnvelope.h \
+HEADER = IsotopicEnvelope.h \
 	MzPeak.h \
 	MzSpectrum.h
 
-OBJ = 	IMzPeak.o    \
-	IMzSpectrum.o \
-	IsotopicEnvelope.o \
+OBJ = 	IsotopicEnvelope.o \
 	MzPeak.o \
 	MzSpectrum.o
 

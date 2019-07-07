@@ -10,26 +10,26 @@ include ../Makefile.defs
 
 HEADER = DeconvolutionFeature.h                  \
 	DeconvolutionFeatureWithMassesAndScans.h \
+	IFilteringParams.h                       \
+	FilteringParams.h                        \
 	GeneratedMzSpectrum.h                    \
 	GeneratedPeak.h                          \
 	IIdentifications.h                       \
-	IMsDataFile.h                            \
-	IMsDynamicDataFile.h                     \
-	IMsStaticDataFile.h                      \
 	MsDataFile.h                             \
+	MsDataScan.h                             \
 	SourceFile.h                             \
 	SummedMsDataFile.h    
 
 
-OBJ = 	DeconvolutionFeature.o                  \
+OBJ = 	DeconvolutionFeature.o                   \
 	DeconvolutionFeatureWithMassesAndScans.o \
+	IFilteringParams.o                       \
+	FilteringParams.o                        \
 	GeneratedMzSpectrum.o                    \
 	GeneratedPeak.o                          \
 	IIdentifications.o                       \
-	IMsDataFile.o                            \
-	IMsDynamicDataFile.o                     \
-	IMsStaticDataFile.o                      \
 	MsDataFile.o                             \
+	MsDataScan.o                             \
 	SourceFile.o                             \
 	SummedMsDataFile.o    
 
@@ -63,6 +63,5 @@ $(OBJ):	$(HEADER)
 clean:  
 	rm -rf *.o *~
 	cd Chromatogram ; make clean ; cd ..
-	cd DataScan ; make clean ; cd ..
 	cd Enums ; make clean ; cd ..
 	cd MzSpectra ; make clean ; cd ..
