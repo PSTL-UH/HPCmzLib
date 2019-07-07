@@ -19,4 +19,14 @@ namespace Chemistry {
     double ClassExtensions::ToMass(double massToChargeRatio, int charge) {
         return std::abs(charge) * massToChargeRatio - charge * Constants::protonMass;
     }
+
+    std::optional<double> ClassExtensions::RoundedDouble(std::optional<double> &myNumber, int places)
+    {
+        if (myNumber)
+        {
+            myNumber = std::make_optional(Math::Round(static_cast<double>(myNumber), places, MidpointRounding::AwayFromZero));
+        }
+        return myNumber;
+    }
+    
 }

@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include <functional>
 #include <vector>
-#include <type_traits>
+#include <functional>
 #include <optional>
+#include <type_traits>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace MzLibUtil { class DoubleRange; }
@@ -29,106 +29,37 @@ namespace Spectra { class IPeak; }
 
 using namespace MzLibUtil;
 
-namespace Spectra {
+namespace Spectra
+{
     /// <summary>
     /// Spectrum that has at least an X array and a Y array
     /// </summary>
     /// <typeparam name="TPeak"></typeparam>
     template<typename TPeak>
-    //C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance
-    // or contravariance in a generic type list:
-    //ORIGINAL LINE: public interface ISpectrum<out TPeak> where TPeak : IPeak
+//C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance or contravariance in a generic type list:
+//ORIGINAL LINE: public interface ISpectrum<out TPeak> where TPeak : IPeak
     class ISpectrum
     {
-#ifndef NDEBUG        
-        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
-#endif
+    static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
     public:
-        std::vector<double> XArray;
-        std::vector<double> YArray;
+        virtual std::vector<double> getXArray() const = 0;
+        virtual std::vector<double> getYArray() const = 0;
 
-        std::optional<int> indexOfpeakWithHighestY;
-        std::optional<double> sumOfAllY;
-
-        // virtual std::vector<double> getXArray() const = 0;
-        std::vector<double> getXArray() const {
-            return this->XArray;
-        }
-        //virtual std::vector<double> getYArray() const = 0;
-        std::vector<double> getYArray() const {
-            return this->YArray;
-        }
-
-        //virtual double getFirstX() const = 0;
-        double getFirstX() const {
-            return this->XArray[0];
-        }
-
-        //virtual double getLastX() const = 0;
-        double getLastX() const {
-            return this->XArray[getSize() - 1];
-        }
-
-        //virtual int getSize() const = 0;
-        int getSize() const {
-            return this->XArray.size();
-        }
-
-        std::optional<int> getIndexOfPeakWithHighesetY()  {
-            if (!this->indexOfpeakWithHighestY.has_value()) {
-                //indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
-                int index = std::distance(this->YArray.begin(), std::max_element(this->YArray.begin(), this->YArray.end()));
-                this->indexOfpeakWithHighestY = std::make_optional(index);
-                return this->indexOfpeakWithHighestY;
-            }
-            return std::nullopt;
-        }
-
-        //virtual double getYofPeakWithHighestY() const = 0;
-        double getYofPeakWithHighestY() {
-            // return getYArray()[getIndexOfPeakWithHighesetY()];
-            if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return getYArray()[getIndexOfPeakWithHighesetY().value()];
-            }
-            return -1.0;        
-        }
-        
-        //virtual double getXofPeakWithHighestY() const = 0;
-        double getXofPeakWithHighestY() {
-            //return getXArray()[getIndexOfPeakWithHighesetY()];
-            if ( getIndexOfPeakWithHighesetY().has_value() ) {
-                return getXArray()[getIndexOfPeakWithHighesetY().value()];
-            }
-            return -1.0;        
-        }
-
-
-        //virtual double getSumOfAllY() const = 0;
-        double getSumOfAllY() {
-            if (!this->sumOfAllY.has_value()) {
-                // sumOfAllY = YArray.Sum();
-                double s = 0.0;
-                std::for_each(this->YArray.begin(), this->YArray.end(), [&] (double a) {
-                        s += a;
-                    });
-                this->sumOfAllY = std::make_optional(s);
-            }
-            return this->sumOfAllY.value();
-        }
-
-        //virtual DoubleRange *getRange() const = 0;
-        DoubleRange *getRange() const  {
-            return new DoubleRange(getFirstX(), getLastX());
-        }
-
+        virtual std::optional<double> getFirstX() const = 0;
+        virtual std::optional<double> getLastX() const = 0;
+        virtual int getSize() const = 0;
+        virtual std::optional<double> getYofPeakWithHighestY() const = 0;
+        virtual std::optional<double> getXofPeakWithHighestY() const = 0;
+        virtual double getSumOfAllY() const = 0;
+        virtual DoubleRange *getRange() const = 0;
 
         virtual std::vector<std::vector<double>> CopyTo2DArray() = 0;
 
         virtual int NumPeaksWithinRange(double minX, double maxX) = 0;
 
-        virtual int GetClosestPeakIndex(double x) = 0;
+        virtual std::optional<int> GetClosestPeakIndex(double x) = 0;
 
-        virtual double GetClosestPeakXvalue(double x) = 0;
+        virtual std::optional<double> GetClosestPeakXvalue(double x) = 0;
 
         virtual std::vector<TPeak> FilterByNumberOfMostIntense(int topNPeaks) = 0;
 
@@ -140,7 +71,6 @@ namespace Spectra {
 
         virtual std::vector<TPeak> FilterByY(DoubleRange *yRange) = 0;
 
-        virtual void ReplaceXbyApplyingFunction(std::function<double(IPeak *)> convertor) = 0;
-
+        virtual void ReplaceXbyApplyingFunction(std::function<double(IPeak*)> convertor) = 0;
     };
 }

@@ -4,5 +4,6 @@
 
 using namespace MzLibUtil;
 
-namespace Spectra {
+namespace Spectra
+{
 }

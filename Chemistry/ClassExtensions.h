@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include <vector>
 #include <cmath>
+#include <tuple>
+#include <optional>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace Chemistry { class IHasMass; }
@@ -43,5 +46,17 @@ namespace Chemistry {
         /// </summary>
         static double ToMass(double massToChargeRatio, int charge);
 
+        static std::optional<double> RoundedDouble(std::optional<double> &myNumber, int places = 9);
+
+    public:
+        template<typename T1, typename T2>
+        class TupleList : public std::vector<std::tuple<T1, T2>>
+        {
+        public:
+            void Add(T1 item, T2 item2)
+            {
+                this->Add(std::tuple<T1, T2>(item, item2));
+            }
+        };
     };
 }
