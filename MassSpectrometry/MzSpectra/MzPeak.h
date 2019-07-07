@@ -1,20 +1,23 @@
 ﻿#pragma once
 
-#include "IMzPeak.h"
-#include "../../Spectra/Peak.h"
 #include <string>
 
-using namespace Spectra;
-
-namespace MassSpectrometry {
-    class MzPeak : public virtual Peak, public virtual IMzPeak {
+namespace MassSpectrometry
+{
+    class MzPeak
+    {
+    private:
+        double privateMz = 0;
+        double privateIntensity = 0;
 
     public:
+        double getMz() const;
+        void setMz(double value);
+        double getIntensity() const;
+        void setIntensity(double value);
+
         MzPeak(double mz, double intensity);
 
-        double getIntensity() const override;
-
-        double getMz() const override;
-        std::string ToString();
+        std::string ToString() override;
     };
 }

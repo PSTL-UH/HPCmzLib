@@ -1,22 +1,36 @@
 ﻿#include "MzPeak.h"
-#include "stringhelper.h"
 
-using namespace Spectra;
+namespace MassSpectrometry
+{
 
-namespace MassSpectrometry {
-
-    MzPeak::MzPeak(double mz, double intensity) : Peak::Peak(mz, intensity) {
+    double MzPeak::getMz() const
+    {
+        return privateMz;
     }
 
-    double MzPeak::getIntensity() const {
-        return getY();
+    void MzPeak::setMz(double value)
+    {
+        privateMz = value;
     }
 
-    double MzPeak::getMz() const {
-        return getX();
+    double MzPeak::getIntensity() const
+    {
+        return privateIntensity;
     }
 
-    std::string MzPeak::ToString() {
-        return StringHelper::formatSimple("({0:G7},{1:G7})", getX(), getY());
+    void MzPeak::setIntensity(double value)
+    {
+        privateIntensity = value;
+    }
+
+    MzPeak::MzPeak(double mz, double intensity)
+    {
+        setMz(mz);
+        setIntensity(intensity);
+    }
+
+    std::string MzPeak::ToString()
+    {
+        return std::string::Format("({0:G7},{1:G7})", getMz(), getIntensity());
     }
 }

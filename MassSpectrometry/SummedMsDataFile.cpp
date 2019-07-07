@@ -1,34 +1,34 @@
 ﻿#include "SummedMsDataFile.h"
 
 #include "DataScan/IMsDataScan.h"
-#include "MzSpectra/IMzPeak.h"
-#include "MzSpectra/IMzSpectrum.h"
-#include "IMsDataFile.h"
+#include "MsDataFile.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "Enums/Polarity.h"
 #include "Enums/MzAnalyzerType.h"
+#include "MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
-#include "DataScan/MsDataScan.h"
+#include "MsDataScan.h"
 #include "GeneratedPeak.h"
 #include "GeneratedMzSpectrum.h"
 
-//using namespace MzLibUtil;
 
 namespace MassSpectrometry {
 
-    SummedMsDataFile::SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination) :
-        MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*>(1, MassSpectrometry::SourceFile("(scan number only nativeID format)",
-                                           raw->getSourceFile()->getMassSpectrometerFileFormat(),
-                                           raw->getSourceFile()->getCheckSum(),
-                                           raw->getSourceFile()->getFileChecksumType(),
-                                           raw->getSourceFile()->getUri(),
-                                           raw->getSourceFile()->getId(),
-                                           raw->getSourceFile()->getFileName())),
-        raw(raw), numScansToAverage(numScansToAverage),
-        ppmToleranceForPeakCombination(ppmToleranceForPeakCombination) {
+    SummedMsDataFile::SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile(raw->getNumSpectra() - numScansToAverage + 1, &tempVar), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination)
+    {
     }
 
-    IMsDataScan<IMzSpectrum<IMzPeak*>*> *SummedMsDataFile::GetOneBasedScan(int oneBasedScanNumber) {
+    std::vector<MsDataScan*> SummedMsDataFile::GetAllScansList()
+    {
+        std::vector<MsDataScan*> allScans;
+        for (int scanNumber = 1; scanNumber <= Scans.size(); scanNumber++)
+        {
+            allScans.push_back(GetOneBasedScan(scanNumber));
+        }
+        return allScans;
+    }
+    
+    MsDataScan *SummedMsDataFile::GetOneBasedScan(int oneBasedScanNumber) {
         if (Scans[oneBasedScanNumber - 1] == nullptr) {
             auto representativeScanNumber = oneBasedScanNumber + (numScansToAverage - 1) / 2;
             auto representative = raw->GetOneBasedScan(representativeScanNumber);
@@ -51,30 +51,38 @@ namespace MassSpectrometry {
             })->Select([&] (std::any b) {
                 b::MassSpectrum;
             }).ToList(), ppmToleranceForPeakCombination);
+
+            MzSpectrum *peaks = CombinePeaks(raw->GetAllScansList().Where([&] (std::any b)
+            {
+                return b::OneBasedScanNumber >= oneBasedScanNumber && b::OneBasedScanNumber <= oneBasedScanNumber + numScansToAverage - 1;
+            })->Select([&] (std::any b)
+            {
+                b::MassSpectrum;
+            }).ToList(), ppmToleranceForPeakCombination);
 #endif
-            std::vector<IMzSpectrum<IMzPeak*>*> v;
-            for ( auto b : *raw) {
+            std::vector<MzSpectrum *> v;
+            for ( auto b : *raw->GetAllScansList() ) {
                 if (b->getOneBasedScanNumber() >= oneBasedScanNumber &&
                     b->getOneBasedScanNumber() <= oneBasedScanNumber + numScansToAverage - 1) {
                     v.push_back(b->getMassSpectrum());
                 }
             }
-            IMzSpectrum<IMzPeak*> *peaks = CombinePeaks( v, ppmToleranceForPeakCombination);
+            MzSpectrum *peaks = CombinePeaks( v, ppmToleranceForPeakCombination);
 
             MzRange *scanWindowRange = representative->getScanWindowRange();
 
-            double totalIonCurrent = peaks->sumOfAllY.value();
+            double totalIonCurrent = peaks->getSumOfAllY.value();
             Nullable<double> injectionTime = NAN;
             Nullable<double>& ijTime= injectionTime;
             std::vector<std::vector<double>> noiseData;
 
-            Scans[oneBasedScanNumber - 1] = new MsDataScan<IMzSpectrum<IMzPeak*>*>(peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData, "scan=" + std::to_string(oneBasedScanNumber));
+            Scans[oneBasedScanNumber - 1] = new MsDataScan (peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData, "scan=" + std::to_string(oneBasedScanNumber));
         }
         return Scans[oneBasedScanNumber - 1];
     }
 
-    IMzSpectrum<IMzPeak*> *SummedMsDataFile::CombinePeaks(std::vector<IMzSpectrum<IMzPeak*>*> &spectraToCombine, double ppmTolerance) {
-        std::vector<IMzPeak*> finalizedPeaks;
+    MzSpectrum *SummedMsDataFile::CombinePeaks(std::vector<MzSpectrum *> &spectraToCombine, double ppmTolerance) {
+        std::vector<MzPeak*> finalizedPeaks;
 
 #ifdef ORIG
         std::vector<int> peaksLeft = spectraToCombine.Select([&] (std::any b) {

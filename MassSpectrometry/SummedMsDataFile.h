@@ -8,20 +8,18 @@
 using namespace MzLibUtil;
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { template<typename TSpectrum>class IMsDataScan; }
-//namespace MassSpectrometry { class IMzPeak; }
-//namespace MassSpectrometry { template<typename TPeak>class IMzSpectrum; }
-//namespace MassSpectrometry { template<typename TScan>class IMsDataFile; }
-#include "MzSpectra/IMzSpectrum.h"
-#include "MzSpectra/IMzPeak.h"
-#include "DataScan/IMsDataScan.h"
+//namespace MassSpectrometry { class MsDataFile; }
+//namespace MassSpectrometry { class MsDataScan; }
+//namespace MassSpectrometry { class MzSpectrum; }
 #include "MsDataFile.h"
+#include "MsDataScan.h"
+#include "MzSpectra/MzSpectrum.h"
 
 namespace MassSpectrometry {
-   class SummedMsDataFile : public MsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> {
+   class SummedMsDataFile : public MsDataFile {
 
     private:
-        IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *const raw;
+        MsDataFile *const raw;
         const int numScansToAverage;
         const double ppmToleranceForPeakCombination;
 
@@ -30,12 +28,12 @@ namespace MassSpectrometry {
             delete raw;
         }
 
-        SummedMsDataFile(IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak*>*>*> *raw, int numScansToAverage, double ppmToleranceForPeakCombination);
-
-        IMsDataScan<IMzSpectrum<IMzPeak*>*> *GetOneBasedScan(int oneBasedScanNumber) override;
+        SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination);
+        std::vector<MsDataScan*> GetAllScansList() override;
+        MsDataScan *GetOneBasedScan(int oneBasedScanNumber) override;
 
     private:
-        IMzSpectrum<IMzPeak*> *CombinePeaks(std::vector<IMzSpectrum<IMzPeak*>*> &spectraToCombine, double ppmTolerance);
+        static MzSpectrum *CombinePeaks(std::vector<MzSpectrum*> &spectraToCombine, double ppmTolerance);
 
    };
 }

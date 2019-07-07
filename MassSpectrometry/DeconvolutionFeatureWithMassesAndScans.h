@@ -20,11 +20,14 @@ namespace MassSpectrometry {
         double privateMass = 0;
         double privateMinElutionTime = 0;
         double privateMaxElutionTime = 0;
-        double privateTotalIntensity = 0;
-
-        std::vector<DeconvolutionFeature*> groups = std::vector<DeconvolutionFeature*>();
+        double privateTotalNormalizedIntensity = 0;
+        IsotopicEnvelope *privateMostIntenseEnvelope;
+        double privateMostIntenseEnvelopeElutionTime = 0;
+        
 
     public:
+        std::vector<DeconvolutionFeature*> groups = std::vector<DeconvolutionFeature*>();
+
         DeconvolutionFeatureWithMassesAndScans();
 
         int getMinScanIndex() const;
@@ -36,15 +39,21 @@ namespace MassSpectrometry {
         double getMass() const;
         void setMass(double value);
 
+        double getScore() const;
         int getNumPeaks() const;
 
         double getMinElutionTime() const;
         void setMinElutionTime(double value);
         double getMaxElutionTime() const;
         void setMaxElutionTime(double value);
-        double getTotalIntensity() const;
-        void setTotalIntensity(double value);
 
+        double getTotalNormalizedIntensity() const;
+        void setTotalNormalizedIntensity(double value);
+        IsotopicEnvelope *getMostIntenseEnvelope() const;
+        void setMostIntenseEnvelope(IsotopicEnvelope *value);
+        double getMostIntenseEnvelopeElutionTime() const;
+        void setMostIntenseEnvelopeElutionTime(double value);
+        
         std::string ToString();
         std::string OneLineString();
 

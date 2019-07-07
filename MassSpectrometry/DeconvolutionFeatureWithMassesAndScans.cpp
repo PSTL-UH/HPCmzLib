@@ -41,6 +41,21 @@ namespace MassSpectrometry {
         privateMass = value;
     }
 
+    double DeconvolutionFeatureWithMassesAndScans::getScore() const
+    {
+        return std::log(std::pow(getTotalNormalizedIntensity(), 0.1) * std::pow(std::max((getMaxElutionTime() - getMinElutionTime() * 60), 1), 0.1) * std::pow(((std::unordered_set<int>(groups.SelectMany([&] (std::any b)
+
+       {
+           b::AllCharges;
+       })))->OrderBy([&] (std::any b)
+       {
+           return b;
+       }))->Count(), 1) * std::pow(static_cast<double>(groups.Select([&] (std::any b)
+       {
+           b::NumPeaks;
+       }).Sum()) / (getMaxScanIndex() - getMinScanIndex() + 1), 1));
+    }
+    
     int DeconvolutionFeatureWithMassesAndScans::getNumPeaks() const {
 #ifdef ORIG
         return groups.Select([&] (std::any b) {
@@ -69,13 +84,35 @@ namespace MassSpectrometry {
     void DeconvolutionFeatureWithMassesAndScans::setMaxElutionTime(double value) {
         privateMaxElutionTime = value;
     }
-
-    double DeconvolutionFeatureWithMassesAndScans::getTotalIntensity() const {
-        return privateTotalIntensity;
+    
+    double DeconvolutionFeatureWithMassesAndScans::getTotalNormalizedIntensity() const
+    {
+        return privateTotalNormalizedIntensity;
     }
 
-    void DeconvolutionFeatureWithMassesAndScans::setTotalIntensity(double value) {
-        privateTotalIntensity = value;
+    void DeconvolutionFeatureWithMassesAndScans::setTotalNormalizedIntensity(double value)
+    {
+        privateTotalNormalizedIntensity = value;
+    }
+
+    IsotopicEnvelope *DeconvolutionFeatureWithMassesAndScans::getMostIntenseEnvelope() const
+    {
+        return privateMostIntenseEnvelope;
+    }
+
+    void DeconvolutionFeatureWithMassesAndScans::setMostIntenseEnvelope(IsotopicEnvelope *value)
+    {
+        privateMostIntenseEnvelope = value;
+    }
+
+    double DeconvolutionFeatureWithMassesAndScans::getMostIntenseEnvelopeElutionTime() const
+    {
+        return privateMostIntenseEnvelopeElutionTime;
+    }
+
+    void DeconvolutionFeatureWithMassesAndScans::setMostIntenseEnvelopeElutionTime(double value)
+    {
+        privateMostIntenseEnvelopeElutionTime = value;
     }
 
     std::string DeconvolutionFeatureWithMassesAndScans::ToString() {

@@ -14,21 +14,17 @@ namespace MassSpectrometry {
         double privateMass = 0;
         int privateNumPeaks = 0;
 
-        std::vector<IsotopicEnvelope*> isotopicEnvelopes = std::vector<IsotopicEnvelope*>();
-
     public:
+        std::vector<(int scanNumber, double elutionTime, IsotopicEnvelope isotopicEnvelope)*> isotopicEnvelopes = std::vector<(int scanNumber, double elutionTime, IsotopicEnvelope isotopicEnvelope)*>();
+
         double getMass() const;
         void setMass(double value);
 
         int getNumPeaks() const;
         void setNumPeaks(int value);
 
-        IsotopicEnvelope *getMostIntenseEnvelope() const;
-
         std::vector<int> getAllCharges() const;
-        std::string ToString();
 
         void AddEnvelope(IsotopicEnvelope *isotopicEnvelope);
-
     };
 }

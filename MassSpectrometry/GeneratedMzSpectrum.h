@@ -7,13 +7,13 @@
 namespace MassSpectrometry { class IMzPeak; }
 
 namespace MassSpectrometry {
-    class GeneratedMzSpectrum : public MzSpectrum<IMzPeak*> {
+    class GeneratedMzSpectrum : public MzSpectrum {
         
     public:
         GeneratedMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy);
 
     protected:
-        IMzPeak *GeneratePeak(int index) override;
+        MzPeak *GeneratePeak(int index) override;
 
     };
 }

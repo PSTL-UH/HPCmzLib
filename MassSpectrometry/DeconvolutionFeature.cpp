@@ -21,23 +21,6 @@ namespace MassSpectrometry {
         privateNumPeaks = value;
     }
 
-    IsotopicEnvelope *DeconvolutionFeature::getMostIntenseEnvelope() const {
-#ifdef ORIG
-        return isotopicEnvelopes.OrderByDescending([&] (std::any b) {
-            b::totalIntensity;
-        }).First();
-#endif
-        IsotopicEnvelope *max_elem;
-        std::for_each(isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](IsotopicEnvelope *e){
-                if ( max_elem == nullptr ) {
-                    max_elem = e;
-                }
-                else if ( e->totalIntensity > max_elem->totalIntensity) {
-                    max_elem = e;
-                }
-            });
-        return max_elem;
-    }
 
     std::vector<int> DeconvolutionFeature::getAllCharges() const {
 #ifdef ORIG
@@ -52,29 +35,6 @@ namespace MassSpectrometry {
         return v;
     }
 
-    std::string DeconvolutionFeature::ToString() {
-        StringBuilder *sb = new StringBuilder();
-        sb->append(" Mass: " + std::to_string(getMass()) + " NumPeaks: " + std::to_string(getNumPeaks()));
-
-#ifdef ORIG
-        for (auto heh : isotopicEnvelopes.OrderBy([&] (std::any b) {
-            -b::peaks->Count;
-                }));
-#endif
-        std::sort (isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](IsotopicEnvelope *l, IsotopicEnvelope *r ){
-                return l->peaks.size() > r->peaks.size();
-            });
-        for ( IsotopicEnvelope *heh : isotopicEnvelopes )   {
-            sb->appendLine();
-            //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-            sb->append("     " + heh->ToString());
-        }
-
-        std::string s = sb->toString();
-        delete sb;
-
-        return s;
-    }
 
     void DeconvolutionFeature::AddEnvelope(IsotopicEnvelope *isotopicEnvelope) {
         isotopicEnvelopes.push_back(isotopicEnvelope);
