@@ -87,11 +87,11 @@ namespace Proteomics
 
         static std::string ModLocationOnPeptideOrProtein(const std::string &_locationRestriction);
 
-        bool Equals(std::any o) override;
+        //bool Equals(std::any o) override;
 
-        int GetHashCode() override;
+        int GetHashCode();
 
-        std::string ToString() override;
+        std::string ToString();
 
         std::string ModificationErrorsToString(); //reports errors in required fields.
     };

@@ -35,12 +35,16 @@ namespace Spectra
     /// Spectrum that has at least an X array and a Y array
     /// </summary>
     /// <typeparam name="TPeak"></typeparam>
+    //C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance or contravariance
+    // in a generic type list:
+    //ORIGINAL LINE: public interface ISpectrum<out TPeak> where TPeak : IPeak
+
     template<typename TPeak>
-//C# TO C++ CONVERTER TODO TASK: C++ does not allow specifying covariance or contravariance in a generic type list:
-//ORIGINAL LINE: public interface ISpectrum<out TPeak> where TPeak : IPeak
     class ISpectrum
     {
-    static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+#ifndef NDEBUG
+        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+#endif
     public:
         virtual std::vector<double> getXArray() const = 0;
         virtual std::vector<double> getYArray() const = 0;
@@ -48,9 +52,9 @@ namespace Spectra
         virtual std::optional<double> getFirstX() const = 0;
         virtual std::optional<double> getLastX() const = 0;
         virtual int getSize() const = 0;
-        virtual std::optional<double> getYofPeakWithHighestY() const = 0;
-        virtual std::optional<double> getXofPeakWithHighestY() const = 0;
-        virtual double getSumOfAllY() const = 0;
+        virtual std::optional<double> getYofPeakWithHighestY() = 0;
+        virtual std::optional<double> getXofPeakWithHighestY() = 0;
+        virtual double getSumOfAllY() = 0;
         virtual DoubleRange *getRange() const = 0;
 
         virtual std::vector<std::vector<double>> CopyTo2DArray() = 0;

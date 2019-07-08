@@ -43,13 +43,7 @@ namespace Spectra {
 #endif
         
     private:
-
-        std::vector<double> privateXArray;
-        std::vector<double> privateYArray;
-
         std::vector<TPeak> peakList;
-        std::optional<int> indexOfpeakWithHighestY;
-        std::optional<double> sumOfAllY;
 
     protected:
         Spectrum(std::vector<double> x, std::vector<double> y, bool shouldCopy) {
@@ -81,18 +75,25 @@ namespace Spectra {
         }
 
     public:
+        std::vector<double> XArray;
+        std::vector<double> YArray;
+
+        std::optional<int> indexOfpeakWithHighestY;
+        std::optional<double> sumOfAllY;
+
+        
         std::vector<double> getXArray() const override
         {
-            return privateXArray;
+            return XArray;
         }
         std::vector<double> getYArray() const override
         {
-            return privateYArray;
+            return YArray;
         }
-        void setXArray(const std::vector<double> &value) override {
+        void setXArray(const std::vector<double> &value)  {
             this->XArray = value;
         }
-        void setYArray(const std::vector<double> &value) override  {
+        void setYArray(const std::vector<double> &value)  {
             this->YArray = value;
         }
 
@@ -119,7 +120,7 @@ namespace Spectra {
             return getXArray().size();
         }
 
-        std::optional<int> getIndexOfPeakWithHighesetY() const
+        std::optional<int> getIndexOfPeakWithHighesetY() 
         {
             if (getSize() == 0)
             {
@@ -132,12 +133,12 @@ namespace Spectra {
                                                                             getYArray().Max()));
 #endif
                 auto e = std::max_element(getYArray().begin(), getYArray().end());
-                indexOfpeakWithHighestY = std::distance(getYArray().begin(), e);   
+                indexOfpeakWithHighestY = std::make_optional((int)std::distance(getYArray().begin(), e));   
             }
-            return std::make_optional(indexOfpeakWithHighestY.value());
+            return indexOfpeakWithHighestY;
         }
 
-        std::optional<double> getYofPeakWithHighestY() const override
+        std::optional<double> getYofPeakWithHighestY() override
         {
             if (getSize() == 0)
             {
@@ -146,7 +147,7 @@ namespace Spectra {
             return std::make_optional(getYArray()[getIndexOfPeakWithHighesetY().value()]);
         }
 
-        std::optional<double> getXofPeakWithHighestY() const override
+        std::optional<double> getXofPeakWithHighestY() override
         {
             if (getSize() == 0)
             {
@@ -155,13 +156,23 @@ namespace Spectra {
             return std::make_optional(getXArray()[getIndexOfPeakWithHighesetY().value()]);
         }
 
-        double getSumOfAllY() const override
+        double getSumOfAllY() override
         {
+#ifdef ORIG
             if (!sumOfAllY)
             {
                 sumOfAllY = getYArray().Sum();
             }
             return sumOfAllY.value();
+#endif
+            if (!this->sumOfAllY.has_value()) {
+                double s = 0.0;
+                std::for_each(this->YArray.begin(), this->YArray.end(), [&] (double a) {
+                        s += a;
+                    });
+                this->sumOfAllY = std::make_optional(s);
+            }
+            return this->sumOfAllY.value();
         }
 
         DoubleRange *getRange() const override
@@ -219,7 +230,11 @@ namespace Spectra {
         }
 
         std::optional<double> GetClosestPeakXvalue(double x) override {
-            return std::make_optional(this->getXArray()[GetClosestPeakIndex(x)]);
+            auto i = GetClosestPeakIndex(x);
+            if ( i.has_value()) {
+                return std::make_optional(this->getXArray()[i.value()]);
+            }
+            return std::nullopt;
         }
 
         int NumPeaksWithinRange(double minX, double maxX) override {
