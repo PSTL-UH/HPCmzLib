@@ -4,20 +4,22 @@
 using namespace Chemistry;
 
 namespace Proteomics {
+    namespace AminoAcidPolymer    {
 
-    ChemicalFormulaTerminus::ChemicalFormulaTerminus(ChemicalFormula *chemicalFormula) {
-        setThisChemicalFormula(chemicalFormula);
-    }
-
-    double ChemicalFormulaTerminus::getMonoisotopicMass() const {
-        return getThisChemicalFormula()->getMonoisotopicMass();
-    }
-
-    ChemicalFormula *ChemicalFormulaTerminus::getThisChemicalFormula() const {
-        return privateThisChemicalFormula;
-    }
-
-    void ChemicalFormulaTerminus::setThisChemicalFormula(ChemicalFormula *value) {
-        privateThisChemicalFormula = value;
+        ChemicalFormulaTerminus::ChemicalFormulaTerminus(ChemicalFormula *chemicalFormula) {
+            setThisChemicalFormula(chemicalFormula);
+        }
+        
+        double ChemicalFormulaTerminus::getMonoisotopicMass() const {
+            return getThisChemicalFormula()->getMonoisotopicMass();
+        }
+        
+        ChemicalFormula *ChemicalFormulaTerminus::getThisChemicalFormula() const {
+            return privateThisChemicalFormula;
+        }
+        
+        void ChemicalFormulaTerminus::setThisChemicalFormula(ChemicalFormula *value) {
+            privateThisChemicalFormula = value;
+        }
     }
 }

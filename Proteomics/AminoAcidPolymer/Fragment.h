@@ -35,45 +35,42 @@ using namespace Chemistry;
 #include "AminoAcidPolymer.h"
 //namespace Proteomics { class AminoAcidPolymer; }
 
-
 namespace Proteomics {
-//    class Fragment : public IHasMass, public IEquatable<Fragment*> {
-    class Fragment : public IHasMass {
-    private:
-        double privateMonoisotopicMass = 0;
-        int privateNumber = 0;
-        AminoAcidPolymer *privateParent;
-        FragmentTypes privateFragmentType = static_cast<FragmentTypes>(0);
-
-
-    public:
-        Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
-
-        double getMonoisotopicMass() const override;
-//        void setMonoisotopicMass(double value) override;
-        void setMonoisotopicMass(double value);
-
-        int getNumber() const;
-        void setNumber(int value);
-
-        AminoAcidPolymer *getParent() const;
-        void setParent(AminoAcidPolymer *value);
-
-        FragmentTypes getFragmentType() const;
-        void setFragmentType(FragmentTypes value);
-
-        std::vector<IHasMass*> getModifications() const;
-
-        std::string getSequence() const;
-
-//        std::string ToString() override;
-        std::string ToString();
-
-//        int GetHashCode() override;
-        int GetHashCode();
-
-//        bool Equals(Fragment *other) override;
-        bool Equals(Fragment *other);
-
+    namespace AminoAcidPolymer  {
+        //  class Fragment : public IHasMass, public IEquatable<Fragment*> {
+        class Fragment : public IHasMass {
+        private:
+            double privateMonoisotopicMass = 0;
+            int privateNumber = 0;
+            AminoAcidPolymer *privateParent;
+            FragmentTypes privateFragmentType = static_cast<FragmentTypes>(0);
+            
+            
+        public:
+            Fragment(FragmentTypes type, int number, double monoisotopicMass, AminoAcidPolymer *parent);
+            
+            double getMonoisotopicMass() const override;
+            void setMonoisotopicMass(double value);
+            
+            int getNumber() const;
+            void setNumber(int value);
+            
+            AminoAcidPolymer *getParent() const;
+            void setParent(AminoAcidPolymer *value);
+            
+            FragmentTypes getFragmentType() const;
+            void setFragmentType(FragmentTypes value);
+            
+            std::vector<IHasMass*> getModifications() const;
+            
+            std::string getSequence() const;
+            
+            std::string ToString();
+            
+            int GetHashCode();
+            
+            bool Equals(Fragment *other);
+            
+        };
     };
 }

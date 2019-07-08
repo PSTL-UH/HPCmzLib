@@ -32,78 +32,81 @@
 using namespace Chemistry;
 
 namespace Proteomics {
-    class Residue : public IHasChemicalFormula {
-    private:
-        ChemicalFormula *privateThisChemicalFormula;
-        char privateLetter = '\0';
-        ModificationSites privateSite = static_cast<ModificationSites>(0);
-        double privateMonoisotopicMass = 0;
-        std::string privateName;
-        std::string privateSymbol;
+    namespace AminoAcidPolymer    {
 
-
-    public:
-        static std::vector<double> ResidueMonoisotopicMass;
-
-    private:
-        static std::unordered_map<std::string, Residue*> ResiduesDictionary;
-        static std::vector<Residue*> ResiduesByLetter;
-
-
-    private:
-        class StaticConstructor {
+        class Residue : public IHasChemicalFormula {
+        private:
+            ChemicalFormula *privateThisChemicalFormula;
+            char privateLetter = '\0';
+            ModificationSites privateSite = static_cast<ModificationSites>(0);
+            double privateMonoisotopicMass = 0;
+            std::string privateName;
+            std::string privateSymbol;
+            
+            
         public:
-            StaticConstructor();
-        };
-
+            static std::vector<double> ResidueMonoisotopicMass;
+            
+        private:
+            static std::unordered_map<std::string, Residue*> ResiduesDictionary;
+            static std::vector<Residue*> ResiduesByLetter;
+            
+            
+        private:
+            class StaticConstructor {
+            public:
+                StaticConstructor();
+            };
+            
 #ifdef ORIG
-    private:
-        static Residue::StaticConstructor staticConstructor;
+        private:
+            static Residue::StaticConstructor staticConstructor;
 #endif
-
-    public:
-        Residue(const std::string &name, char oneLetterAbbreviation, const std::string &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site);
-
-
-        static void StaticConstructor();
-        
-        ChemicalFormula *getThisChemicalFormula() const override;
-//        void setThisChemicalFormula(ChemicalFormula *value) override;
-        void setThisChemicalFormula(ChemicalFormula *value);
-
-        char getLetter() const;
-        void setLetter(char value);
-
-        ModificationSites getSite() const;
-        void setSite(ModificationSites value);
-
-        double getMonoisotopicMass() const override;
-//        void setMonoisotopicMass(double value) override;
-        void setMonoisotopicMass(double value);
-
-        std::string getName() const;
-        void setName(const std::string &value);
-
-        std::string getSymbol() const;
-        void setSymbol(const std::string &value);
-
-        /// <summary>
-        /// Get the residue based on the residues's symbol
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <returns></returns>
-        static Residue *GetResidue(const std::string &symbol);
-
-        /// <summary>
-        /// Gets the resdiue based on the residue's one-character symbol
-        /// </summary>
-        /// <param name="letter"></param>
-        /// <returns></returns>
-        static Residue *GetResidue(char letter);
-
-        static bool TryGetResidue(char letter, Residue **residue);
-
-        static bool TryGetResidue(const std::string &name, Residue **residue);
-
-    };
+            
+        public:
+            Residue(const std::string &name, char oneLetterAbbreviation, const std::string &threeLetterAbbreviation, ChemicalFormula *chemicalFormula, ModificationSites site);
+            
+            
+            static void StaticConstructor();
+            
+            ChemicalFormula *getThisChemicalFormula() const override;
+            // void setThisChemicalFormula(ChemicalFormula *value) override;
+            void setThisChemicalFormula(ChemicalFormula *value);
+            
+            char getLetter() const;
+            void setLetter(char value);
+            
+            ModificationSites getSite() const;
+            void setSite(ModificationSites value);
+            
+            double getMonoisotopicMass() const override;
+            // void setMonoisotopicMass(double value) override;
+            void setMonoisotopicMass(double value);
+            
+            std::string getName() const;
+            void setName(const std::string &value);
+            
+            std::string getSymbol() const;
+            void setSymbol(const std::string &value);
+            
+            /// <summary>
+            /// Get the residue based on the residues's symbol
+            /// </summary>
+            /// <param name="symbol"></param>
+            /// <returns></returns>
+            static Residue *GetResidue(const std::string &symbol);
+            
+            /// <summary>
+            /// Gets the resdiue based on the residue's one-character symbol
+            /// </summary>
+            /// <param name="letter"></param>
+            /// <returns></returns>
+            static Residue *GetResidue(char letter);
+            
+            static bool TryGetResidue(char letter, Residue **residue);
+            
+            static bool TryGetResidue(const std::string &name, Residue **residue);
+            
+        };
+    }
 }

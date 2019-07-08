@@ -5,7 +5,7 @@
 #include "FragmentTypes.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-#include "../Chemistry/ChemicalFormula.h"
+#include "../../Chemistry/ChemicalFormula.h"
 #include "AminoAcidPolymer.h"
 //namespace Chemistry { class ChemicalFormula; }
 //namespace Proteomics { class AminoAcidPolymer; }
@@ -31,21 +31,23 @@
 using namespace Chemistry;
 
 namespace Proteomics {
-    class ChemicalFormulaFragment : public Fragment, public IHasChemicalFormula {
-    private:
-        ChemicalFormula *privateThisChemicalFormula;
-
-
-    public:
-        ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
-
-        ChemicalFormula *getThisChemicalFormula() const override;
-//        void setThisChemicalFormula(ChemicalFormula *value) override;
-        void setThisChemicalFormula(ChemicalFormula *value);
-
-        // ADDED BY EDGAR
-        double getMonoisotopicMass() const override;
-        
-        
+    namespace AminoAcidPolymer    {
+        class ChemicalFormulaFragment : public Fragment, public IHasChemicalFormula {
+        private:
+            ChemicalFormula *privateThisChemicalFormula;
+            
+            
+        public:
+            ChemicalFormulaFragment(FragmentTypes type, int number, ChemicalFormula *formula, AminoAcidPolymer *parent);
+            
+            ChemicalFormula *getThisChemicalFormula() const override;
+            // void setThisChemicalFormula(ChemicalFormula *value) override;
+            void setThisChemicalFormula(ChemicalFormula *value);
+            
+            // ADDED BY EDGAR
+            double getMonoisotopicMass() const override;
+                        
+        };
     };
 }
+    

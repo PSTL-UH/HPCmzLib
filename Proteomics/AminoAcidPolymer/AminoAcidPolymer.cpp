@@ -5,7 +5,7 @@
 #include "ChemicalFormulaTerminus.h"
 #include "Fragment.h"
 #include "DigestionPoint.h"
-#include "Interfaces/IProtease.h"
+#include "IProtease.h"
 #include "../Chemistry/Isotope.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "ChemicalFormulaFragment.h"
@@ -24,6 +24,7 @@ using namespace MzLibUtil;
 
 namespace Proteomics {
 
+    namespace AminoAcidPolymer {
 //    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
 //    }
 
@@ -161,21 +162,21 @@ namespace Proteomics {
         ReplaceMod(0, value);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::GetSiteDeterminingFragments(AminoAcidPolymer *peptideA, AminoAcidPolymer *peptideB, FragmentTypes types) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::GetSiteDeterminingFragments(AminoAcidPolymer *peptideA, AminoAcidPolymer *peptideB, FragmentTypes types) {
         // std::unordered_set<Proteomics::Fragment*> aFrags(peptideA->Fragment(types));
         //aFrags.SymmetricExceptWith(peptideB->Fragment(types));
 
-        std::vector<Proteomics::Fragment*> aFrags = peptideA->Fragment(types);
-        std::vector<Proteomics::Fragment*> bFrags = peptideB->Fragment(types);
-        std::vector<Proteomics::Fragment*> cFrags;
+        std::vector<Proteomics::AminoAcidPolymer::Fragment*> aFrags = peptideA->Fragment(types);
+        std::vector<Proteomics::AminoAcidPolymer::Fragment*> bFrags = peptideB->Fragment(types);
+        std::vector<Proteomics::AminoAcidPolymer::Fragment*> cFrags;
         // SymmetricExceptWith return an object that is either in afrags or in bfrags,
         // but not in both. There is a similar function in C++ stl, namely set_symmetric_difference,
         // it requires however for the two arrays to be pre-sorted, which I am not sure whether it
         // is given here. So I prefer to implement it manually.
         // Step 1: insert all elements of aFrags that are not in bFrags
-        std::for_each(aFrags.begin(), aFrags.end(), [&] (Proteomics::Fragment *a) {
+        std::for_each(aFrags.begin(), aFrags.end(), [&] (Proteomics::AminoAcidPolymer::Fragment *a) {
                 bool found = false;
-                std::vector<Proteomics::Fragment*>::iterator it;
+                std::vector<Proteomics::AminoAcidPolymer::Fragment*>::iterator it;
                 for ( it = bFrags.begin(); it != bFrags.end(); ++it) {
                     if ( a == *it ) {
                         found = true;
@@ -187,9 +188,9 @@ namespace Proteomics {
                 }                    
             });
         // Step 2: insert all elements of bFrags that are not in aFrags
-        std::for_each(bFrags.begin(), bFrags.end(), [&] (Proteomics::Fragment *b) {
+        std::for_each(bFrags.begin(), bFrags.end(), [&] (Proteomics::AminoAcidPolymer::Fragment *b) {
                 bool found = false;
-                std::vector<Proteomics::Fragment*>::iterator it;
+                std::vector<Proteomics::AminoAcidPolymer::Fragment*>::iterator it;
                 for ( it = aFrags.begin(); it != aFrags.end(); ++it) {
                     if ( b == *it ) {
                         found = true;
@@ -538,32 +539,32 @@ namespace Proteomics {
         return count;
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::GetSiteDeterminingFragments(AminoAcidPolymer *other, FragmentTypes type) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::GetSiteDeterminingFragments(AminoAcidPolymer *other, FragmentTypes type) {
         return GetSiteDeterminingFragments(this, other, type);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types) {
         return Fragment(types, false);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, bool calculateChemicalFormula) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, bool calculateChemicalFormula) {
         return Fragment(types, 1, getLength() - 1, calculateChemicalFormula);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int number) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int number) {
         return Fragment(types, number, false);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int number, bool calculateChemicalFormula) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int number, bool calculateChemicalFormula) {
         return Fragment(types, number, number, calculateChemicalFormula);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex) {
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex) {
         return Fragment(types, minIndex, maxIndex, false);
     }
 
-    std::vector<Proteomics::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex, bool calculateChemicalFormula) {
-        std::vector<Proteomics::Fragment*> v;
+    std::vector<Proteomics::AminoAcidPolymer::Fragment*> AminoAcidPolymer::Fragment(FragmentTypes types, int minIndex, int maxIndex, bool calculateChemicalFormula) {
+        std::vector<Proteomics::AminoAcidPolymer::Fragment*> v;
         for (FragmentTypes type : FragmentTypesExtension::GetIndividualFragmentTypes(types)) {
             bool isChemicalFormula = calculateChemicalFormula;
             ChemicalFormula *capFormula = FragmentTypesExtension::GetIonCap(type);
@@ -616,8 +617,9 @@ namespace Proteomics {
                     if (mod != nullptr) {
                         monoMass += mod->getMonoisotopicMass();
                         if (isChemicalFormula) {
-//C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables in 'is' expressions:
-//ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
+                            // C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables
+                            // in 'is' expressions:
+                            //ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
                             if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr)   {
                                 formula->Add(dynamic_cast<IHasChemicalFormula*>(mod));
                             }
@@ -633,20 +635,22 @@ namespace Proteomics {
                 }
 
                 if (isChemicalFormula) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                  yield return new ChemicalFormulaFragment(type, i, formula, this);
+                    // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to
+                    // the C# 'yield' keyword:
+                    // yield return new ChemicalFormulaFragment(type, i, formula, this);
                     ChemicalFormulaFragment *cff = new ChemicalFormulaFragment(type, i, formula, this);
                     v.push_back (cff);
                 }
                 else {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                  yield return new Fragment(type, i, monoMass, this);
-                    Proteomics::Fragment *f = new Proteomics::Fragment(type, i, monoMass, this);
+                    // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    // yield return new Fragment(type, i, monoMass, this);
+                    Proteomics::AminoAcidPolymer::Fragment *f = new Proteomics::AminoAcidPolymer::Fragment(type, i, monoMass, this);
                     v.push_back ( f);
                 }
             }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was
+            // passed to a method or constructor. Handle memory management manually.
         }
         return v;
     }
@@ -1137,42 +1141,41 @@ template<typename T>
                     OldSchoolChemicalFormulaModification *modification;
                     try {
                          modification = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(modString));
-                    monoMass += modification->getMonoisotopicMass();
-                       
+                         monoMass += modification->getMonoisotopicMass();
                     }
                     catch (const MzLibException &e1) {
                         double mass;
-//                        if (double::TryParse(modString, mass)) {
+                        // if (double::TryParse(modString, mass)) {
                         if ( 1 == sscanf(modString.c_str(), "%lf", &mass)) {
                             modification2 = new ModWithOnlyMass(mass);
                             monoMass += modification2->getMonoisotopicMass();
                         }
                         else {
-                            delete modification;
+                            // delete modification;
                             delete modSb;
                             throw MzLibException("Unable to correctly parse the following modification: " + modString);
                         }
                     }
 
-//                    monoMass += modification->getMonoisotopicMass();
+                    // monoMass += modification->getMonoisotopicMass();
 
                     if (_modifications.empty()) {
                         _modifications = std::vector<IHasMass*>(getLength() + 2);
                     }
 
                     if (cterminalMod) {
-//                        _modifications[index + 1] = modification;
+                        // _modifications[index + 1] = modification;
                         _modifications[index + 1] = modification2;
                     }
                     else {
-//                        _modifications[index] = modification;
+                        // _modifications[index] = modification;
                         _modifications[index] = modification2;
                     }
 
                     cterminalMod = false;
 
-                    delete modification;
-                    delete modification2;
+                    // delete modification;
+                    // delete modification2;
 
                 }
                 else {
@@ -1233,4 +1236,5 @@ template<typename T>
 //C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
         return std::to_string(mass);
     }
+  }
 }

@@ -30,31 +30,32 @@ namespace Proteomics { class OldSchoolModification; }
 using namespace MzLibUtil;
 
 namespace Proteomics {
-    class ModificationWithMultiplePossibilitiesCollection : public OldSchoolModification, public std::vector<OldSchoolModification*> {
+    namespace AminoAcidPolymer {
 
-    private:
-//        SortedList<double, OldSchoolModification*> *const _modifications;
-        std::map<double, OldSchoolModification*> *const _modifications;
+        class ModificationWithMultiplePossibilitiesCollection : public OldSchoolModification, public std::vector<OldSchoolModification*> {
 
-    public:
-        virtual ~ModificationWithMultiplePossibilitiesCollection() {
-            delete _modifications;
-        }
+        private:
+            // SortedList<double, OldSchoolModification*> *const _modifications;
+            std::map<double, OldSchoolModification*> *const _modifications;
+            
+        public:
+            virtual ~ModificationWithMultiplePossibilitiesCollection() {
+                delete _modifications;
+            }
 
-        ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites);
+            ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites);
+            
+            int getCount() const;
+            
+            OldSchoolModification *operator [](int index);
+            
+            void AddModification(OldSchoolModification *modification);
+            
+            bool Contains(OldSchoolModification *modification);
 
-        int getCount() const;
 
-        OldSchoolModification *operator [](int index);
-
-        void AddModification(OldSchoolModification *modification);
-
-        bool Contains(OldSchoolModification *modification);
-
-
-//        IEnumerator<OldSchoolModification*> *GetEnumerator() override;
-//
-//        System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
-
-    };
+            // IEnumerator<OldSchoolModification*> *GetEnumerator() override;
+            // System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
+        };
+    }
 }

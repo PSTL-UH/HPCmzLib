@@ -30,30 +30,33 @@
 using namespace Chemistry;
 
 namespace Proteomics {
-    class OldSchoolChemicalFormulaModification : public OldSchoolModification, public IHasChemicalFormula {
-    private:
-        ChemicalFormula *privateThisChemicalFormula;
-
-    public:
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula);
-
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, ModificationSites sites);
-
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name);
-
-        OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name, ModificationSites sites);
-
-        OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other);
-
-        /// <summary>
-        /// The Chemical Formula of this modifications
-        /// </summary>
-        ChemicalFormula *getThisChemicalFormula() const override;
-
-//        void setThisChemicalFormula(ChemicalFormula *value) override;
-        void setThisChemicalFormula(ChemicalFormula *value);
-
-        // Added by EDGAR
-        double getMonoisotopicMass() const override;
+    namespace AminoAcidPolymer    {
+        class OldSchoolChemicalFormulaModification : public OldSchoolModification, public IHasChemicalFormula {
+        private:
+            ChemicalFormula *privateThisChemicalFormula;
+            
+        public:
+            OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula);
+            
+            OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, ModificationSites sites);
+            
+            OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name);
+            
+            OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name, ModificationSites sites);
+            
+            OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other);
+            
+            /// <summary>
+            /// The Chemical Formula of this modifications
+            /// </summary>
+            ChemicalFormula *getThisChemicalFormula() const override;
+            
+            // void setThisChemicalFormula(ChemicalFormula *value) override;
+            void setThisChemicalFormula(ChemicalFormula *value);
+            
+            // Added by EDGAR
+            double getMonoisotopicMass() const override;
+        };
     };
 }
+    

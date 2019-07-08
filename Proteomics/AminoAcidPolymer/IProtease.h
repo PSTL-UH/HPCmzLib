@@ -4,7 +4,7 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class AminoAcidPolymer; }
+namespace Proteomics { namespace AminoAcidPolymer {class AminoAcidPolymer; } }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -26,24 +26,28 @@ namespace Proteomics { class AminoAcidPolymer; }
 
 
 namespace Proteomics {
-    /// <summary>
-    /// A proteolyic enzyme that cuts amino acids at specific residues.
-    /// </summary>
-    class IProtease {
+    
+    namespace AminoAcidPolymer {
+        
         /// <summary>
-        /// Finds the indicies of where this protease would cut in
-        /// the given amino acid sequence
+        /// A proteolyic enzyme that cuts amino acids at specific residues.
         /// </summary>
-        /// <param name="aminoAcidSequence">The Amino Acid Polymer to cut</param>
-        /// <returns>A set of the 1-based indicies to cut at</returns>
-    public:
-        virtual std::vector<int> GetDigestionSites(const std::string &aminoAcidSequence) = 0;
-
-        virtual std::vector<int> GetDigestionSites(AminoAcidPolymer *aminoAcidSequence) = 0;
-
-        virtual int MissedCleavages(const std::string &sequence) = 0;
-
-        virtual int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) = 0;
-
+        class IProtease {
+            /// <summary>
+            /// Finds the indicies of where this protease would cut in
+            /// the given amino acid sequence
+            /// </summary>
+            /// <param name="aminoAcidSequence">The Amino Acid Polymer to cut</param>
+            /// <returns>A set of the 1-based indicies to cut at</returns>
+        public:
+            virtual std::vector<int> GetDigestionSites(const std::string &aminoAcidSequence) = 0;
+            
+            virtual std::vector<int> GetDigestionSites(AminoAcidPolymer *aminoAcidSequence) = 0;
+            
+            virtual int MissedCleavages(const std::string &sequence) = 0;
+            
+            virtual int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) = 0;
+            
+        };
     };
 }

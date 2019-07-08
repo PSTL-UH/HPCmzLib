@@ -25,20 +25,24 @@ namespace Chemistry { class ChemicalFormula; }
 using namespace Chemistry;
 
 namespace Proteomics {
-    class ChemicalFormulaTerminus : public IHasChemicalFormula {
-    private:
-        ChemicalFormula *privateThisChemicalFormula;
-
-
-    public:
-        ChemicalFormulaTerminus(ChemicalFormula *chemicalFormula);
-
-
-        double getMonoisotopicMass() const override;
-
-        ChemicalFormula *getThisChemicalFormula() const override;
-//        void setThisChemicalFormula(ChemicalFormula *value) override;
-        void setThisChemicalFormula(ChemicalFormula *value);
-
+    namespace AminoAcidPolymer    {
+        
+        class ChemicalFormulaTerminus : public IHasChemicalFormula {
+        private:
+            ChemicalFormula *privateThisChemicalFormula;
+            
+            
+        public:
+            ChemicalFormulaTerminus(ChemicalFormula *chemicalFormula);
+            
+            
+            double getMonoisotopicMass() const override;
+            
+            ChemicalFormula *getThisChemicalFormula() const override;
+            //void setThisChemicalFormula(ChemicalFormula *value) override;
+            void setThisChemicalFormula(ChemicalFormula *value);
+            
+        };
     };
 }
+    

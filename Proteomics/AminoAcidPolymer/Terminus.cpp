@@ -2,4 +2,7 @@
 
 
 namespace Proteomics {
+    namespace AminoAcidPolymer
+    {
+    }
 }

@@ -34,57 +34,61 @@ using namespace Chemistry;
 using namespace MzLibUtil;
 
 namespace Proteomics {
-//    class ModificationCollection : public ICollection<IHasMass*>, public IEquatable<ModificationCollection*>, public IHasChemicalFormula {
-    class ModificationCollection : std::vector<IHasMass*>, public Chemistry::IHasChemicalFormula {
-    private:
-        double privateMonoisotopicMass = 0;
+    namespace AminoAcidPolymer    {
 
-//        const std::vector<IHasMass*> _modifications;
-        std::vector<IHasMass*> _modifications;
+    
+        //  class ModificationCollection : public ICollection<IHasMass*>, public IEquatable<ModificationCollection*>,
+        //                                 public IHasChemicalFormula {
+        class ModificationCollection : std::vector<IHasMass*>, public Chemistry::IHasChemicalFormula {
+        private:
+            double privateMonoisotopicMass = 0;
+            
+            //  const std::vector<IHasMass*> _modifications;
+            std::vector<IHasMass*> _modifications;
+            
+        public:
+            ModificationCollection(std::vector<IHasMass*> &mods);
+            
+            double getMonoisotopicMass() const override;
+            // double getMonoisotopicMass() const;
 
-    public:
-        ModificationCollection(std::vector<IHasMass*> &mods);
+            // void setMonoisotopicMass(double value) override;
+            void setMonoisotopicMass(double value);
+            
+            // int getCount() const override;
+            int getCount() const;
+            
+            // bool getIsReadOnly() const override;
+            bool getIsReadOnly() const;
+            
+            ChemicalFormula *getThisChemicalFormula() const override;
+            
+            std::string ToString();
 
-        double getMonoisotopicMass() const override;
-//        double getMonoisotopicMass() const;
+            // void Add(IHasMass *item) override;
+            void Add(IHasMass *item);
+            
+            // void Clear() override;
+            void Clear();
+            
+            // bool Contains(IHasMass *item) override;
+            bool Contains(IHasMass *item);
+            
+            // void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex) override;
+            void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex);
+            
+            // bool Remove(IHasMass *item) override;
+            bool Remove(IHasMass *item);
+            
+            // bool Equals(ModificationCollection *other) override;
+            bool Equals(ModificationCollection *other);
+            
+            // IEnumerator<IHasMass*> *GetEnumerator() override;
+            std::vector<IHasMass*>::iterator GetEnumerator();
 
-//        void setMonoisotopicMass(double value) override;
-        void setMonoisotopicMass(double value);
-
-//        int getCount() const override;
-        int getCount() const;
-
-//        bool getIsReadOnly() const override;
-        bool getIsReadOnly() const;
-
-        ChemicalFormula *getThisChemicalFormula() const override;
-
-//        std::string ToString() override;
-        std::string ToString();
-
-//        void Add(IHasMass *item) override;
-        void Add(IHasMass *item);
-
-//        void Clear() override;
-        void Clear();
-
-//        bool Contains(IHasMass *item) override;
-        bool Contains(IHasMass *item);
-
-//        void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex) override;
-        void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex);
-
-//        bool Remove(IHasMass *item) override;
-        bool Remove(IHasMass *item);
-
-//        bool Equals(ModificationCollection *other) override;
-        bool Equals(ModificationCollection *other);
-
-//        IEnumerator<IHasMass*> *GetEnumerator() override;
-        std::vector<IHasMass*>::iterator GetEnumerator();
-
-// EG: Not implementing this method in C++ for now.
-//        System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
-
-    };
+            // EG: Not implementing this method in C++ for now.
+            // System::Collections::IEnumerator *IEnumerable_GetEnumerator() override;
+            
+        };
+    }
 }

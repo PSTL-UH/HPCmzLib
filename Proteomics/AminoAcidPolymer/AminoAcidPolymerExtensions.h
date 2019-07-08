@@ -5,7 +5,7 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 //namespace Proteomics { class AminoAcidPolymer; }
-#include "../AminoAcidPolymer.h"
+#include "AminoAcidPolymer.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -27,16 +27,18 @@
 
 
 namespace Proteomics {
-    class AminoAcidPolymerExtensions final {
-
-    public:
-        static double GetSequenceCoverageFraction(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences);
-
-        static double GetSequenceCoverageFraction(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences, bool useLeucineSequence);
-
-        static std::vector<int> GetSequenceCoverage(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences);
-
-        static std::vector<int> GetSequenceCoverage(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &allPolymers, bool useLeucineSequence);
-
-    };
+    namespace AminoAcidPolymer {
+        class AminoAcidPolymerExtensions final {
+            
+        public:
+            static double GetSequenceCoverageFraction(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences);
+            
+            static double GetSequenceCoverageFraction(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences, bool useLeucineSequence);
+            
+            static std::vector<int> GetSequenceCoverage(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &sequences);
+            
+            static std::vector<int> GetSequenceCoverage(AminoAcidPolymer *baseSequence, std::vector<AminoAcidPolymer*> &allPolymers, bool useLeucineSequence);
+            
+        };
+    }
 }

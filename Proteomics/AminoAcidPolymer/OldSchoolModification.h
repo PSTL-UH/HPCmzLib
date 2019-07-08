@@ -27,60 +27,61 @@
 using namespace Chemistry;
 
 namespace Proteomics {
-    /// <summary>
-    /// Represents a modification with a mass and name and default amino acid sites of modification
-    /// </summary>
-//    class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
-    class OldSchoolModification : public IHasMass {
-    private:
-        std::string privateName;
-        double privateMonoisotopicMass = 0;
-        ModificationSites privateSites = static_cast<ModificationSites>(0);
-
-    public:
-        OldSchoolModification(OldSchoolModification *modification);
-
-        OldSchoolModification();
-
-        OldSchoolModification(double monoMass);
-
-        OldSchoolModification(double monoMass, const std::string &name);
-
-        OldSchoolModification(double monoMass, const std::string &name, ModificationSites sites);
+    namespace AminoAcidPolymer    {
 
         /// <summary>
-        /// The name of the modification
+        /// Represents a modification with a mass and name and default amino acid sites of modification
         /// </summary>
-        std::string getName() const;
-        void setName(const std::string &value);
+        //    class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
+        class OldSchoolModification : public IHasMass {
+        private:
+            std::string privateName;
+            double privateMonoisotopicMass = 0;
+            ModificationSites privateSites = static_cast<ModificationSites>(0);
+            
+        public:
+            OldSchoolModification(OldSchoolModification *modification);
+            
+            OldSchoolModification();
+            
+            OldSchoolModification(double monoMass);
+            
+            OldSchoolModification(double monoMass, const std::string &name);
+            
+            OldSchoolModification(double monoMass, const std::string &name, ModificationSites sites);
 
-        /// <summary>
-        /// The monoisotopic mass of the modification, commoningly known as the delta mass
-        /// </summary>
-        double getMonoisotopicMass() const override;
-//        void setMonoisotopicMass(double value) override;
-        void setMonoisotopicMass(double value);
+            /// <summary>
+            /// The name of the modification
+            /// </summary>
+            std::string getName() const;
+            void setName(const std::string &value);
+            
+            /// <summary>
+            /// The monoisotopic mass of the modification, commoningly known as the delta mass
+            /// </summary>
+            double getMonoisotopicMass() const override;
+            // void setMonoisotopicMass(double value) override;
+            void setMonoisotopicMass(double value);
+            
+            /// <summary>
+            /// The potentially modified sites of this modification
+            /// </summary>
+            ModificationSites getSites() const;
+            void setSites(ModificationSites value);
+            
+            /// <summary>
+            /// Displays the name of the mod and the sites it modified in a formated string
+            /// </summary>
+            std::string getNameAndSites() const;
+            
+            std::string ToString();
 
-        /// <summary>
-        /// The potentially modified sites of this modification
-        /// </summary>
-        ModificationSites getSites() const;
-        void setSites(ModificationSites value);
-
-        /// <summary>
-        /// Displays the name of the mod and the sites it modified in a formated string
-        /// </summary>
-        std::string getNameAndSites() const;
-
-//        std::string ToString() override;
-        std::string ToString();
-
-//        int GetHashCode() override;
-        int GetHashCode();
-
-//        bool Equals(std::any obj) override;
-//        bool Equals(OldSchoolModification *other) override;
-        bool Equals(OldSchoolModification *other);
-
-    };
+            int GetHashCode();
+            
+            //  bool Equals(std::any obj) override;
+            //  bool Equals(OldSchoolModification *other) override;
+            bool Equals(OldSchoolModification *other);
+            
+        };
+    }
 }

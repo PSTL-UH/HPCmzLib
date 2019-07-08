@@ -31,42 +31,49 @@ using namespace Chemistry;
 using namespace MzLibUtil;
 
 namespace Proteomics {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Flags] public enum FragmentTypes
-    enum class FragmentTypes {
-        None = 0,
-        a = 1 << 0,
-        adot = 1 << 1,
-        b = 1 << 2,
-        bdot = 1 << 3,
-        c = 1 << 4,
-        cdot = 1 << 5,
-        x = 1 << 6,
-        xdot = 1 << 7,
-        y = 1 << 8,
-        ydot = 1 << 9,
-        z = 1 << 10,
-        zdot = 1 << 11,
-        Internal = 1 << 12,
-        All = (1 << 12) - 1, // Handy way of setting all below the 12th bit
-    };
+    namespace AminoAcidPolymer    {
 
-    class FragmentTypesExtension final {
+        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent
+        // in native C++:
+        //ORIGINAL LINE: [Flags] public enum FragmentTypes
+        enum class FragmentTypes {
+            None = 0,
+            a = 1 << 0,
+            adot = 1 << 1,
+            b = 1 << 2,
+            bdot = 1 << 3,
+            c = 1 << 4,
+            cdot = 1 << 5,
+            x = 1 << 6,
+            xdot = 1 << 7,
+            y = 1 << 8,
+            ydot = 1 << 9,
+            z = 1 << 10,
+            zdot = 1 << 11,
+            Internal = 1 << 12,
+            All = (1 << 12) - 1, // Handy way of setting all below the 12th bit
+        };
+    
 
-    private:
-        static const std::unordered_map<FragmentTypes, ChemicalFormula*> FragmentIonCaps;
+        class FragmentTypesExtension final {
+            
+        private:
+            static const std::unordered_map<FragmentTypes, ChemicalFormula*> FragmentIonCaps;
+            
+        public:
+            static std::vector<FragmentTypes> GetIndividualFragmentTypes(FragmentTypes fragmentTypes);
+            
+            static Terminus GetTerminus(FragmentTypes fragmentType);
+            
+            static ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
 
-    public:
-        static std::vector<FragmentTypes> GetIndividualFragmentTypes(FragmentTypes fragmentTypes);
-
-        static Terminus GetTerminus(FragmentTypes fragmentType);
-
-        static ChemicalFormula *GetIonCap(FragmentTypes fragmentType) ;
-        static const std::vector<FragmentTypes> FragmentTypesValues; 
-        static std::vector<FragmentTypes> GetValues();
-        static const std::vector<std::string> FragmentTypesNames;
-        static std::vector<std::string> GetNames();
-        static std::string GetName( FragmentTypes fragmentType);
-
-    };
+            // Added by Edgar for the C++ version 
+            static const std::vector<FragmentTypes> FragmentTypesValues; 
+            static std::vector<FragmentTypes> GetValues();
+            static const std::vector<std::string> FragmentTypesNames;
+            static std::vector<std::string> GetNames();
+            static std::string GetName( FragmentTypes fragmentType);
+            
+        };
+    }
 }

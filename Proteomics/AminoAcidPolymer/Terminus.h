@@ -20,20 +20,23 @@
 
 
 namespace Proteomics {
-    /// <summary>
-    /// The terminus of an amino acid polymer N-[Amino Acids]-C
-    /// </summary>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Flags] public enum Terminus
-    enum class Terminus {
-        /// <summary>
-        /// The N-terminus (amino-terminus)
-        /// </summary>
-        N = 1,
 
+    namespace AminoAcidPolymer    {
         /// <summary>
-        /// The C-terminus (carboxyl-terminus)
+        /// The terminus of an amino acid polymer N-[Amino Acids]-C
         /// </summary>
-        C = 2
-    };
+        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+        //ORIGINAL LINE: [Flags] public enum Terminus
+        enum class Terminus {
+            /// <summary>
+            /// The N-terminus (amino-terminus)
+            /// </summary>
+            N = 1,
+                
+                /// <summary>
+                /// The C-terminus (carboxyl-terminus)
+                /// </summary>
+                C = 2
+        };
+    }
 }
