@@ -22,9 +22,13 @@ namespace Chemistry {
 
     std::optional<double> ClassExtensions::RoundedDouble(std::optional<double> &myNumber, int places)
     {
-        if (myNumber)
+        if (myNumber.has_value())
         {
-            myNumber = std::make_optional(Math::Round(static_cast<double>(myNumber), places, MidpointRounding::AwayFromZero));
+#ifdef ORIG
+            myNumber = std::make_optional(Math::Round(static_cast<double>(myNumber), places,
+                                                       MidpointRounding::AwayFromZero));
+#endif
+            myNumber = std::make_optional((floor((static_cast<double>(myNumber.value())*pow(10,places))+.5))/pow(10,places));
         }
         return myNumber;
     }
