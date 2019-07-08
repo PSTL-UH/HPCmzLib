@@ -127,8 +127,12 @@ namespace Spectra {
             }
             if (!indexOfpeakWithHighestY)
             {
-                indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray(\
-                                                                                ).Max()));
+#ifdef ORIG
+                indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(),
+                                                                            getYArray().Max()));
+#endif
+                auto e = std::max_element(getYArray().begin(), getYArray().end());
+                indexOfpeakWithHighestY = std::distance(getYArray().begin(), e);   
             }
             return std::make_optional(indexOfpeakWithHighestY.value());
         }
@@ -214,7 +218,7 @@ namespace Spectra {
             return std::make_optional(index - 1);
         }
 
-        std::make_optional(double) GetClosestPeakXvalue(double x) override {
+        std::optional<double> GetClosestPeakXvalue(double x) override {
             return std::make_optional(this->getXArray()[GetClosestPeakIndex(x)]);
         }
 
