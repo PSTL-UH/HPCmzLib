@@ -24,7 +24,6 @@
 
 namespace MzLibUtil {
     class ClassExtensions final {
-//        #region Public Methods
 
     public:
         static std::vector<double> BoxCarSmooth(std::vector<double> &data, int points);
@@ -38,6 +37,5 @@ namespace MzLibUtil {
         template<typename T>
         static bool ScrambledEquals(std::vector<T> &list1, std::vector<T> &list2);
 
-//        #endregion Public Methods
     };
 }

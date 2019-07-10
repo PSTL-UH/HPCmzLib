@@ -11,11 +11,15 @@
 #include "floating_point_to_integer.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MzPeak; }
-namespace MzLibUtil { class MzRange; }
-namespace MassSpectrometry { class IsotopicEnvelope; }
-namespace MzLibUtil { class DoubleRange; }
-namespace MzLibUtil { class Tolerance; }
+//namespace MassSpectrometry { class MzPeak; }
+#include "MzPeak.h"
+//namespace MassSpectrometry { class IsotopicEnvelope; }
+#include "IsotopicEnvelope.h"
+//namespace MzLibUtil { class MzRange; }
+//namespace MzLibUtil { class DoubleRange; }
+//namespace MzLibUtil { class Tolerance; }
+#include "MzLibUtil.h"
+using namespace MzLibUtil;
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -35,9 +39,10 @@ namespace MzLibUtil { class Tolerance; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../../Chemistry/Chemistry.h"
 using namespace Chemistry;
-using namespace MathNet::Numerics::Statistics;
-using namespace MzLibUtil;
+
+//using namespace MathNet::Numerics::Statistics;
 
 namespace MassSpectrometry
 {
@@ -47,11 +52,11 @@ namespace MassSpectrometry
         std::vector<double> privateXArray;
         std::vector<double> privateYArray;
 
-        static constexpr int numAveraginesToGenerate = 1500;
-        static const std::vector<std::vector<double>> allMasses;
-        static const std::vector<std::vector<double>> allIntensities;
-        static const std::vector<double> mostIntenseMasses;
-        static const std::vector<double> diffToMonoisotopic;
+        //static constexpr int numAveraginesToGenerate = 1500;
+        static std::vector<std::vector<double>> allMasses;
+        static std::vector<std::vector<double>> allIntensities;
+        static std::vector<double> mostIntenseMasses;
+        static std::vector<double> diffToMonoisotopic;
 
         std::vector<MzPeak*> peakList;
         std::optional<int> indexOfpeakWithHighestY;
@@ -102,7 +107,7 @@ namespace MassSpectrometry
 
         std::vector<unsigned char> Get64BitXarray();
 
-        std::string ToString() override;
+        std::string ToString();
 
         // Mass tolerance must account for different isotope spacing!
         std::vector<IsotopicEnvelope*> Deconvolute(MzRange *theRange, int minAssumedChargeState, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatioLimit);

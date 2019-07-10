@@ -1,4 +1,5 @@
 ﻿#include "MzPeak.h"
+#include "stringhelper.h"
 
 namespace MassSpectrometry
 {
@@ -31,6 +32,6 @@ namespace MassSpectrometry
 
     std::string MzPeak::ToString()
     {
-        return std::string::Format("({0:G7},{1:G7})", getMz(), getIntensity());
+        return StringHelper::formatSimple("({0:G7},{1:G7})", getMz(), getIntensity());
     }
 }

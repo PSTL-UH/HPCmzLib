@@ -5,6 +5,10 @@
 
 namespace MassSpectrometry {
 
+
+    ExtendedIsotopicEnvelope::ExtendedIsotopicEnvelope( int sN, double eT, IsotopicEnvelope *iE) : scanNumber(sN), elutionTime(eT), isotopicEnvelope(iE){
+    }
+    
     double DeconvolutionFeature::getMass() const {
         return privateMass;
     }
@@ -25,41 +29,42 @@ namespace MassSpectrometry {
     std::vector<int> DeconvolutionFeature::getAllCharges() const {
 #ifdef ORIG
         return isotopicEnvelopes.Select([&] (std::any b) {
-            b::charge;
+            b::isotopicEnvelope::charge;
         }).ToList();
 #endif
         std::vector<int> v;
-        std::for_each (isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](IsotopicEnvelope *e){
-                v.push_back ( e->charge);
+        std::for_each (isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](ExtendedIsotopicEnvelope *e){
+                v.push_back ( e->isotopicEnvelope->charge);
             });        
         return v;
     }
 
 
-    void DeconvolutionFeature::AddEnvelope(IsotopicEnvelope *isotopicEnvelope) {
-        isotopicEnvelopes.push_back(isotopicEnvelope);
+    void DeconvolutionFeature::AddEnvelope(int scanNumber, double elutionTime, IsotopicEnvelope *isotopicEnvelope) {
+        ExtendedIsotopicEnvelope *e = new ExtendedIsotopicEnvelope (scanNumber, elutionTime, isotopicEnvelope );
+        isotopicEnvelopes.push_back(e);
 #ifdef ORIG
         setMass(isotopicEnvelopes.Select([&] (std::any b) {
-            b::monoisotopicMass;
+            b::isotopicEnvelope::monoisotopicMass;
                 }).Average());
 #endif
         double avg = 0.0, dsum=0.0;
         int count=0;
-        std::for_each(isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](IsotopicEnvelope *b ){
+        std::for_each(isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](ExtendedIsotopicEnvelope *b ){
                 count++;
-                dsum += b->monoisotopicMass;
+                dsum += b->isotopicEnvelope->monoisotopicMass;
             });
         avg = dsum / (double)count;
         setMass(avg);
         
 #ifdef ORIG
         setNumPeaks(isotopicEnvelopes.Select([&] (std::any b) {
-            b::peaks->Count;
+            b::isotopicEnvelope::peaks->Count;
         }).Sum());
 #endif
         int sum=0;
-        std::for_each(isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](IsotopicEnvelope *b ){
-                sum += (int) (b->peaks.size());
+        std::for_each(isotopicEnvelopes.begin(), isotopicEnvelopes.end(), [&](ExtendedIsotopicEnvelope *b ){
+                sum += (int) (b->isotopicEnvelope->peaks.size());
             });
         setNumPeaks(sum);
     }

@@ -51,6 +51,25 @@
         with my own StringHelper::GetHashCode(string) method
         
 6. Lambda functions: 
+   Example: in C#
+        int maxCharge = groups.SelectMany([&] (std::any p)
+        {
+            p::AllCharges;
+        }).Max();
+  
+   in C++ 
+        int maxCharge =0;
+        std::for_each (groups.begin(), groups.end(), [&] ( DeconvolutionFeature *b) {
+                auto v = b->getAllCharges();
+                std::for_each ( v.begin(), v.end(), [&] (int i)  {
+                        if ( i > maxCharge ) {
+                            maxCharge = i;
+                        }
+                });
+        });
+   
+   
+
 7. yield.
     C++ does not have an equivalent to the C# 'yield' keyword:
     What is typically done is to create eg a

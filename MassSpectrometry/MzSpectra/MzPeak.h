@@ -18,6 +18,6 @@ namespace MassSpectrometry
 
         MzPeak(double mz, double intensity);
 
-        std::string ToString() override;
+        std::string ToString();
     };
 }

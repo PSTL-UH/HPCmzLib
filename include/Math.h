@@ -6,6 +6,13 @@
 
 class Math {
 public:
+    static double Round(double myNumber, int places)
+    {
+        double nm;
+        nm = (floor((static_cast<double>(myNumber*pow(10,places))+.5))/pow(10,places));
+        return nm;
+    }
+
     static double StandardDeviation(std::vector<double> samples)
     {
         return sqrt(Variance(samples));

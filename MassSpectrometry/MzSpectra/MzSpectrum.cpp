@@ -1,24 +1,25 @@
 ﻿#include "MzSpectrum.h"
-#include "MzPeak.h"
-#include "../../Chemistry/ChemicalFormula.h"
-#include "../../Chemistry/IsotopicDistribution.h"
-#include "../../MzLibUtil/MzRange.h"
-#include "IsotopicEnvelope.h"
-#include "../../Chemistry/ClassExtensions.h"
-#include "../../MzLibUtil/DoubleRange.h"
-#include "../../MzLibUtil/Tolerance.h"
+//#include "MzPeak.h"
+//#include "../../Chemistry/ChemicalFormula.h"
+//#include "../../Chemistry/IsotopicDistribution.h"
+//#include "../../MzLibUtil/MzRange.h"
+//#include "IsotopicEnvelope.h"
+//#include "../../Chemistry/ClassExtensions.h"
+//#include "../../MzLibUtil/DoubleRange.h"
+//#include "../../MzLibUtil/Tolerance.h"
 
-using namespace Chemistry;
-using namespace MathNet::Numerics::Statistics;
-using namespace MzLibUtil;
+//using namespace Chemistry;
+//using namespace MathNet::Numerics::Statistics;
+//using namespace MzLibUtil;
 
 namespace MassSpectrometry
 {
+    static constexpr int numAveraginesToGenerate = 1500;
 
-const std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
-const std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
-const std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
-const std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
+    static std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    static std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    static std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
+    static std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
 
     std::vector<double> MzSpectrum::getXArray() const
     {
@@ -57,11 +58,11 @@ const std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(n
             double averagineMultiplier = (i + 1) / 2.0;
             //Console.Write("numAveragines = " + numAveragines);
             ChemicalFormula *chemicalFormula = new ChemicalFormula();
-            chemicalFormula->Add("C", FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
-            chemicalFormula->Add("H", FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
-            chemicalFormula->Add("O", FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
-            chemicalFormula->Add("N", FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
-            chemicalFormula->Add("S", FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("C"), FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("H"), FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("O"), FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("N"), FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
+            chemicalFormula->Add(PeriodicTable::GetElement("S"), FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
         
             {
                 auto chemicalFormulaReg = chemicalFormula;

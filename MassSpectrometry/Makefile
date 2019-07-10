@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018      University of Houston. All rights reserved.
+# Copyright (c) 2019      University of Houston. All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -39,7 +39,6 @@ OBJ = 	DeconvolutionFeature.o                   \
 all:    
 	make $(MZLIB_LIB) 
 	cd Chromatogram ; make ; cd ..
-	cd DataScan ; make ; cd ..
 	cd Enums ; make ; cd ..
 	cd MzSpectra ; make ; cd ..
 
