@@ -18,14 +18,16 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include <optional>
+
 namespace MassSpectrometry
 {
     class IFilteringParams
     {
     public:
-        virtual Nullable<double> getMinimumAllowedIntensityRatioToBasePeakM() const = 0;
-        virtual Nullable<int> getNumberOfPeaksToKeepPerWindow() const = 0;
-        virtual Nullable<int> getNumberOfWindows() const = 0;
+        virtual std::optional<double> getMinimumAllowedIntensityRatioToBasePeakM() const = 0;
+        virtual std::optional<int> getNumberOfPeaksToKeepPerWindow() const = 0;
+        virtual std::optional<int> getNumberOfWindows() const = 0;
         virtual bool getApplyTrimmingToMs1() const = 0;
         virtual bool getApplyTrimmingToMsMs() const = 0;
     };

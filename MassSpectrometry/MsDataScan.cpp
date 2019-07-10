@@ -10,28 +10,43 @@ using namespace MzLibUtil;
 namespace MassSpectrometry
 {
 
-    MsDataScan::MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId, std::optional<double> &selectedIonMz, std::optional<int> &selectedIonChargeStateGuess, std::optional<double> &selectedIonIntensity, std::optional<double> &isolationMZ, std::optional<double> &isolationWidth, std::optional<MassSpectrometry::DissociationType> &dissociationType, std::optional<int> &oneBasedPrecursorScanNumber, std::optional<double> &selectedIonMonoisotopicGuessMz)
+    MsDataScan::MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder,
+                           bool isCentroid, MassSpectrometry::Polarity polarity,
+                           double retentionTime, MzRange *scanWindowRange,
+                           const std::string &scanFilter, MZAnalyzerType mzAnalyzer,
+                           double totalIonCurrent, std::optional<double> injectionTime,
+                           std::vector<std::vector<double>> &noiseData,
+                           const std::string &nativeId,
+                           std::optional<double> selectedIonMz,
+                           std::optional<int> selectedIonChargeStateGuess,
+                           std::optional<double> selectedIonIntensity,
+                           std::optional<double> isolationMZ,
+                           std::optional<double> isolationWidth,
+                           std::optional<MassSpectrometry::DissociationType> dissociationType,
+                           std::optional<int> oneBasedPrecursorScanNumber,
+                           std::optional<double> selectedIonMonoisotopicGuessMz)
     {
-        OneBasedScanNumber = oneBasedScanNumber;
-        MsnOrder = msnOrder;
-        IsCentroid = isCentroid;
-        Polarity = polarity;
-        RetentionTime = retentionTime;
-        ScanWindowRange = scanWindowRange;
-        ScanFilter = scanFilter;
-        MzAnalyzer = mzAnalyzer;
-        TotalIonCurrent = totalIonCurrent;
-        InjectionTime = injectionTime;
-        NoiseData = noiseData;
+        privateOneBasedScanNumber = oneBasedScanNumber;
+        privateMsnOrder = msnOrder;
+        privateIsCentroid = isCentroid;
+        privatePolarity = polarity;
+        privateRetentionTime = retentionTime;
+        privateScanWindowRange = scanWindowRange;
+        privateScanFilter = scanFilter;
+        privateMzAnalyzer = mzAnalyzer;
+        privateTotalIonCurrent = totalIonCurrent;
+        privateInjectionTime = injectionTime;
+        privateNoiseData = noiseData;
+        
         setMassSpectrum(massSpectrum);
-        NativeId = nativeId;
+        privateNativeId = nativeId;
         setOneBasedPrecursorScanNumber(oneBasedPrecursorScanNumber);
         setIsolationMz(isolationMZ);
-        IsolationWidth = isolationWidth;
-        DissociationType = dissociationType;
+        privateIsolationWidth = isolationWidth;
+        privateDissociationType = dissociationType;
         setSelectedIonMZ(selectedIonMz);
         setSelectedIonIntensity(selectedIonIntensity);
-        SelectedIonChargeStateGuess = selectedIonChargeStateGuess;
+        privateSelectedIonChargeStateGuess = selectedIonChargeStateGuess;
         setSelectedIonMonoisotopicGuessMz(selectedIonMonoisotopicGuessMz);
     }
 
@@ -213,24 +228,52 @@ namespace MassSpectrometry
         return MzSpectrum::Get64Bitarray(GetNoiseDataBaseline(getNoiseData()));
     }
 
-    std::vector<IsotopicEnvelope*> MsDataScan::GetIsolatedMassesAndCharges(MzSpectrum *precursorSpectrum, int minAssumedChargeState, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatio)
+    std::vector<IsotopicEnvelope*> MsDataScan::GetIsolatedMassesAndCharges(MzSpectrum *precursorSpectrum,
+                                                                           int minAssumedChargeState,
+                                                                           int maxAssumedChargeState,
+                                                                           double deconvolutionTolerancePpm,
+                                                                           double intensityRatio)
     {
+        std::vector<IsotopicEnvelope*> v;
         if (getIsolationRange() == nullptr)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield break;
+            // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
+            // C# 'yield' keyword:
+            // yield break;
+            return v;
         }
-        for (auto haha : precursorSpectrum->Deconvolute(new MzRange(getIsolationRange()->Minimum - 8.5, getIsolationRange()->Maximum + 8.5), minAssumedChargeState, maxAssumedChargeState, deconvolutionTolerancePpm, intensityRatio).Where([&] (std::any b)
-        {
-            b::peaks::Any([&] (std::any cc)
-            {
-                isolationRange->Contains(cc::mz);
-            });
-        }))
-        {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+
+        MzRange *m = new MzRange(getIsolationRange()->getMinimum() - 8.5, getIsolationRange()->getMaximum() + 8.5);
+        std::vector<IsotopicEnvelope*> vIE = precursorSpectrum->Deconvolute (m, minAssumedChargeState,
+                                                                             maxAssumedChargeState,
+                                                                             deconvolutionTolerancePpm,
+                                                                             intensityRatio);
+#ifdef ORIG            
+        for (auto haha : vIE.Where([&] (std::any b) {
+                    b::peaks::Any([&] (std::any cc) {
+                            isolationRange->Contains(cc::mz);
+                        });
+         })) {
+            // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# '
+            // 'yield' keyword:
             yield return haha;
         }
+#endif
+        for (IsotopicEnvelope* haha : vIE ) {
+            bool found =false;
+            std::for_each (haha->peaks.begin(), haha->peaks.end(), [&] (std::tuple<double, double> cc) {
+                    if ( isolationRange->Contains(std::get<0>(cc) )) {
+                        found = true;
+                    };
+                });
+            if ( found ) {
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return haha;
+                v.push_back(haha);
+            }
+        }
+
+        return v;
     }
 
     void MsDataScan::TransformMzs(std::function<double(MzPeak*)> convertorForSpectrum, std::function<double(MzPeak*)> convertorForPrecursor)
@@ -297,28 +340,40 @@ namespace MassSpectrometry
 
     std::vector<double> MsDataScan::GetNoiseDataMass(std::vector<std::vector<double>> &noiseData)
     {
+        std::vector<double> v;
         for (int i = 0; i < noiseData.size() / 3; i++)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield return noiseData[0][i];
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
+            // C# 'yield' keyword:
+            //yield return noiseData[0][i];
+            v.push_back(noiseData[0][i]);
         }
+        return v;
     }
 
     std::vector<double> MsDataScan::GetNoiseDataNoise(std::vector<std::vector<double>> &noiseData)
     {
+        std::vector<double> v;
         for (int i = 0; i < noiseData.size() / 3; i++)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield return noiseData[1][i];
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
+            // C# 'yield' keyword:
+            //yield return noiseData[1][i];
+             v.push_back(noiseData[1][i]);
         }
+        return v;
     }
 
     std::vector<double> MsDataScan::GetNoiseDataBaseline(std::vector<std::vector<double>> &noiseData)
     {
+        std::vector<double> v;
         for (int i = 0; i < noiseData.size() / 3; i++)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield return noiseData[2][i];
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
+            // C# 'yield' keyword:
+            //yield return noiseData[2][i];
+             v.push_back(noiseData[2][i]);
         }
+        return v;
     }
 }

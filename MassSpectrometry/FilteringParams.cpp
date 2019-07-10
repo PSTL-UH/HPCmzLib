@@ -3,26 +3,26 @@
 namespace MassSpectrometry
 {
 
-    FilteringParams::FilteringParams(Nullable<int> numberOfPeaksToKeepPerWindow, Nullable<double> minimumAllowedIntensityRatioToBasePeak, Nullable<int> numberOfWindows, bool applyTrimmingToMs1, bool applyTrimmingToMsMs)
+    FilteringParams::FilteringParams(std::optional<int> numberOfPeaksToKeepPerWindow, std::optional<double> minimumAllowedIntensityRatioToBasePeak, std::optional<int> numberOfWindows, bool applyTrimmingToMs1, bool applyTrimmingToMsMs)
     {
-        NumberOfPeaksToKeepPerWindow = numberOfPeaksToKeepPerWindow;
-        MinimumAllowedIntensityRatioToBasePeakM = minimumAllowedIntensityRatioToBasePeak;
-        NumberOfWindows = numberOfWindows;
-        ApplyTrimmingToMs1 = applyTrimmingToMs1;
-        ApplyTrimmingToMsMs = applyTrimmingToMsMs;
+        privateNumberOfPeaksToKeepPerWindow = numberOfPeaksToKeepPerWindow;
+        privateMinimumAllowedIntensityRatioToBasePeakM = minimumAllowedIntensityRatioToBasePeak;
+        privateNumberOfWindows = numberOfWindows;
+        privateApplyTrimmingToMs1 = applyTrimmingToMs1;
+        privateApplyTrimmingToMsMs = applyTrimmingToMsMs;
     }
 
-    Nullable<double> FilteringParams::getMinimumAllowedIntensityRatioToBasePeakM() const
+    std::optional<double> FilteringParams::getMinimumAllowedIntensityRatioToBasePeakM() const
     {
         return privateMinimumAllowedIntensityRatioToBasePeakM;
     }
 
-    Nullable<int> FilteringParams::getNumberOfPeaksToKeepPerWindow() const
+    std::optional<int> FilteringParams::getNumberOfPeaksToKeepPerWindow() const
     {
         return privateNumberOfPeaksToKeepPerWindow;
     }
 
-    Nullable<int> FilteringParams::getNumberOfWindows() const
+    std::optional<int> FilteringParams::getNumberOfWindows() const
     {
         return privateNumberOfWindows;
     }

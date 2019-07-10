@@ -26,19 +26,22 @@ namespace MassSpectrometry
     class FilteringParams : public IFilteringParams
     {
     private:
-        Nullable<double> privateMinimumAllowedIntensityRatioToBasePeakM;
-        Nullable<int> privateNumberOfPeaksToKeepPerWindow;
-        Nullable<int> privateNumberOfWindows;
+        std::optional<double> privateMinimumAllowedIntensityRatioToBasePeakM;
+        std::optional<int> privateNumberOfPeaksToKeepPerWindow;
+        std::optional<int> privateNumberOfWindows;
         bool privateApplyTrimmingToMs1 = false;
         bool privateApplyTrimmingToMsMs = false;
 
         //Num: the number of windows used to filer; testSize: for comparing the amount of topN is used on
     public:
-        FilteringParams(Nullable<int> numberOfPeaksToKeepPerWindow = std::nullopt, Nullable<double> minimumAllowedIntensityRatioToBasePeak = std::nullopt, Nullable<int> numberOfWindows = std::nullopt, bool applyTrimmingToMs1 = true, bool applyTrimmingToMsMs = true);
+        FilteringParams(std::optional<int> numberOfPeaksToKeepPerWindow = std::nullopt,
+                        std::optional<double> minimumAllowedIntensityRatioToBasePeak = std::nullopt,
+                        std::optional<int> numberOfWindows = std::nullopt,
+                        bool applyTrimmingToMs1 = true, bool applyTrimmingToMsMs = true);
 
-        Nullable<double> getMinimumAllowedIntensityRatioToBasePeakM() const override;
-        Nullable<int> getNumberOfPeaksToKeepPerWindow() const override;
-        Nullable<int> getNumberOfWindows() const override;
+        std::optional<double> getMinimumAllowedIntensityRatioToBasePeakM() const override;
+        std::optional<int> getNumberOfPeaksToKeepPerWindow() const override;
+        std::optional<int> getNumberOfWindows() const override;
         bool getApplyTrimmingToMs1() const override;
         bool getApplyTrimmingToMsMs() const override;
     };

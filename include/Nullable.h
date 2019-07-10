@@ -13,9 +13,9 @@ public:
     const Nullable<T> & operator=(const Nullable<T> &value);
     const Nullable<T> & operator=(const T &value);
     const Nullable<T> & operator=(nullptr_t nullpointer);
-    bool HasValue() const;
-    const T & GetValueOrDefault() const;
-    const T & GetValueOrDefault(const T &def) const;
+    bool has_value() const;
+    const T & value() const;
+    const T & value(const T &def) const;
     bool TryGetValue(T &value) const;
 
 public:
@@ -124,16 +124,16 @@ void Nullable<T>::NullableValue::checkHasValue() const
 }
 
 template <typename T>
-bool Nullable<T>::HasValue() const { return Value.m_hasValue; }
+bool Nullable<T>::has_value() const { return Value.m_hasValue; }
 
 template <typename T>
-const T & Nullable<T>::GetValueOrDefault() const
+const T & Nullable<T>::value() const
 {
     return Value.m_value;
 }
 
 template <typename T>
-const T & Nullable<T>::GetValueOrDefault(const T &def) const
+const T & Nullable<T>::value(const T &def) const
 {
     if (Value.m_hasValue)
         return Value.m_value;

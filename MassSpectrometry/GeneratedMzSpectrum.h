@@ -4,7 +4,7 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class IMzPeak; }
+namespace MassSpectrometry { class MzPeak; }
 
 namespace MassSpectrometry {
     class GeneratedMzSpectrum : public MzSpectrum {
@@ -13,7 +13,7 @@ namespace MassSpectrometry {
         GeneratedMzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy);
 
     protected:
-        MzPeak *GeneratePeak(int index) override;
+        MzPeak *GeneratePeak(int index);
 
     };
 }

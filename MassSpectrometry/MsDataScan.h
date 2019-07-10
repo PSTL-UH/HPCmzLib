@@ -10,10 +10,13 @@
 #include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MzSpectrum; }
-namespace MzLibUtil { class MzRange; }
-namespace MassSpectrometry { class IsotopicEnvelope; }
-namespace MassSpectrometry { class MzPeak; }
+//namespace MassSpectrometry { class MzSpectrum; }
+#include "MzSpectra/MzSpectrum.h"
+//namespace MzLibUtil { class MzRange; }
+//namespace MassSpectrometry { class IsotopicEnvelope; }
+#include "MzSpectra/IsotopicEnvelope.h"
+//namespace MassSpectrometry { class MzPeak; }
+#include "MzSpectra/MzPeak.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -33,6 +36,7 @@ namespace MassSpectrometry { class MzPeak; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace MassSpectrometry
@@ -66,10 +70,24 @@ namespace MassSpectrometry
     public:
         virtual ~MsDataScan()
         {
-            delete isolationRange;
+            // delete isolationRange;
         }
 
-        MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder, bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime, MzRange *scanWindowRange, const std::string &scanFilter, MZAnalyzerType mzAnalyzer, double totalIonCurrent, std::optional<double> &injectionTime, std::vector<std::vector<double>> &noiseData, const std::string &nativeId, std::optional<double> &selectedIonMz = std::nullopt, std::optional<int> &selectedIonChargeStateGuess = std::nullopt, std::optional<double> &selectedIonIntensity = std::nullopt, std::optional<double> &isolationMZ = std::nullopt, std::optional<double> &isolationWidth = std::nullopt, std::optional<MassSpectrometry::DissociationType> &dissociationType = std::nullopt, std::optional<int> &oneBasedPrecursorScanNumber = std::nullopt, std::optional<double> &selectedIonMonoisotopicGuessMz = std::nullopt);
+        MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder,
+                   bool isCentroid, MassSpectrometry::Polarity polarity, double retentionTime,
+                   MzRange *scanWindowRange, const std::string &scanFilter,
+                   MZAnalyzerType mzAnalyzer, double totalIonCurrent,
+                   std::optional<double> injectionTime,
+                   std::vector<std::vector<double>> &noiseData,
+                   const std::string &nativeId,
+                   std::optional<double> selectedIonMz = std::nullopt,
+                   std::optional<int> selectedIonChargeStateGuess = std::nullopt,
+                   std::optional<double> selectedIonIntensity = std::nullopt,
+                   std::optional<double> isolationMZ = std::nullopt,
+                   std::optional<double> isolationWidth = std::nullopt,
+                   std::optional<MassSpectrometry::DissociationType> dissociationType = std::nullopt,
+                   std::optional<int> oneBasedPrecursorScanNumber = std::nullopt,
+                   std::optional<double> selectedIonMonoisotopicGuessMz = std::nullopt);
 
         /// <summary>
         /// The mass spectrum associated with the scan
@@ -114,7 +132,7 @@ namespace MassSpectrometry
     public:
         MzRange *getIsolationRange() const;
 
-        std::string ToString() override;
+        std::string ToString();
 
         std::vector<unsigned char> Get64BitNoiseDataMass();
 
