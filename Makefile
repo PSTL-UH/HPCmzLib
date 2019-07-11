@@ -24,10 +24,10 @@ HEADER = exceptionhelper.h           \
 all:    
 	cd MzLibUtil ; make ; cd ..
 	cd Chemistry ; make ; cd ..
-	cd Proteomics ; make ; cd ..
 	cd Spectra ; make ; cd ..
 	cd MassSpectrometry ; make ; cd ..
 	cd UsefulProteomicsDatabases ; make ;  cd ..
+	cd Proteomics ; make ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
@@ -39,6 +39,9 @@ $(OBJ):	$(HEADER)
 clean:  
 	cd MzLibUtil ; make clean ; cd ..
 	cd Chemistry ; make clean ; cd ..
+	cd Spectra ; make clean ; cd ..
+	cd MassSpectrometry ; make clean ; cd ..
+	cd UsefulProteomicsDatabases ; make clean ;  cd ..
 	cd Proteomics ; make clean ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(MZLIB_LIB) ; cd ..
 	rm -rf *.o *~

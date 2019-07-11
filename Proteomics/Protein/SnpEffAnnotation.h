@@ -43,7 +43,7 @@ namespace Proteomics
         bool privateFrameshiftVariant = false;
         bool privateBadTranscript = false;
 
-        static Regex *const HGVSProteinRegex;
+        //static Regex *const HGVSProteinRegex;
 
         /// <summary>
         /// Original SnpEff annotation string.

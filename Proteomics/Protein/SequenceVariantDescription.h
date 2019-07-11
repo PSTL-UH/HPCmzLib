@@ -45,11 +45,10 @@ namespace Proteomics
         /// Returns original string for the description
         /// </summary>
         /// <returns></returns>
-        std::string ToString() override;
+        std::string ToString();
 
-        bool Equals(std::any obj) override;
-
-        int GetHashCode() override;
+        bool Equals(SequenceVariantDescription *obj);
+        int GetHashCode();
 
         /// <summary>
         /// Gets a dictionary of the format (key) and fields (value) for a genotype

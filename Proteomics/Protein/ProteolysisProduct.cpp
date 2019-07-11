@@ -31,13 +31,13 @@ namespace Proteomics {
     int ProteolysisProduct::GetHashCode() {
         int hash1=0;
         Nullable<int> i1 = getOneBasedBeginPosition();      
-        if ( i1.HasValue() ) {
-            hash1 = StringHelper::GetHashCode(std::to_string(i1.GetValueOrDefault()));
+        if ( i1.has_value() ) {
+            hash1 = StringHelper::GetHashCode(std::to_string(i1.value()));
         }
         int hash2=0;
         Nullable<int> i2 = getOneBasedEndPosition();      
-        if ( i2.HasValue() ) {
-            hash2 = StringHelper::GetHashCode(std::to_string(i2.GetValueOrDefault()));
+        if ( i2.has_value() ) {
+            hash2 = StringHelper::GetHashCode(std::to_string(i2.value()));
         }
 
         return hash1 ^ hash2 ^ StringHelper::GetHashCode(getType());
