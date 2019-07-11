@@ -25,7 +25,7 @@ namespace MassSpectrometry {
 
     public:
         virtual ~SummedMsDataFile() {
-            delete raw;
+            //delete raw;
         }
 
         SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination);

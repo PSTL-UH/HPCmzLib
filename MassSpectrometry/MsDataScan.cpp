@@ -15,7 +15,7 @@ namespace MassSpectrometry
                            double retentionTime, MzRange *scanWindowRange,
                            const std::string &scanFilter, MZAnalyzerType mzAnalyzer,
                            double totalIonCurrent, std::optional<double> injectionTime,
-                           std::vector<std::vector<double>> &noiseData,
+                           std::vector<std::vector<double>> noiseData,
                            const std::string &nativeId,
                            std::optional<double> selectedIonMz,
                            std::optional<int> selectedIonChargeStateGuess,
@@ -195,7 +195,7 @@ namespace MassSpectrometry
         privateSelectedIonMonoisotopicGuessMz = value;
     }
 
-    MzRange *MsDataScan::getIsolationRange() const
+    MzRange *MsDataScan::getIsolationRange() 
     {
         if (isolationRange != nullptr)
         {
@@ -338,10 +338,10 @@ namespace MassSpectrometry
         this->setOneBasedPrecursorScanNumber(std::make_optional(value));
     }
 
-    std::vector<double> MsDataScan::GetNoiseDataMass(std::vector<std::vector<double>> &noiseData)
+    std::vector<double> MsDataScan::GetNoiseDataMass(std::vector<std::vector<double>> noiseData)
     {
         std::vector<double> v;
-        for (int i = 0; i < noiseData.size() / 3; i++)
+        for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
             // C# 'yield' keyword:
@@ -351,10 +351,10 @@ namespace MassSpectrometry
         return v;
     }
 
-    std::vector<double> MsDataScan::GetNoiseDataNoise(std::vector<std::vector<double>> &noiseData)
+    std::vector<double> MsDataScan::GetNoiseDataNoise(std::vector<std::vector<double>> noiseData)
     {
         std::vector<double> v;
-        for (int i = 0; i < noiseData.size() / 3; i++)
+        for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
             // C# 'yield' keyword:
@@ -364,10 +364,10 @@ namespace MassSpectrometry
         return v;
     }
 
-    std::vector<double> MsDataScan::GetNoiseDataBaseline(std::vector<std::vector<double>> &noiseData)
+    std::vector<double> MsDataScan::GetNoiseDataBaseline(std::vector<std::vector<double>> noiseData)
     {
         std::vector<double> v;
-        for (int i = 0; i < noiseData.size() / 3; i++)
+        for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
             // C# 'yield' keyword:

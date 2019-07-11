@@ -101,7 +101,7 @@ namespace MassSpectrometry
 
         double getSumOfAllY() const;
 
-        static std::vector<unsigned char> Get64Bitarray(std::vector<double> &array);
+        static std::vector<unsigned char> Get64Bitarray(std::vector<double> array);
 
         std::vector<unsigned char> Get64BitYarray();
 

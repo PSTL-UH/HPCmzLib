@@ -185,18 +185,17 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         return sumOfAllY.value();
     }
 
-    std::vector<unsigned char> MzSpectrum::Get64Bitarray(std::vector<double> &array)
+    std::vector<unsigned char> MzSpectrum::Get64Bitarray(std::vector<double> array_Renamed)
     {
-        auto mem = new MemoryStream();
-        for (auto okk : array)
-        {
-            std::vector<unsigned char> ok = BitConverter::GetBytes(okk);
-            mem->Write(ok, 0, ok.size());
-        }
-        mem->Position = 0;
-
-        delete mem;
-        return mem->ToArray();
+      std::vector<unsigned char> ok;
+            for (double okk : array_Renamed) {
+                unsigned char* ptr = (unsigned char *)(&okk);
+                for ( int i=0; i< (int)sizeof(double); i++ ){
+                    ok.push_back(*ptr);
+                    ptr++;
+                }
+            }
+            return ok;
     }
 
     std::vector<unsigned char> MzSpectrum::Get64BitYarray()
@@ -214,17 +213,21 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         return StringHelper::formatSimple("{0} (Peaks {1})", getRange(), getSize());
     }
 
-    std::vector<IsotopicEnvelope*> MzSpectrum::Deconvolute(MzRange *theRange, int minAssumedChargeState, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatioLimit)
+    std::vector<IsotopicEnvelope*> MzSpectrum::Deconvolute(MzRange *theRange,
+                                                           int minAssumedChargeState,
+                                                           int maxAssumedChargeState,
+                                                           double deconvolutionTolerancePpm,
+                                                           double intensityRatioLimit)
     {
-        if (getSize() == 0)
-        {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield break;
-        }
-
         auto isolatedMassesAndCharges = std::vector<IsotopicEnvelope*>();
+        if (getSize() == 0)  {
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+            //yield break;
+            return isolatedMassesAndCharges;
+        }
+        
 
-        for (auto candidateForMostIntensePeak : ExtractIndices(theRange->Minimum, theRange->Maximum))
+        for (auto candidateForMostIntensePeak : ExtractIndices(theRange->getMinimum(), theRange->getMaximum()))
         {
             IsotopicEnvelope *bestIsotopeEnvelopeForThisPeak = nullptr;
 
@@ -237,27 +240,27 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 //Console.WriteLine(" chargeState: " + chargeState);
                 auto testMostIntenseMass = Chemistry::ClassExtensions::ToMass(candidateForMostIntensePeakMz, chargeState);
 
-                auto massIndex = Array::BinarySearch(mostIntenseMasses, testMostIntenseMass);
-                if (massIndex < 0)
-                {
+                //auto massIndex = Array::BinarySearch(mostIntenseMasses, testMostIntenseMass);
+                int massIndex = std::binary_search(mostIntenseMasses.begin(), mostIntenseMasses.end(),
+                                                   testMostIntenseMass);
+                if (massIndex < 0) {
                     massIndex = ~massIndex;
                 }
-                if (massIndex == mostIntenseMasses.size())
-                {
+                if (massIndex == mostIntenseMasses.size()) {
                     //Console.WriteLine("Breaking  because mass is too high: " + testMostIntenseMass);
                     break;
                 }
                 //Console.WriteLine("  massIndex: " + massIndex);
 
-                auto listOfPeaks = std::vector<(double, double)*> {(candidateForMostIntensePeakMz, candidateForMostIntensePeakIntensity)};
+                std::vector<std::tuple<double, double>> listOfPeaks = {std::make_tuple(candidateForMostIntensePeakMz, candidateForMostIntensePeakIntensity)};
+
                 auto listOfRatios = std::vector<std::vector<std::vector<double>>>(massIndex) / candidateForMostIntensePeakIntensity };
                 // Assuming the test peak is most intense...
                 // Try to find the rest of the isotopes!
 
                 double differenceBetweenTheorAndActual = testMostIntenseMass - mostIntenseMasses[massIndex];
                 double totalIntensity = candidateForMostIntensePeakIntensity;
-                for (int indexToLookAt = 1; indexToLookAt < allIntensities[massIndex].size(); indexToLookAt++)
-                {
+                for (int indexToLookAt=1; indexToLookAt<(int) allIntensities[massIndex].size(); indexToLookAt++) {
                     //Console.WriteLine("   indexToLookAt: " + indexToLookAt);
                     double theorMassThatTryingToFind = allMasses[massIndex][indexToLookAt] + differenceBetweenTheorAndActual;
                     //Console.WriteLine("   theorMassThatTryingToFind: " + theorMassThatTryingToFind);
@@ -266,7 +269,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                     auto closestPeakmz = getXArray()[closestPeakToTheorMass.value()];
                     //Console.WriteLine("   closestPeakmz: " + closestPeakmz);
                     auto closestPeakIntensity = getYArray()[closestPeakToTheorMass.value()];
-                    if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm && Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit) && !std::find(listOfPeaks.begin(), listOfPeaks.end(), (closestPeakmz, closestPeakIntensity)) != listOfPeaks.end()))
+                    if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm
+                        && Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit)
+                        && !std::find(listOfPeaks.begin(), listOfPeaks.end(), (closestPeakmz, closestPeakIntensity)) != listOfPeaks.end()))
                     {
                         //Found a match to an isotope peak for this charge state!
                         //Console.WriteLine(" *   Found a match to an isotope peak for this charge state!");
@@ -327,7 +332,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             {
                 seen.insert(ah);
             }
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
             yield return ok;
         }
     }
@@ -341,7 +346,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         }
         while (ind < getSize() && getXArray()[ind] <= maxX)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
             yield return ind;
             ind++;
         }

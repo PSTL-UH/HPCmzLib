@@ -78,7 +78,7 @@ namespace MassSpectrometry
                    MzRange *scanWindowRange, const std::string &scanFilter,
                    MZAnalyzerType mzAnalyzer, double totalIonCurrent,
                    std::optional<double> injectionTime,
-                   std::vector<std::vector<double>> &noiseData,
+                   std::vector<std::vector<double>> noiseData,
                    const std::string &nativeId,
                    std::optional<double> selectedIonMz = std::nullopt,
                    std::optional<int> selectedIonChargeStateGuess = std::nullopt,
@@ -130,7 +130,7 @@ namespace MassSpectrometry
         MzRange *isolationRange;
 
     public:
-        MzRange *getIsolationRange() const;
+        MzRange *getIsolationRange();
 
         std::string ToString();
 
@@ -153,10 +153,10 @@ namespace MassSpectrometry
         void setOneBasedPrecursorScanNumber(int value);
 
     private:
-        std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> &noiseData);
+        std::vector<double> GetNoiseDataMass(std::vector<std::vector<double>> noiseData);
 
-        std::vector<double> GetNoiseDataNoise(std::vector<std::vector<double>> &noiseData);
+        std::vector<double> GetNoiseDataNoise(std::vector<std::vector<double>> noiseData);
 
-        std::vector<double> GetNoiseDataBaseline(std::vector<std::vector<double>> &noiseData);
+        std::vector<double> GetNoiseDataBaseline(std::vector<std::vector<double>> noiseData);
     };
 }

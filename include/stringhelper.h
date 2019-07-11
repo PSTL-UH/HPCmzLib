@@ -238,7 +238,7 @@ public:
 		int openBrace = -1;
 		while ((openBrace = input.find('{', openBrace + 1)) > -1)
 		{
-			if (openBrace + 1 < input.length())
+                    if ( (openBrace + 1) < (int) input.length())
 			{
 				if (input[openBrace + 1] == '{')
 				{
@@ -261,7 +261,7 @@ public:
 			}
 		}
 
-		if (lastCloseBrace + 1 < input.length())
+		if ( (lastCloseBrace + 1) < (int) input.length())
 			ss << input.substr(lastCloseBrace + 1);
 
 		return ss.str();

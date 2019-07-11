@@ -1,27 +1,24 @@
 ﻿#include "SummedMsDataFile.h"
-
-#include "DataScan/IMsDataScan.h"
-#include "MsDataFile.h"
+#include "MsDataScan.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "Enums/Polarity.h"
 #include "Enums/MzAnalyzerType.h"
 #include "MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
-#include "MsDataScan.h"
 #include "GeneratedPeak.h"
 #include "GeneratedMzSpectrum.h"
 
 
 namespace MassSpectrometry {
 
-    SummedMsDataFile::SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile(raw->getNumSpectra() - numScansToAverage + 1, &tempVar), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination)
+    SummedMsDataFile::SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile(raw->getNumSpectra() - numScansToAverage + 1, raw->getSourceFile()), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination)
     {
     }
 
     std::vector<MsDataScan*> SummedMsDataFile::GetAllScansList()
     {
         std::vector<MsDataScan*> allScans;
-        for (int scanNumber = 1; scanNumber <= Scans.size(); scanNumber++)
+        for (int scanNumber = 1; scanNumber <= (int) Scans.size(); scanNumber++)
         {
             allScans.push_back(GetOneBasedScan(scanNumber));
         }
@@ -45,23 +42,15 @@ namespace MassSpectrometry {
             MZAnalyzerType mzAnalyzer = representative->getMzAnalyzer();
 
 #ifdef ORIG
-            IMzSpectrum<IMzPeak*> *peaks = CombinePeaks(raw->Where([&] (std::any b) {
+            MzSpectrum<IMzPeak*> *peaks = CombinePeaks(aw->GetAllScansList().Where([&] (std::any b) {
                 return b::OneBasedScanNumber >= oneBasedScanNumber &&
                 b::OneBasedScanNumber <= oneBasedScanNumber + numScansToAverage - 1;
             })->Select([&] (std::any b) {
                 b::MassSpectrum;
             }).ToList(), ppmToleranceForPeakCombination);
-
-            MzSpectrum *peaks = CombinePeaks(raw->GetAllScansList().Where([&] (std::any b)
-            {
-                return b::OneBasedScanNumber >= oneBasedScanNumber && b::OneBasedScanNumber <= oneBasedScanNumber + numScansToAverage - 1;
-            })->Select([&] (std::any b)
-            {
-                b::MassSpectrum;
-            }).ToList(), ppmToleranceForPeakCombination);
 #endif
             std::vector<MzSpectrum *> v;
-            for ( auto b : *raw->GetAllScansList() ) {
+            for ( auto b : raw->GetAllScansList() ) {
                 if (b->getOneBasedScanNumber() >= oneBasedScanNumber &&
                     b->getOneBasedScanNumber() <= oneBasedScanNumber + numScansToAverage - 1) {
                     v.push_back(b->getMassSpectrum());
@@ -71,9 +60,9 @@ namespace MassSpectrometry {
 
             MzRange *scanWindowRange = representative->getScanWindowRange();
 
-            double totalIonCurrent = peaks->getSumOfAllY.value();
-            Nullable<double> injectionTime = NAN;
-            Nullable<double>& ijTime= injectionTime;
+            double totalIonCurrent = peaks->getSumOfAllY();
+            double injectionTime = NAN;
+            double& ijTime= injectionTime;
             std::vector<std::vector<double>> noiseData;
 
             Scans[oneBasedScanNumber - 1] = new MsDataScan (peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData, "scan=" + std::to_string(oneBasedScanNumber));
@@ -111,7 +100,7 @@ namespace MassSpectrometry {
 #endif
         std::vector<double> nextPeakMzs;
         for ( auto b : spectraToCombine ) {
-            nextPeakMzs.push_back(b->XArray[0]);
+            nextPeakMzs.push_back(b->getXArray()[0]);
         }
     
 #ifdef ORIG
@@ -121,7 +110,7 @@ namespace MassSpectrometry {
 #endif
         std::vector<double> nextPeaksIntensites;
         for ( auto b : spectraToCombine ) {
-            nextPeaksIntensites.push_back(b->YArray[0]);
+            nextPeaksIntensites.push_back(b->getYArray()[0]);
         }
 
 #ifdef ORIG
@@ -158,8 +147,8 @@ namespace MassSpectrometry {
                 nextPeakMzs[index] = std::numeric_limits<double>::max();
             }
             else {
-                nextPeakMzs[index] = spectraToCombine[index]->XArray[totalPeaks[index] - peaksLeft[index]];
-                nextPeaksIntensites[index] = spectraToCombine[index]->YArray[totalPeaks[index] - peaksLeft[index]];
+                nextPeakMzs[index] = spectraToCombine[index]->getXArray()[totalPeaks[index] - peaksLeft[index]];
+                nextPeaksIntensites[index] = spectraToCombine[index]->getYArray()[totalPeaks[index] - peaksLeft[index]];
             }
             
 #ifdef ORIG
