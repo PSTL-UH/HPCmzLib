@@ -1,13 +1,15 @@
 ﻿#include "SpliceSite.h"
+#include "stringhelper.h"
 
 namespace Proteomics
 {
 
     SpliceSite::SpliceSite(int oneBasedBegin, int oneBasedEnd, const std::string &description)
     {
-        OneBasedBeginPosition = oneBasedBegin;
-        OneBasedEndPosition = oneBasedEnd;
-        Description = (description != nullptr) ? description : "";
+        privateOneBasedBeginPosition = oneBasedBegin;
+        privateOneBasedEndPosition = oneBasedEnd;
+        //privateDescription = (description != nullptr) ? description : "";
+        privateDescription = description;
     }
 
     SpliceSite::SpliceSite(int oneBasedPosition, const std::string &description) : SpliceSite(oneBasedPosition, oneBasedPosition, description)
@@ -29,14 +31,18 @@ namespace Proteomics
         return privateDescription;
     }
 
-    bool SpliceSite::Equals(std::any obj)
+    bool SpliceSite::Equals(SpliceSite *s)
     {
-        SpliceSite *s = dynamic_cast<SpliceSite*>(obj);
-        return s != nullptr && s->getOneBasedBeginPosition() == getOneBasedBeginPosition() && s->getOneBasedEndPosition() == getOneBasedEndPosition() && s->getDescription() == getDescription();
+        return s != nullptr &&
+            s->getOneBasedBeginPosition() == getOneBasedBeginPosition() &&
+            s->getOneBasedEndPosition() == getOneBasedEndPosition()
+            && s->getDescription() == getDescription();
     }
 
     int SpliceSite::GetHashCode()
     {
-        return getOneBasedBeginPosition().GetHashCode() ^ getOneBasedEndPosition().GetHashCode() ^ getDescription().GetHashCode(); // null handled in constructor
+        return StringHelper::GetHashCode(std::to_string(getOneBasedBeginPosition())) ^
+            StringHelper::GetHashCode(std::to_string(getOneBasedEndPosition())) ^
+            StringHelper::GetHashCode(getDescription()); // null handled in constructor
     }
 }

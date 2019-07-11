@@ -20,8 +20,7 @@ namespace Proteomics
         int getOneBasedEndPosition() const;
         std::string getDescription() const;
 
-        bool Equals(std::any obj) override;
-
-        int GetHashCode() override;
+        bool Equals(SpliceSite *s);
+        int GetHashCode();
     };
 }

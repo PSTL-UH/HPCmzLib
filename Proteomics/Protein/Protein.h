@@ -9,13 +9,18 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace Proteomics { class Modification; }
-namespace Proteomics { class SequenceVariation; }
-namespace Proteomics { class DisulfideBond; }
-namespace Proteomics { class SpliceSite; }
-namespace Proteomics { class ProteolysisProduct; }
-namespace Proteomics { class DatabaseReference; }
+//namespace Proteomics { class SequenceVariation; }
+#include "SequenceVariation.h"
+//namespace Proteomics { class DisulfideBond; }
+#include "DisulfideBond.h"
+//namespace Proteomics { class SpliceSite; }
+#include "SpliceSite.h"
+//namespace Proteomics { class ProteolysisProduct; }
+#include "ProteolysisProduct.h"
+//namespace Proteomics { class DatabaseReference; }
+#include "DatabaseReference.h"
 
-using namespace Proteomics::ProteolyticDigestion;
+//using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
 {
@@ -61,7 +66,23 @@ namespace Proteomics
         /// <param name="spliceSites"></param>
         /// <param name="databaseFilePath"></param>
     public:
-        Protein(const std::string &sequence, const std::string &accession, const std::string &organism = "", std::vector<std::tuple<std::string, std::string>> &geneNames = std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications = std::unordered_map<int, std::vector<Modification>>(), std::vector<ProteolysisProduct*> &proteolysisProducts = std::vector<ProteolysisProduct>(), const std::string &name = "", const std::string &fullName = "", bool isDecoy = false, bool isContaminant = false, std::vector<DatabaseReference*> &databaseReferences = std::vector<DatabaseReference>(), std::vector<SequenceVariation*> &sequenceVariations = std::vector<SequenceVariation>(), std::vector<SequenceVariation*> &appliedSequenceVariations = std::vector<SequenceVariation>(), const std::string &sampleNameForVariants = "", std::vector<DisulfideBond*> &disulfideBonds = std::vector<DisulfideBond>(), std::vector<SpliceSite*> &spliceSites = std::vector<SpliceSite>(), const std::string &databaseFilePath = "");
+        Protein(const std::string &sequence,
+                const std::string &accession,
+                const std::string &organism = "",
+                std::vector<std::tuple<std::string, std::string>> &geneNames = std::vector<std::tuple<std::string, std::string>>(),
+                std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications = std::unordered_map<int, std::vector<Modification>>(),
+                std::vector<ProteolysisProduct*> &proteolysisProducts = std::vector<ProteolysisProduct>(),
+                const std::string &name = "",
+                const std::string &fullName = "",
+                bool isDecoy = false,
+                bool isContaminant = false,
+                std::vector<DatabaseReference*> &databaseReferences = std::vector<DatabaseReference>(),
+                std::vector<SequenceVariation*> &sequenceVariations = std::vector<SequenceVariation>(),
+                std::vector<SequenceVariation*> &appliedSequenceVariations = std::vector<SequenceVariation>(),
+                const std::string &sampleNameForVariants = "",
+                std::vector<DisulfideBond*> &disulfideBonds = std::vector<DisulfideBond>(),
+                std::vector<SpliceSite*> &spliceSites = std::vector<SpliceSite>(),
+                const std::string &databaseFilePath = "");
 
         /// <summary>
         /// Protein construction with applied variations
@@ -72,9 +93,16 @@ namespace Proteomics
         /// <param name="applicableProteolysisProducts"></param>
         /// <param name="oneBasedModifications"></param>
         /// <param name="sampleNameForVariants"></param>
-        Protein(std::string variantBaseSequence, Protein protein, std::vector<SequenceVariation*> appliedSequenceVariations, std::vector<ProteolysisProduct*> applicableProteolysisProducts, std::unordered_map<int, std::vector<Modification*>> oneBasedModifications, std::string sampleNameForVariants) : this(variantBaseSequence, VariantApplication::GetAccession(protein, appliedSequenceVariations), organism: protein::Organism, geneNames: std::vector<std::tuple<std::string, std::string>>(protein::GeneNames), oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
-        {
-        x::Key;
+        Protein(std::string variantBaseSequence,
+                Protein protein,
+                std::vector<SequenceVariation*> appliedSequenceVariations,
+                std::vector<ProteolysisProduct*> applicableProteolysisProducts,
+                std::unordered_map<int, std::vector<Modification*>> oneBasedModifications, std::string sampleNameForVariants) :
+            this(variantBaseSequence, VariantApplication::GetAccession(protein, appliedSequenceVariations),
+                 organism: protein::Organism, geneNames: std::vector<std::tuple<std::string,
+                 std::string>>(protein::GeneNames), oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
+       {
+           x::Key;
         }, [&] (std::any x)
         {
         x->Value;
@@ -87,11 +115,11 @@ namespace Proteomics
         /// <summary>
         /// Modifications (values) located at one-based protein positions (keys)
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
         public IDictionary<int, List<Modification>> OneBasedPossibleLocalizedModifications
         {
             std::unordered_map<int, std::vector<Modification*>> get();
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+            //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
             set
         }
 
