@@ -10,32 +10,12 @@
 #include "DeconvolutionFeatureWithMassesAndScans.h"
 #include "MzSpectra/IsotopicEnvelope.h"
 
+#include "Sort.h"
 
 using namespace MzLibUtil;
 
 namespace MassSpectrometry
 {
-    // EG: Added for the C++ version.
-    void MsDataFile::BubbleSortPairs ( std::vector<double> &keys, std::vector<double> &values, int size)
-    {
-        // Sort an array of values based on the keys provided.
-        double tempkey, tempvalue;
-        
-        for ( int i=0; i< (size-1); i++ ) {
-            for (int j=0; j <(size-1); j++ ) {
-                if ( keys[j] > keys[j+1] ) {
-                    tempkey     = keys[j+1];
-                    tempvalue   = values[j+1];
-                    keys[j+1]   = keys[j];
-                    values[j+1] = values[j];
-                    keys[j]     = tempkey;
-                    values[j]   = tempvalue;
-                }
-            }
-        }
-    }
-    
-    
     
     MsDataFile::MsDataFile(int numSpectra, MassSpectrometry::SourceFile *sourceFile)
     {
@@ -75,7 +55,7 @@ namespace MassSpectrometry
         //    Array using the specified IComparer.
         // For the C++ version, I replace it by a bubble-sort for the moment.
         int numPeaks = intensities.size();
-        BubbleSortPairs ( intensities, mArray, numPeaks );
+        Sort::SortPairs ( intensities, mArray, numPeaks );
         
         if (filteringParams->getMinimumAllowedIntensityRatioToBasePeakM().has_value())
         {
@@ -111,7 +91,7 @@ namespace MassSpectrometry
     void MsDataFile::WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams, double scanRangeMinMz, double scanRangeMaxMz, std::optional<double> WindowMaxNormalizationToValue)
     {
         //Array::Sort(mArray, intensities);
-        BubbleSortPairs ( mArray, intensities, mArray.size() );
+        Sort::SortPairs ( mArray, intensities, mArray.size() );
         constexpr double shiftToMakeRangeInclusive = 0.000000001;
         std::vector<MzPeak*> mzIntensites;
         std::vector<MzPeak*> mzIntensites_reduced;
@@ -272,7 +252,7 @@ namespace MassSpectrometry
     {
         //The discrete bin value 1.0005079 was from J. Proteome Res., 2018, 17 (11), pp 3644–3656
         //Array::Sort(mArray, intensities);
-        BubbleSortPairs (mArray, intensities, mArray.size());
+        Sort::SortPairs (mArray, intensities, mArray.size());
         int numberOfWindows = static_cast<int>(std::round((scanRangeMaxMz - scanRangeMinMz + discreteMassBin) / discreteMassBin * std::pow(10, 0))) / std::pow(10, 0);
         
         FilteringParams *firstFilter = new FilteringParams(std::make_optional<int>(1),
@@ -373,7 +353,7 @@ namespace MassSpectrometry
         std::copy (zeroArray.begin(), zeroArray.end(), intensities.begin() + original_mArray_count);
         
         //Array::Sort(mArray, intensities);
-        BubbleSortPairs ( mArray, intensities, mArray.size() );
+        Sort::SortPairs ( mArray, intensities, mArray.size() );
         
         //Scale the intensities
         

@@ -64,9 +64,6 @@ namespace MassSpectrometry
 
         static int TopNpeakHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams);
 
-        // EG: Added for the C++ version.
-        static void BubbleSortPairs(std::vector<double> &keys, std::vector<double> &values, int size);
-
         
         /// <summary>
         /// This method is designed to break a scan up into windows and take the top N peaks (by intensity)

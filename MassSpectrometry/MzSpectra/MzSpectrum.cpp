@@ -1,12 +1,16 @@
 ﻿#include "MzSpectrum.h"
-//#include "MzPeak.h"
-//#include "../../Chemistry/ChemicalFormula.h"
-//#include "../../Chemistry/IsotopicDistribution.h"
-//#include "../../MzLibUtil/MzRange.h"
-//#include "IsotopicEnvelope.h"
-//#include "../../Chemistry/ClassExtensions.h"
-//#include "../../MzLibUtil/DoubleRange.h"
-//#include "../../MzLibUtil/Tolerance.h"
+#include "MzPeak.h"
+#include "../../Chemistry/ChemicalFormula.h"
+#include "../../Chemistry/IsotopicDistribution.h"
+#include "../../MzLibUtil/MzRange.h"
+#include "IsotopicEnvelope.h"
+#include "../../Chemistry/ClassExtensions.h"
+#include "../../MzLibUtil/DoubleRange.h"
+#include "../../MzLibUtil/Tolerance.h"
+
+#include "Sort.h"
+#include "Math.h"
+#include "RectangularVectors.h"
 
 //using namespace Chemistry;
 //using namespace MathNet::Numerics::Statistics;
@@ -16,10 +20,10 @@ namespace MassSpectrometry
 {
     static constexpr int numAveraginesToGenerate = 1500;
 
-    static std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
-    static std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
-    static std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
-    static std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
+    std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
+    std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
 
     std::vector<double> MzSpectrum::getXArray() const
     {
@@ -67,12 +71,17 @@ namespace MassSpectrometry
             {
                 auto chemicalFormulaReg = chemicalFormula;
                 IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormulaReg, fineRes, minRes);
-                auto masses = ye->getMasses().ToArray();
-                auto intensities = ye->getIntensities().ToArray();
+                auto masses = ye->getMasses();
+                auto intensities = ye->getIntensities();
+#ifdef ORIG
                 Array::Sort(intensities, masses);
                 Array::Reverse(intensities);
                 Array::Reverse(masses);
-        
+#endif
+                Sort::SortPairs ( intensities, masses, intensities.size() );
+                std::reverse (intensities.begin(), intensities.end());
+                std::reverse (masses.begin(), masses.end() );
+
                 mostIntenseMasses[i] = masses[0];
                 diffToMonoisotopic[i] = masses[0] - chemicalFormulaReg->getMonoisotopicMass();
                 allMasses[i] = masses;
@@ -91,8 +100,12 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
         setXArray(std::vector<double>(count));
         setYArray(std::vector<double>(count));
+#ifdef ORIG
         Buffer::BlockCopy(mzintensities, 0, getXArray(), 0, sizeof(double) * count);
         Buffer::BlockCopy(mzintensities, sizeof(double) * count, getYArray(), 0, sizeof(double) * count);
+#endif
+        std::copy (mzintensities[0].begin(), mzintensities[0].end(), privateXArray.begin());
+        std::copy (mzintensities[1].begin(), mzintensities[1].end(), privateYArray.begin()  );
         peakList = std::vector<MzPeak*>(getSize());
     }
 
@@ -102,8 +115,13 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             setXArray(std::vector<double>(mz.size()));
             setYArray(std::vector<double>(intensities.size()));
+
+#ifdef ORIG
             Array::Copy(mz, getXArray(), mz.size());
             Array::Copy(intensities, getYArray(), intensities.size());
+#endif
+            std::copy (mz.begin(), mz.end(), privateXArray.begin());
+            std::copy (intensities.begin(), intensities.end(), privateYArray.begin()  );
         }
         else
         {
@@ -145,42 +163,53 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         return getXArray().size();
     }
 
-    std::optional<int> MzSpectrum::getIndexOfPeakWithHighesetY() const
+    std::optional<int> MzSpectrum::getIndexOfPeakWithHighesetY() 
     {
         if (getSize() == 0)
         {
             return std::nullopt;
         }
-        if (!indexOfpeakWithHighestY)
+        if (!indexOfpeakWithHighestY.has_value())
         {
-            indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
+            //indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
+            auto maxval = std::max_element(getYArray().begin(), getYArray().end() );
+            indexOfpeakWithHighestY = std::make_optional(std::distance(getYArray().begin(), maxval ));
         }
         return std::make_optional(indexOfpeakWithHighestY.value());
     }
 
-    std::optional<double> MzSpectrum::getYofPeakWithHighestY() const
+    std::optional<double> MzSpectrum::getYofPeakWithHighestY() 
     {
         if (getSize() == 0)
         {
             return std::nullopt;
         }
-        return std::make_optional(getYArray()[getIndexOfPeakWithHighesetY().value()]);
+        int index = getIndexOfPeakWithHighesetY().value();
+        return std::make_optional(getYArray()[index]);
     }
 
-    std::optional<double> MzSpectrum::getXofPeakWithHighestY() const
+    std::optional<double> MzSpectrum::getXofPeakWithHighestY() 
     {
         if (getSize() == 0)
         {
             return std::nullopt;
         }
-        return std::make_optional(getXArray()[getIndexOfPeakWithHighesetY().value()]);
+        int index = getIndexOfPeakWithHighesetY().value();
+        return std::make_optional(getXArray()[index]);
     }
 
-    double MzSpectrum::getSumOfAllY() const
+    double MzSpectrum::getSumOfAllY() 
     {
-        if (!sumOfAllY)
+        if (!sumOfAllY.has_value() )
         {
+#ifdef ORIG
             sumOfAllY = getYArray().Sum();
+#endif
+            double sum = 0.0;
+            for ( auto y : getYArray() ) {
+                sum +=  y;
+            }
+            sumOfAllY = std::make_optional ( sum );
         }
         return sumOfAllY.value();
     }
@@ -246,7 +275,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 if (massIndex < 0) {
                     massIndex = ~massIndex;
                 }
-                if (massIndex == mostIntenseMasses.size()) {
+                if (massIndex == (int) mostIntenseMasses.size()) {
                     //Console.WriteLine("Breaking  because mass is too high: " + testMostIntenseMass);
                     break;
                 }
@@ -254,7 +283,14 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
                 std::vector<std::tuple<double, double>> listOfPeaks = {std::make_tuple(candidateForMostIntensePeakMz, candidateForMostIntensePeakIntensity)};
 
-                auto listOfRatios = std::vector<std::vector<std::vector<double>>>(massIndex) / candidateForMostIntensePeakIntensity };
+#ifdef ORG
+                // Code generated by C#to C++ convertor below is weird.
+                // auto listOfRatios = std::vector<std::vector<std::vector<double>>>(massIndex) / candidateForMostIntensePeakIntensity };
+               // Here is the original line from C#
+               // var listOfRatios = new List<double> { allIntensities[massIndex][0] / candidateForMostIntensePeakIntensity };
+            
+#endif
+            auto listOfRatios = std::vector<double>{allIntensities[massIndex][0] / candidateForMostIntensePeakIntensity };
                 // Assuming the test peak is most intense...
                 // Try to find the rest of the isotopes!
 
@@ -271,13 +307,13 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                     auto closestPeakIntensity = getYArray()[closestPeakToTheorMass.value()];
                     if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm
                         && Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit)
-                        && !std::find(listOfPeaks.begin(), listOfPeaks.end(), (closestPeakmz, closestPeakIntensity)) != listOfPeaks.end()))
+                        && (std::find(listOfPeaks.begin(), listOfPeaks.end(), std::make_tuple(closestPeakmz, closestPeakIntensity)) == listOfPeaks.end()))
                     {
                         //Found a match to an isotope peak for this charge state!
                         //Console.WriteLine(" *   Found a match to an isotope peak for this charge state!");
                         //Console.WriteLine(" *   chargeState: " + chargeState);
                         //Console.WriteLine(" *   closestPeakmz: " + closestPeakmz);
-                        listOfPeaks.push_back((closestPeakmz, closestPeakIntensity));
+                        listOfPeaks.push_back(std::make_tuple(closestPeakmz, closestPeakIntensity));
                         totalIntensity += closestPeakIntensity;
                         listOfRatios.push_back(allIntensities[massIndex][indexToLookAt] / closestPeakIntensity);
                     }
@@ -287,23 +323,39 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                     }
                 }
 
-                auto extrapolatedMonoisotopicMass = testMostIntenseMass - diffToMonoisotopic[massIndex]; // Optimized for proteoforms!!
+                // Optimized for proteoforms!!
+                auto extrapolatedMonoisotopicMass = testMostIntenseMass - diffToMonoisotopic[massIndex];
+                double lM = std::numeric_limits<double>::max();
+#ifdef ORIG
                 auto lowestMass = listOfPeaks.Min([&] (std::any b)
                 {
                     b::Item1;
                 }).ToMass(chargeState); // But may actually observe this small peak
+#endif
+                std::for_each(listOfPeaks.begin(), listOfPeaks.end(), [&] (std::tuple<double, double> b) {
+                        double b1 = std::get<0>(b);
+                         if ( b1< lM ) {
+                             lM = b1;
+                }});
+                double lowestMass = Chemistry::ClassExtensions::ToMass(lM, chargeState);
+                
                 auto monoisotopicMass = std::abs(extrapolatedMonoisotopicMass - lowestMass) < 0.5 ? lowestMass : extrapolatedMonoisotopicMass;
 
-                IsotopicEnvelope *test = new IsotopicEnvelope(listOfPeaks, monoisotopicMass, chargeState, totalIntensity, MathNet::Numerics::Statistics::Statistics::StandardDeviation(listOfRatios), massIndex);
+                IsotopicEnvelope *test = new IsotopicEnvelope(listOfPeaks, monoisotopicMass,
+                                                              chargeState, totalIntensity,
+                                                              Math::StandardDeviation(listOfRatios),
+                                                              massIndex);
 
-                if (listOfPeaks.size() >= 2 && ScoreIsotopeEnvelope(test) > ScoreIsotopeEnvelope(bestIsotopeEnvelopeForThisPeak))
+                if (listOfPeaks.size() >= 2 && ScoreIsotopeEnvelope(test) >
+                    ScoreIsotopeEnvelope(bestIsotopeEnvelopeForThisPeak))
                 {
                     //Console.WriteLine("Better charge state is " + test.charge);
                     //Console.WriteLine("peaks: " + string.Join(",", listOfPeaks.Select(b => b.Item1)));
                     bestIsotopeEnvelopeForThisPeak = test;
                 }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete test' statement was not added since test was passed to a method or constructor. Handle memory management manually.
+                //C# TO C++ CONVERTER TODO TASK: A 'delete test' statement was not added since
+                //est was passed to a method or constructor. Handle memory management manually.
             }
 
             if (bestIsotopeEnvelopeForThisPeak != nullptr && bestIsotopeEnvelopeForThisPeak->peaks.size() >= 2)
@@ -311,7 +363,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 isolatedMassesAndCharges.push_back(bestIsotopeEnvelopeForThisPeak);
             }
         }
-
+#ifdef ORIG
         std::unordered_set<double> seen;
         for (auto ok : isolatedMassesAndCharges.OrderByDescending([&] (std::any b)
         {
@@ -334,12 +386,40 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             }
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
             yield return ok;
+            
+#endif
+            std::unordered_set<double> seen = std::unordered_set<double>();
+            std::vector<IsotopicEnvelope*> y;
+            std::sort(isolatedMassesAndCharges.begin(), isolatedMassesAndCharges.end(), [&] ( IsotopicEnvelope *lhs, IsotopicEnvelope *rhs) {
+                    return (ScoreIsotopeEnvelope(lhs) < ScoreIsotopeEnvelope(rhs));
+            });
+            for (IsotopicEnvelope* ok : isolatedMassesAndCharges ) {
+                bool found =false;
+                for ( auto p : ok->peaks ) {
+                    if (seen.find(std::get<0>(p)) == seen.end()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( found ) {
+                    continue;
+                }
+                for ( auto p: ok->peaks ) {
+                    seen.insert(std::get<0>(p));
+                }
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                y.push_back(ok);
+            }
+            return y;
         }
-    }
 
     std::vector<int> MzSpectrum::ExtractIndices(double minX, double maxX)
     {
+        std::vector<int> v;
+# ifdef ORIG
         int ind = Array::BinarySearch(getXArray(), minX);
+#endif
+        int ind = std::binary_search (getXArray().begin(), getXArray().end(), minX);
         if (ind < 0)
         {
             ind = ~ind;
@@ -347,9 +427,11 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         while (ind < getSize() && getXArray()[ind] <= maxX)
         {
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield return ind;
+            //yield return ind;
+            v.push_back(ind);
             ind++;
         }
+        return v;
     }
 
     std::optional<int> MzSpectrum::GetClosestPeakIndex(double x)
@@ -358,7 +440,10 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return std::nullopt;
         }
+#ifdef ORIG
         int index = Array::BinarySearch(getXArray(), x);
+#endif
+        int index = std::binary_search(getXArray().begin(), getXArray().end(), x);
         if (index >= 0)
         {
             return std::make_optional(index);
@@ -392,12 +477,17 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     std::vector<std::vector<double>> MzSpectrum::CopyTo2DArray()
     {
-//C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper class reproduces the rectangular array initialization that is automatic in C#:
-//ORIGINAL LINE: double[,] data = new double[2, Size];
-        std::vector<std::vector<double>> data = RectangularVectors::RectangularDoubleVector(2, getSize());
-        constexpr int size = sizeof(double);
+        //C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper
+        // class reproduces the rectangular array initialization that is automatic in C#:
+        //ORIGINAL LINE: double[,] data = new double[2, Size];
+        std::vector<std::vector<double>> data = RectangularVectors::ReturnRectangularDoubleVector(2, getSize());
+        //constexpr int size = sizeof(double);
+#ifdef ORIG
         Buffer::BlockCopy(getXArray(), 0, data, 0, size * getSize());
         Buffer::BlockCopy(getYArray(), 0, data, size * getSize(), size * getSize());
+#endif
+        std::copy(data[0].begin(), data[0].begin()+this->getSize(), this->getXArray().begin());
+        std::copy(data[1].begin(), data[1].begin()+this->getSize(), this->getYArray().begin());
         return data;
     }
 
@@ -412,7 +502,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     int MzSpectrum::NumPeaksWithinRange(double minX, double maxX)
     {
-        int startingIndex = Array::BinarySearch(getXArray(), minX);
+        //int startingIndex = Array::BinarySearch(getXArray(), minX);
+        int startingIndex = std::binary_search(getXArray().begin(), getXArray().end(), minX);
         if (startingIndex < 0)
         {
             startingIndex = ~startingIndex;
@@ -421,7 +512,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return 0;
         }
-        int endIndex = Array::BinarySearch(getXArray(), maxX);
+        //int endIndex = Array::BinarySearch(getXArray(), maxX);
+        int endIndex = std::binary_search(getXArray().begin(), getXArray().end(), maxX);
         if (endIndex < 0)
         {
             endIndex = ~endIndex;
@@ -436,56 +528,68 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     std::vector<MzPeak*> MzSpectrum::FilterByNumberOfMostIntense(int topNPeaks)
     {
+        std::vector<MzPeak*> v;
         auto quantile = 1.0 - static_cast<double>(topNPeaks) / getSize();
-        quantile = std::max(0, quantile);
-        quantile = std::min(1, quantile);
-        double cutoffYvalue = getYArray().Quantile(quantile);
+        quantile = std::max((double) 0.0, quantile);
+        quantile = std::min((double) 1.0 , quantile);
+        //double cutoffYvalue = getYArray().Quantile(quantile);
+        double cutoffYvalue = Math::Quantile(getYArray(), quantile);
 
         for (int i = 0; i < getSize(); i++)
         {
             if (getYArray()[i] >= cutoffYvalue)
             {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return GetPeak(i);
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return GetPeak(i);
+                v.push_back(GetPeak(i));
             }
         }
+        return v;
     }
 
     std::vector<MzPeak*> MzSpectrum::Extract(DoubleRange *xRange)
     {
-        return Extract(xRange->Minimum, xRange->Maximum);
+        return Extract(xRange->getMinimum(), xRange->getMaximum());
     }
 
     std::vector<MzPeak*> MzSpectrum::Extract(double minX, double maxX)
     {
-        int ind = Array::BinarySearch(getXArray(), minX);
+        std::vector<MzPeak*> v;
+        //int ind = Array::BinarySearch(getXArray(), minX);
+        int ind = std::binary_search(getXArray().begin(), getXArray().end(), minX);
+
         if (ind < 0)
         {
             ind = ~ind;
         }
         while (ind < getSize() && getXArray()[ind] <= maxX)
         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            yield return GetPeak(ind);
+            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+            //yield return GetPeak(ind);
+            v.push_back(GetPeak(ind));
             ind++;
         }
+        return v;
     }
 
     std::vector<MzPeak*> MzSpectrum::FilterByY(double minY, double maxY)
     {
+        std::vector<MzPeak*> v;        
         for (int i = 0; i < getSize(); i++)
         {
             if (getYArray()[i] >= minY && getYArray()[i] <= maxY)
             {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                yield return GetPeak(i);
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                //yield return GetPeak(i);
+                v.push_back(GetPeak(i));
             }
         }
+        return v;
     }
 
     std::vector<MzPeak*> MzSpectrum::FilterByY(DoubleRange *yRange)
     {
-        return FilterByY(yRange->Minimum, yRange->Maximum);
+        return FilterByY(yRange->getMinimum(), yRange->getMaximum());
     }
 
     double MzSpectrum::CalculateDotProductSimilarity(MzSpectrum *spectrumToCompare, Tolerance *tolerance)
@@ -493,18 +597,18 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         //get arrays of m/zs and intensities
         std::vector<double> mz1 = getXArray();
         std::vector<double> intensity1 = getYArray();
-
+        
         std::vector<double> mz2 = spectrumToCompare->getXArray();
         std::vector<double> intensity2 = spectrumToCompare->getYArray();
-
+        
         //convert spectra to vectors
         std::vector<double> vector1;
         std::vector<double> vector2;
         int i = 0; //iterate through mz1
         int j = 0; //iterate through mz2
-
+        
         //find where peaks match
-        while (i != mz1.size() && j != mz2.size())
+        while (i != (int) mz1.size() && j != (int)mz2.size())
         {
             double one = mz1[i];
             double two = mz2[j];
@@ -529,12 +633,12 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             }
         }
         //wrap up leftover peaks
-        for (; i < mz1.size(); i++)
+        for (; i < (int) mz1.size(); i++)
         {
             vector1.push_back(intensity1[i]);
             vector2.push_back(0);
         }
-        for (; j < mz2.size(); j++)
+        for (; j < (int) mz2.size(); j++)
         {
             vector1.push_back(0);
             vector2.push_back(intensity2[j]);
@@ -542,12 +646,13 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
         //numerator of dot product
         double numerator = 0;
-        for (i = 0; i < vector1.size(); i++)
+        for (i = 0; i < (int) vector1.size(); i++)
         {
             numerator += vector1[i] * vector2[i];
         }
-
+        
         //denominator of dot product
+#ifdef ORIG
         double denominator = std::sqrt(vector1.Sum([&] (std::any x)
         {
             return x * x;
@@ -555,7 +660,16 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return x * x;
         }));
-
+#endif
+        double d1 = 0.0;
+        for ( auto x : vector1 ) {
+            d1 += x*x;
+        }
+        double d2 = 0.0;
+        for ( auto x : vector2 ) {
+            d2 += x*x;
+        }
+        double denominator = std::sqrt(d1) * std::sqrt(d2);
         //return dot product
         return numerator / denominator;
     }

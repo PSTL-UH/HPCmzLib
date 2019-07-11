@@ -93,13 +93,13 @@ namespace MassSpectrometry
 
         int getSize() const;
 
-        std::optional<int> getIndexOfPeakWithHighesetY() const;
+        std::optional<int> getIndexOfPeakWithHighesetY();
 
-        std::optional<double> getYofPeakWithHighestY() const;
+        std::optional<double> getYofPeakWithHighestY();
 
-        std::optional<double> getXofPeakWithHighestY() const;
+        std::optional<double> getXofPeakWithHighestY();
 
-        double getSumOfAllY() const;
+        double getSumOfAllY();
 
         static std::vector<unsigned char> Get64Bitarray(std::vector<double> array);
 
