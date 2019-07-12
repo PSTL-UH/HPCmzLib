@@ -8,7 +8,8 @@
 #include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class Modification; }
+//namespace Proteomics { class Modification; }
+#include "../Modifications/Modification.h"
 //namespace Proteomics { class SequenceVariation; }
 #include "SequenceVariation.h"
 //namespace Proteomics { class DisulfideBond; }
@@ -21,6 +22,7 @@ namespace Proteomics { class Modification; }
 #include "DatabaseReference.h"
 
 //using namespace Proteomics::ProteolyticDigestion;
+#include "../ProteolyticDigestion/PeptideWithSetModifications.h"
 
 namespace Proteomics
 {
@@ -70,20 +72,21 @@ namespace Proteomics
                 const std::string &accession,
                 const std::string &organism = "",
                 std::vector<std::tuple<std::string, std::string>> &geneNames = std::vector<std::tuple<std::string, std::string>>(),
-                std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications = std::unordered_map<int, std::vector<Modification>>(),
-                std::vector<ProteolysisProduct*> &proteolysisProducts = std::vector<ProteolysisProduct>(),
+                std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications = std::unordered_map<int, std::vector<Modification*>>(),
+                std::vector<ProteolysisProduct*> &proteolysisProducts = std::vector<ProteolysisProduct*>(),
                 const std::string &name = "",
                 const std::string &fullName = "",
                 bool isDecoy = false,
                 bool isContaminant = false,
-                std::vector<DatabaseReference*> &databaseReferences = std::vector<DatabaseReference>(),
-                std::vector<SequenceVariation*> &sequenceVariations = std::vector<SequenceVariation>(),
-                std::vector<SequenceVariation*> &appliedSequenceVariations = std::vector<SequenceVariation>(),
+                std::vector<DatabaseReference*> &databaseReferences = std::vector<DatabaseReference*>(),
+                std::vector<SequenceVariation*> &sequenceVariations = std::vector<SequenceVariation*>(),
+                std::vector<SequenceVariation*> &appliedSequenceVariations = std::vector<SequenceVariation*>(),
                 const std::string &sampleNameForVariants = "",
-                std::vector<DisulfideBond*> &disulfideBonds = std::vector<DisulfideBond>(),
-                std::vector<SpliceSite*> &spliceSites = std::vector<SpliceSite>(),
+                std::vector<DisulfideBond*> &disulfideBonds = std::vector<DisulfideBond*>(),
+                std::vector<SpliceSite*> &spliceSites = std::vector<SpliceSite*>(),
                 const std::string &databaseFilePath = "");
 
+#ifdef LATER
         /// <summary>
         /// Protein construction with applied variations
         /// </summary>
@@ -110,7 +113,8 @@ namespace Proteomics
                                                                                                             }, [&] (std::any x)
                                                                                                             {
                                                                                                                 x->Value;
-                                                                                                            }) : std::unordered_map<int, std::vector<Modification*>>(),
+                                                                                                            }) :
+              std::unordered_map<int, std::vector<Modification*>>(),
               proteolysisProducts: std::vector<ProteolysisProduct*>((applicableProteolysisProducts != nullptr) ? applicableProteolysisProducts : std::vector<ProteolysisProduct*>()),
               name: GetName(appliedSequenceVariations, protein->Name),
               fullName: GetName(appliedSequenceVariations, protein->FullName),
@@ -125,167 +129,112 @@ namespace Proteomics
             setOriginalNonVariantModifications(getNonVariantProtein()->getOriginalNonVariantModifications());
             AppliedSequenceVariations = ((appliedSequenceVariations != nullptr) ? appliedSequenceVariations : std::vector<SequenceVariation*>())->ToList();
             SampleNameForVariants = sampleNameForVariants;
-    };
-
+        };
+#endif
+        
         /// <summary>
         /// Modifications (values) located at one-based protein positions (keys)
         /// </summary>
-        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IDictionary<int, List<Modification>> OneBasedPossibleLocalizedModifications
-        {
-            std::unordered_map<int, std::vector<Modification*>> get();
-            //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-            set
-        }
+        // get private set
+        std::unordered_map<int, std::vector<Modification*>> getOneBasedPossibleLocalizedModifications () const;
+
 
         /// <summary>
-        /// The list of gene names consists of tuples, where Item1 is the type of gene name, and Item2 is the name. There may be many genes and names of a certain type produced when reading an XML protein database.
+        /// The list of gene names consists of tuples, where Item1 is the type of gene name, and Item2 is the name.
+        /// There may be many genes and names of a certain type produced when reading an XML protein database.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<std::tuple<string, string>> GeneNames
-        {
-            std::vector<std::tuple<std::string, std::string>> get();
-        }
+        // get
+        std::vector<std::tuple<std::string, std::string>> getGeneNames() const;
 
         /// <summary>
         /// Unique accession for this protein.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string Accession
-        {
-            std::string get();
-        }
+        // get
+        std::string getAccession() const;
 
         /// <summary>
         /// Base sequence, which may contain applied sequence variations.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string BaseSequence
-        {
-            std::string get();
-        }
+        // get
+        std::string getBaseSequence () const;
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string Organism
-        {
-            std::string get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public bool IsDecoy
-        {
-            bool get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<SequenceVariation> SequenceVariations
-        {
-            std::vector<SequenceVariation*> get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<DisulfideBond> DisulfideBonds
-        {
-            std::vector<DisulfideBond*> get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<SpliceSite> SpliceSites
-        {
-            std::vector<SpliceSite*> get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<ProteolysisProduct> ProteolysisProducts
-        {
-            std::vector<ProteolysisProduct*> get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<DatabaseReference> DatabaseReferences
-        {
-            std::vector<DatabaseReference*> get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string DatabaseFilePath
-        {
-            std::string get();
-        }
+        // get
+        std::string getOrganism () const;
+
+        // get
+        bool getIsDecoy() const;
+
+        //get
+        std::vector<SequenceVariation*> getSequenceVariations () const;
+
+        //get
+        std::vector<DisulfideBond*> getDisulfideBonds() const;
+
+        //get
+        std::vector<SpliceSite*> getSpliceSites() const;
+
+        //get
+        std::vector<ProteolysisProduct*>  getProteolysisProducts() const;
+
+        //get
+        std::vector<DatabaseReference*> getDatabaseReferences() const;
+
+        //get
+        std::string getDatabaseFilePath() const;
 
         /// <summary>
         /// Protein before applying variations.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public Protein NonVariantProtein
-        {
-            Protein *get();
-        }
+        // get
+        Protein* getNonVariantProtein() const;
 
         /// <summary>
         /// Sequence variations that have been applied to the base sequence.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public List<SequenceVariation> AppliedSequenceVariations
-        {
-            std::vector<SequenceVariation*> get();
-        }
+        // get
+        std::vector<SequenceVariation*> getAppliedSequenceVariations() const;
 
+        
         /// <summary>
         /// Sample name from which applied variants came, e.g. tumor or normal.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string SampleNameForVariants
-        {
-            std::string get();
-        }
+        //get
+        std::string getSampleNameForVariants() const;
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public int Length
-        {
-            int get();
-        }
+        int getLength() const;
+        std::string getFullDescription() const;
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string FullDescription
-        {
-            std::string get();
-        }
+        //get
+        std::string getName () const;
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string Name
-        {
-            std::string get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string FullName
-        {
-            std::string get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public bool IsContaminant
-        {
-            bool get();
-        }
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        internal IDictionary<int, List<Modification>> OriginalNonVariantModifications
-        {
-            std::unordered_map<int, std::vector<Modification*>> get();
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-            set
-        }
+        //get
+        std::string getFullName() const;
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        //get
+        bool getIsContaminant() const;
+
+        //get, set
+        std::unordered_map<int, std::vector<Modification*>>  getOriginalNonVariantModifications() const;
+        void setOriginalNonVariantModifications( std::unordered_map<int, std::vector<Modification*>> &value);
+
+#ifdef LATER
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
         public char this[int zeroBasedIndex]
         {
             char get(int zeroBasedIndex);
         }
+#endif
 
         /// <summary>
         /// Formats a string for a UniProt fasta header. See https://www.uniprot.org/help/fasta-headers.
         /// Note that the db field isn't very applicable here, so mz is placed in to denote written by mzLib.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string GetUniProtFastaHeader()
+        std::string GetUniProtFastaHeader();
 
         /// <summary>
         /// Formats a string for an ensembl header
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public string GetEnsemblFastaHeader()
+        std::string GetEnsemblFastaHeader();
 
         /// <summary>
         /// The protein object uses the default equals method for speed, 
@@ -293,44 +242,41 @@ namespace Proteomics
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public override bool Equals(object obj)
+        bool Equals(Protein *obj);
 
         /// <summary>
         /// The protein object uses the default hash code method for speed, 
         /// but note that two protein objects with the same information will give two different hash codes.
         /// </summary>
         /// <returns></returns>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public override int GetHashCode()
+        int GetHashCode();
 
         /// <summary>
         /// Gets peptides for digestion of a protein
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public IEnumerable<PeptideWithSetModifications> Digest(DigestionParams digestionParams, IEnumerable<Modification> allKnownFixedModifications, List<Modification> variableModifications)
+        std::vector<PeptideWithSetModifications* > Digest(Proteomics::ProteolyticDigestion::DigestionParams digestionParams,
+                                                          std::vector<Modification*> allKnownFixedModifications,
+                                                          std::vector<Modification*> variableModifications);
 
         /// <summary>
         /// Gets proteins with applied variants from this protein
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public List<Protein> GetVariantProteins(int maxAllowedVariantsForCombinitorics = 4, int minAlleleDepth = 1)
+        std::vector<Protein *> GetVariantProteins(int maxAllowedVariantsForCombinitorics = 4, int minAlleleDepth = 1);
 
         /// <summary>
         /// Restore all modifications that were read in, including those that did not match their target amino acid.
         /// </summary>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        public void RestoreUnfilteredModifications()
+        void RestoreUnfilteredModifications();
 
         /// <summary>
         /// Filters modifications that do not match their target amino acid.
         /// </summary>
         /// <param name="dict"></param>
         /// <returns></returns>
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private IDictionary<int, List<Modification>> SelectValidOneBaseMods(IDictionary<int, List<Modification>> dict)
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private static string GetName(IEnumerable<SequenceVariation> appliedVariations, string name)
-}
+    private:
+        void setOneBasedPossibleLocalizedModifications ( const std::unordered_map<int, std::vector<Modification*>> &value);
+        std::unordered_map<int, std::vector<Modification*>> SelectValidOneBaseMods( std::unordered_map<int, std::vector<Modification*>>  dict);
+        std::string GetName(  std::vector<SequenceVariation*> appliedVariations, std::string name);
+    };
 }

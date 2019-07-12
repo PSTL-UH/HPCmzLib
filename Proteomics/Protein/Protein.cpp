@@ -7,205 +7,230 @@
 #include "DatabaseReference.h"
 #include "../Modifications/ModificationLocalization.h"
 
-using namespace Proteomics::ProteolyticDigestion;
+//using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
 {
 
-    Protein::Protein(const std::string &sequence, const std::string &accession, const std::string &organism, std::vector<std::tuple<std::string, std::string>> &geneNames, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications, std::vector<ProteolysisProduct*> &proteolysisProducts, const std::string &name, const std::string &fullName, bool isDecoy, bool isContaminant, std::vector<DatabaseReference*> &databaseReferences, std::vector<SequenceVariation*> &sequenceVariations, std::vector<SequenceVariation*> &appliedSequenceVariations, const std::string &sampleNameForVariants, std::vector<DisulfideBond*> &disulfideBonds, std::vector<SpliceSite*> &spliceSites, const std::string &databaseFilePath)
+    Protein::Protein(const std::string &sequence,
+                     const std::string &accession,
+                     const std::string &organism,
+                     std::vector<std::tuple<std::string, std::string>> &geneNames,
+                     std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications,
+                     std::vector<ProteolysisProduct*> &proteolysisProducts,
+                     const std::string &name,
+                     const std::string &fullName,
+                     bool isDecoy, bool isContaminant,
+                     std::vector<DatabaseReference*> &databaseReferences,
+                     std::vector<SequenceVariation*> &sequenceVariations,
+                     std::vector<SequenceVariation*> &appliedSequenceVariations,
+                     const std::string &sampleNameForVariants,
+                     std::vector<DisulfideBond*> &disulfideBonds,
+                     std::vector<SpliceSite*> &spliceSites,
+                     const std::string &databaseFilePath)
     {
         // Mandatory
-        BaseSequence = sequence;
-        NonVariantProtein = this;
-        Accession = accession;
+        privateBaseSequence = sequence;
+        privateNonVariantProtein = this;
+        privateAccession = accession;
 
-        Name = name;
-        Organism = organism;
-        FullName = fullName;
-        IsDecoy = isDecoy;
-        IsContaminant = isContaminant;
-        DatabaseFilePath = databaseFilePath;
-        SampleNameForVariants = sampleNameForVariants;
+        privateName = name;
+        privateOrganism = organism;
+        privateFullName = fullName;
+        privateIsDecoy = isDecoy;
+        privateIsContaminant = isContaminant;
+        privateDatabaseFilePath = databaseFilePath;
+        privateSampleNameForVariants = sampleNameForVariants;
 
-        GeneNames = geneNames ? geneNames : std::vector<std::tuple<std::string, std::string>>();
-        ProteolysisProducts = proteolysisProducts ? proteolysisProducts : std::vector<ProteolysisProduct*>();
-        SequenceVariations = sequenceVariations ? sequenceVariations : std::vector<SequenceVariation*>();
-        AppliedSequenceVariations = appliedSequenceVariations ? appliedSequenceVariations : std::vector<SequenceVariation*>();
+#ifdef ORIG
+        privateGeneNames = geneNames ? geneNames : std::vector<std::tuple<std::string, std::string>>();
+        privateProteolysisProducts = proteolysisProducts ? proteolysisProducts : std::vector<ProteolysisProduct*>();
+        privateSequenceVariations = sequenceVariations ? sequenceVariations : std::vector<SequenceVariation*>();
+        privateAppliedSequenceVariations = appliedSequenceVariations ? appliedSequenceVariations : std::vector<SequenceVariation*>();
         setOriginalNonVariantModifications(oneBasedModifications ? oneBasedModifications : std::unordered_map<int, std::vector<Modification*>>());
-        if (!oneBasedModifications.empty())
-        {
+#endif
+        // EG: in Theory, a reference can never have a null value;
+        privateGeneNames = geneNames;
+        privateProteolysisProducts = proteolysisProducts;
+        privateSequenceVariations = sequenceVariations;
+        privateAppliedSequenceVariations = appliedSequenceVariations;
+        setOriginalNonVariantModifications(oneBasedModifications);
+        
+        if (!oneBasedModifications.empty()) {
             setOneBasedPossibleLocalizedModifications(SelectValidOneBaseMods(oneBasedModifications));
         }
-        else
-        {
+        else  {
             setOneBasedPossibleLocalizedModifications(std::unordered_map<int, std::vector<Modification*>>());
         }
-        DatabaseReferences = databaseReferences ? databaseReferences : std::vector<DatabaseReference*>();
-        DisulfideBonds = disulfideBonds ? disulfideBonds : std::vector<DisulfideBond*>();
-        SpliceSites = spliceSites ? spliceSites : std::vector<SpliceSite*>();
+        privateDatabaseReferences = databaseReferences ? databaseReferences : std::vector<DatabaseReference*>();
+        privateDisulfideBonds = disulfideBonds ? disulfideBonds : std::vector<DisulfideBond*>();
+        privateSpliceSites = spliceSites ? spliceSites : std::vector<SpliceSite*>();
     }
 
-    std::unordered_map<int, std::vector<Modification*>> <missing_class_definition>::getOneBasedPossibleLocalizedModifications() const
+    std::unordered_map<int, std::vector<Modification*>> Protein::getOneBasedPossibleLocalizedModifications() const
     {
         return privateOneBasedPossibleLocalizedModifications;
     }
 
-    void <missing_class_definition>::setOneBasedPossibleLocalizedModifications(const std::unordered_map<int, std::vector<Modification*>> &value)
+    void Protein::setOneBasedPossibleLocalizedModifications(const std::unordered_map<int, std::vector<Modification*>> &value)
     {
         privateOneBasedPossibleLocalizedModifications = value;
     }
 
-    std::vector<std::tuple<std::string, std::string>> <missing_class_definition>::getGeneNames() const
+    std::vector<std::tuple<std::string, std::string>> Protein::getGeneNames() const
     {
         return privateGeneNames;
     }
 
-    std::string <missing_class_definition>::getAccession() const
+    std::string Protein::getAccession() const
     {
         return privateAccession;
     }
 
-    std::string <missing_class_definition>::getBaseSequence() const
+    std::string Protein::getBaseSequence() const
     {
         return privateBaseSequence;
     }
 
-    std::string <missing_class_definition>::getOrganism() const
+    std::string Protein::getOrganism() const
     {
         return privateOrganism;
     }
 
-    bool <missing_class_definition>::getIsDecoy() const
+    bool Protein::getIsDecoy() const
     {
         return privateIsDecoy;
     }
 
-    std::vector<SequenceVariation*> <missing_class_definition>::getSequenceVariations() const
+    std::vector<SequenceVariation*> Protein::getSequenceVariations() const
     {
         return privateSequenceVariations;
     }
 
-    std::vector<DisulfideBond*> <missing_class_definition>::getDisulfideBonds() const
+    std::vector<DisulfideBond*> Protein::getDisulfideBonds() const
     {
         return privateDisulfideBonds;
     }
 
-    std::vector<SpliceSite*> <missing_class_definition>::getSpliceSites() const
+    std::vector<SpliceSite*> Protein::getSpliceSites() const
     {
         return privateSpliceSites;
     }
 
-    std::vector<ProteolysisProduct*> <missing_class_definition>::getProteolysisProducts() const
+    std::vector<ProteolysisProduct*> Protein::getProteolysisProducts() const
     {
         return privateProteolysisProducts;
     }
 
-    std::vector<DatabaseReference*> <missing_class_definition>::getDatabaseReferences() const
+    std::vector<DatabaseReference*> Protein::getDatabaseReferences() const
     {
         return privateDatabaseReferences;
     }
 
-    std::string <missing_class_definition>::getDatabaseFilePath() const
+    std::string Protein::getDatabaseFilePath() const
     {
         return privateDatabaseFilePath;
     }
 
-    Protein *<missing_class_definition>::getNonVariantProtein() const
+    Protein* Protein::getNonVariantProtein() const
     {
         return privateNonVariantProtein;
     }
 
-    std::vector<SequenceVariation*> <missing_class_definition>::getAppliedSequenceVariations() const
+    std::vector<SequenceVariation*> Protein::getAppliedSequenceVariations() const
     {
         return privateAppliedSequenceVariations;
     }
 
-    std::string <missing_class_definition>::getSampleNameForVariants() const
+    std::string Protein::getSampleNameForVariants() const
     {
         return privateSampleNameForVariants;
     }
 
-    int <missing_class_definition>::getLength() const
+    int Protein::getLength() const
     {
-        return BaseSequence->Length;
+        return privateBaseSequence->getLength();
     }
 
-    std::string <missing_class_definition>::getFullDescription() const
+    std::string Protein::getFullDescription() const
     {
-        return Accession + "|" + Name + "|" + FullName;
+        return privateAccession + "|" + privateName + "|" + privateFullName;
     }
 
-    std::string <missing_class_definition>::getName() const
+    std::string Protein::getName() const
     {
         return privateName;
     }
 
-    std::string <missing_class_definition>::getFullName() const
+    std::string Protein::getFullName() const
     {
         return privateFullName;
     }
 
-    bool <missing_class_definition>::getIsContaminant() const
+    bool Protein::getIsContaminant() const
     {
         return privateIsContaminant;
     }
 
-    std::unordered_map<int, std::vector<Modification*>> <missing_class_definition>::getOriginalNonVariantModifications() const
+    std::unordered_map<int, std::vector<Modification*>> Protein::getOriginalNonVariantModifications() const
     {
         return privateOriginalNonVariantModifications;
     }
 
-    void <missing_class_definition>::setOriginalNonVariantModifications(const std::unordered_map<int, std::vector<Modification*>> &value)
+    void Protein::setOriginalNonVariantModifications(const std::unordered_map<int, std::vector<Modification*>> &value)
     {
         privateOriginalNonVariantModifications = value;
     }
 
+#ifdef LATER
     char <missing_class_definition>::operator [](int zeroBasedIndex)
     {
         return BaseSequence[zeroBasedIndex];
     }
+#endif
 
-    public std::string <missing_class_definition>::GetUniProtFastaHeader()
+    std::string Protein::GetUniProtFastaHeader()
     {
-        auto n = GeneNames::FirstOrDefault();
+        auto n = privateGeneNames::FirstOrDefault();
         std::string geneName = n == nullptr ? "" : n->Item2;
-        return std::string::Format("mz|{0}|{1} {2} OS={3} GN={4}", Accession, Name, FullName, Organism, geneName);
+        return std::string::Format("mz|{0}|{1} {2} OS={3} GN={4}", privateAccession, privateName,
+                                   privateFullName, privateOrganism, privategeneName);
     }
 
-    public std::string <missing_class_definition>::GetEnsemblFastaHeader()
+    std::string Protein::GetEnsemblFastaHeader()
     {
         return StringHelper::formatSimple("{0} {1}", Accession, FullName);
     }
 
-    public bool <missing_class_definition>::Equals(std::any obj)
+    bool Protein::Equals(std::any obj)
     {
         return __super::Equals(obj);
     }
 
-    public int <missing_class_definition>::GetHashCode()
+    int Protein::GetHashCode()
     {
         return __super::GetHashCode();
     }
 
-    public std::vector<PeptideWithSetModifications*> <missing_class_definition>::Digest(DigestionParams *digestionParams, std::vector<Modification*> &allKnownFixedModifications, std::vector<Modification*> &variableModifications)
+    std::vector<PeptideWithSetModifications*> Protein::Digest(DigestionParams *digestionParams, std::vector<Modification*> &allKnownFixedModifications, std::vector<Modification*> &variableModifications)
     {
         ProteinDigestion *digestion = new ProteinDigestion(digestionParams, allKnownFixedModifications, variableModifications);
 
-        delete digestion;
+        //delete digestion;
         return digestionParams->getSearchModeType() == CleavageSpecificity::Semi ? digestion->SpeedySemiSpecificDigestion(this) : digestion->Digestion(this);
     }
 
-    public std::vector<Protein*> <missing_class_definition>::GetVariantProteins(int maxAllowedVariantsForCombinitorics, int minAlleleDepth)
+    std::vector<Protein*> Protein::GetVariantProteins(int maxAllowedVariantsForCombinitorics, int minAlleleDepth)
     {
         return VariantApplication::ApplyVariants(this, SequenceVariations, maxAllowedVariantsForCombinitorics, minAlleleDepth);
     }
 
-    public void <missing_class_definition>::RestoreUnfilteredModifications()
+    void Protein::RestoreUnfilteredModifications()
     {
         OneBasedPossibleLocalizedModifications = OriginalNonVariantModifications;
     }
 
-    private std::unordered_map<int, std::vector<Modification*>> <missing_class_definition>::SelectValidOneBaseMods(std::unordered_map<int, std::vector<Modification*>> &dict)
+    std::unordered_map<int, std::vector<Modification*>> Protein::SelectValidOneBaseMods(std::unordered_map<int, std::vector<Modification*>> &dict)
     {
         std::unordered_map<int, std::vector<Modification*>> validModDictionary;
         for (auto entry : dict)
@@ -235,7 +260,7 @@ namespace Proteomics
         return validModDictionary;
     }
 
-    private std::string <missing_class_definition>::GetName(std::vector<SequenceVariation*> &appliedVariations, const std::string &name)
+    std::string Protein::GetName(std::vector<SequenceVariation*> &appliedVariations, const std::string &name)
     {
         bool emptyVars = appliedVariations.empty() || appliedVariations.size()() == 0;
         if (name == "" && emptyVars)
