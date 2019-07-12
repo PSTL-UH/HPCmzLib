@@ -5,8 +5,8 @@
 #include <cctype>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class Modification; }
-
+//namespace Proteomics { class Modification; }
+#include "Modification.h"
 
 namespace Proteomics
 {

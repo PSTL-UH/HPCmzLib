@@ -97,16 +97,31 @@ namespace Proteomics
                 Protein protein,
                 std::vector<SequenceVariation*> appliedSequenceVariations,
                 std::vector<ProteolysisProduct*> applicableProteolysisProducts,
-                std::unordered_map<int, std::vector<Modification*>> oneBasedModifications, std::string sampleNameForVariants) :
-            this(variantBaseSequence, VariantApplication::GetAccession(protein, appliedSequenceVariations),
-                 organism: protein::Organism, geneNames: std::vector<std::tuple<std::string,
-                 std::string>>(protein::GeneNames), oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
-       {
-           x::Key;
-        }, [&] (std::any x)
-        {
-        x->Value;
-    }) : std::unordered_map<int, std::vector<Modification*>>(), proteolysisProducts: std::vector<ProteolysisProduct*>((applicableProteolysisProducts != nullptr) ? applicableProteolysisProducts : std::vector<ProteolysisProduct*>()), name: GetName(appliedSequenceVariations, protein->Name), fullName: GetName(appliedSequenceVariations, protein->FullName), isDecoy: protein::IsDecoy, isContaminant: protein::IsContaminant, databaseReferences: std::vector<DatabaseReference*>(protein::DatabaseReferences), sequenceVariations: std::vector<SequenceVariation*>(protein::SequenceVariations), disulfideBonds: std::vector<DisulfideBond*>(protein::DisulfideBonds), spliceSites: std::vector<SpliceSite*>(protein::SpliceSites), databaseFilePath: protein::DatabaseFilePath){NonVariantProtein = protein::NonVariantProtein;
+                std::unordered_map<int, std::vector<Modification*>> oneBasedModifications,
+                std::string sampleNameForVariants) :
+        this( variantBaseSequence,
+              VariantApplication::GetAccession(protein, appliedSequenceVariations),
+              organism: protein::Organism,
+              geneNames: std::vector<std::tuple<std::string,
+              std::string>>(protein::GeneNames),
+              oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
+                                                                                                            {
+                                                                                                                x::Key;
+                                                                                                            }, [&] (std::any x)
+                                                                                                            {
+                                                                                                                x->Value;
+                                                                                                            }) : std::unordered_map<int, std::vector<Modification*>>(),
+              proteolysisProducts: std::vector<ProteolysisProduct*>((applicableProteolysisProducts != nullptr) ? applicableProteolysisProducts : std::vector<ProteolysisProduct*>()),
+              name: GetName(appliedSequenceVariations, protein->Name),
+              fullName: GetName(appliedSequenceVariations, protein->FullName),
+              isDecoy: protein::IsDecoy,
+              isContaminant: protein::IsContaminant,
+              databaseReferences: std::vector<DatabaseReference*>(protein::DatabaseReferences),
+              sequenceVariations: std::vector<SequenceVariation*>(protein::SequenceVariations),
+              disulfideBonds: std::vector<DisulfideBond*>(protein::DisulfideBonds),
+              spliceSites: std::vector<SpliceSite*>(protein::SpliceSites),
+              databaseFilePath: protein::DatabaseFilePath) {
+            NonVariantProtein = protein::NonVariantProtein;
             setOriginalNonVariantModifications(getNonVariantProtein()->getOriginalNonVariantModifications());
             AppliedSequenceVariations = ((appliedSequenceVariations != nullptr) ? appliedSequenceVariations : std::vector<SequenceVariation*>())->ToList();
             SampleNameForVariants = sampleNameForVariants;

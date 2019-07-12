@@ -9,20 +9,35 @@ namespace Proteomics
     {
         // First find the capital letter...
         auto motif = attemptToLocalize->getTarget();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        auto motifStartLocation = (int)motif->ToString()->find(motif->ToString()->First([&] (std::any b)
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+#ifdef ORIG
+        auto motifStartLocation = (int) motif->ToString()->find(motif->ToString()->First([&] (std::any b)
         {
             std::isupper(b);
         }));
+#endif
+        int motifStartLocation;
+        std::string motifstring = motif->ToString();
+        for ( int i; i < (int) motifstring.length(); i++ )
+        {
+            if ( std::isupper(motifstring[i])){
+                motifStartLocation = i;
+                break;
+            }
+        }
+    
 
         // Look up starting at and including the capital letter
         auto proteinToMotifOffset = proteinOneBasedIndex - motifStartLocation - 1;
         auto indexUp = 0;
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        while (indexUp < motif->ToString()->length())
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        int upper = motifstring.length();
+        while (indexUp < upper)
         {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-            if (indexUp + proteinToMotifOffset < 0 || indexUp + proteinToMotifOffset >= proteinSequence.length() || !MotifMatches(motif->ToString()[indexUp], proteinSequence[indexUp + proteinToMotifOffset]))
+            //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+            if (indexUp + proteinToMotifOffset < 0 ||
+                indexUp + proteinToMotifOffset >= (int) proteinSequence.length() ||
+                !MotifMatches(motifstring[indexUp], proteinSequence[indexUp + proteinToMotifOffset]))
             {
                 return false;
             }
@@ -36,7 +51,7 @@ namespace Proteomics
         {
             return false;
         }
-        if (attemptToLocalize->getLocationRestriction() == "C-terminal." && proteinOneBasedIndex < proteinSequence.length())
+        if (attemptToLocalize->getLocationRestriction() == "C-terminal." && proteinOneBasedIndex < (int)proteinSequence.length())
         {
             return false;
         }
@@ -53,6 +68,20 @@ namespace Proteomics
     bool ModificationLocalization::MotifMatches(char motifChar, char sequenceChar)
     {
         char upperMotifChar = std::toupper(motifChar);
+#ifdef ORIG
         return upperMotifChar.Equals('X') || upperMotifChar.Equals(sequenceChar) || upperMotifChar.Equals('B') && {'D', 'N'}->Contains(sequenceChar) || upperMotifChar.Equals('J') && {'I', 'L'}->Contains(sequenceChar) || upperMotifChar.Equals('Z') && {'E', 'Q'}->Contains(sequenceChar);
+#endif
+        bool containsD = sequenceChar == 'D' ? true : false;
+        bool containsN = sequenceChar == 'N' ? true : false;
+        bool containsI = sequenceChar == 'I' ? true : false;
+        bool containsL = sequenceChar == 'L' ? true : false;
+        bool containsE = sequenceChar == 'E' ? true : false;
+        bool containsQ = sequenceChar == 'Q' ? true : false;
+        return upperMotifChar == 'X'       ||
+            upperMotifChar == sequenceChar ||
+            (upperMotifChar == 'B' && (containsD || containsN )) ||
+            (upperMotifChar == 'J' && (containsI || containsL )) ||
+            (upperMotifChar == 'Z' && (containsE || containsQ ));
+
     }
 }

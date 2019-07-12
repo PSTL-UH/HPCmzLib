@@ -14,10 +14,14 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class ModificationMotif; }
-namespace Chemistry { class ChemicalFormula; }
+//namespace Proteomics { class ModificationMotif; }
+#include "ModificationMotif.h"
 
+//namespace Chemistry { class ChemicalFormula; }
+#include "../../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
+#include "../../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
 
 namespace Proteomics
@@ -83,11 +87,24 @@ namespace Proteomics
     public:
         bool getValidModification() const;
 
-        Modification(const std::string &_originalId = "", const std::string &_accession = "", const std::string &_modificationType = "", const std::string &_featureType = "", ModificationMotif *_target = nullptr, const std::string &_locationRestriction = "Unassigned.", Chemistry::ChemicalFormula *_chemicalFormula = nullptr, std::optional<double> &_monoisotopicMass = std::nullopt, std::unordered_map<std::string, std::vector<std::string>> &_databaseReference = std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>> &_taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string> &_keywords = std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>> &_neutralLosses = std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>> &_diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>(), const std::string &_fileOrigin = "");
+        Modification(const std::string &_originalId = "",
+                     const std::string &_accession = "",
+                     const std::string &_modificationType = "",
+                     const std::string &_featureType = "",
+                     ModificationMotif *_target = nullptr,
+                     const std::string &_locationRestriction = "Unassigned.",
+                     Chemistry::ChemicalFormula *_chemicalFormula = nullptr,
+                     std::optional<double> _monoisotopicMass = std::nullopt,
+                     std::unordered_map<std::string, std::vector<std::string>> _databaseReference = std::unordered_map<std::string, std::vector<std::string>>(),
+                     std::unordered_map<std::string,std::vector<std::string>> _taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>(),
+                     std::vector<std::string> _keywords = std::vector<std::string>(),
+                     std::unordered_map<DissociationType,std::vector<double>> _neutralLosses = std::unordered_map<DissociationType, std::vector<double>>(),
+                     std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>(), const std::string &_fileOrigin = "");
 
         static std::string ModLocationOnPeptideOrProtein(const std::string &_locationRestriction);
 
         //bool Equals(std::any o) override;
+        bool Equals (Modification* o);
 
         int GetHashCode();
 
