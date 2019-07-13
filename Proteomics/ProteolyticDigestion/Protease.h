@@ -38,13 +38,11 @@ namespace Proteomics
                 std::string getPsiMsName() const;
                 std::vector<DigestionMotif*> getDigestionMotifs() const;
 
-            std::string ToString() override;
+                std::string ToString();
+                bool Equals(Protease *a);
+                int GetHashCode();
 
-            bool Equals(std::any obj) override;
-
-            int GetHashCode() override;
-
-            Proteomics::ProteolyticDigestion::CleavageSpecificity GetCleavageSpecificity(const std::string &proteinSequence, int startIndex, int endIndex);
+                Proteomics::ProteolyticDigestion::CleavageSpecificity GetCleavageSpecificity(const std::string &proteinSequence, int startIndex, int endIndex);
 
             /// <summary>
             /// Gets intervals of a protein sequence that will result from digestion by this protease.

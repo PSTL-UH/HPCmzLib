@@ -3,14 +3,15 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <any>
 #include "stringhelper.h"
 #include "tangible_filesystem.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
+//namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
+#include "Protease.h"
 
-using namespace Proteomics::Fragmentation;
+//using namespace Proteomics::Fragmentation;
+//#include "../Fragmentation/FragmentationTerminus.h"
 
 namespace Proteomics
 {
@@ -36,7 +37,7 @@ namespace Proteomics
                 static std::unordered_map<std::string, Protease*> getDictionary();
                 static void setDictionary(const std::unordered_map<std::string, Protease*> &value);
 
-            static std::unordered_map<std::string, Protease*> LoadProteaseDictionary(const std::string &path);
+                static std::unordered_map<std::string, Protease*> LoadProteaseDictionary(const std::string &path);
         };
     }
 }

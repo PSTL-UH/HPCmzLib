@@ -47,10 +47,12 @@ namespace Proteomics
             return getName();
         }
 
-        bool Protease::Equals(std::any obj)
+        bool Protease::Equals(Protease *a)
         {
-            auto a = dynamic_cast<Protease*>(obj);
-            return a != nullptr && (a->getName() == "" && getName() == "" || a->getName() == getName());
+            return a != nullptr       &&
+                (a->getName() == "" &&
+                 getName() == ""    ||
+                 a->getName() == getName());
         }
 
         int Protease::GetHashCode()

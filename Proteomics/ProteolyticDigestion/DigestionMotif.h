@@ -4,6 +4,7 @@
 #include <vector>
 #include "stringhelper.h"
 
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace Proteomics

@@ -2,7 +2,7 @@
 #include "Protease.h"
 #include "ProteaseDictionary.h"
 
-using namespace Proteomics::Fragmentation;
+//using namespace Proteomics::Fragmentation;
 namespace Proteomics
 {
     namespace ProteolyticDigestion
@@ -126,37 +126,72 @@ namespace Proteomics
             privateSpecificProtease = value;
         }
 
-        bool DigestionParams::Equals(std::any obj)
+        bool DigestionParams::Equals(DigestionParams *a)
         {
-            DigestionParams *a = dynamic_cast<DigestionParams*>(obj);
 
-            return a != nullptr && getMaxMissedCleavages().Equals(a->getMaxMissedCleavages()) && getMinPeptideLength().Equals(a->getMinPeptideLength()) && getMaxPeptideLength().Equals(a->getMaxPeptideLength()) && getInitiatorMethionineBehavior().Equals(a->getInitiatorMethionineBehavior()) && getMaxModificationIsoforms().Equals(a->getMaxModificationIsoforms()) && getMaxModsForPeptide().Equals(a->getMaxModsForPeptide()) && getProtease()->Equals(a->getProtease()) && getSearchModeType().Equals(a->getSearchModeType()) && getFragmentationTerminus().Equals(a->getFragmentationTerminus());
+            return a != nullptr &&
+                getMaxMissedCleavages() == a->getMaxMissedCleavages()      &&
+                getMinPeptideLength()   == a->getMinPeptideLength()        &&
+                getMaxPeptideLength()   == a->getMaxPeptideLength()        &&
+                getInitiatorMethionineBehavior()== a->getInitiatorMethionineBehavior() &&
+                getMaxModificationIsoforms() == a->getMaxModificationIsoforms()              &&
+                getMaxModsForPeptide()  == a->getMaxModsForPeptide()       &&
+                getProtease()->Equals(a->getProtease())                    &&
+                getSearchModeType()    == a->getSearchModeType()           &&
+                getFragmentationTerminus() == a->getFragmentationTerminus();
         }
 
         int DigestionParams::GetHashCode()
         {
-            return getMaxMissedCleavages().GetHashCode() ^ getInitiatorMethionineBehavior().GetHashCode() ^ getMaxModificationIsoforms().GetHashCode() ^ getMaxModsForPeptide().GetHashCode();
+            return StringHelper::GetHashCode(std::to_string(getMaxMissedCleavages()))                         ^
+                StringHelper::GetHashCode(std::to_string(static_cast<int>(getInitiatorMethionineBehavior()))) ^
+                StringHelper::GetHashCode(std::to_string(getMaxModificationIsoforms()))                       ^
+                StringHelper::GetHashCode(std::to_string(getMaxModsForPeptide()));
         }
 
         std::string DigestionParams::ToString()
         {
-            return std::to_string(getMaxMissedCleavages()) + "," + getInitiatorMethionineBehavior() + "," + std::to_string(getMinPeptideLength()) + "," + std::to_string(getMaxPeptideLength()) + ","
-                + std::to_string(getMaxModificationIsoforms()) + "," + std::to_string(getMaxModsForPeptide()) + "," + getProtease()->getName() + "," + getSearchModeType() + "," + getFragmentationTerminus();
+            return std::to_string(getMaxMissedCleavages()) + "," +
+                std::to_string(static_cast<int>(getInitiatorMethionineBehavior())) + "," +
+                std::to_string(getMinPeptideLength()) + "," +
+                std::to_string(getMaxPeptideLength()) + "," +
+                std::to_string(getMaxModificationIsoforms()) + "," +
+                std::to_string(getMaxModsForPeptide()) + "," +
+                getProtease()->getName() + "," +
+                std::to_string(static_cast<int>(getSearchModeType())) + "," +
+                std::to_string(static_cast<int>(getFragmentationTerminus()));
         }
 
         DigestionParams *DigestionParams::FromString(const std::string &str)
         {
             std::vector<std::string> split = StringHelper::split(str, ',');
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-            return new DigestionParams(split[6], std::stoi(split[0]), std::stoi(split[2]), std::stoi(split[3]), std::stoi(split[4]), std::any_cast<Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior>(Enum::Parse(typeof(InitiatorMethionineBehavior), split[1])), std::stoi(split[5]), std::any_cast<CleavageSpecificity>(Enum::Parse(typeof(CleavageSpecificity), split[7])), std::any_cast<FragmentationTerminus>(Enum::Parse(typeof(FragmentationTerminus), split[8])));
+            //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+#ifdef ORIG
+            return new DigestionParams(split[6], std::stoi(split[0]), std::stoi(split[2]), std::stoi(split[3]),
+                     std::stoi(split[4]),
+                     std::any_cast<Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior>(Enum::Parse(typeof(InitiatorMethionineBehavior),split[1])),
+                     std::stoi(split[5]),
+                     std::any_cast<CleavageSpecificity>(Enum::Parse(typeof(CleavageSpecificity), split[7])),
+                     std::any_cast<FragmentationTerminus>(Enum::Parse(typeof(FragmentationTerminus), split[8])));
+#endif
+            return new DigestionParams(split[6], std::stoi(split[0]), std::stoi(split[2]), std::stoi(split[3]),
+                                       std::stoi(split[4]),
+                                       static_cast<Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior>(std::stoi(split[1])),
+                                       std::stoi(split[5]),
+                                       static_cast<CleavageSpecificity>(std::stoi(split[7])),
+                                       static_cast<FragmentationTerminus>(std::stoi(split[8])));
         }
 
         void DigestionParams::RecordSpecificProtease()
         {
             setSpecificProtease(getProtease());
-            if (getSearchModeType() == CleavageSpecificity::None) //nonspecific searches, which might have a specific protease
+            
+            if (getSearchModeType() == CleavageSpecificity::None)
             {
-                setProtease(getFragmentationTerminus() == getFragmentationTerminus()::N ? ProteaseDictionary::getDictionary()["singleN"] : ProteaseDictionary::getDictionary()["singleC"]);
+                //nonspecific searches, which might have a specific protease
+                setProtease( getFragmentationTerminus() == FragmentationTerminus::N ?
+                            ProteaseDictionary::getDictionary()["singleN"] :
+                            ProteaseDictionary::getDictionary()["singleC"]);
             }
         }
     }

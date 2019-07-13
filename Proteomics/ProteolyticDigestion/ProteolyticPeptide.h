@@ -8,7 +8,8 @@
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace Proteomics { class Protein; }
-namespace Proteomics { class Modification; }
+//namespace Proteomics { class Modification; }
+#include "../Modifications/Modification.h"
 namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
 namespace Proteomics { namespace ProteolyticDigestion { class PeptideWithSetModifications; } }
 
@@ -67,7 +68,7 @@ namespace Proteomics
 
             std::string getBaseSequence() const;
 
-            char operator [](int zeroBasedIndex);
+//            char operator [](int zeroBasedIndex);
 
             /// <summary>
             /// Gets the peptides for a specific protein interval

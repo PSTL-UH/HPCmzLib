@@ -5,11 +5,14 @@
 #include <string>
 #include <vector>
 #include <any>
+#include <limits>
 #include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
+//namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
+#include "Protease.h"
 
+#include "../Fragmentation/FragmentationTerminus.h"
 using namespace Proteomics::Fragmentation;
 
 namespace Proteomics
@@ -35,7 +38,7 @@ namespace Proteomics
         public:
             DigestionParams();
 
-            DigestionParams(const std::string &protease = "trypsin", int maxMissedCleavages = 2, int minPeptideLength = 7, int maxPeptideLength = int::MaxValue, int maxModificationIsoforms = 1024, Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior initiatorMethionineBehavior = InitiatorMethionineBehavior::Variable, int maxModsForPeptides = 2, CleavageSpecificity searchModeType = CleavageSpecificity::Full, FragmentationTerminus fragmentationTerminus = FragmentationTerminus::Both);
+            DigestionParams(const std::string &protease = "trypsin", int maxMissedCleavages = 2, int minPeptideLength = 7, int maxPeptideLength = std::numeric_limits<int>::max(), int maxModificationIsoforms = 1024, Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior initiatorMethionineBehavior = InitiatorMethionineBehavior::Variable, int maxModsForPeptides = 2, CleavageSpecificity searchModeType = CleavageSpecificity::Full, FragmentationTerminus fragmentationTerminus = FragmentationTerminus::Both);
 
                 int getMaxMissedCleavages() const;
                 void setMaxMissedCleavages(int value);
@@ -58,11 +61,9 @@ namespace Proteomics
                 Proteomics::ProteolyticDigestion::Protease *getSpecificProtease() const;
                 void setSpecificProtease(Proteomics::ProteolyticDigestion::Protease *value);
 
-            bool Equals(std::any obj) override;
-
-            int GetHashCode() override;
-
-            std::string ToString() override;
+            bool Equals(DigestionParams *a);
+            int GetHashCode();
+            std::string ToString();
 
             /// <summary>
             /// Creates a DigestionParams object from string. Used after deserializing a PeptideWithSetModifications
