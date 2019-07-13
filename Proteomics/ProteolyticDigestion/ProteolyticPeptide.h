@@ -10,7 +10,9 @@
 namespace Proteomics { class Protein; }
 //namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
-namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
+//namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
+#include "DigestionParams.h"
+
 namespace Proteomics { namespace ProteolyticDigestion { class PeptideWithSetModifications; } }
 
 
@@ -22,8 +24,8 @@ namespace Proteomics
         /// Product of digesting a protein
         /// Contains methods for modified peptide combinitorics
         /// </summary>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Serializable] public class ProteolyticPeptide
+        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+        //ORIGINAL LINE: [Serializable] public class ProteolyticPeptide
         class ProteolyticPeptide
         {
         private:
@@ -39,14 +41,14 @@ namespace Proteomics
         public:
             virtual ~ProteolyticPeptide()
             {
-                delete _protein;
+                //delete _protein;
             }
 
             ProteolyticPeptide(Proteomics::Protein *protein, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages, CleavageSpecificity cleavageSpecificityForFdrCategory, const std::string &peptideDescription = "");
 
         private:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [NonSerialized] private Protein _protein;
+            //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+            //ORIGINAL LINE: [NonSerialized] private Protein _protein;
             Proteomics::Protein *_protein; // protein that this peptide is a digestion product of
             public:
                 int getOneBasedStartResidueInProtein() const;
@@ -68,7 +70,7 @@ namespace Proteomics
 
             std::string getBaseSequence() const;
 
-//            char operator [](int zeroBasedIndex);
+            char operator [](int zeroBasedIndex);
 
             /// <summary>
             /// Gets the peptides for a specific protein interval
@@ -99,9 +101,9 @@ namespace Proteomics
 
             static std::vector<std::unordered_map<int, Modification*>> GetVariableModificationPatterns(std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications, int maxModsForPeptide, int peptideLength);
 
-            static std::vector<std::vector<int>> GetVariableModificationPatterns(std::vector<KeyValuePair<int, std::vector<Modification*>>*> &possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index);
+            static std::vector<std::vector<int>> GetVariableModificationPatterns(std::vector<std::unordered_map<int, std::vector<Modification*>>*> &possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index);
 
-            static std::unordered_map<int, Modification*> GetNewVariableModificationPattern(std::vector<int> &variableModificationArray, std::vector<KeyValuePair<int, std::vector<Modification*>>*> &possibleVariableModifications);
+            static std::unordered_map<int, Modification*> GetNewVariableModificationPattern(std::vector<int> &variableModificationArray, std::vector<std::unordered_map<int, std::vector<Modification*>>*> &possibleVariableModifications);
 
             std::unordered_map<int, Modification*> GetFixedModsOneIsNterminus(int peptideLength, std::vector<Modification*> &allKnownFixedModifications);
         };

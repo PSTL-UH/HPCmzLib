@@ -1,9 +1,10 @@
 ﻿#include "ProteolyticPeptide.h"
-#include "../Protein/Protein.h"
 #include "../Modifications/Modification.h"
 #include "DigestionParams.h"
 #include "PeptideWithSetModifications.h"
 #include "../Modifications/ModificationLocalization.h"
+#include "../Protein/Protein.h"
+
 
 namespace Proteomics
 {
@@ -13,9 +14,9 @@ namespace Proteomics
         ProteolyticPeptide::ProteolyticPeptide(Proteomics::Protein *protein, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages, CleavageSpecificity cleavageSpecificityForFdrCategory, const std::string &peptideDescription)
         {
             _protein = protein;
-            OneBasedStartResidueInProtein = oneBasedStartResidueInProtein;
-            OneBasedEndResidueInProtein = oneBasedEndResidueInProtein;
-            MissedCleavages = missedCleavages;
+            privateOneBasedStartResidueInProtein = oneBasedStartResidueInProtein;
+            privateOneBasedEndResidueInProtein = oneBasedEndResidueInProtein;
+            privateMissedCleavages = missedCleavages;
             setCleavageSpecificityForFdrCategory(cleavageSpecificityForFdrCategory);
             setPeptideDescription(peptideDescription);
         }
@@ -241,7 +242,7 @@ namespace Proteomics
                 });
                 for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide); variable_modifications++)
                 {
-                    for (auto variable_modification_pattern : GetVariableModificationPatterns(std::vector<KeyValuePair<int, std::vector<Modification*>>*>(possible_variable_modifications), possible_variable_modifications.size() - variable_modifications, base_variable_modification_pattern, 0))
+                    for (auto variable_modification_pattern : GetVariableModificationPatterns(std::vector<std::unordered_map<int, std::vector<Modification*>>*>(possible_variable_modifications), possible_variable_modifications.size() - variable_modifications, base_variable_modification_pattern, 0))
                     {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         yield return GetNewVariableModificationPattern(variable_modification_pattern, possible_variable_modifications);
@@ -250,8 +251,9 @@ namespace Proteomics
             }
         }
 
-        std::vector<std::vector<int>> ProteolyticPeptide::GetVariableModificationPatterns(std::vector<KeyValuePair<int, std::vector<Modification*>>*> &possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index)
+        std::vector<std::vector<int>> ProteolyticPeptide::GetVariableModificationPatterns(std::vector<std::unordered_map<int, std::vector<Modification*>>*> &possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index)
         {
+            std::vector<std::vector<int>> v;
             if (index < possibleVariableModifications.size() - 1)
             {
                 if (unmodifiedResiduesDesired > 0)
@@ -259,8 +261,9 @@ namespace Proteomics
                     variableModificationPattern[possibleVariableModifications[index]->first] = 0;
                     for (auto new_variable_modification_pattern : GetVariableModificationPatterns(possibleVariableModifications, unmodifiedResiduesDesired - 1, variableModificationPattern, index + 1))
                     {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        yield return new_variable_modification_pattern;
+                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                        //yield return new_variable_modification_pattern;
+                        v.push_back(new_variable_modification_pattern);
                     }
                 }
                 if (unmodifiedResiduesDesired < possibleVariableModifications.size() - index)
@@ -270,9 +273,9 @@ namespace Proteomics
                         variableModificationPattern[possibleVariableModifications[index]->first] = i;
                         for (auto new_variable_modification_pattern : GetVariableModificationPatterns(possibleVariableModifications, unmodifiedResiduesDesired, variableModificationPattern, index + 1))
                         {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                            yield return new_variable_modification_pattern;
-                        }
+                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                            //yield return new_variable_modification_pattern;
+                            v.push_back(new_variable_modification_pattern);                        }
                     }
                 }
             }
@@ -281,22 +284,25 @@ namespace Proteomics
                 if (unmodifiedResiduesDesired > 0)
                 {
                     variableModificationPattern[possibleVariableModifications[index]->first] = 0;
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return variableModificationPattern;
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    //yield return variableModificationPattern;
+                    v.push_back(variableModificationPattern);
                 }
                 else
                 {
                     for (int i = 1; i <= possibleVariableModifications[index].Value.size(); i++)
                     {
                         variableModificationPattern[possibleVariableModifications[index]->first] = i;
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        yield return variableModificationPattern;
+                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                        //yield return variableModificationPattern;
+                        v.push_back(variableModificationPattern);
                     }
                 }
             }
+            return v;
         }
 
-        std::unordered_map<int, Modification*> ProteolyticPeptide::GetNewVariableModificationPattern(std::vector<int> &variableModificationArray, std::vector<KeyValuePair<int, std::vector<Modification*>>*> &possibleVariableModifications)
+        std::unordered_map<int, Modification*> ProteolyticPeptide::GetNewVariableModificationPattern(std::vector<int> &variableModificationArray, std::vector<std::unordered_map<int, std::vector<Modification*>>*> &possibleVariableModifications)
         {
             auto modification_pattern = std::unordered_map<int, Modification*>();
 
@@ -316,33 +322,37 @@ namespace Proteomics
             auto fixedModsOneIsNterminus = std::unordered_map<int, Modification*>(peptideLength + 3);
             for (auto mod : allKnownFixedModifications)
             {
-//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
-//                switch (mod.LocationRestriction)
-//ORIGINAL LINE: case "N-terminal.":
+                //C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was
+                // converted to C++ 'if-else' logic:
+                // switch (mod.LocationRestriction)
+                //ORIGINAL LINE: case "N-terminal.":
                 if (mod->getLocationRestriction() == "N-terminal." || mod->getLocationRestriction() == "Peptide N-terminal.")
                 {
-                        if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), 1, peptideLength, getOneBasedStartResidueInProtein()))
+                        if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), 1,
+                                                              peptideLength, getOneBasedStartResidueInProtein()))
                         {
                             fixedModsOneIsNterminus[1] = mod;
                         }
 
                 }
-//ORIGINAL LINE: case "Anywhere.":
+                //ORIGINAL LINE: case "Anywhere.":
                 else if (mod->getLocationRestriction() == "Anywhere.")
                 {
                         for (int i = 2; i <= peptideLength + 1; i++)
                         {
-                            if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), i - 1, peptideLength, getOneBasedStartResidueInProtein() + i - 2))
+                            if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), i - 1,
+                                                                  peptideLength, getOneBasedStartResidueInProtein() + i - 2))
                             {
                                 fixedModsOneIsNterminus[i] = mod;
                             }
                         }
 
                 }
-//ORIGINAL LINE: case "C-terminal.":
+                //ORIGINAL LINE: case "C-terminal.":
                 else if (mod->getLocationRestriction() == "C-terminal." || mod->getLocationRestriction() == "Peptide C-terminal.")
                 {
-                        if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), peptideLength, peptideLength, getOneBasedStartResidueInProtein() + peptideLength - 1))
+                        if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), peptideLength,
+                                                              peptideLength, getOneBasedStartResidueInProtein()+peptideLength-1))
                         {
                             fixedModsOneIsNterminus[peptideLength + 2] = mod;
                         }

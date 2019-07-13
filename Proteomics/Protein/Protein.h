@@ -21,8 +21,8 @@
 //namespace Proteomics { class DatabaseReference; }
 #include "DatabaseReference.h"
 
-//using namespace Proteomics::ProteolyticDigestion;
 #include "../ProteolyticDigestion/PeptideWithSetModifications.h"
+using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
 {
