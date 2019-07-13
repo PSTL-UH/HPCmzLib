@@ -1,5 +1,5 @@
-Proteomics/ModificationWithMass.cpp:
-  - check the ToString() method if required. There is some unclear aspects of how to construct the strings
+Proteomics/ProteolyticDigestion/ProteaseDictionary.cpp:
+ -  check file for location and name of the Protease Dictionary. Currently hardcoded to 'protease.tsv' in the current working directory, but the original logic was more complex.
 
 Parallel Processing found in the following files:
  - MassSpectrometry/MsDataFile.h: uses Parallel::ForEach. converted to sequential std::for_each for now.
