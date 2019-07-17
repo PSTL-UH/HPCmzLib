@@ -65,7 +65,7 @@ std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollectio
             if (NeutralMassShiftFromProductType_iterator != NeutralMassShiftFromProductType.end())
             {
                 shift = NeutralMassShiftFromProductType_iterator->second;
-                if (!shift.HasValue)
+                if (!shift.has_value())
                 {
                     // compute formula
                     switch (productType)
@@ -129,7 +129,7 @@ std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollectio
 
         double DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(double mass, ProductType p)
         {
-            return static_cast<double>(ClassExtensions::RoundedDouble(std::make_optional(mass + GetMassShiftFromProductType(p)), 9));
+            return static_cast<double>(Chemistry::ClassExtensions::RoundedDouble(std::make_optional(mass + GetMassShiftFromProductType(p)), 9));
         }
     }
 }

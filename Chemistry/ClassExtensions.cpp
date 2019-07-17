@@ -32,5 +32,5 @@ namespace Chemistry {
         }
         return myNumber;
     }
-    
+
 }

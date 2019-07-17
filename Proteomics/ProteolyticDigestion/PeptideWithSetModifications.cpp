@@ -4,6 +4,10 @@
 #include "../Protein/Protein.h"
 #include "../../MzLibUtil/MzLibException.h"
 #include "../../Chemistry/ClassExtensions.h"
+#include "../Fragmentation/TerminusSpecificProductTypes.h"
+#include "../Fragmentation/DissociationTypeCollection.h"
+
+#include "stringhelper.h"
 
 using namespace Chemistry;
 using namespace MassSpectrometry;
@@ -24,9 +28,10 @@ namespace Proteomics
             privateFullSequence = value;
         }
 
-const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() * 2 + PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
+        const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() * 2 +
+            PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+
         PeptideWithSetModifications::PeptideWithSetModifications(Proteomics::Protein *protein, Proteomics::ProteolyticDigestion::DigestionParams *digestionParams, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, CleavageSpecificity cleavageSpecificity, const std::string &peptideDescription, int missedCleavages, std::unordered_map<int, Modification*> &allModsOneIsNterminus, int numFixedMods) : ProteolyticPeptide(protein, oneBasedStartResidueInProtein, oneBasedEndResidueInProtein, missedCleavages, cleavageSpecificity, peptideDescription), NumFixedMods(numFixedMods), DigestionParamString(digestionParams->ToString()), ProteinAccession(protein->getAccession())
         {
             _allModsOneIsNterminus = allModsOneIsNterminus;
@@ -52,7 +57,6 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
             }
             if (digestionParams != nullptr)
             {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 DigestionParamString = digestionParams->ToString();
             }
         }
@@ -77,37 +81,43 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
             return getNumMods() - NumFixedMods;
         }
 
-        double PeptideWithSetModifications::getMonoisotopicMass() const
+        double PeptideWithSetModifications::getMonoisotopicMass()
         {
             if (!_monoisotopicMass)
             {
                 double monoMass = WaterMonoisotopicMass;
-
-                for (auto mod : getAllModsOneIsNterminus())
+                std::unordered_map<int, Modification*> mods = getAllModsOneIsNterminus();
+                for ( auto mod=mods.begin(); mod != mods.end(); mod++  )
                 {
-                    monoMass += mod->second.MonoisotopicMass->Value;
+                    //monoMass += mod->second.MonoisotopicMass->Value;
+                    monoMass += mod->second->getMonoisotopicMass().value();
                 }
+#ifdef ORIG
                 monoMass += getBaseSequence().Select([&] (std::any b)
                 {
                     Residue::ResidueMonoisotopicMass[b];
                 }).Sum();
-
+#endif
+                for ( auto b: getBaseSequence() ) {
+                    monoMass += Residue::ResidueMonoisotopicMass[b];
+                }
                 _monoisotopicMass = std::make_optional(monoMass);
             }
-            return static_cast<double>(ClassExtensions::RoundedDouble(_monoisotopicMass.value()));
+            return Chemistry::ClassExtensions::RoundedDouble(_monoisotopicMass).value();
         }
 
-        std::string PeptideWithSetModifications::getSequenceWithChemicalFormulas() const
+        std::string PeptideWithSetModifications::getSequenceWithChemicalFormulas()
         {
             if (!_hasChemicalFormulas)
             {
-                _hasChemicalFormulas = std::make_optional(true);
+                bool b=true;
+                _hasChemicalFormulas = std::make_optional(b);
                 auto subsequence = new StringBuilder();
 
                 // variable modification on peptide N-terminus
-                Modification pep_n_term_variable_mod;
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(1);
-                if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                Modification *pep_n_term_variable_mod;
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = _allModsOneIsNterminus.find(1);
+                if (AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
                 {
                     pep_n_term_variable_mod = AllModsOneIsNterminus_iterator->second;
                     Modification *jj = dynamic_cast<Modification*>(pep_n_term_variable_mod);
@@ -130,11 +140,11 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                 {
                     subsequence->append(this->operator[](r));
                     // variable modification on this residue
-                    Modification residue_variable_mod;
-                    std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(r + 2);
-                    if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                    Modification *residue_variable_mod;
+                    std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus2_iterator = _allModsOneIsNterminus.find(r + 2);
+                    if (AllModsOneIsNterminus2_iterator != getAllModsOneIsNterminus().end())
                     {
-                        residue_variable_mod = AllModsOneIsNterminus_iterator->second;
+                        residue_variable_mod = AllModsOneIsNterminus2_iterator->second;
                         Modification *jj = dynamic_cast<Modification*>(residue_variable_mod);
                         if (jj != nullptr)
                         {
@@ -148,16 +158,16 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                     }
                     else
                     {
-                        residue_variable_mod = AllModsOneIsNterminus_iterator->second;
+                        residue_variable_mod = AllModsOneIsNterminus2_iterator->second;
                     }
                 }
 
                 // variable modification on peptide C-terminus
-                Modification pep_c_term_variable_mod;
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(Length + 2);
-                if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                Modification *pep_c_term_variable_mod;
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus3_iterator = _allModsOneIsNterminus.find(getLength() + 2);
+                if (AllModsOneIsNterminus3_iterator != getAllModsOneIsNterminus().end())
                 {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator->second;
+                    pep_c_term_variable_mod = AllModsOneIsNterminus3_iterator->second;
                     Modification *jj = dynamic_cast<Modification*>(pep_c_term_variable_mod);
                     if (jj != nullptr)
                     {
@@ -171,7 +181,7 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                 }
                 else
                 {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator->second;
+                    pep_c_term_variable_mod = AllModsOneIsNterminus3_iterator->second;
                 }
 
                 _sequenceWithChemicalFormulas = subsequence->toString();
@@ -181,14 +191,29 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
             return _sequenceWithChemicalFormulas;
         }
 
-        std::vector<Product*> PeptideWithSetModifications::Fragment(DissociationType dissociationType, FragmentationTerminus fragmentationTerminus)
+        std::vector<Product*> PeptideWithSetModifications::Fragment(DissociationType dissociationType,
+                                                                    FragmentationTerminus fragmentationTerminus)
         {
             // molecular ion
-            //yield return new Product(ProductType.M, new NeutralTerminusFragment(FragmentationTerminus.None, this.MonoisotopicMass, Length, Length), 0);
+            //yield return new Product(ProductType.M, new NeutralTerminusFragment(FragmentationTerminus.None,
+            //this.MonoisotopicMass, Length, Length), 0);
+            std::vector<Product*> v;
 
-            auto productCollection = TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus].Intersect(DissociationTypeCollection::ProductsFromDissociationType[dissociationType]);
+#if ORIG
+             std::unordered_map<FragmentationTerminus, std::vector<ProductType>> productCollection =
+                 TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus].Intersect(
+                     DissociationTypeCollection::ProductsFromDissociationType[dissociationType]);
+#endif
 
-            std::vector<(ProductType, int)*> skippers;
+             std::vector<ProductType> vInter;
+             std::vector<ProductType> v1 = TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus];
+             std::vector<ProductType> v2 = DissociationTypeCollection::ProductsFromDissociationType[dissociationType];
+             std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), vInter.begin());
+             std::unordered_map<FragmentationTerminus, std::vector<ProductType>> productCollection = {{fragmentationTerminus, vInter}};
+             
+            //std::vector<std::tuple<ProductType, int>*> skippers;
+            std::vector<std::tuple<ProductType, int>> skippers;
+#ifdef ORIG
             for (auto product : productCollection->Where([&] (std::any f)
             {
                 return f != ProductType::zDot;
@@ -196,11 +221,20 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
             {
                 skippers.push_back((product, getBaseSequence().length()));
             }
+#endif
+            for (auto product=productCollection.begin(); product != productCollection.end(); product++ ) {
+                for ( auto type = product->second.begin(); type != product->second.end(); type ++ ) {
+                    if ( *type != ProductType::zDot ) {
+                        int len = getBaseSequence().length();
+                        skippers.push_back(std::make_tuple(*type, len));
+                    }
+                }
+            }
 
             switch (dissociationType)
             {
                 case DissociationType::CID:
-                    skippers.push_back((ProductType::b, 1));
+                    skippers.push_back(std::make_tuple(ProductType::b, 1));
                     break;
 
                 case DissociationType::ETD:
@@ -238,8 +272,10 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                             {
                                 if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[n]->FragmentNumber)) != skippers.end()))
                                 {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                                    yield return new Product(productType, terminalMasses[n], neutralLoss);
+                                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                                    //yield return new Product(productType, terminalMasses[n], neutralLoss);
+                                     Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
+                                     v.push_back(pp);
                                 }
                             }
                         }
@@ -252,8 +288,10 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                     // "normal" fragment without neutral loss
                     if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[f]->FragmentNumber)) != skippers.end()))
                     {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        yield return new Product(productType, terminalMasses[f], 0);
+                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                        //yield return new Product(productType, terminalMasses[f], 0);
+                        Product *pp = new Product(productType, terminalMasses[f], 0);
+                        v.push_back( pp);
                     }
                 }
             }
@@ -265,7 +303,8 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                 for (auto mod : getAllModsOneIsNterminus())
                 {
                     // molecular ion minus neutral losses
-                    List<double> losses;
+                    //List<double> losses;
+                    std::vector<double> losses;
                     if (mod->second.NeutralLosses != nullptr && mod->second.NeutralLosses.TryGetValue(dissociationType, losses))
                     {
                         for (double neutralLoss : losses)
@@ -273,15 +312,19 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
                             if (neutralLoss != 0)
                             {
                                 NeutralTerminusFragment tempVar2(FragmentationTerminus::Both, getMonoisotopicMass(), 0, 0);
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                                yield return new Product(ProductType::M, &tempVar2, neutralLoss);
+                                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                                //yield return new Product(ProductType::M, &tempVar2, neutralLoss);
+                                Product *pp = new Product(ProductType::M, &tempVar2, neutralLoss);
+                                v.push_back( pp);
                             }
                         }
                     }
 
                     // diagnostic ions
-                    List<double> diagIonsForThisModAndDissociationType;
-                    if (mod->second.DiagnosticIons != nullptr && mod->second.DiagnosticIons.TryGetValue(dissociationType, diagIonsForThisModAndDissociationType))
+                    //List<double> diagIonsForThisModAndDissociationType;
+                    std::vector<double> diagIonsForThisModAndDissociationType;
+                    if ( mod->second.DiagnosticIons != nullptr &&
+                         mod->second.DiagnosticIons.TryGetValue(dissociationType, diagIonsForThisModAndDissociationType))
                     {
                         for (double diagnosticIon : diagIonsForThisModAndDissociationType)
                         {
@@ -296,10 +339,12 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
 
                 for (auto diagnosticIon : diagnosticIons)
                 {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return diagnosticIon;
+                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                    //yield return diagnosticIon;
+                    v.push_back(diagnosticIon);
                 }
             }
+            return v;
         }
 
         std::string PeptideWithSetModifications::EssentialSequence(IReadOnlyDictionary<std::string, int> *modstoWritePruned)
@@ -389,22 +434,29 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
 
             auto peptideWithLocalizedMass = new PeptideWithSetModifications(getProtein(), _digestionParams, getOneBasedStartResidueInProtein(), getOneBasedEndResidueInProtein(), getCleavageSpecificityForFdrCategory(), getPeptideDescription(), getMissedCleavages(), dictWithLocalizedMass, NumFixedMods);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete peptideWithLocalizedMass' statement was not added since peptideWithLocalizedMass was used in a 'return' or 'throw' statement.
+            //C# TO C++ CONVERTER TODO TASK: A 'delete peptideWithLocalizedMass' statement was not added
+            //since peptideWithLocalizedMass was used in a 'return' or 'throw' statement.
             return peptideWithLocalizedMass;
         }
 
         std::string PeptideWithSetModifications::ToString()
         {
+#ifdef ORIF
             return getFullSequence() + std::string::Join("\t", getAllModsOneIsNterminus().Select([&] (std::any m)
             {
                 m.ToString();
             }));
+#endif
+            StringBuilder *sb = new StringBuilder();
+            sb->appendLine(getFullSequence);
+            for (auto m : getAllModsOneIsNterminus() ) {
+                sb->appendLine(m->ToString() );
+            }
+            return sb->toString();
         }
 
-        bool PeptideWithSetModifications::Equals(std::any obj)
+        bool PeptideWithSetModifications::Equals(PeptideWithSetModifications* q)
         {
-            auto q = dynamic_cast<PeptideWithSetModifications*>(obj);
-
             if (getProtein() == nullptr && q->getProtein() == nullptr)
             {
                 return q->getFullSequence() == this->getFullSequence();
@@ -415,12 +467,15 @@ const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable:
 
         int PeptideWithSetModifications::GetHashCode()
         {
+#ifdef ORIG
             return getFullSequence().GetHashCode() + getDigestionParams()->getProtease()->GetHashCode();
+#endif
+            return StringHelper::GetHashCode(getFullSequence()) + StringHelper::GetHashCode(getDigestionParams()->getProtease());
         }
 
         void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*> &idToMod, std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein)
         {
-            string baseSequence;
+            std::string baseSequence;
             GetModsAfterDeserialization(idToMod, baseSequence);
             GetProteinAfterDeserialization(accessionToProtein);
             GetDigestionParamsAfterDeserialization();

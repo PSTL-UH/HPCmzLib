@@ -17,6 +17,7 @@
 #include "ProteolyticPeptide.h"
 #include "CleavageSpecificity.h"
 #include "../../MassSpectrometry/Enums/DissociationType.h"
+#include "../Fragmentation/ProductType.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 //namespace Proteomics { class Modification; }
@@ -52,7 +53,7 @@ namespace Proteomics
             public:
                 virtual ~PeptideWithSetModifications()
                 {
-                    delete _digestionParams;
+                    //delete _digestionParams;
                 }
 
                 std::string getFullSequence() const;
@@ -73,8 +74,8 @@ namespace Proteomics
             std::optional<double> _monoisotopicMass;
             Proteomics::ProteolyticDigestion::DigestionParams *_digestionParams;
             static const double WaterMonoisotopicMass;
-            const std::string DigestionParamString; // used to get digestion param object after deserialization
-            const std::string ProteinAccession; // used to get protein object after deserialization
+            std::string DigestionParamString; // used to get digestion param object after deserialization
+            std::string ProteinAccession; // used to get protein object after deserialization
 
             /// <summary>
             /// Creates a PeptideWithSetModifications object from a protein. Used when a Protein is digested.
@@ -96,9 +97,9 @@ namespace Proteomics
 
             int getNumVariableMods() const;
 
-            double getMonoisotopicMass() const;
+            double getMonoisotopicMass();
 
-            std::string getSequenceWithChemicalFormulas() const;
+            std::string getSequenceWithChemicalFormulas();
 
             /// <summary>
             /// Generates theoretical fragments for given dissociation type for this peptide
@@ -110,15 +111,29 @@ namespace Proteomics
 #endif
             virtual std::string EssentialSequence(std::unordered_map<std::string, int> *modstoWritePruned);
 
-//C# TO C++ CONVERTER TODO TASK: Methods returning tuples are not converted by C# to C++ Converter:
-//            private IEnumerable<(ProductType, int)> GetProlineZIonIndicies()
-    //        {
-    //            for (int i = BaseSequence.IndexOf('P'); i > -1; i = BaseSequence.IndexOf('P', i + 1))
-    //            {
-    //                yield return (ProductType.zDot, BaseSequence.Length - i);
-    //            }
-    //        }
-
+#ifdef ORIG
+            //C# TO C++ CONVERTER TODO TASK: Methods returning tuples are not converted by C# to C++ Converter:
+            // private IEnumerable<(ProductType, int)> GetProlineZIonIndicies()
+            //  {
+             //     for (int i = BaseSequence.IndexOf('P'); i > -1; i = BaseSequence.IndexOf('P', i + 1))
+            //            {
+            //                yield return (ProductType.zDot, BaseSequence.Length - i);
+            //            }
+            //        }
+#endif
+            std::vector<std::tuple<ProductType, int>> GetProlineZIonIndicies()
+            {
+                std::vector<std::tuple<ProductType, int>> v;
+                size_t i = 0;
+                while ( (i = _baseSequence.find ( 'P', i ))){
+                    if ( i == std::string::npos ) {
+                        break;
+                    }
+                    v.push_back(std::make_tuple(ProductType::zDot, _baseSequence.length() - i));
+                };
+                return v;
+            }
+            
             PeptideWithSetModifications *Localize(int j, double massToLocalize);
 
             std::string ToString();

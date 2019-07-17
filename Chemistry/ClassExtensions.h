@@ -48,6 +48,7 @@ namespace Chemistry {
 
         static std::optional<double> RoundedDouble(std::optional<double> &myNumber, int places = 9);
 
+
     public:
         template<typename T1, typename T2>
         class TupleList : public std::vector<std::tuple<T1, T2>>
