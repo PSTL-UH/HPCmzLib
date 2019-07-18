@@ -47,7 +47,7 @@ namespace Chemistry {
         static double ToMass(double massToChargeRatio, int charge);
 
         static std::optional<double> RoundedDouble(std::optional<double> &myNumber, int places = 9);
-
+        static double RoundedDouble(double myNumber, int places=9);
 
     public:
         template<typename T1, typename T2>

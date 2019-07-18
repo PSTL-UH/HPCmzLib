@@ -33,4 +33,12 @@ namespace Chemistry {
         return myNumber;
     }
 
+    double ClassExtensions::RoundedDouble(double myNumber, int places)
+    {
+        
+        myNumber = (floor(myNumber*pow(10,places))+.5)/pow(10,places);
+        return myNumber;
+    }
+
+    
 }

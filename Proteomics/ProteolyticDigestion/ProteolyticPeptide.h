@@ -67,10 +67,11 @@ namespace Proteomics
             
             Proteomics::Protein *getProtein() const;
 
+            std::string getBaseSequence();
+
         protected:
             void setProtein(Proteomics::Protein *value);
             
-            std::string getBaseSequence();
             
             char operator [](int zeroBasedIndex);
             

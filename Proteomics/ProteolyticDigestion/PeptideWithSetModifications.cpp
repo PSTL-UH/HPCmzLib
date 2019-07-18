@@ -6,6 +6,7 @@
 #include "../../Chemistry/ClassExtensions.h"
 #include "../Fragmentation/TerminusSpecificProductTypes.h"
 #include "../Fragmentation/DissociationTypeCollection.h"
+#include "../Fragmentation/CompactPeptide.h"
 
 #include "stringhelper.h"
 
@@ -240,58 +241,68 @@ namespace Proteomics
                 case DissociationType::ETD:
                 case DissociationType::ECD:
                 case DissociationType::EThcD:
-                    skippers.AddRange(GetProlineZIonIndicies());
+                {
+                    // skippers.AddRange(GetProlineZIonIndicies());
+                    std::vector<std::tuple<ProductType, int>> zv = GetProlineZIonIndicies();
+                    for ( auto zve = zv.begin(); zve != zv.end(); zve++ ) {
+                        skippers.push_back(*zve);
+                    }
+                    break;
+                }
+                default:
                     break;
             }
 
-            for (auto productType : productCollection)
-            {
-                // we're separating the N and C terminal masses and computing a separate compact peptide for each one
-                // this speeds calculations up without producing unnecessary terminus fragment info
-                FragmentationTerminus temporaryFragmentationTerminus = TerminusSpecificProductTypes::ProductTypeToFragmentationTerminus[productType];
-                CompactPeptide tempVar(this, temporaryFragmentationTerminus);
-                std::vector<NeutralTerminusFragment*> terminalMasses = (&tempVar)->TerminalMasses;
+            for (auto k :  productCollection) {
+                for (auto productType : std::get<1>(k) )  {
+                    // we're separating the N and C terminal masses and computing a separate
+                    // compact peptide for each one. This speeds 
+                    // calculations up without producing unnecessary terminus fragment info
+                    FragmentationTerminus temporaryFragmentationTerminus = TerminusSpecificProductTypes::ProductTypeToFragmentationTerminus[productType];
+                    CompactPeptide tempVar(this, temporaryFragmentationTerminus);
+                    std::vector<NeutralTerminusFragment*> terminalMasses = (&tempVar)->TerminalMasses;
 
-                for (int f = 0; f < terminalMasses.size(); f++)
-                {
-                    // fragments with neutral loss
-                    Modification mod;
-                    std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(terminalMasses[f].AminoAcidPosition + 1);
-                    std::vector<double> neutralLosses;
-                    if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end() && mod::NeutralLosses != nullptr && mod::NeutralLosses::TryGetValue(dissociationType, neutralLosses))
+                    for (int f = 0; f < terminalMasses.size(); f++)
                     {
-                        mod = AllModsOneIsNterminus_iterator->second;
-                        for (double neutralLoss : neutralLosses)
+                        // fragments with neutral loss
+                        Modification mod;
+                        std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(terminalMasses[f].AminoAcidPosition + 1);
+                        std::vector<double> neutralLosses;
+                        if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end() && mod::NeutralLosses != nullptr && mod::NeutralLosses::TryGetValue(dissociationType, neutralLosses))
                         {
-                            if (neutralLoss == 0)
+                            mod = AllModsOneIsNterminus_iterator->second;
+                            for (double neutralLoss : neutralLosses)
                             {
-                                continue;
-                            }
-
-                            for (int n = f; n < terminalMasses.size(); n++)
-                            {
-                                if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[n]->FragmentNumber)) != skippers.end()))
+                                if (neutralLoss == 0)
                                 {
-                                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                                    //yield return new Product(productType, terminalMasses[n], neutralLoss);
-                                     Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
-                                     v.push_back(pp);
+                                    continue;
+                                }
+                                
+                                for (int n = f; n < terminalMasses.size(); n++)
+                                {
+                                    if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[n]->FragmentNumber)) != skippers.end())
+                                    {
+                                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                                        //yield return new Product(productType, terminalMasses[n], neutralLoss);
+                                        Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
+                                        v.push_back(pp);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        mod = AllModsOneIsNterminus_iterator->second;
-                    }
-
-                    // "normal" fragment without neutral loss
-                    if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[f]->FragmentNumber)) != skippers.end()))
-                    {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        //yield return new Product(productType, terminalMasses[f], 0);
-                        Product *pp = new Product(productType, terminalMasses[f], 0);
-                        v.push_back( pp);
+                        else
+                        {
+                            mod = AllModsOneIsNterminus_iterator->second;
+                        }
+                        
+                        // "normal" fragment without neutral loss
+                        if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[f]->FragmentNumber)) != skippers.end())
+                        {
+                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                            //yield return new Product(productType, terminalMasses[f], 0);
+                            Product *pp = new Product(productType, terminalMasses[f], 0);
+                            v.push_back( pp);
+                        }
                     }
                 }
             }

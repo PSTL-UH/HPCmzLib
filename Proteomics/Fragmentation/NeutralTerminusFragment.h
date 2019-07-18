@@ -4,6 +4,7 @@
 #include <string>
 #include <any>
 
+#include "../../Chemistry/Chemistry.h"
 using namespace Chemistry;
 
 namespace Proteomics
@@ -29,11 +30,11 @@ namespace Proteomics
 
             NeutralTerminusFragment(FragmentationTerminus terminus, double neutralMass, int fragmentNumber, int aminoAcidPosition);
 
-            bool Equals(std::any obj) override;
+            bool Equals(NeutralTerminusFragment *obj);
 
-            int GetHashCode() override;
+            int GetHashCode();
 
-            std::string ToString() override;
+            std::string ToString();
         };
     }
 }

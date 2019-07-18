@@ -8,7 +8,7 @@ namespace Proteomics
 
         CompactPeptide::CompactPeptide(PeptideWithSetModifications *peptideWithSetModifications, FragmentationTerminus fragmentationTerminus)
         {
-            setTerminalMasses(ComputeNeutralTerminusFragments(peptideWithSetModifications, fragmentationTerminus).ToArray());
+            setTerminalMasses(ComputeNeutralTerminusFragments(peptideWithSetModifications, fragmentationTerminus));
             setMonoisotopicMassIncludingFixedMods(peptideWithSetModifications->getMonoisotopicMass());
         }
     }

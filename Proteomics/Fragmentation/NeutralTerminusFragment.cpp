@@ -1,30 +1,32 @@
 ﻿#include "NeutralTerminusFragment.h"
 
-using namespace Chemistry;
+//using namespace Chemistry;
 namespace Proteomics
 {
     namespace Fragmentation
     {
 
-        NeutralTerminusFragment::NeutralTerminusFragment(FragmentationTerminus terminus, double neutralMass, int fragmentNumber, int aminoAcidPosition) : Terminus(terminus), NeutralMass(static_cast<double>(ClassExtensions::RoundedDouble(std::make_optional(neutralMass)))), FragmentNumber(fragmentNumber), AminoAcidPosition(aminoAcidPosition)
+        NeutralTerminusFragment::NeutralTerminusFragment(FragmentationTerminus terminus, double neutralMass, int fragmentNumber, int aminoAcidPosition) : Terminus(terminus), NeutralMass(Chemistry::ClassExtensions::RoundedDouble(neutralMass)), FragmentNumber(fragmentNumber), AminoAcidPosition(aminoAcidPosition)
         {
         }
 
-        bool NeutralTerminusFragment::Equals(std::any obj)
+        bool NeutralTerminusFragment::Equals(NeutralTerminusFragment *other)
         {
-            NeutralTerminusFragment *other = std::any_cast<NeutralTerminusFragment*>(obj);
-
-            return this->Terminus == other->Terminus && this->FragmentNumber == other->FragmentNumber && this->AminoAcidPosition == other->AminoAcidPosition && this->NeutralMass == other->NeutralMass;
+            
+            return this->Terminus == other->Terminus          &&
+                this->FragmentNumber == other->FragmentNumber &&
+                this->AminoAcidPosition == other->AminoAcidPosition &&
+                this->NeutralMass == other->NeutralMass;
         }
 
         int NeutralTerminusFragment::GetHashCode()
         {
-            return NeutralMass.GetHashCode();
+            return StringHelper::GetHashCode(std::to_string(NeutralMass));
         }
 
         std::string NeutralTerminusFragment::ToString()
         {
-            return "Term: " + Terminus + "; Mass: " + std::to_string(NeutralMass) + "; FragNum:" + std::to_string(FragmentNumber) + "; AA: " + std::to_string(AminoAcidPosition);
+            return "Term: " + std::to_string(static_cast<int>(Terminus)) + "; Mass: " + std::to_string(NeutralMass) + "; FragNum:" + std::to_string(FragmentNumber) + "; AA: " + std::to_string(AminoAcidPosition);
         }
     }
 }
