@@ -1,12 +1,15 @@
 ﻿#include "Product.h"
 #include "NeutralTerminusFragment.h"
+#include "DissociationTypeCollection.h"
+#include "stringhelper.h"
+
 
 namespace Proteomics
 {
     namespace Fragmentation
     {
 
-        Product::Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss) : NeutralMass(DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(terminusFragment->NeutralMass, productType) - neutralLoss), ProductType(productType), TerminusFragment(terminusFragment), NeutralLoss(neutralLoss)
+        Product::Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss) : NeutralMass(DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(terminusFragment->NeutralMass, productType) - neutralLoss), productType(productType), TerminusFragment(terminusFragment), NeutralLoss(neutralLoss)
         {
         }
 
@@ -14,7 +17,7 @@ namespace Proteomics
         {
             StringBuilder *sb = new StringBuilder();
 
-            sb->append(ProductType);
+            sb->append(static_cast<int>(productType));
 
             // for "normal" fragments this is just the fragment number (e.g., the 3 in the b3 ion)
             // for diagnostic ions, it's the m/z assuming z=1
@@ -24,29 +27,31 @@ namespace Proteomics
             if (NeutralLoss != 0)
             {
                 sb->append("-");
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                sb->append(NeutralLoss.ToString("F2"));
+                //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                sb->append(std::to_string(NeutralLoss));
             }
 
-            delete sb;
+            //delete sb;
             return sb->toString();
         }
 
         std::string Product::ToString()
         {
-            return ProductType + "" + std::to_string(TerminusFragment->FragmentNumber) + ";" + std::to_string(NeutralMass) + "-" + std::to_string(NeutralLoss);
+            return std::to_string(static_cast<int>(productType)) + "" + std::to_string(TerminusFragment->FragmentNumber)
+                + ";" + std::to_string(NeutralMass) + "-" + std::to_string(NeutralLoss);
         }
 
-        bool Product::Equals(std::any obj)
+        bool Product::Equals(Product *other)
         {
-            Product *other = std::any_cast<Product*>(obj);
 
-            return this->ProductType == other->ProductType && this->TerminusFragment->Equals(other->TerminusFragment) && this->NeutralLoss == other->NeutralLoss;
+            return this->productType == other->productType              &&
+                this->TerminusFragment->Equals(other->TerminusFragment) &&
+                this->NeutralLoss == other->NeutralLoss;
         }
 
         int Product::GetHashCode()
         {
-            return NeutralMass.GetHashCode();
+            return StringHelper::GetHashCode(std::to_string(NeutralMass));
         }
     }
 }

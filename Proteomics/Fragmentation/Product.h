@@ -6,8 +6,8 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace Fragmentation { class NeutralTerminusFragment; } }
-
+//namespace Proteomics { namespace Fragmentation { class NeutralTerminusFragment; } }
+#include "NeutralTerminusFragment.h"
 
 namespace Proteomics
 {
@@ -17,18 +17,21 @@ namespace Proteomics
         {
         public:
             const double NeutralMass;
-            const ProductType ProductType;
+            const ProductType productType;
             NeutralTerminusFragment *const TerminusFragment;
             const double NeutralLoss;
 
             /// <summary>
-            /// A product is the individual neutral fragment from an MS dissociation. A fragmentation product here contains one of the two termini (N- or C-). 
-            /// The ProductType describes where along the backbone the fragmentaiton occurred (e.g. b-, y-, c-, zdot-). The neutral loss mass (if any) that 
-            /// occurred from a mod on the fragment is listed as a mass. Finally the neutral mass of the whole fragment is provided.
+            /// A product is the individual neutral fragment from an MS dissociation.
+            /// A fragmentation product here contains one of the two termini (N- or C-). 
+            /// The ProductType describes where along the backbone the fragmentaiton occurred
+            /// (e.g. b-, y-, c-, zdot-). The neutral loss mass (if any) that 
+            /// occurred from a mod on the fragment is listed as a mass. Finally the neutral
+            /// mass of the whole fragment is provided.
             /// </summary>
             virtual ~Product()
             {
-                delete TerminusFragment;
+                //delete TerminusFragment;
             }
 
             Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss);
@@ -38,11 +41,11 @@ namespace Proteomics
             /// <summary>
             /// Summarizes a Product into a string for debug purposes
             /// </summary>
-            std::string ToString() override;
+            std::string ToString();
 
-            bool Equals(std::any obj) override;
+            bool Equals(Product * obj);
 
-            int GetHashCode() override;
+            int GetHashCode();
         };
     }
 }

@@ -5,7 +5,8 @@
 #include "stringbuilder.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace Fragmentation { class Product; } }
+//namespace Proteomics { namespace Fragmentation { class Product; } }
+#include "Product.h"
 
 using namespace Chemistry;
 
@@ -26,7 +27,7 @@ namespace Proteomics
             /// </summary>
             virtual ~MatchedFragmentIon()
             {
-                delete NeutralTheoreticalProduct;
+                // delete NeutralTheoreticalProduct;
             }
 
             MatchedFragmentIon(Product *neutralTheoreticalProduct, double experMz, double experIntensity, int charge);
@@ -40,11 +41,11 @@ namespace Proteomics
             /// <summary>
             /// Summarizes a TheoreticalFragmentIon into a string for debug purposes
             /// </summary>
-            std::string ToString() override;
+            std::string ToString();
 
-            bool Equals(std::any obj) override;
+            bool Equals(MatchedFragmentIon* obj);
 
-            int GetHashCode() override;
+            int GetHashCode();
         };
     }
 }

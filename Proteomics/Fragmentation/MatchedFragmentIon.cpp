@@ -1,6 +1,7 @@
 ﻿#include "MatchedFragmentIon.h"
 #include "Product.h"
 #include "../../Chemistry/ClassExtensions.h"
+#include "stringhelper.h"
 
 using namespace Chemistry;
 namespace Proteomics
@@ -43,26 +44,31 @@ namespace Proteomics
             sb->append("+");
             sb->append(Charge);
 
-            delete sb;
+            //delete sb;
             return sb->toString();
         }
 
         std::string MatchedFragmentIon::ToString()
         {
-            // we add the blank space in the tostring because the values are treated like integers and looked up as index in the enum instead of being converted to just string and concatenated
-            return NeutralTheoreticalProduct->ProductType + "" + std::to_string(NeutralTheoreticalProduct->TerminusFragment->FragmentNumber) + "+" + std::to_string(Charge) + "\t;" + std::to_string(NeutralTheoreticalProduct->NeutralMass);
+            // we add the blank space in the tostring because the values are treated like
+            // integers and looked up as index in the enum instead of being converted to just string and concatenated
+            return std::to_string(static_cast<int>(NeutralTheoreticalProduct->productType)) + ""
+                + std::to_string(NeutralTheoreticalProduct->TerminusFragment->FragmentNumber) + "+"
+                + std::to_string(Charge) + "\t;" + std::to_string(NeutralTheoreticalProduct->NeutralMass);
         }
 
-        bool MatchedFragmentIon::Equals(std::any obj)
+        bool MatchedFragmentIon::Equals( MatchedFragmentIon *other)
         {
-            MatchedFragmentIon *other = std::any_cast<MatchedFragmentIon*>(obj);
-
-            return this->NeutralTheoreticalProduct->Equals(other->NeutralTheoreticalProduct) && this->Charge == other->Charge && this->Mz == other->Mz && this->Intensity == other->Intensity;
+            
+            return this->NeutralTheoreticalProduct->Equals(other->NeutralTheoreticalProduct) &&
+                this->Charge    == other->Charge     &&
+                this->Mz        == other->Mz         &&
+                this->Intensity == other->Intensity;
         }
 
         int MatchedFragmentIon::GetHashCode()
         {
-            return Mz.GetHashCode();
+            return StringHelper::GetHashCode(std::to_string(Mz));
         }
     }
 }

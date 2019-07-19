@@ -39,29 +39,31 @@ std::unordered_map<DissociationType, std::vector<ProductType>> DissociationTypeC
     {DissociationType::Custom, std::vector<ProductType>()},
     {DissociationType::ISCID, std::vector<ProductType>()}
 };
-std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollection::NeutralMassShiftFromProductType =
+
+        std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollection::NeutralMassShiftFromProductType =
 {
-    {ProductType::a, nullptr},
-    {ProductType::aStar, nullptr},
-    {ProductType::aDegree, nullptr},
-    {ProductType::b, nullptr},
-    {ProductType::bStar, nullptr},
-    {ProductType::bDegree, nullptr},
-    {ProductType::c, nullptr},
-    {ProductType::x, nullptr},
-    {ProductType::y, nullptr},
-    {ProductType::yStar, nullptr},
-    {ProductType::yDegree, nullptr},
-    {ProductType::zDot, nullptr},
-    {ProductType::zPlusOne, nullptr},
-    {ProductType::M, nullptr},
-    {ProductType::D, nullptr}
+    {ProductType::a, std::nullopt},
+    {ProductType::aStar, std::nullopt},
+    {ProductType::aDegree, std::nullopt},
+    {ProductType::b, std::nullopt},
+    {ProductType::bStar, std::nullopt},
+    {ProductType::bDegree, std::nullopt},
+    {ProductType::c, std::nullopt},
+    {ProductType::x, std::nullopt},
+    {ProductType::y, std::nullopt},
+    {ProductType::yStar, std::nullopt},
+    {ProductType::yDegree, std::nullopt},
+    {ProductType::zDot, std::nullopt},
+    {ProductType::zPlusOne, std::nullopt},
+    {ProductType::M, std::nullopt},
+    {ProductType::D, std::nullopt}
 };
 
         double DissociationTypeCollection::GetMassShiftFromProductType(ProductType productType)
         {
-            Nullable<double> shift;
+            std::optional<double> shift;
             std::unordered_map<ProductType, std::optional<double>>::const_iterator NeutralMassShiftFromProductType_iterator = NeutralMassShiftFromProductType.find(productType);
+
             if (NeutralMassShiftFromProductType_iterator != NeutralMassShiftFromProductType.end())
             {
                 shift = NeutralMassShiftFromProductType_iterator->second;
@@ -104,7 +106,7 @@ std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollectio
                             NeutralMassShiftFromProductType[productType] = std::make_optional(0);
                             break; // 0, no change
                         case ProductType::zDot:
-                            NeutralMassShiftFromProductType[productType] = std::make_optional(ChemicalFormula::ParseFormula("O1N-1H-1")->getMonoisotopicMass() + Constants::ElectronMass + Constants::ProtonMass);
+                            NeutralMassShiftFromProductType[productType] = std::make_optional(ChemicalFormula::ParseFormula("O1N-1H-1")->getMonoisotopicMass() + Constants::electronMass + Constants::protonMass);
                             break; //1.991840552567, +O -NH + e- + p+
                         case ProductType::zPlusOne:
                             NeutralMassShiftFromProductType[productType] = std::make_optional(ChemicalFormula::ParseFormula("O1H1N-1")->getMonoisotopicMass());
@@ -129,7 +131,7 @@ std::unordered_map<ProductType, std::optional<double>> DissociationTypeCollectio
 
         double DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(double mass, ProductType p)
         {
-            return static_cast<double>(Chemistry::ClassExtensions::RoundedDouble(std::make_optional(mass + GetMassShiftFromProductType(p)), 9));
+            return Chemistry::ClassExtensions::RoundedDouble((mass + GetMassShiftFromProductType(p)), 9);
         }
     }
 }
