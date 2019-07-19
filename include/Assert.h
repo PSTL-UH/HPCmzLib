@@ -65,4 +65,17 @@ public:
     }
     
     //  static void Throws ( T a1);
+
+
+    template <class T>
+    static bool SequenceEqual ( std::vector<T> a, std::vector<T> b ) {
+        if ( a.size() != b.size() ) {
+            return false;
+        }
+
+        std::sort(a.begin(), a.end());
+        std::sort(b.begin(), b.end());
+        return std::equal(a.begin(), a.end(), b.begin());                
+    }
+
 };

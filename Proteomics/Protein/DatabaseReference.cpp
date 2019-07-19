@@ -1,5 +1,6 @@
 ﻿#include "stringhelper.h"
 #include "DatabaseReference.h"
+#include "Assert.h"
 #include <bits/stdc++.h>
 #include <algorithm>
 
@@ -35,16 +36,7 @@ namespace Proteomics {
         if (d == nullptr || d->getType() != getType() || d->getId() != getId() ){
             return false;
         }
-        std::vector<std::tuple<std::string, std::string>> dp1 = d->getProperties();
-        std::sort(dp1.begin(), dp1.end());
-        std::vector<std::tuple<std::string, std::string>> dp = getProperties();
-        std::sort(dp.begin(), dp.end());
-        // Sort dp1 and dp to ensure that Properties are listed in
-        // alphabetical order. If there is a mismatch, return false;
-        if (dp.size() != dp1.size() ) {
-            return false;
-        }
-        return std::equal(dp1.begin(), dp1.end(), dp.begin());
+        return Assert::SequenceEqual( getProperties(), d->getProperties() );
     }
 
     int DatabaseReference::GetHashCode() {

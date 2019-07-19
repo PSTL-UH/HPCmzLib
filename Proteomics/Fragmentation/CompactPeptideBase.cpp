@@ -3,7 +3,7 @@
 #include "CompactPeptideBase.h"
 #include "NeutralTerminusFragment.h"
 #include "../Modifications/Modification.h"
-
+#include "Assert.h"
 
 using namespace Chemistry;
 using namespace Proteomics::AminoAcidPolymer;
@@ -58,14 +58,7 @@ namespace Proteomics
 #ifdef ORIG
                 return getTerminalMasses().SequenceEqual(cp->getTerminalMasses());
 #endif
-                std::vector<NeutralTerminusFragment*> vm1 = getTerminalMasses();
-                std::vector<NeutralTerminusFragment*> vm2 = cp->getTerminalMasses();
-                if ( vm1.size() != vm2.size() ) {
-                    return false;
-                }
-                std::sort(vm1.begin(), vm1.end());
-                std::sort(vm2.begin(), vm2.end());
-                return std::equal(vm1.begin(), vm1.end(), vm2.begin());                
+                return Assert::SequenceEqual ( getTerminalMasses(), cp->getTerminalMasses() );
             }
             else //Cannot compare
             {
