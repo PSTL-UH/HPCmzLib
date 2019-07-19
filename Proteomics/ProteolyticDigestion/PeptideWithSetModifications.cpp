@@ -260,43 +260,44 @@ namespace Proteomics
                     // calculations up without producing unnecessary terminus fragment info
                     FragmentationTerminus temporaryFragmentationTerminus = TerminusSpecificProductTypes::ProductTypeToFragmentationTerminus[productType];
                     CompactPeptide tempVar(this, temporaryFragmentationTerminus);
-                    std::vector<NeutralTerminusFragment*> terminalMasses = (&tempVar)->TerminalMasses;
+                    std::vector<NeutralTerminusFragment*> terminalMasses = (&tempVar)->getTerminalMasses();
 
-                    for (int f = 0; f < terminalMasses.size(); f++)
+                    for (int f = 0; f < (int)terminalMasses.size(); f++)
                     {
                         // fragments with neutral loss
-                        Modification mod;
-                        std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(terminalMasses[f].AminoAcidPosition + 1);
+                        Modification* mod;
+                        std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(terminalMasses[f]->AminoAcidPosition + 1);
                         std::vector<double> neutralLosses;
-                        if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end() && mod::NeutralLosses != nullptr && mod::NeutralLosses::TryGetValue(dissociationType, neutralLosses))
-                        {
+                        if (AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end() ){
                             mod = AllModsOneIsNterminus_iterator->second;
-                            for (double neutralLoss : neutralLosses)
-                            {
-                                if (neutralLoss == 0)
+                            if ( !mod->getNeutralLosses().empty()   &&
+                                 mod->getNeutralLosses().find(dissociationType) != mod->getNeutralLosses().end() ) {
+                                neutralLosses = mod->getNeutralLosses()[dissociationType];
+                                for (double neutralLoss : neutralLosses)
                                 {
-                                    continue;
-                                }
-                                
-                                for (int n = f; n < terminalMasses.size(); n++)
-                                {
-                                    if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[n]->FragmentNumber)) != skippers.end())
+                                    if (neutralLoss == 0)
                                     {
-                                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                                        //yield return new Product(productType, terminalMasses[n], neutralLoss);
-                                        Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
-                                        v.push_back(pp);
+                                        continue;
+                                    }
+                                    
+                                    for (int n = f; n < (int)terminalMasses.size(); n++)
+                                    {
+                                        if (std::find(skippers.begin(), skippers.end(),
+                                                      std::make_tuple(productType, terminalMasses[n]->FragmentNumber)) == skippers.end())
+                                        {
+                                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                                            //yield return new Product(productType, terminalMasses[n], neutralLoss);
+                                            Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
+                                            v.push_back(pp);
+                                        }
                                     }
                                 }
                             }
                         }
-                        else
-                        {
-                            mod = AllModsOneIsNterminus_iterator->second;
-                        }
                         
                         // "normal" fragment without neutral loss
-                        if (!std::find(skippers.begin(), skippers.end(), (productType, terminalMasses[f]->FragmentNumber)) != skippers.end())
+                        if (std::find(skippers.begin(), skippers.end(),
+                                      std::make_tuple(productType, terminalMasses[f]->FragmentNumber)) == skippers.end())
                         {
                             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                             //yield return new Product(productType, terminalMasses[f], 0);
@@ -316,8 +317,10 @@ namespace Proteomics
                     // molecular ion minus neutral losses
                     //List<double> losses;
                     std::vector<double> losses;
-                    if (mod->second.NeutralLosses != nullptr && mod->second.NeutralLosses.TryGetValue(dissociationType, losses))
+                    if ( !(std::get<1>(mod)->getNeutralLosses().empty()) &&
+                         (std::get<1>(mod)->getNeutralLosses().find(dissociationType) != std::get<1>(mod)->getNeutralLosses().end() ))
                     {
+                        losses = std::get<1>(mod)->getNeutralLosses()[dissociationType];
                         for (double neutralLoss : losses)
                         {
                             if (neutralLoss != 0)
@@ -334,9 +337,10 @@ namespace Proteomics
                     // diagnostic ions
                     //List<double> diagIonsForThisModAndDissociationType;
                     std::vector<double> diagIonsForThisModAndDissociationType;
-                    if ( mod->second.DiagnosticIons != nullptr &&
-                         mod->second.DiagnosticIons.TryGetValue(dissociationType, diagIonsForThisModAndDissociationType))
+                    if ( !std::get<1>(mod)->getDiagnosticIons().empty() &&
+                         std::get<1>(mod)->getDiagnosticIons().find(dissociationType)!= std::get<1>(mod)->getDiagnosticIons().end() )
                     {
+                        diagIonsForThisModAndDissociationType = std::get<1>(mod)->getDiagnosticIons()[dissociationType];
                         for (double diagnosticIon : diagIonsForThisModAndDissociationType)
                         {
                             int diagnosticIonLabel = static_cast<int>(std::round(Chemistry::ClassExtensions::ToMz(diagnosticIon, 1) * std::pow(10, 0))) / std::pow(10, 0);
@@ -358,7 +362,7 @@ namespace Proteomics
             return v;
         }
 
-        std::string PeptideWithSetModifications::EssentialSequence(IReadOnlyDictionary<std::string, int> *modstoWritePruned)
+        std::string PeptideWithSetModifications::EssentialSequence(std::unordered_map<std::string, int> *modstoWritePruned)
         {
             std::string essentialSequence = getBaseSequence();
             if (modstoWritePruned != nullptr)
@@ -366,14 +370,14 @@ namespace Proteomics
                 auto sbsequence = new StringBuilder();
 
                 // variable modification on peptide N-terminus
-                Modification pep_n_term_variable_mod;
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(1);
-                if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                Modification *pep_n_term_variable_mod;
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(1);
+                if ( AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
                 {
                     pep_n_term_variable_mod = AllModsOneIsNterminus_iterator->second;
-                    if (modstoWritePruned->ContainsKey(pep_n_term_variable_mod::ModificationType))
+                    if ( modstoWritePruned->find(pep_n_term_variable_mod->getModificationType()) != modstoWritePruned->end() )
                     {
-                        sbsequence->append('[' + pep_n_term_variable_mod::ModificationType + ":" + pep_n_term_variable_mod::IdWithMotif + ']');
+                        sbsequence->append('[' + pep_n_term_variable_mod->getModificationType() + ":" + pep_n_term_variable_mod->getIdWithMotif() + ']');
                     }
                 }
                 else
@@ -384,14 +388,14 @@ namespace Proteomics
                 {
                     sbsequence->append(this->operator[](r));
                     // variable modification on this residue
-                    Modification residue_variable_mod;
-                    std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(r + 2);
-                    if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                    Modification *residue_variable_mod;
+                    std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(r + 2);
+                    if (AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
                     {
                         residue_variable_mod = AllModsOneIsNterminus_iterator->second;
-                        if (modstoWritePruned->ContainsKey(residue_variable_mod::ModificationType))
+                        if (modstoWritePruned->find(residue_variable_mod->getModificationType()) != modstoWritePruned->end() )
                         {
-                            sbsequence->append('[' + residue_variable_mod::ModificationType + ":" + residue_variable_mod::IdWithMotif + ']');
+                            sbsequence->append('[' + residue_variable_mod->getModificationType() + ":" + residue_variable_mod->getIdWithMotif() + ']');
                         }
                     }
                     else
@@ -401,19 +405,19 @@ namespace Proteomics
                 }
 
                 // variable modification on peptide C-terminus
-                Modification pep_c_term_variable_mod;
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(Length + 2);
-                if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                Modification *pep_c_term_variable_mod;
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = getAllModsOneIsNterminus().find(getLength() + 2);
+                if ( AllModsOneIsNterminus_iterator2 != getAllModsOneIsNterminus().end())
                 {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator->second;
-                    if (modstoWritePruned->ContainsKey(pep_c_term_variable_mod::ModificationType))
+                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator2->second;
+                    if (modstoWritePruned->find(pep_c_term_variable_mod->getModificationType()) != modstoWritePruned->end() )
                     {
-                        sbsequence->append('[' + pep_c_term_variable_mod::ModificationType + ":" + pep_c_term_variable_mod::IdWithMotif + ']');
+                        sbsequence->append('[' + pep_c_term_variable_mod->getModificationType() + ":" + pep_c_term_variable_mod->getIdWithMotif() + ']');
                     }
                 }
                 else
                 {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator->second;
+                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator2->second;
                 }
 
                 essentialSequence = sbsequence->toString();
@@ -427,12 +431,12 @@ namespace Proteomics
         {
             auto dictWithLocalizedMass = std::unordered_map<int, Modification*>(getAllModsOneIsNterminus());
             double massOfExistingMod = 0;
-            Modification modToReplace;
+            Modification* modToReplace;
             std::unordered_map<int, Modification*>::const_iterator dictWithLocalizedMass_iterator = dictWithLocalizedMass.find(j + 2);
             if (dictWithLocalizedMass_iterator != dictWithLocalizedMass.end())
             {
                 modToReplace = dictWithLocalizedMass_iterator->second;
-                massOfExistingMod = static_cast<double>(modToReplace::MonoisotopicMass);
+                massOfExistingMod = modToReplace->getMonoisotopicMass().value();
                 dictWithLocalizedMass.erase(j + 2);
             }
             else
@@ -459,9 +463,9 @@ namespace Proteomics
             }));
 #endif
             StringBuilder *sb = new StringBuilder();
-            sb->appendLine(getFullSequence);
+            sb->appendLine(getFullSequence());
             for (auto m : getAllModsOneIsNterminus() ) {
-                sb->appendLine(m->ToString() );
+                sb->appendLine(std::to_string(static_cast<int>(std::get<0>(m))) + std::get<1>(m)->ToString() );
             }
             return sb->toString();
         }
@@ -473,7 +477,13 @@ namespace Proteomics
                 return q->getFullSequence() == this->getFullSequence();
             }
 
-            return q != nullptr && q->getFullSequence() == this->getFullSequence() && q->getOneBasedStartResidueInProtein() == this->getOneBasedStartResidueInProtein() && (q->getProtein()->getAccession() == "" && this->getProtein()->getAccession() == "" || q->getProtein()->getAccession() == this->getProtein()->getAccession()) && q->getDigestionParams()->getProtease() == this->getDigestionParams()->getProtease();
+            return q != nullptr                                                                   &&
+                q->getFullSequence() == this->getFullSequence()                                   &&
+                q->getOneBasedStartResidueInProtein() == this->getOneBasedStartResidueInProtein() &&
+                ( q->getProtein()->getAccession() == ""                                           &&
+                  (this->getProtein()->getAccession() == ""                               ||
+                   q->getProtein()->getAccession() == this->getProtein()->getAccession()))        &&
+                q->getDigestionParams()->getProtease() == this->getDigestionParams()->getProtease();
         }
 
         int PeptideWithSetModifications::GetHashCode()
@@ -481,7 +491,7 @@ namespace Proteomics
 #ifdef ORIG
             return getFullSequence().GetHashCode() + getDigestionParams()->getProtease()->GetHashCode();
 #endif
-            return StringHelper::GetHashCode(getFullSequence()) + StringHelper::GetHashCode(getDigestionParams()->getProtease());
+            return StringHelper::GetHashCode(getFullSequence()) + getDigestionParams()->getProtease()->GetHashCode();
         }
 
         void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*> &idToMod, std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein)
@@ -509,7 +519,7 @@ namespace Proteomics
             bool currentlyReadingMod = false;
             int bracketCount = 0;
 
-            for (int r = 0; r < getFullSequence().length(); r++)
+            for (int r = 0; r < (int)getFullSequence().length(); r++)
             {
                 char c = getFullSequence()[r];
 
@@ -545,10 +555,11 @@ namespace Proteomics
                             {
                                 delete currentModification;
                                 delete baseSequenceSb;
-                                throw MzLibUtil::MzLibException("Error while trying to parse string into peptide: " + e.what());
+                                std::string message = {"Error while trying to parse string into peptide: "};
+                                throw MzLibUtil::MzLibException(message + e.what());
                             }
 
-                            Modification mod;
+                            Modification *mod;
                             std::unordered_map<std::string, Modification*>::const_iterator idToMod_iterator = idToMod.find(modId);
                             if (idToMod_iterator == idToMod.end())
                             {
@@ -563,7 +574,8 @@ namespace Proteomics
                                 mod = idToMod_iterator->second;
                             }
 
-                            if (mod::LocationRestriction->Contains("C-terminal.") && r == getFullSequence().length() - 1)
+                            if ( (mod->getLocationRestriction().find("C-terminal.") != std::string::npos) &&
+                                 (r == ((int)getFullSequence().length() - 1))    ) 
                             {
                                 currentModificationLocation = baseSequenceSb->length() + 2;
                             }
@@ -623,12 +635,12 @@ namespace Proteomics
             auto subsequence = new StringBuilder();
 
             // modification on peptide N-terminus
-            Modification mod;
-            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(1);
-            if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+            Modification *mod;
+            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(1);
+            if (AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
             {
                 mod = AllModsOneIsNterminus_iterator->second;
-                subsequence->append('[' + mod::ModificationType + ":" + mod::IdWithMotif + ']');
+                subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
             }
             else
             {
@@ -640,11 +652,11 @@ namespace Proteomics
                 subsequence->append(this->operator[](r));
 
                 // modification on this residue
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(r + 2);
-                if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(r + 2);
+                if ( AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
                 {
                     mod = AllModsOneIsNterminus_iterator->second;
-                    subsequence->append('[' + mod::ModificationType + ":" + mod::IdWithMotif + ']');
+                    subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
                 }
                 else
                 {
@@ -653,15 +665,15 @@ namespace Proteomics
             }
 
             // modification on peptide C-terminus
-            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = AllModsOneIsNterminus.find(Length + 2);
-            if (getAllModsOneIsNterminus()_iterator != getAllModsOneIsNterminus().end())
+            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = getAllModsOneIsNterminus().find(getLength() + 2);
+            if (AllModsOneIsNterminus_iterator2 != getAllModsOneIsNterminus().end())
             {
-                mod = AllModsOneIsNterminus_iterator->second;
-                subsequence->append('[' + mod::ModificationType + ":" + mod::IdWithMotif + ']');
+                mod = AllModsOneIsNterminus_iterator2->second;
+                subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
             }
             else
             {
-                mod = AllModsOneIsNterminus_iterator->second;
+                mod = AllModsOneIsNterminus_iterator2->second;
             }
 
             setFullSequence(subsequence->toString());
@@ -674,8 +686,8 @@ namespace Proteomics
             if (getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Unknown)
             {
                 setCleavageSpecificityForFdrCategory(getDigestionParams()->getSpecificProtease()->GetCleavageSpecificity(getProtein()->getBaseSequence(), getOneBasedStartResidueInProtein(), getOneBasedEndResidueInProtein()));
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                setPeptideDescription(getCleavageSpecificityForFdrCategory().ToString());
+                //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                setPeptideDescription(std::to_string(static_cast<int>(getCleavageSpecificityForFdrCategory())) );
             }
         }
     }

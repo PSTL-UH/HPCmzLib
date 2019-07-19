@@ -22,6 +22,7 @@
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
 //namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
+
 //namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
 #include "DigestionParams.h"
 namespace Proteomics { class Protein; }
@@ -37,7 +38,8 @@ using namespace Proteomics::AminoAcidPolymer;
 
 #include "../Fragmentation/FragmentationTerminus.h"
 using namespace Proteomics::Fragmentation;
-namespace Proteomics { namespace Fragmentation { class Product; } }
+
+#include "../Fragmentation/Product.h"
 
 namespace Proteomics
 {

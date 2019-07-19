@@ -46,41 +46,44 @@ namespace Proteomics
 
     public:
         std::string getIdWithMotif() const;
-        void setIdWithMotif(const std::string &value);
         std::string getOriginalId() const;
-        void setOriginalId(const std::string &value);
         std::string getAccession() const;
-        void setAccession(const std::string &value);
         std::string getModificationType() const;
-        void setModificationType(const std::string &value);
         std::string getFeatureType() const;
-        void setFeatureType(const std::string &value);
         ModificationMotif *getTarget() const;
         void setTarget(ModificationMotif *value);
         std::string getLocationRestriction() const;
-        void setLocationRestriction(const std::string &value);
         Chemistry::ChemicalFormula *getChemicalFormula() const;
-        void setChemicalFormula(Chemistry::ChemicalFormula *value);
+
     private:
         std::optional<double> monoisotopicMass;
 
     public:
         std::optional<double> getMonoisotopicMass() const;
-        private:
-        void setMonoisotopicMass(const std::optional<double> &value);
-
         std::unordered_map<std::string, std::vector<std::string>> getDatabaseReference() const;
-        void setDatabaseReference(const std::unordered_map<std::string, std::vector<std::string>> &value);
         std::unordered_map<std::string, std::vector<std::string>> getTaxonomicRange() const;
-        void setTaxonomicRange(const std::unordered_map<std::string, std::vector<std::string>> &value);
         std::vector<std::string> getKeywords() const;
-        void setKeywords(const std::vector<std::string> &value);
         std::unordered_map<DissociationType, std::vector<double>> getNeutralLosses() const;
-        void setNeutralLosses(const std::unordered_map<DissociationType, std::vector<double>> &value);
         std::unordered_map<DissociationType, std::vector<double>> getDiagnosticIons() const;
-        void setDiagnosticIons(const std::unordered_map<DissociationType, std::vector<double>> &value);
         std::string getFileOrigin() const;
+
+    private:
+        void setIdWithMotif(const std::string &value);
+        void setOriginalId(const std::string &value);
+        void setAccession(const std::string &value);
+        void setModificationType(const std::string &value);
+        void setFeatureType(const std::string &value);
+        void setLocationRestriction(const std::string &value);
+        void setChemicalFormula(Chemistry::ChemicalFormula *value);
+        void setMonoisotopicMass(const std::optional<double> &value);
+        void setDatabaseReference(const std::unordered_map<std::string, std::vector<std::string>> &value);
+
+        void setTaxonomicRange(const std::unordered_map<std::string, std::vector<std::string>> &value);
+        void setKeywords(const std::vector<std::string> &value);
+        void setNeutralLosses(const std::unordered_map<DissociationType, std::vector<double>> &value);
+        void setDiagnosticIons(const std::unordered_map<DissociationType, std::vector<double>> &value);
         void setFileOrigin(const std::string &value);
+
     protected:
         static constexpr double tolForEquality = 1e-9;
 
