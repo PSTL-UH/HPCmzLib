@@ -11,10 +11,12 @@
 #include "exceptionhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace ProteolyticDigestion { class DigestionMotif; } }
+//namespace Proteomics { namespace ProteolyticDigestion { class DigestionMotif; } }
+#include "DigestionMotif.h"
 namespace Proteomics { class Protein; }
-namespace Proteomics { namespace ProteolyticDigestion { class ProteolyticPeptide; } }
 
+namespace Proteomics { namespace ProteolyticDigestion { class ProteolyticPeptide; } }
+//#include "ProteolyticPeptide.h"
 
 namespace Proteomics
 {
@@ -87,7 +89,7 @@ namespace Proteomics
             /// <param name="minPeptidesLength"></param>
             /// <param name="maxPeptidesLength"></param>
             /// <returns></returns>
-            static bool OkayLength(std::optional<int> &peptideLength, std::optional<int> &minPeptidesLength, std::optional<int> &maxPeptidesLength);
+            static bool OkayLength(std::optional<int> peptideLength, std::optional<int> minPeptidesLength, std::optional<int> maxPeptidesLength);
 
             /// <summary>
             /// Gets protein intervals for digestion by this specific protease.
@@ -132,7 +134,7 @@ namespace Proteomics
             /// <param name="peptideLength"></param>
             /// <param name="minPeptidesLength"></param>
             /// <returns></returns>
-            static bool OkayMinLength(std::optional<int> &peptideLength, std::optional<int> &minPeptidesLength);
+            static bool OkayMinLength(std::optional<int> peptideLength, std::optional<int> minPeptidesLength);
 
             /// <summary>
             /// Is length of given peptide okay, given maximum?
@@ -140,7 +142,7 @@ namespace Proteomics
             /// <param name="peptideLength"></param>
             /// <param name="maxPeptidesLength"></param>
             /// <returns></returns>
-            static bool OkayMaxLength(std::optional<int> &peptideLength, std::optional<int> &maxPeptidesLength);
+            static bool OkayMaxLength(std::optional<int> peptideLength, std::optional<int> maxPeptidesLength);
         };
     }
 }
