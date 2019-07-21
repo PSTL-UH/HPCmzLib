@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "../Fragmentation/ProductType.h"
+#include "../Fragmentation/FragmentationTerminus.h"
 using namespace Proteomics::Fragmentation;
 
 namespace Proteomics

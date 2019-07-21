@@ -69,12 +69,6 @@ namespace Proteomics
 
             std::string getBaseSequence();
 
-        protected:
-            void setProtein(Proteomics::Protein *value);
-            
-            
-            char operator [](int zeroBasedIndex);
-            
             /// <summary>
             /// Gets the peptides for a specific protein interval
             /// </summary>
@@ -83,7 +77,15 @@ namespace Proteomics
             /// <param name="digestionParams"></param>
             /// <param name="variableModifications"></param>
             /// <returns></returns>
-            std::vector<PeptideWithSetModifications*> GetModifiedPeptides(std::vector<Modification*> &allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> &variableModifications);
+            std::vector<PeptideWithSetModifications*> GetModifiedPeptides(std::vector<Modification*> allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> variableModifications);
+
+            
+        protected:
+            void setProtein(Proteomics::Protein *value);
+            
+            
+            char operator [](int zeroBasedIndex);
+            
             
             /// <summary>
             /// Determines whether given modification can be an N-terminal modification

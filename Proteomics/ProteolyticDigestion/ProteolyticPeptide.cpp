@@ -111,7 +111,7 @@ namespace Proteomics
             return getBaseSequence()[zeroBasedIndex];
         }
 
-        std::vector<PeptideWithSetModifications*> ProteolyticPeptide::GetModifiedPeptides(std::vector<Modification*> &allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> &variableModifications)
+        std::vector<PeptideWithSetModifications*> ProteolyticPeptide::GetModifiedPeptides(std::vector<Modification*> allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> variableModifications)
         {
             int peptideLength = getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1;
             int maximumVariableModificationIsoforms = digestionParams->getMaxModificationIsoforms();

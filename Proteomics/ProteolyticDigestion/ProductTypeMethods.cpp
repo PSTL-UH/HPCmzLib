@@ -1,5 +1,5 @@
 ﻿#include "ProductTypeMethods.h"
-
+#
 using namespace Proteomics::Fragmentation;
 namespace Proteomics
 {
@@ -8,11 +8,20 @@ namespace Proteomics
 
         FragmentationTerminus ProductTypeMethods::IdentifyTerminusType(std::vector<ProductType> &productTypes)
         {
-            if ((std::find(productTypes.begin(), productTypes.end(), ProductType::b) != productTypes.end() || productTypes.Contains(ProductType::c) || productTypes.Contains(ProductType::aDegree)) && (productTypes.Contains(ProductType::y) || productTypes.Contains(ProductType::zDot) || productTypes.Contains(ProductType::zPlusOne) || productTypes.Contains(ProductType::x)))
+            if ( ( (std::find(productTypes.begin(), productTypes.end(), ProductType::b) != productTypes.end())        ||
+                   (std::find(productTypes.begin(), productTypes.end(), ProductType::c) != productTypes.end())        ||
+                   (std::find(productTypes.begin(), productTypes.end(), ProductType::aDegree) !=productTypes.end()))  &&
+                 ( (std::find(productTypes.begin(), productTypes.end(), ProductType::y)    != productTypes.end())     ||
+                   (std::find(productTypes.begin(), productTypes.end(), ProductType::zDot) != productTypes.end())     ||
+                   (std::find(productTypes.begin(), productTypes.end(), ProductType::zPlusOne) != productTypes.end()) ||
+                   (std::find(productTypes.begin(), productTypes.end(), ProductType::x)!= productTypes.end())      )  )
             {
                 return FragmentationTerminus::Both;
             }
-            else if (std::find(productTypes.begin(), productTypes.end(), ProductType::y) != productTypes.end() || productTypes.Contains(ProductType::zDot) || productTypes.Contains(ProductType::zPlusOne) || productTypes.Contains(ProductType::x))
+            else if ( (std::find(productTypes.begin(), productTypes.end(), ProductType::y) != productTypes.end())       ||
+                      (std::find(productTypes.begin(), productTypes.end(), ProductType::zDot)!= productTypes.end())     ||
+                      (std::find(productTypes.begin(), productTypes.end(), ProductType::zPlusOne)!= productTypes.end()) ||
+                      (std::find(productTypes.begin(), productTypes.end(), ProductType::x)!= productTypes.end())        )
             {
                 return FragmentationTerminus::C;
             }

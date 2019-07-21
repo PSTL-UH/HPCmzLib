@@ -21,8 +21,8 @@ namespace Proteomics
             setInitiatorMethionineBehavior(digestionParams->getInitiatorMethionineBehavior());
             setMinPeptideLength(digestionParams->getMinPeptideLength());
             setMaxPeptideLength(digestionParams->getMaxPeptideLength());
-            setAllKnownFixedModifications(allKnownFixedModifications ? allKnownFixedModifications : std::vector<Modification*>());
-            setVariableModifications(variableModifications ? variableModifications : std::vector<Modification*>());
+            setAllKnownFixedModifications(allKnownFixedModifications );
+            setVariableModifications(variableModifications );
         }
 
         Proteomics::ProteolyticDigestion::Protease *ProteinDigestion::getProtease() const
@@ -111,9 +111,9 @@ namespace Proteomics
             std::vector<int> oneBasedIndicesToCleaveAfter = getProtease()->GetDigestionSiteIndices(protein->getBaseSequence()); //get peptide bonds to cleave SPECIFICALLY (termini included)
 
             //it's possible not to go through this loop (maxMissedCleavages+1>number of indexes), and that's okay. It will get digested in the next loops (finish C/N termini)
-            for (int i = 0; i < oneBasedIndicesToCleaveAfter.size() - getMaximumMissedCleavages() - 1; i++)
+            for (int i = 0; i < (int)oneBasedIndicesToCleaveAfter.size() - getMaximumMissedCleavages() - 1; i++)
             {
-                bool retain = getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein[0]);
+                bool retain = getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein->getBaseSequence()[0]);
                 if (retain) //it's okay to use i instead of oneBasedIndicesToCleaveAfter[i], because the index of zero is zero and it only checks if it's the N-terminus or not
                 {
                     int peptideLength = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1] - oneBasedIndicesToCleaveAfter[i];
@@ -124,23 +124,29 @@ namespace Proteomics
                             ProteolyticPeptide tempVar(protein, oneBasedIndicesToCleaveAfter[i] + 1, oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1], getMaximumMissedCleavages(), CleavageSpecificity::Full, "full");
                             peptides.push_back(&tempVar);
                         }
-                        else if (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N) //make something with the maximum length and fixed N
+                        else if (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N) 
                         {
+                            //make something with the maximum length and fixed N
                             int tempIndex = oneBasedIndicesToCleaveAfter[i] + 1;
-                            ProteolyticPeptide tempVar2(protein, tempIndex, tempIndex + getMaxPeptideLength(), getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
+                            ProteolyticPeptide tempVar2(protein, tempIndex, tempIndex + getMaxPeptideLength(),
+                                                        getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
                             peptides.push_back(&tempVar2);
                         }
                         else //It has to be FragmentationTerminus.C //make something with the maximum length and fixed C
                         {
                             int tempIndex = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1];
-                            ProteolyticPeptide tempVar3(protein, tempIndex - getMaxPeptideLength(), tempIndex, getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
+                            ProteolyticPeptide tempVar3(protein, tempIndex - getMaxPeptideLength(), tempIndex,
+                                                        getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
                             peptides.push_back(&tempVar3);
                         }
                     }
                 }
 
-                if (getProtease()->Cleave(i, getInitiatorMethionineBehavior(), protein[0]) && (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N || !retain)) //it's okay to use i instead of oneBasedIndicesToCleaveAfter[i], because the index of zero is zero and it only checks if it's the N-terminus or not
+                if (getProtease()->Cleave(i, getInitiatorMethionineBehavior(), protein->getBaseSequence()[0]) &&
+                    (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N || !retain)) 
                 {
+                    //it's okay to use i instead of oneBasedIndicesToCleaveAfter[i], because the index of zero is
+                    // zero and it only checks if it's the N-terminus or not
                     int peptideLength = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1] - 1;
                     if (peptideLength >= getMinPeptideLength())
                     {
@@ -157,8 +163,9 @@ namespace Proteomics
                         else //It has to be FragmentationTerminus.C //make something with the maximum length and fixed C
                         {
                             //kinda tricky, because we'll be creating a duplication if cleavage is variable
-                            if (!getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein[0])) //only if cleave, because then not made earlier during retain
+                            if (!getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein->getBaseSequence()[0])) 
                             {
+                                //only if cleave, because then not made earlier during retain
                                 int tempIndex = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1];
                                 ProteolyticPeptide tempVar6(protein, tempIndex - getMaxPeptideLength(), tempIndex, getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
                                 peptides.push_back(&tempVar6);
@@ -203,27 +210,77 @@ namespace Proteomics
             }
 
             // Also digest using the proteolysis product start/end indices
+#ifdef ORIG
             peptides.AddRange(protein->getProteolysisProducts().Where([&] (std::any proteolysisProduct)
             {
-                return proteolysisProduct::OneBasedEndPosition.HasValue && proteolysisProduct::OneBasedBeginPosition.HasValue && (proteolysisProduct::OneBasedBeginPosition != 1 || proteolysisProduct::OneBasedEndPosition != protein->getLength());
+                return proteolysisProduct::OneBasedEndPosition.HasValue &&
+                    proteolysisProduct::OneBasedBeginPosition.HasValue &&
+                    (proteolysisProduct::OneBasedBeginPosition != 1 ||
+                     proteolysisProduct::OneBasedEndPosition != protein->getLength());
             })->Select([&] (std::any proteolysisProduct)
             {
-                new ProteolyticPeptide(protein, proteolysisProduct::OneBasedBeginPosition->Value, proteolysisProduct::OneBasedEndPosition->Value, 0, CleavageSpecificity::Full, proteolysisProduct::Type + " start");
+                new ProteolyticPeptide(protein, proteolysisProduct::OneBasedBeginPosition->Value,
+                                       proteolysisProduct::OneBasedEndPosition->Value, 0,
+                                       CleavageSpecificity::Full, proteolysisProduct::Type + " start");
             }));
+#endif
+            for ( auto proteolysisProduct : protein->getProteolysisProducts() ){
+                if ( proteolysisProduct->getOneBasedEndPosition().has_value()     &&
+                     proteolysisProduct->getOneBasedBeginPosition().has_value()   &&
+                     (proteolysisProduct->getOneBasedBeginPosition().value() != 1 ||
+                      proteolysisProduct->getOneBasedEndPosition().value()   != protein->getLength() ) ){
+                    ProteolyticPeptide *p = new ProteolyticPeptide(protein,
+                                                   proteolysisProduct->getOneBasedBeginPosition().value(),
+                                                   proteolysisProduct->getOneBasedEndPosition().value(), 0,
+                                                   CleavageSpecificity::Full,
+                                                   proteolysisProduct->getType() + " start");
+                    peptides.push_back(p);
+                }
+            }
 
+            std::vector<PeptideWithSetModifications*> temppeptides;
+            
+#ifdef ORIG
             return peptides.SelectMany([&] (std::any peptide)
             {
-                peptide::GetModifiedPeptides(getAllKnownFixedModifications(), getDigestionParams(), getVariableModifications());
+                peptide::GetModifiedPeptides(getAllKnownFixedModifications(), getDigestionParams(),
+                                             getVariableModifications());
             });
+#endif
+            for ( auto peptide : peptides ) {
+                std::vector<PeptideWithSetModifications*> ts = peptide->GetModifiedPeptides(getAllKnownFixedModifications(),
+                                                                                       getDigestionParams(),
+                                                                                       getVariableModifications());
+                for ( auto t : ts ) {
+                    temppeptides.push_back (t);
+                }
+            }
+            return temppeptides;
         }
 
         std::vector<PeptideWithSetModifications*> ProteinDigestion::Digestion(Protein *protein)
         {
-            auto unmodifiedPeptides = getProtease()->GetUnmodifiedPeptides(protein, getMaximumMissedCleavages(), getInitiatorMethionineBehavior(), getMinPeptideLength(), getMaxPeptideLength());
+            auto unmodifiedPeptides = getProtease()->GetUnmodifiedPeptides(protein, getMaximumMissedCleavages(),
+                                                                           getInitiatorMethionineBehavior(),
+                                                                           getMinPeptideLength(),
+                                                                           getMaxPeptideLength());
+
+#ifdef ORIG            
             return unmodifiedPeptides.SelectMany([&] (std::any peptide)
             {
                 peptide::GetModifiedPeptides(getAllKnownFixedModifications(), getDigestionParams(), getVariableModifications());
             });
+#endif
+            std::vector<PeptideWithSetModifications*> tmp;
+            for ( auto peptide : unmodifiedPeptides ) {
+                std::vector<PeptideWithSetModifications*> ps = peptide->GetModifiedPeptides(getAllKnownFixedModifications(),
+                                                                                            getDigestionParams(),
+                                                                                            getVariableModifications());
+                for ( auto p : ps ) {
+                    tmp.push_back(p);
+                }
+            }
+            return tmp;
         }
     }
 }
