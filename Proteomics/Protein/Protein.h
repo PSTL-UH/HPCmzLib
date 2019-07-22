@@ -21,7 +21,7 @@
 //namespace Proteomics { class DatabaseReference; }
 #include "DatabaseReference.h"
 
-#include "../ProteolyticDigestion/PeptideWithSetModifications.h"
+#include "../ProteolyticDigestion/ProteinDigestion.h"
 using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
@@ -86,7 +86,6 @@ namespace Proteomics
                 std::vector<SpliceSite*> spliceSites = std::vector<SpliceSite*>(),
                 const std::string &databaseFilePath = "");
 
-#ifdef LATER
         /// <summary>
         /// Protein construction with applied variations
         /// </summary>
@@ -97,16 +96,17 @@ namespace Proteomics
         /// <param name="oneBasedModifications"></param>
         /// <param name="sampleNameForVariants"></param>
         Protein(std::string variantBaseSequence,
-                Protein protein,
+                Protein *protein,
                 std::vector<SequenceVariation*> appliedSequenceVariations,
                 std::vector<ProteolysisProduct*> applicableProteolysisProducts,
                 std::unordered_map<int, std::vector<Modification*>> oneBasedModifications,
-                std::string sampleNameForVariants) :
+                std::string sampleNameForVariants);
+#ifdef LATER
+
         this( variantBaseSequence,
               VariantApplication::GetAccession(protein, appliedSequenceVariations),
               organism: protein::Organism,
-              geneNames: std::vector<std::tuple<std::string,
-              std::string>>(protein::GeneNames),
+              geneNames: std::vector<std::tuple<std::string, std::string>>(protein::GeneNames),
               oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
                                                                                                             {
                                                                                                                 x::Key;
@@ -114,7 +114,7 @@ namespace Proteomics
                                                                                                             {
                                                                                                                 x->Value;
                                                                                                             }) :
-              std::unordered_map<int, std::vector<Modification*>>(),
+                                                                          std::unordered_map<int, std::vector<Modification*>>(),
               proteolysisProducts: std::vector<ProteolysisProduct*>((applicableProteolysisProducts != nullptr) ? applicableProteolysisProducts : std::vector<ProteolysisProduct*>()),
               name: GetName(appliedSequenceVariations, protein->Name),
               fullName: GetName(appliedSequenceVariations, protein->FullName),
@@ -254,9 +254,9 @@ namespace Proteomics
         /// <summary>
         /// Gets peptides for digestion of a protein
         /// </summary>
-        std::vector<PeptideWithSetModifications* > Digest(Proteomics::ProteolyticDigestion::DigestionParams digestionParams,
-                                                          std::vector<Modification*> allKnownFixedModifications,
-                                                          std::vector<Modification*> variableModifications);
+        std::vector<PeptideWithSetModifications* > Digest(DigestionParams *digestionParams,
+                                                          std::vector<Modification*> &allKnownFixedModifications,
+                                                          std::vector<Modification*> &variableModifications);
 
         /// <summary>
         /// Gets proteins with applied variants from this protein
@@ -276,7 +276,7 @@ namespace Proteomics
 
     private:
         void setOneBasedPossibleLocalizedModifications ( const std::unordered_map<int, std::vector<Modification*>> &value);
-        std::unordered_map<int, std::vector<Modification*>> SelectValidOneBaseMods( std::unordered_map<int, std::vector<Modification*>>  dict);
-        std::string GetName(  std::vector<SequenceVariation*> appliedVariations, std::string name);
+        std::unordered_map<int, std::vector<Modification*>> SelectValidOneBaseMods( std::unordered_map<int, std::vector<Modification*>>  &dict);
+        std::string GetName(  std::vector<SequenceVariation*> &appliedVariations, const std::string &name);
     };
 }

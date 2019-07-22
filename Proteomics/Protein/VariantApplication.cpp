@@ -11,8 +11,11 @@ namespace Proteomics
     std::string VariantApplication::GetAccession(Protein *protein, std::vector<SequenceVariation*> &appliedSequenceVariations)
     {
         std::vector<std::string> accSplit = StringHelper::split(protein->getAccession(), '_');
-        std::string baseAcc = StringHelper::startsWith(protein->getAccession(), "DECOY_") ? StringHelper::formatSimple("{0}_{1}", accSplit[0], accSplit[1]) : accSplit[0];
-        return baseAcc + (appliedSequenceVariations.empty() || appliedSequenceVariations.size()() == 0 ? "" : StringHelper::formatSimple("_{0}", CombineSimpleStrings(appliedSequenceVariations)));
+        std::string baseAcc = StringHelper::startsWith(protein->getAccession(), "DECOY_") ?
+            StringHelper::formatSimple("{0}_{1}", accSplit[0], accSplit[1]) : accSplit[0];
+        return baseAcc + (appliedSequenceVariations.empty() ||
+                          appliedSequenceVariations.size() == 0 ? "" :
+                          StringHelper::formatSimple("_{0}", CombineSimpleStrings(appliedSequenceVariations)));
     }
 
     bool VariantApplication::IsSequenceVariantModification(SequenceVariation *appliedVariant, int variantProteinIndex)
@@ -22,6 +25,7 @@ namespace Proteomics
 
     int VariantApplication::RestoreModificationIndex(Protein *protein, int variantProteinIndex)
     {
+#ifdef ORIG
         return variantProteinIndex - protein->getAppliedSequenceVariations().Where([&] (std::any v)
         {
             return v::OneBasedEndPosition < variantProteinIndex;
@@ -29,26 +33,66 @@ namespace Proteomics
         {
             return v::VariantSequence->Length - v::OriginalSequence->Length;
         });
+#endif
+        std::vector<SequenceVariation*> v1;
+        for ( auto v: protein->getAppliedSequenceVariations() ) {
+            if ( v->getOneBasedEndPosition() < variantProteinIndex ) {
+                v1.push_back (v);
+            }
+        }
+        int sum =0;
+        for ( auto v : v1 ) {
+            sum += v->getVariantSequence().length() - v->getOriginalSequence().length();
+        }
+        return sum;
     }
 
     std::string VariantApplication::CombineSimpleStrings(std::vector<SequenceVariation*> &variations)
     {
-        return variations.empty() || variations.size()() == 0? "" : std::string::Join("_", variations.Select([&] (std::any v)
+#ifdef ORIG
+        return variations.empty() || variations.size() == 0? "" : std::string::Join("_", variations.Select([&] (std::any v)
         {
             v::SimpleString();
         }));
+#endif
+        std::string s;
+        for ( auto v = variations.begin(); v != variations.end(); v++ ) {
+            SequenceVariation *vv= *v;
+            if ( std::next(v) == variations.end() ) {
+                s += vv->SimpleString();
+            }
+            else {
+                s += vv->SimpleString() + "_";
+            }
+        }
+        return variations.empty() || variations.size() == 0? "" : s;
     }
 
     std::string VariantApplication::CombineDescriptions(std::vector<SequenceVariation*> &variations)
     {
-        return variations.empty() || variations.size()() == 0 ? "" : std::string::Join(", variant:", variations.Select([&] (std::any d)
+#ifdef ORIG
+        return variations.empty() || variations.size() == 0 ? "" : std::string::Join(", variant:", variations.Select([&] (std::any d)
         {
             d::Description;
         }));
+#endif
+        std::string s;
+        for ( auto d = variations.begin(); d != variations.end(); d++ ) {
+            SequenceVariation *vv= *d;
+            if ( std::next(d) == variations.end() ) {
+                s += vv->getDescription()->getDescription();
+            }
+            else {
+                s += vv->getDescription()->getDescription() + ", variant:";
+            }
+        }
+        return variations.empty() || variations.size() == 0? "" : s;
     }
+
 
     std::vector<Protein*> VariantApplication::ApplyVariants(Protein *protein, std::vector<SequenceVariation*> &sequenceVariations, int maxAllowedVariantsForCombinitorics, int minAlleleDepth)
     {
+#ifdef ORIG
         std::vector<SequenceVariation*> uniqueEffectsToApply = sequenceVariations.GroupBy([&] (std::any v)
         {
             v::SimpleString();
@@ -62,8 +106,30 @@ namespace Proteomics
         {
             v::OneBasedBeginPosition;
         }).ToList();
+#endif
+        std::sort(sequenceVariations.begin(), sequenceVariations.end(), [&] (SequenceVariation* a, SequenceVariation* b) {
+                return a->SimpleString() > b->SimpleString();
+            });
+        std::vector<SequenceVariation*> CopyOfsequenceVariations = sequenceVariations;
+        std::vector<SequenceVariation*>::iterator ip;
+        std::unique(CopyOfsequenceVariations.begin(), CopyOfsequenceVariations.end(), [&] (SequenceVariation* a, SequenceVariation* b){
+            return a->SimpleString() == b->SimpleString();
+            });
+        CopyOfsequenceVariations.resize(std::distance(CopyOfsequenceVariations.begin(), ip));   
 
-        Protein *proteinCopy = new Protein(protein->getBaseSequence(), protein, std::vector<SequenceVariation>(), protein->getProteolysisProducts(), protein->getOneBasedPossibleLocalizedModifications(), "");
+        std::vector<SequenceVariation*> uniqueEffectsToApply;
+        for ( auto v :  CopyOfsequenceVariations ) {
+            if ( v->getDescription()->getGenotypes().size() > 0 ) {
+                uniqueEffectsToApply.push_back(v);
+            }
+        }
+        std::sort(uniqueEffectsToApply.begin(), uniqueEffectsToApply.end(), [&] (SequenceVariation* a, SequenceVariation* b){
+                return a->getOneBasedBeginPosition() > b->getOneBasedBeginPosition();
+            });
+        
+        
+        Protein *proteinCopy = new Protein(protein->getBaseSequence(), protein, std::vector<SequenceVariation *>(),
+                                           protein->getProteolysisProducts(), protein->getOneBasedPossibleLocalizedModifications(), "");
 
         // If there aren't any variants to apply, just return the base protein
         if (uniqueEffectsToApply.empty())
@@ -72,44 +138,126 @@ namespace Proteomics
             return std::vector<Protein*> {proteinCopy};
         }
 
+#ifdef ORIG
         std::unordered_set<std::string> individuals = std::unordered_set<std::string>(uniqueEffectsToApply.SelectMany([&] (std::any v)
         {
             v::Description->Genotypes->Keys;
         }));
+#endif
+        std::unordered_set<std::string> individuals;
+        for ( auto v : uniqueEffectsToApply  ) {
+            std::unordered_map<std::string, std::vector<std::string>> geno = v->getDescription()->getGenotypes();
+            for ( auto g = geno.begin(); g != geno.end(); g++ ) {
+                std::vector<std::string> s = g->second;
+                for ( auto thisstring: s ) {
+                    individuals.insert(thisstring);
+                }
+            }
+        }
+        
         std::vector<Protein*> variantProteins;
 
         // loop through genotypes for each sample/individual (e.g. tumor and normal)
         for (auto individual : individuals)
         {
+#ifdef ORIG
             bool tooManyHeterozygousVariants = uniqueEffectsToApply.size()([&] (std::any v)
             {
                 v::Description->Heterozygous[individual];
             }) > maxAllowedVariantsForCombinitorics;
+#endif
+            int count =0;
+            for ( auto v : uniqueEffectsToApply  ) {
+                if ( v->getDescription()->getHeterozygous()[individual] ) {
+                    count++;
+                }
+            }
+            bool tooManyHeterozygousVariants = count > maxAllowedVariantsForCombinitorics;
+
+
             std::vector<Protein*> newVariantProteins = {proteinCopy};
             for (auto variant : uniqueEffectsToApply)
             {
+#ifdef ORIG
                 bool variantAlleleIsInTheGenotype = variant->getDescription()->getGenotypes()[individual]->Contains(std::to_string(variant->getDescription()->getAlleleIndex())); // should catch the case where it's -1 if the INFO isn't from SnpEff
+#endif
+                bool variantAlleleIsInTheGenotype = false;
+                std::vector<std::string> svector = variant->getDescription()->getGenotypes()[individual];
+                std::string singleitem = std::to_string(variant->getDescription()->getAlleleIndex());
+                for ( auto s: svector ) {
+                    if (s == singleitem ) {
+                        variantAlleleIsInTheGenotype = true;
+                        break;
+                    }
+                }
+
                 if (!variantAlleleIsInTheGenotype)
                 {
                     continue;
                 }
+#ifdef ORIG
                 bool isHomozygousAlternate = variant->getDescription()->getHomozygous()[individual] && variant->getDescription()->getGenotypes()[individual]->All([&] (std::any d)
                 {
                 delete proteinCopy;
                     return d == std::to_string(variant->getDescription()->getAlleleIndex());
-                }); // note this isn't a great test for homozygosity, since the genotype could be 1/2 and this would still return true. But currently, alleles 1 and 2 will be included as separate variants, so this is fine for now.
+                });
+                // note this isn't a great test for homozygosity, since the genotype could be 1/2 and this would still
+                //return true. But currently, alleles 1 and 2 will be included as separate variants, so this is fine for now.
+#endif
+                bool isHomozygousAlternate =  variant->getDescription()->getHomozygous()[individual];
+                // std::vector<std::string> svector = variant->getDescription()->getGenotypes()[individual];
+                for ( auto d : svector ) {
+                    if ( d != std::to_string(variant->getDescription()->getAlleleIndex()) ) {
+                        isHomozygousAlternate = false;
+                        break;
+                    }
+                }
+                
+#ifdef ORIG
                 int depthRef;
-                bool isDeepReferenceAllele = int::TryParse(variant->getDescription()->getAlleleDepths()[individual][0], depthRef) && depthRef >= minAlleleDepth;
-                int depthAlt;
-                bool isDeepAlternateAllele = int::TryParse(variant->getDescription()->getAlleleDepths()[individual][variant->getDescription()->getAlleleIndex()], depthAlt) && depthAlt >= minAlleleDepth;
+                bool isDeepReferenceAllele = int::TryParse(variant->getDescription()->getAlleleDepths()[individual][0], depthRef) &&
+                    depthRef >= minAlleleDepth;
 
+                int depthAlt;
+                bool isDeepAlternateAllele = int::TryParse(variant->getDescription()->getAlleleDepths()[individual][variant->getDescription()->getAlleleIndex()], depthAlt) &&
+                    depthAlt >= minAlleleDepth;
+#endif
+                std::string s1 = variant->getDescription()->getAlleleDepths()[individual][0];
+                bool isDeepReferenceAllele=false;
+                try {
+                    int depthRef = std::stoi(s1);
+                    if ( depthRef >= minAlleleDepth ) {
+                        isDeepReferenceAllele = true;
+                    }                          
+                }
+                catch(std::invalid_argument& e) {
+                    //don't do anything.
+                }
+
+                std::string s2 = variant->getDescription()->getAlleleDepths()[individual][variant->getDescription()->getAlleleIndex()];
+                bool isDeepAlternateAllele = false;
+                try {
+                    int depthAlt = std::stoi(s2);
+                    if (  depthAlt >= minAlleleDepth ) {
+                        isDeepAlternateAllele = true;
+                    }
+                }
+                catch(std::invalid_argument& e) {
+                    //don't do anything.
+                }
+                                  
                 // homozygous alternate
                 if (isHomozygousAlternate && isDeepAlternateAllele)
                 {
+#ifdef ORIG
                     newVariantProteins = newVariantProteins.Select([&] (std::any p)
                     {
                         ApplySingleVariant(variant, p, individual);
                     }).ToList();
+#endif
+                    for ( auto p : newVariantProteins ) {
+                        newVariantProteins.push_back( ApplySingleVariant(variant, p, individual));
+                    }
                 }
 
                 // heterozygous basic
@@ -134,10 +282,15 @@ namespace Proteomics
                     }
                     else if (isDeepAlternateAllele && maxAllowedVariantsForCombinitorics > 0)
                     {
+#ifdef ORIG
                         newVariantProteins = newVariantProteins.Select([&] (std::any p)
                         {
                             ApplySingleVariant(variant, p, individual);
                         }).ToList();
+#endif
+                        for ( auto p : newVariantProteins ) {
+                            newVariantProteins.push_back( ApplySingleVariant(variant, p, individual));
+                        }
                     }
                     else
                     {

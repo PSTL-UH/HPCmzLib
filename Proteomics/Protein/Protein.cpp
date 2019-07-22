@@ -7,6 +7,8 @@
 #include "DatabaseReference.h"
 #include "../Modifications/ModificationLocalization.h"
 
+#include "stringhelper.h"
+
 //using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
@@ -49,7 +51,7 @@ namespace Proteomics
         privateAppliedSequenceVariations = appliedSequenceVariations ? appliedSequenceVariations : std::vector<SequenceVariation*>();
         setOriginalNonVariantModifications(oneBasedModifications ? oneBasedModifications : std::unordered_map<int, std::vector<Modification*>>());
 #endif
-        // EG: in Theory, a reference can never have a null value;
+        // EG: in Theory, a reference can never have a null value in C++;
         privateGeneNames = geneNames;
         privateProteolysisProducts = proteolysisProducts;
         privateSequenceVariations = sequenceVariations;
@@ -62,9 +64,9 @@ namespace Proteomics
         else  {
             setOneBasedPossibleLocalizedModifications(std::unordered_map<int, std::vector<Modification*>>());
         }
-        privateDatabaseReferences = databaseReferences ? databaseReferences : std::vector<DatabaseReference*>();
-        privateDisulfideBonds = disulfideBonds ? disulfideBonds : std::vector<DisulfideBond*>();
-        privateSpliceSites = spliceSites ? spliceSites : std::vector<SpliceSite*>();
+        privateDatabaseReferences = databaseReferences ;
+        privateDisulfideBonds = disulfideBonds;
+        privateSpliceSites = spliceSites;
     }
 
     std::unordered_map<int, std::vector<Modification*>> Protein::getOneBasedPossibleLocalizedModifications() const
@@ -149,7 +151,7 @@ namespace Proteomics
 
     int Protein::getLength() const
     {
-        return privateBaseSequence->getLength();
+        return privateBaseSequence.length();
     }
 
     std::string Protein::getFullDescription() const
@@ -177,7 +179,7 @@ namespace Proteomics
         return privateOriginalNonVariantModifications;
     }
 
-    void Protein::setOriginalNonVariantModifications(const std::unordered_map<int, std::vector<Modification*>> &value)
+    void Protein::setOriginalNonVariantModifications(std::unordered_map<int, std::vector<Modification*>> &value)
     {
         privateOriginalNonVariantModifications = value;
     }
@@ -191,30 +193,60 @@ namespace Proteomics
 
     std::string Protein::GetUniProtFastaHeader()
     {
-        auto n = privateGeneNames::FirstOrDefault();
+#ifdef ORIG
+        auto n = privateGeneNames->FirstOrDefault();
         std::string geneName = n == nullptr ? "" : n->Item2;
-        return std::string::Format("mz|{0}|{1} {2} OS={3} GN={4}", privateAccession, privateName,
-                                   privateFullName, privateOrganism, privategeneName);
+#endif
+        std::tuple<std::string, std::string> n = privateGeneNames[0];
+        std::string geneName = std::get<1>(n);
+
+#ifdef ORIG
+        return StringHelper::formatSimple("mz|{0}|{1} {2} OS={3} GN={4}", privateAccession, privateName,
+                                   privateFullName, privateOrganism, geneName);
+#endif
+        std::string s = "mz|" + privateAccession + "|" + privateName + " " + privateFullName + " OS= " +
+            privateOrganism + " GN=" +  geneName;
+        return s;
     }
 
     std::string Protein::GetEnsemblFastaHeader()
     {
-        return StringHelper::formatSimple("{0} {1}", Accession, FullName);
+        return StringHelper::formatSimple("{0} {1}", privateAccession, privateFullName);
     }
 
-    bool Protein::Equals(std::any obj)
+    bool Protein::Equals(Protein *obj)
     {
+#ifdef ORIG
+        // C++ Note: this is Microsoft C++ extension not supported by g++
         return __super::Equals(obj);
+        // Using the version from the current repository ( 07/21/2019) instead
+        // of the previos verions. The C# code is as follows.
+        // Protein otherProtein = (Protein)obj;
+        // return otherProtein != null && otherProtein.Accession.Equals(Accession) &&
+        // otherProtein.BaseSequence.Equals(BaseSequence);
+#endif
+        return obj != nullptr                           && 
+            privateAccession    == obj->getAccession()  &&
+            privateBaseSequence == obj->getBaseSequence() ;
     }
 
     int Protein::GetHashCode()
     {
+#ifdef ORIG
         return __super::GetHashCode();
+        // Using the version from the current repository (07/21/2019) instead
+        // of the one used by the convertor. Original C# code is as follows.
+        //  return this.BaseSequence.GetHashCode();
+#endif
+        return StringHelper::GetHashCode(privateBaseSequence);
     }
-
-    std::vector<PeptideWithSetModifications*> Protein::Digest(DigestionParams *digestionParams, std::vector<Modification*> &allKnownFixedModifications, std::vector<Modification*> &variableModifications)
+    
+    std::vector<PeptideWithSetModifications*> Protein::Digest(DigestionParams *digestionParams,
+                                                              std::vector<Modification*> &allKnownFixedModifications,
+                                                              std::vector<Modification*> &variableModifications)
     {
-        ProteinDigestion *digestion = new ProteinDigestion(digestionParams, allKnownFixedModifications, variableModifications);
+        ProteinDigestion *digestion = new ProteinDigestion(digestionParams, allKnownFixedModifications,
+                                                           variableModifications);
 
         //delete digestion;
         return digestionParams->getSearchModeType() == CleavageSpecificity::Semi ? digestion->SpeedySemiSpecificDigestion(this) : digestion->Digestion(this);
@@ -222,38 +254,44 @@ namespace Proteomics
 
     std::vector<Protein*> Protein::GetVariantProteins(int maxAllowedVariantsForCombinitorics, int minAlleleDepth)
     {
-        return VariantApplication::ApplyVariants(this, SequenceVariations, maxAllowedVariantsForCombinitorics, minAlleleDepth);
+        return VariantApplication::ApplyVariants(this, privateSequenceVariations,
+                                                 maxAllowedVariantsForCombinitorics,
+                                                 minAlleleDepth);
     }
 
     void Protein::RestoreUnfilteredModifications()
     {
-        OneBasedPossibleLocalizedModifications = OriginalNonVariantModifications;
+        privateOneBasedPossibleLocalizedModifications = privateOriginalNonVariantModifications;
     }
 
     std::unordered_map<int, std::vector<Modification*>> Protein::SelectValidOneBaseMods(std::unordered_map<int, std::vector<Modification*>> &dict)
     {
         std::unordered_map<int, std::vector<Modification*>> validModDictionary;
-        for (auto entry : dict)
+        for (auto entry =dict.begin(); entry != dict.end(); entry++ )
         {
             std::vector<Modification*> validMods;
-            for (auto m : entry.Value)
+            for (auto m : entry->second )
             {
-                //mod must be valid mod and the motif of the mod must be present in the protein at the specified location
-                if (m->getValidModification() && ModificationLocalization::ModFits(m, BaseSequence, 0, BaseSequence->Length, entry.first))
+                // mod must be valid mod and the motif of the mod must be present in the protein at the
+                // specified location
+                if (m->getValidModification() && ModificationLocalization::ModFits(m, privateBaseSequence, 0,
+                                                                                   privateBaseSequence.length(),
+                                                                                   entry->first))
                 {
                     validMods.push_back(m);
                 }
             }
 
-            if (validMods.Any())
+            if (!validMods.empty())
             {
-                if (validModDictionary.Keys->Contains(entry.first))
+                if (validModDictionary.find(entry->first) != validModDictionary.end() )
                 {
-                    validModDictionary[entry.first].insert(validModDictionary[entry.first].end(), validMods.begin(), validMods.end());
+                    validModDictionary[entry->first].insert(validModDictionary[entry->first].end(),
+                                                            validMods.begin(), validMods.end());
                 }
                 else
                 {
-                    validModDictionary.emplace(entry.first, validMods);
+                    validModDictionary.emplace(entry->first, validMods);
                 }
             }
         }
@@ -262,7 +300,7 @@ namespace Proteomics
 
     std::string Protein::GetName(std::vector<SequenceVariation*> &appliedVariations, const std::string &name)
     {
-        bool emptyVars = appliedVariations.empty() || appliedVariations.size()() == 0;
+        bool emptyVars = appliedVariations.empty() || appliedVariations.size() == 0;
         if (name == "" && emptyVars)
         {
             return "";

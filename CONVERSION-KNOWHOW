@@ -109,3 +109,10 @@
   
    int index = std::binary_search(privateXArray.begin(), privateXArray.end(), x);
 
+
+13. Contains() method for IDictionary becomes a find() operation on
+    std::unordered_map
+    e.g. in C#
+       validModDictionary.Keys->Contains(entry.first)
+    becomes in C++
+       validModDictionary.find(entry->first) != validModDictionary.end()

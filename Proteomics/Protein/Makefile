@@ -21,13 +21,13 @@ HEADER =  DatabaseReference.h           \
 	  SpliceSite.h
 
 OBJ =     DatabaseReference.o           \
-	  Protein.o                     \
 	  SequenceVariantDescription.o  \
-	  SnpEffAnnotation.o            \
-	  VariantApplication.o          \
 	  DisulfideBond.o               \
 	  ProteolysisProduct.o          \
 	  SequenceVariation.o           \
+	  Protein.o                     \
+	  VariantApplication.o          \
+	  SnpEffAnnotation.o            \
 	  SpliceSite.o
 
 

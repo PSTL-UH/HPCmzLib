@@ -7,10 +7,17 @@
 #include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class Protein; }
-namespace Proteomics { class SequenceVariation; }
-namespace Proteomics { class ProteolysisProduct; }
-namespace Proteomics { class Modification; }
+//namespace Proteomics { class Protein; }
+#include "Protein.h"
+
+//namespace Proteomics { class SequenceVariation; }
+#include "SequenceVariation.h"
+
+//namespace Proteomics { class ProteolysisProduct; }
+#include "ProteolysisProduct.h"
+
+//namespace Proteomics { class Modification; }
+#include "../Modifications/Modification.h"
 
 
 namespace Proteomics
