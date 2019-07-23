@@ -3,17 +3,17 @@
 
 namespace Proteomics {
 
-    ProteolysisProduct::ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::string &type) {
+    ProteolysisProduct::ProteolysisProduct(std::optional<int> oneBasedBeginPosition, std::optional<int> oneBasedEndPosition, const std::string &type) {
         privateOneBasedBeginPosition = oneBasedBeginPosition;
         privateOneBasedEndPosition = oneBasedEndPosition;
         privateType = type;
     }
 
-    Nullable<int> ProteolysisProduct::getOneBasedBeginPosition() const {
+    std::optional<int> ProteolysisProduct::getOneBasedBeginPosition() const {
         return privateOneBasedBeginPosition;
     }
 
-    Nullable<int> ProteolysisProduct::getOneBasedEndPosition() const {
+    std::optional<int> ProteolysisProduct::getOneBasedEndPosition() const {
         return privateOneBasedEndPosition;
     }
 
@@ -30,12 +30,12 @@ namespace Proteomics {
 
     int ProteolysisProduct::GetHashCode() {
         int hash1=0;
-        Nullable<int> i1 = getOneBasedBeginPosition();      
+        std::optional<int> i1 = getOneBasedBeginPosition();      
         if ( i1.has_value() ) {
             hash1 = StringHelper::GetHashCode(std::to_string(i1.value()));
         }
         int hash2=0;
-        Nullable<int> i2 = getOneBasedEndPosition();      
+        std::optional<int> i2 = getOneBasedEndPosition();      
         if ( i2.has_value() ) {
             hash2 = StringHelper::GetHashCode(std::to_string(i2.value()));
         }

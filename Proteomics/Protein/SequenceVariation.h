@@ -33,7 +33,7 @@ namespace Proteomics {
         /// <param name="VariantSequence"></param>
         /// <param name="oneBasedModifications"></param>        
     public:
-        SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications);
+        SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> oneBasedModifications);
 
         /// </summary>
         /// For variations with only position information (not begin and end).
@@ -43,7 +43,7 @@ namespace Proteomics {
         /// <param name="VariantSequence"></param>
         /// <param name="Description"></param>
         /// <param name="oneBasedModifications"></param>
-    SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications);
+    SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> oneBasedModifications);
 
         /// <summary>
         /// Beginning position of original sequence to be replaced

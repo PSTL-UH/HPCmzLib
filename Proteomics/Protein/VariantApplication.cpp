@@ -112,7 +112,7 @@ namespace Proteomics
             });
         std::vector<SequenceVariation*> CopyOfsequenceVariations = sequenceVariations;
         std::vector<SequenceVariation*>::iterator ip;
-        std::unique(CopyOfsequenceVariations.begin(), CopyOfsequenceVariations.end(), [&] (SequenceVariation* a, SequenceVariation* b){
+        ip = std::unique(CopyOfsequenceVariations.begin(), CopyOfsequenceVariations.end(), [&] (SequenceVariation* a, SequenceVariation* b){
             return a->SimpleString() == b->SimpleString();
             });
         CopyOfsequenceVariations.resize(std::distance(CopyOfsequenceVariations.begin(), ip));   
@@ -185,7 +185,7 @@ namespace Proteomics
                 std::vector<std::string> svector = variant->getDescription()->getGenotypes()[individual];
                 std::string singleitem = std::to_string(variant->getDescription()->getAlleleIndex());
                 for ( auto s: svector ) {
-                    if (s == singleitem ) {
+                    if ( s.find(singleitem) != std::string::npos ) {
                         variantAlleleIsInTheGenotype = true;
                         break;
                     }
@@ -308,22 +308,34 @@ namespace Proteomics
                         if (isDeepAlternateAllele && maxAllowedVariantsForCombinitorics > 0 && isDeepReferenceAllele)
                         {
                             // keep reference allele
+#ifdef ORIG
                             if (variant->getDescription()->getGenotypes()[individual]->Contains("0"))
                             {
                                 combinitoricProteins.push_back(ppp);
                             }
-
-                            // alternate allele (replace all, since in heterozygous with two alternates, both alternates are included)
+#endif
+                            std::vector<std::string> genotypes = variant->getDescription()->getGenotypes()[individual];
+                            for ( auto genotype : genotypes ) {
+                                if ( genotype.find("0" ) != std::string::npos ) {
+                                    combinitoricProteins.push_back(ppp);                                    
+                                }
+                            }
+                            
+                            // alternate allele (replace all, since in heterozygous with two alternates,
+                            // both alternates are included)
                             combinitoricProteins.push_back(ApplySingleVariant(variant, ppp, individual));
                         }
                         else if (isDeepAlternateAllele && maxAllowedVariantsForCombinitorics > 0)
                         {
                             combinitoricProteins.push_back(ApplySingleVariant(variant, ppp, individual));
                         }
+#ifdef ORIG
+                        // C++ this looks like an exact duplicate of the if statement above. Skipping.
                         else if (variant->getDescription()->getGenotypes()[individual]->Contains("0"))
                         {
                             combinitoricProteins.push_back(ppp);
                         }
+#endif
                         else
                         {
                             // must be two alternate alleles with not enough depth
@@ -336,6 +348,8 @@ namespace Proteomics
         }
 
         delete proteinCopy;
+
+#ifdef ORIG
         return variantProteins.GroupBy([&] (std::any x)
         {
             x::BaseSequence;
@@ -343,8 +357,19 @@ namespace Proteomics
         {
             x::First();
         }).ToList();
+#endif
+        std::sort(variantProteins.begin(), variantProteins.end(), [&] (Protein* a, Protein* b) {
+                return a->getBaseSequence() > b->getBaseSequence();
+            });
+        std::vector<Protein*>::iterator it;
+        it = std::unique(variantProteins.begin(), variantProteins.end(), [&] (Protein* a, Protein* b){
+            return a->getBaseSequence() == b->getBaseSequence();
+            });
+        variantProteins.resize(std::distance(variantProteins.begin(), it));   
 
-        delete proteinCopy;
+        return variantProteins;
+        
+        
     }
 
     Protein *VariantApplication::ApplySingleVariant(SequenceVariation *variantGettingApplied, Protein *protein, const std::string &individual)
@@ -353,49 +378,89 @@ namespace Proteomics
         std::string seqVariant = variantGettingApplied->getVariantSequence();
         int afterIdx = variantGettingApplied->getOneBasedBeginPosition() + variantGettingApplied->getOriginalSequence().length() - 1;
 
-        SequenceVariation *variantAfterApplication = new SequenceVariation(variantGettingApplied->getOneBasedBeginPosition(), variantGettingApplied->getOneBasedBeginPosition() + variantGettingApplied->getVariantSequence().length() - 1, variantGettingApplied->getOriginalSequence(), variantGettingApplied->getVariantSequence(), variantGettingApplied->getDescription()->getDescription(), variantGettingApplied->getOneBasedModifications().ToDictionary([&] (std::any kv)
-        {
-            kv::Key;
-        }, [&] (std::any kv)
-        {
-            kv->Value;
-        }));
-
+        SequenceVariation *variantAfterApplication = new SequenceVariation(variantGettingApplied->getOneBasedBeginPosition(),
+              variantGettingApplied->getOneBasedBeginPosition() + variantGettingApplied->getVariantSequence().length() - 1,
+              variantGettingApplied->getOriginalSequence(),
+              variantGettingApplied->getVariantSequence(),
+              variantGettingApplied->getDescription()->getDescription(),
+              variantGettingApplied->getOneBasedModifications());
+#ifdef ORIG
+//              variantGettingApplied->getOneBasedModifications().ToDictionary([&] (std::any kv)
+//        {
+//            kv::Key;
+//        }, [&] (std::any kv)
+//        {
+//            kv->Value;
+//        });
+#endif
         // check to see if there is incomplete indel overlap, which would lead to weird variant sequences
         // complete overlap is okay, since it will be overwritten; this can happen if there are two alternate alleles,
         //    e.g. reference sequence is wrong at that point
+ 
+#ifdef ORIG
         bool intersectsAppliedRegionIncompletely = protein->getAppliedSequenceVariations().Any([&] (std::any x)
         {
-        delete variantAfterApplication;
+            // C++: not sure why the converter added this delete statement, I do not see anything related
+            //     to it in the original C# code.
+            // delete variantAfterApplication;
             return variantGettingApplied->Intersects(x) && !variantGettingApplied->Includes(x);
         });
+#endif        
+        bool intersectsAppliedRegionIncompletely = false;
+        for ( auto x: protein->getAppliedSequenceVariations() ) {
+            if ( variantGettingApplied->Intersects(x) && !variantGettingApplied->Includes(x) ) {
+                intersectsAppliedRegionIncompletely = true;
+                break;
+            }
+        }
         std::vector<SequenceVariation*> appliedVariations = {variantAfterApplication};
         std::string seqAfter = "";
         if (intersectsAppliedRegionIncompletely)
         {
             // use original protein sequence for the remaining sequence
-            seqAfter = protein->getBaseSequence().length() - afterIdx <= 0 ? "" : protein->getNonVariantProtein()->getBaseSequence().substr(afterIdx);
+            seqAfter = protein->getBaseSequence().length() - afterIdx <= 0 ? "" :
+                protein->getNonVariantProtein()->getBaseSequence().substr(afterIdx);
         }
         else
         {
             // use this variant protein sequence for the remaining sequence
-            seqAfter = protein->getBaseSequence().length() - afterIdx <= 0 ? "" : protein->getBaseSequence().substr(afterIdx);
+            seqAfter = protein->getBaseSequence().length() - afterIdx <= 0 ? "" :
+                protein->getBaseSequence().substr(afterIdx);
+#ifdef ORIG
             appliedVariations = appliedVariations.Concat(protein->getAppliedSequenceVariations().Where([&] (std::any x)
             {
                 !variantGettingApplied->Includes(x);
             }))->ToList();
+#endif
+            for ( auto x : protein->getAppliedSequenceVariations() ) {
+                if (  !variantGettingApplied->Includes(x) ) {
+                    appliedVariations.push_back(x);
+                }
+            }
         }
+#ifdef ORIG
         std::string variantSequence = (seqBefore + seqVariant + seqAfter).Split('*')[0]; // there may be a stop gained
-
+#endif
+        std::string variantSequence = (StringHelper::split((seqBefore + seqVariant + seqAfter), '*'))[0];
+        
         // adjust indices
-        std::vector<ProteolysisProduct*> adjustedProteolysisProducts = AdjustProteolysisProductIndices(variantGettingApplied, variantSequence, protein, protein->getProteolysisProducts());
-        std::unordered_map<int, std::vector<Modification*>> adjustedModifications = AdjustModificationIndices(variantGettingApplied, variantSequence, protein);
-        std::vector<SequenceVariation*> adjustedAppliedVariations = AdjustSequenceVariationIndices(variantGettingApplied, variantSequence, appliedVariations);
-
+        std::vector<Proteomics::ProteolysisProduct*> tmp = protein->getProteolysisProducts();
+        std::vector<Proteomics::ProteolysisProduct*> &t = tmp;
+        std::vector<ProteolysisProduct*> adjustedProteolysisProducts = AdjustProteolysisProductIndices(variantGettingApplied,
+                                                                                                       variantSequence,
+                                                                                                       protein, t);
+        std::unordered_map<int, std::vector<Modification*>> adjustedModifications = AdjustModificationIndices(variantGettingApplied,
+                                                                                                              variantSequence,
+                                                                                                              protein);
+        std::vector<SequenceVariation*> adjustedAppliedVariations = AdjustSequenceVariationIndices(variantGettingApplied,
+                                                                                                   variantSequence,
+                                                                                                   appliedVariations);
+        
         delete variantAfterApplication;
-        return new Protein(variantSequence, protein, adjustedAppliedVariations, adjustedProteolysisProducts, adjustedModifications, individual);
+        return new Protein(variantSequence, protein, adjustedAppliedVariations, adjustedProteolysisProducts,
+                           adjustedModifications, individual);
     }
-
+        
     std::vector<SequenceVariation*> VariantApplication::AdjustSequenceVariationIndices(SequenceVariation *variantGettingApplied, const std::string &variantAppliedProteinSequence, std::vector<SequenceVariation*> &alreadyAppliedVariations)
     {
         std::vector<SequenceVariation*> variations;
@@ -405,6 +470,7 @@ namespace Proteomics
         }
         for (auto v : alreadyAppliedVariations)
         {
+#ifdef ORIG
             int addedIdx = alreadyAppliedVariations.Where([&] (std::any applied)
             {
                 return applied::OneBasedEndPosition < v->getOneBasedBeginPosition();
@@ -412,10 +478,18 @@ namespace Proteomics
             {
                 return applied::VariantSequence->Length - applied::OriginalSequence->Length;
             });
-
+#endif
+            int addedIdx=0;
+            for ( auto applied: alreadyAppliedVariations ) {
+                if (applied->getOneBasedEndPosition() < v->getOneBasedBeginPosition() ) {
+                    addedIdx += (applied->getVariantSequence().length() - applied->getOriginalSequence().length());
+                }
+            }
+            
             // variant was entirely before the one being applied (shouldn't happen because of order of applying variants)
             // or it's the current variation
-            if (v->getDescription()->Equals(variantGettingApplied->getDescription()) || v->getOneBasedEndPosition() - addedIdx < variantGettingApplied->getOneBasedBeginPosition())
+            if (v->getDescription()->Equals(variantGettingApplied->getDescription()) ||
+                v->getOneBasedEndPosition() - addedIdx < variantGettingApplied->getOneBasedBeginPosition())
             {
                 variations.push_back(v);
             }
@@ -428,22 +502,25 @@ namespace Proteomics
                 int overlap = intersectOneBasedEnd < intersectOneBasedStart ? 0 : intersectOneBasedEnd - intersectOneBasedStart + 1; // there's some overlap
                 int sequenceLengthChange = variantGettingApplied->getVariantSequence().length() - variantGettingApplied->getOriginalSequence().length();
                 int begin = v->getOneBasedBeginPosition() + sequenceLengthChange - overlap;
-                if (begin > variantAppliedProteinSequence.length())
+                if (begin > (int) variantAppliedProteinSequence.length())
                 {
                     continue; // cut out by a stop gain
                 }
                 int end = v->getOneBasedEndPosition() + sequenceLengthChange - overlap;
-                if (end > variantAppliedProteinSequence.length())
+                if (end > (int) variantAppliedProteinSequence.length())
                 {
                     end = variantAppliedProteinSequence.length(); // end shortened by a stop gain
                 }
-                SequenceVariation tempVar(begin, end, v->getOriginalSequence(), v->getVariantSequence(), v->getDescription()->getDescription(), v->getOneBasedModifications().ToDictionary([&] (std::any kv)
-                {
-                    kv::Key;
-                }, [&] (std::any kv)
-                {
-                    kv->Value;
-                }));
+#ifdef ORIG
+//                SequenceVariation tempVar(begin, end, v->getOriginalSequence(), v->getVariantSequence(), v->getDescription()->getDescription(), v->getOneBasedModifications().ToDictionary([&] (std::any kv)
+//                {
+//                    kv::Key;
+//                }, [&] (std::any kv)
+//                {
+//                    kv->Value;
+//                }));
+#endif
+                SequenceVariation tempVar(begin, end, v->getOriginalSequence(), v->getVariantSequence(), v->getDescription()->getDescription(), v->getOneBasedModifications());
                 variations.push_back(&tempVar);
             }
         }
@@ -458,73 +535,90 @@ namespace Proteomics
             return products;
         }
         int sequenceLengthChange = variant->getVariantSequence().length() - variant->getOriginalSequence().length();
-        for (ProteolysisProduct *p : proteolysisProducts.Where([&] (std::any p)
-        {
-            return p->getOneBasedEndPosition() && p->getOneBasedBeginPosition();
-        }))
-        {
-            // proteolysis product is entirely before the variant
-            if (variant->getOneBasedBeginPosition() > p::OneBasedEndPosition)
+#ifdef ORIG
+//      for (ProteolysisProduct *p : proteolysisProducts.Where([&] (std::any p)
+//      {
+//          return p->getOneBasedEndPosition() && p->getOneBasedBeginPosition();
+//      }))
+#endif
+        for (ProteolysisProduct *p : proteolysisProducts )  {
+            if ( p->getOneBasedEndPosition().has_value() && p->getOneBasedBeginPosition().has_value() )
             {
-                products.push_back(p);
-            }
-            // proteolysis product straddles the variant, but the cleavage site(s) are still intact; the ends aren't considered cleavage sites
-            else if ((p::OneBasedBeginPosition < variant->getOneBasedBeginPosition() || p->OneBasedBeginPosition == 1 || p->OneBasedBeginPosition == 2) && (p::OneBasedEndPosition > variant->getOneBasedEndPosition() || p->OneBasedEndPosition == protein->getNonVariantProtein()->getBaseSequence().length()))
-            {
-                if (StringHelper::endsWith(variant->getVariantSequence(), "*"))
+                // proteolysis product is entirely before the variant
+                if (variant->getOneBasedBeginPosition() > p->getOneBasedEndPosition().value())
                 {
-                    ProteolysisProduct tempVar(p::OneBasedBeginPosition, std::make_optional(variantAppliedProteinSequence.length()), p::Type);
-                    products.push_back(&tempVar);
+                    products.push_back(p);
                 }
-                else if (p::OneBasedEndPosition + sequenceLengthChange <= variantAppliedProteinSequence.length())
+                // proteolysis product straddles the variant, but the cleavage site(s) are still intact; the ends aren't considered cleavage sites
+                else if ((p->getOneBasedBeginPosition().value() < variant->getOneBasedBeginPosition() ||
+                          p->getOneBasedBeginPosition().value() == 1 ||
+                          p->getOneBasedBeginPosition().value() == 2) &&
+                         (p->getOneBasedEndPosition().value() > variant->getOneBasedEndPosition() ||
+                          p->getOneBasedEndPosition().value() == (int)protein->getNonVariantProtein()->getBaseSequence().length()))
                 {
-                    ProteolysisProduct tempVar2(p::OneBasedBeginPosition, p::OneBasedEndPosition + sequenceLengthChange, p::Type);
-                    products.push_back(&tempVar2);
+                    if (StringHelper::endsWith(variant->getVariantSequence(), "*"))
+                    {
+                        ProteolysisProduct tempVar(p->getOneBasedBeginPosition(), std::make_optional(variantAppliedProteinSequence.length()), p->getType());
+                        products.push_back(&tempVar);
+                    }
+                    else if (p->getOneBasedEndPosition().value() + sequenceLengthChange <= (int)variantAppliedProteinSequence.length())
+                    {
+                        ProteolysisProduct tempVar2(p->getOneBasedBeginPosition(), p->getOneBasedEndPosition().value() + sequenceLengthChange,
+                                                    p->getType());
+                        products.push_back(&tempVar2);
+                    }
+                    else
+                    {
+                        // cleavage site is not intact
+                    }
                 }
-                else
+                // proteolysis product is after the variant and there is no stop gain
+                else if (p->getOneBasedBeginPosition().value() > variant->getOneBasedEndPosition() &&
+                         p->getOneBasedBeginPosition().value() + sequenceLengthChange <= (int)variantAppliedProteinSequence.length() &&
+                         p->getOneBasedEndPosition().value() + sequenceLengthChange <= (int)variantAppliedProteinSequence.length() &&
+                         !StringHelper::endsWith(variant->getVariantSequence(), "*"))
                 {
-                    // cleavage site is not intact
+                    ProteolysisProduct tempVar3(p->getOneBasedBeginPosition().value() + sequenceLengthChange,
+                                                p->getOneBasedEndPosition().value() + sequenceLengthChange, p->getType());
+                    products.push_back(&tempVar3);
                 }
-            }
-            // proteolysis product is after the variant and there is no stop gain
-            else if (p::OneBasedBeginPosition > variant->getOneBasedEndPosition() && p::OneBasedBeginPosition + sequenceLengthChange <= variantAppliedProteinSequence.length() && p::OneBasedEndPosition + sequenceLengthChange <= variantAppliedProteinSequence.length() && !StringHelper::endsWith(variant->getVariantSequence(), "*"))
-            {
-                ProteolysisProduct tempVar3(p::OneBasedBeginPosition + sequenceLengthChange, p::OneBasedEndPosition + sequenceLengthChange, p::Type);
-                products.push_back(&tempVar3);
-            }
-            else // sequence variant conflicts with proteolysis cleavage site (cleavage site was lost)
-            {
-                continue;
+                else // sequence variant conflicts with proteolysis cleavage site (cleavage site was lost)
+                {
+                    continue;
+                }
             }
         }
         return products;
     }
 
-    std::unordered_map<int, std::vector<Modification*>> VariantApplication::AdjustModificationIndices(SequenceVariation *variant, const std::string &variantAppliedProteinSequence, Protein *protein)
+    std::unordered_map<int, std::vector<Modification*>> VariantApplication::AdjustModificationIndices(SequenceVariation *variant,
+                                                                                                      const std::string &variantAppliedProteinSequence,
+                                                                                                      Protein *protein)
     {
-        std::unordered_map<int, std::vector<Modification*>> &modificationDictionary = protein->getOneBasedPossibleLocalizedModifications();
-        std::unordered_map<int, std::vector<Modification*>> &variantModificationDictionary = variant->getOneBasedModifications();
+        std::unordered_map<int, std::vector<Modification*>> modificationDictionary = protein->getOneBasedPossibleLocalizedModifications();
+        std::unordered_map<int, std::vector<Modification*>> variantModificationDictionary = variant->getOneBasedModifications();
         std::unordered_map<int, std::vector<Modification*>> mods;
         int sequenceLengthChange = variant->getVariantSequence().length() - variant->getOriginalSequence().length();
 
         // change modification indices for variant sequence
         if (!modificationDictionary.empty())
         {
-            for (auto kv : modificationDictionary)
+            for (auto kv = modificationDictionary.begin(); kv !=modificationDictionary.end(); kv++ )
             {
-                if (kv.first > variantAppliedProteinSequence.length())
+                if (kv->first > (int)variantAppliedProteinSequence.length())
                 {
                     continue; // it was cut out by a stop gain
                 }
                 // mod is before the variant
-                else if (kv.first < variant->getOneBasedBeginPosition())
+                else if (kv->first < variant->getOneBasedBeginPosition())
                 {
-                    mods.emplace(kv.first, kv.second);
+                    mods.emplace(kv->first, kv->second);
                 }
                 // mod is after the variant and not affected by a stop gain
-                else if (variant->getOneBasedEndPosition() < kv.first && kv.first + sequenceLengthChange <= variantAppliedProteinSequence.length())
+                else if (variant->getOneBasedEndPosition() < kv->first &&
+                         kv->first + sequenceLengthChange <= (int) variantAppliedProteinSequence.length())
                 {
-                    mods.emplace(kv.first + sequenceLengthChange, kv.second);
+                    mods.emplace(kv->first + sequenceLengthChange, kv->second);
                 }
                 else // sequence variant conflicts with modification site (modification site substitution)
                 {
@@ -534,22 +628,29 @@ namespace Proteomics
         }
 
         // sequence variant modifications are indexed to the variant sequence
-        //    NOTE: this code assumes variants are added from end to beginning of protein, so that previously added variant mods are adjusted above
+        //    NOTE: this code assumes variants are added from end to beginning of protein, so that previously added
+        //          variant mods are adjusted above
         if (!variantModificationDictionary.empty())
         {
-            for (auto kv : variantModificationDictionary)
+            for (auto kv =variantModificationDictionary.begin();  kv !=variantModificationDictionary.end(); kv++)
             {
-                TValue modsAtPos;
-                std::unordered_map<int, std::vector<Modification*>>::const_iterator mods_iterator = mods.find(kv.Key);
+                std::vector<Modification*> modsAtPos;
+                std::unordered_map<int, std::vector<Modification*>>::const_iterator mods_iterator = mods.find(kv->first);
                 if (mods_iterator != mods.end())
                 {
                     modsAtPos = mods_iterator->second;
-                    modsAtPos->AddRange(kv.Value);
+#ifdef ORIG
+                    modsAtPos->AddRange(kv->second);
+                    // C++ Skipping converting this line for now, since I do not see
+                    // any whay this is actually beeing used, not just in the C++ code,
+                    // but also in the original C# code.
+#endif
+                    
                 }
                 else
                 {
                     modsAtPos = mods_iterator->second;
-                    mods.emplace(kv.Key, kv.Value);
+                    mods.emplace(kv->first, kv->second);
                 }
             }
         }

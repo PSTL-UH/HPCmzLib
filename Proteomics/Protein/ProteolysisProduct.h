@@ -1,21 +1,21 @@
 ﻿#pragma once
 
 #include <string>
-#include "Nullable.h"
+#include <optional>
 
 namespace Proteomics {
     class ProteolysisProduct {
     private:
-        Nullable<int> privateOneBasedBeginPosition;
-        Nullable<int> privateOneBasedEndPosition;
+        std::optional<int> privateOneBasedBeginPosition;
+        std::optional<int> privateOneBasedEndPosition;
         std::string privateType;
 
 
     public:
-        ProteolysisProduct(Nullable<int> oneBasedBeginPosition, Nullable<int> oneBasedEndPosition, const std::string &type);
+        ProteolysisProduct(std::optional<int> oneBasedBeginPosition, std::optional<int> oneBasedEndPosition, const std::string &type);
 
-        Nullable<int> getOneBasedBeginPosition() const;
-        Nullable<int> getOneBasedEndPosition() const;
+        std::optional<int> getOneBasedBeginPosition() const;
+        std::optional<int> getOneBasedEndPosition() const;
         std::string getType() const;
 
         bool Equals(ProteolysisProduct* obj);

@@ -4,7 +4,7 @@
 
 namespace Proteomics {
 
-    SequenceVariation::SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications)
+    SequenceVariation::SequenceVariation(int OneBasedBeginPosition, int OneBasedEndPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> oneBasedModifications)
     {
         privateOneBasedBeginPosition = OneBasedBeginPosition;
         privateOneBasedEndPosition = OneBasedEndPosition;
@@ -14,7 +14,7 @@ namespace Proteomics {
         privateOneBasedModifications = oneBasedModifications;
     }
 
-    SequenceVariation::SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> &oneBasedModifications) : SequenceVariation(OneBasedPosition, OneBasedPosition, OriginalSequence, VariantSequence, Description, oneBasedModifications) {
+    SequenceVariation::SequenceVariation(int OneBasedPosition, const std::string &OriginalSequence, const std::string &VariantSequence, const std::string &Description, std::unordered_map<int, std::vector<Modification*>> oneBasedModifications) : SequenceVariation(OneBasedPosition, OneBasedPosition, OriginalSequence, VariantSequence, Description, oneBasedModifications) {
     }
 
     int SequenceVariation::getOneBasedBeginPosition() const {

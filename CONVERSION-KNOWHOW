@@ -68,7 +68,9 @@
                 });
         });
    
-   
+6b.  Select vs. Where in C# and how to translate it:
+      Select is a projection, so what you get is i.e. lots of true/false values (the same number as your original list). 
+      Where filters the results, returning an enumerable of the original type (no projection).
 
 7. yield.
     C++ does not have an equivalent to the C# 'yield' keyword:
