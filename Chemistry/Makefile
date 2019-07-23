@@ -19,6 +19,7 @@ HEADER = ChemicalFormula.h                \
 
 OBJ = 	Constants.o                      \
 	Element.o                        \
+	ClassExtensions.o                \
 	ChemicalFormula.o                \
 	ClassExtensions.o                \
 	Isotope.o                        \
