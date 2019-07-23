@@ -1,0 +1,494 @@
+﻿#include "TestMetaMorpheus.h"
+#include "../Proteomics/Protein/Protein.h"
+#include "../Proteomics/Modifications/Modification.h"
+#include "../Proteomics/Modifications/ModificationMotif.h"
+#include "../Chemistry/ChemicalFormula.h"
+#include "../MassSpectrometry/Enums/DissociationType.h"
+
+using namespace Chemistry;
+using namespace MassSpectrometry;
+using namespace NUnit::Framework;
+using namespace Proteomics;
+using namespace Proteomics::Fragmentation;
+using namespace Proteomics::ProteolyticDigestion;
+namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+namespace Test
+{
+
+System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
+
+    Stopwatch *TestCompactPeptide::getStopwatch()
+    {
+        return privateStopwatch;
+    }
+
+    void TestCompactPeptide::setStopwatch(Stopwatch *value)
+    {
+        privateStopwatch = value;
+    }
+
+    void TestCompactPeptide::Setuppp()
+    {
+        Stopwatch tempVar();
+        setStopwatch(&tempVar);
+        getStopwatch()->Start();
+    }
+
+    void TestCompactPeptide::TearDown()
+    {
+        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_UnmodifiedPeptide()
+    {
+        Protein *p = new Protein("PET", "accession");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {97, 226};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 230, 327};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("P", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {177, 306};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 230, 407};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_cTerminalModifiedPeptide()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {97, 226};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {181, 310, 407};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_internallyModifiedPeptide()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("E", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {97, 306};
+        std::unordered_set<int> foundNTerminalMasses = std::unordered_set<int>(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        }).ToList());
+
+        Assert::That(expectedNTerminalMasses.SetEquals(foundNTerminalMasses));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 310, 407};
+        std::unordered_set<int> foundCTerminalMasses = std::unordered_set<int>(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        }).ToList());
+
+        Assert::That(expectedCTerminalMasses.SetEquals(foundCTerminalMasses));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("P", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {177, 306};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 230, 407};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_cTerminalModifiedPeptide_NeutralLoss()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //var nTerminalMasses = aCompactPeptide.TerminalMasses.Where(v => v.Terminus == FragmentationTerminus.N);
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> foundNTerminalMasses = std::unordered_set<int>(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        }).ToList());
+        std::unordered_set<int> expectedNTerminalMasses = {97, 226};
+
+        Assert::That(expectedNTerminalMasses.SetEquals(foundNTerminalMasses));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> foundCTerminalMasses = std::unordered_set<int>(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        }).ToList());
+        std::unordered_set<int> expectedCTerminalMasses = {181, 310, 407};
+
+        Assert::That(expectedCTerminalMasses.SetEquals(foundCTerminalMasses));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_internallyModifiedPeptide_NeutralLoss()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("E", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto allFragmentNeutralMasses = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto n = allFragmentNeutralMasses->Where([&] (std::any f)
+        {
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
+        }).ToList();
+        std::unordered_set<int> expectedNTerminalMasses = {97, 306, 208};
+        Assert::That(expectedNTerminalMasses.SetEquals(n.Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        //evaluate C-terminal masses
+        auto c = allFragmentNeutralMasses->Where([&] (std::any f)
+        {
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
+        }).ToList();
+        std::unordered_set<int> expectedCTerminalMasses = {119, 328, 230};
+        Assert::That(expectedCTerminalMasses.SetEquals(c.Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_AnyActivationType_and_HCD()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("P", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                MassSpectrometry::DissociationType::AnyActivationType, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {177, 306};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 230, 407};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+
+    void TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_CID_and_HCD()
+    {
+        Protein *p = new Protein("PET", "accession");
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("P", motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                MassSpectrometry::DissociationType::CID, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+
+        auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
+
+        //evaluate N-terminal masses
+        auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::N;
+        });
+        std::unordered_set<int> expectedNTerminalMasses = {177, 306};
+        Assert::That(expectedNTerminalMasses.SetEquals(nTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        //evaluate C-terminal masses
+        auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
+        {
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+            return v->Terminus == FragmentationTerminus::C;
+        });
+        std::unordered_set<int> expectedCTerminalMasses = {101, 230, 407};
+        Assert::That(expectedCTerminalMasses.SetEquals(cTerminalMasses->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
+        })));
+
+        delete aCompactPeptide;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete p;
+    }
+}

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo " "
-echo "  ElementsAndIsotopesTests"
-./ElementsAndIsotopesTests
+echo "  TestElementsAndIsotopes"
+./TestElementsAndIsotopes
 
 echo " "
 echo "  TestAminoAcids"
@@ -10,8 +10,8 @@ echo "  TestAminoAcids"
 
 
 echo " "
-echo "  ChemicalFormulaTestFixture"
-./ChemicalFormulaTestFixture
+echo "  TestChemicalFormula"
+./TestChemicalFormula
 
 echo " "
 echo "  TestModifications  "

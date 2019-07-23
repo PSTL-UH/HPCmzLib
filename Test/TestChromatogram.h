@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <vector>
+#include <iostream>
+#include "stringhelper.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -23,26 +25,39 @@
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace NUnit::Framework;
+namespace Stopwatch = System::Diagnostics::Stopwatch;
 
-namespace Test {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [TestFixture] public sealed class ChromatogramTestFixture
-    class ChromatogramTestFixture final {
-//        #region Public Methods
+namespace Test
+{
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [TestFixture] public sealed class TestChromatogram
+    class TestChromatogram final
+    {
+    private:
+        static Stopwatch *privateStopwatch;
+
+        static Stopwatch *getStopwatch();
+        static void setStopwatch(Stopwatch *value);
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [SetUp] public static void Setup()
+        static void Setup();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [TearDown] public static void TearDown()
+        static void TearDown();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [Test] public void ChromatogramTest()
         void ChromatogramTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [Test] public void TestGetApex()
         void TestGetApex();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [Test] public void AnotherChromatogramTest()
         void AnotherChromatogramTest();
-
-//        #endregion Public Methods
     };
 }

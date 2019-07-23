@@ -1,15 +1,15 @@
 ﻿#pragma once
 
-#include "../Proteomics/Interfaces/IProtease.h"
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <iostream>
+#include <any>
 #include "exceptionhelper.h"
+#include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class Peptide; }
-//namespace Proteomics { class DigestionPointAndLength; }
-//namespace Proteomics { class AminoAcidPolymer; }
+namespace Test { class TestChemicalFormula; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -29,184 +29,341 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
-#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
-
-#include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
+using namespace NUnit::Framework;
+using namespace Proteomics::AminoAcidPolymer;
+using namespace Proteomics::Fragmentation;
+using namespace Proteomics::ProteolyticDigestion;
+namespace Stopwatch = System::Diagnostics::Stopwatch;
 
-//using namespace NUnit::Framework;
-
-#include "../Proteomics/Proteomics.h"
-using namespace Proteomics;
-
-namespace Test {
-    class TestPeptides final {
-
+namespace Test
+{
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [TestFixture] public sealed class TestPeptides
+    class TestPeptides final
+    {
     private:
+        static Stopwatch *privateStopwatch;
+
         Peptide *_mockPeptideEveryAminoAcid;
         Peptide *_mockTrypticPeptide;
-
     public:
-        virtual ~TestPeptides() {
+        virtual ~TestPeptides()
+        {
             delete _mockPeptideEveryAminoAcid;
             delete _mockTrypticPeptide;
         }
 
+    private:
+        static Stopwatch *getStopwatch();
+        static void setStopwatch(Stopwatch *value);
+
+    public:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [SetUp] public static void Setuppp()
+        static void Setuppp();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [TearDown] public static void TearDown()
+        static void TearDown();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [SetUp] public void SetUp()
         void SetUp();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideTestReal()
         void PeptideTestReal();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideMassGlycine()
         void PeptideMassGlycine();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void AApolymerNullEquals()
         void AApolymerNullEquals();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCountElements()
         void PeptideCountElements();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideMassTryptic()
         void PeptideMassTryptic();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideAminoAcidCount()
         void PeptideAminoAcidCount();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseNTerminalChemicalFormula()
         void ParseNTerminalChemicalFormula();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseCTerminalChemicalFormula()
         void ParseCTerminalChemicalFormula();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseCTerminalChemicalFormulaWithLastResidueMod()
         void ParseCTerminalChemicalFormulaWithLastResidueMod();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation()
         void ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseNAndCTerminalChemicalFormula()
         void ParseNAndCTerminalChemicalFormula();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void EmptyStringPeptideConstructorLength()
         void EmptyStringPeptideConstructorLength();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void EmptyStringPeptideConstructorToString()
         void EmptyStringPeptideConstructorToString();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseDoubleModificationToString()
         void ParseDoubleModificationToString();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ParseNamedChemicalModificationInvalidName()
         void ParseNamedChemicalModificationInvalidName();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModification()
         void SetAminoAcidModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTyped()
         void SetAminoAcidModificationStronglyTyped();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTypedMultipleLocations()
         void SetAminoAcidModificationStronglyTypedMultipleLocations();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTypedAny()
         void SetAminoAcidModificationStronglyTypedAny();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTypedAll()
         void SetAminoAcidModificationStronglyTypedAll();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTypedNone()
         void SetAminoAcidModificationStronglyTypedNone();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidModificationStronglyTypedTermini()
         void SetAminoAcidModificationStronglyTypedTermini();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetAminoAcidCharacterModification()
         void SetAminoAcidCharacterModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetResiduePositionModification()
         void SetResiduePositionModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetResiduePositionModificationOutOfRangeUpper()
         void SetResiduePositionModificationOutOfRangeUpper();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetResiduePositionModificationOutOfRangeLower()
         void SetResiduePositionModificationOutOfRangeLower();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetCTerminusModStringRepresentation()
         void SetCTerminusModStringRepresentation();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetCTerminusModStringRepresentationofChemicalModification()
         void SetCTerminusModStringRepresentationofChemicalModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetNAndCTerminusMod()
         void SetNAndCTerminusMod();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void SetSameNAndCTerminusMod()
         void SetSameNAndCTerminusMod();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ClearNTerminusMod()
         void ClearNTerminusMod();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ClearCTerminusMod()
         void ClearCTerminusMod();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ClearAllMods()
         void ClearAllMods();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ClearModificationsBySites()
         void ClearModificationsBySites();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void EmptyPeptideLengthIsZero()
         void EmptyPeptideLengthIsZero();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void EmptyPeptideSequenceIsEmpty()
         void EmptyPeptideSequenceIsEmpty();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void EmptyPeptideFormulaIsH2O()
         void EmptyPeptideFormulaIsH2O();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideEquality()
         void PeptideEquality();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideInEqualityAminoAcidSwitch()
         void PeptideInEqualityAminoAcidSwitch();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideInEqualityAminoAcidModification()
         void PeptideInEqualityAminoAcidModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCloneEquality()
         void PeptideCloneEquality();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCloneNotSameReference()
         void PeptideCloneNotSameReference();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCloneWithModifications()
         void PeptideCloneWithModifications();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCloneWithoutModifications()
         void PeptideCloneWithoutModifications();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideCloneWithModification()
         void PeptideCloneWithModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideParitalCloneInternal()
         void PeptideParitalCloneInternal();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideParitalClonelWithInternalModification()
         void PeptideParitalClonelWithInternalModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideHashing()
         void PeptideHashing();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ClearMods()
         void ClearMods();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideParitalClonelWithInternalModificationTwoMods()
         void PeptideParitalClonelWithInternalModificationTwoMods();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void PeptideParitalCloneInternalWithCTerminusModification()
         void PeptideParitalCloneInternalWithCTerminusModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void GetLeucineSequence()
         void GetLeucineSequence();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void GetLeucineSequenceNoReplacement()
         void GetLeucineSequenceNoReplacement();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void GetSequenceCoverage()
         void GetSequenceCoverage();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void GenerateIsotopologues()
         void GenerateIsotopologues();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void GetSequenceCoverageFraction()
         void GetSequenceCoverageFraction();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TerminusModification()
         void TerminusModification();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void DigestionTest()
         void DigestionTest();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestChemicalFormula()
         void TestChemicalFormula();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestChemicalFormula2()
         void TestChemicalFormula2();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestMultipleModificationsAtSingleResidue()
         void TestMultipleModificationsAtSingleResidue();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestAApolymerContains()
         void TestAApolymerContains();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestLeucineSequence()
         void TestLeucineSequence();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestClearModifications()
         void TestClearModifications();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestGetSubPeptide()
         void TestGetSubPeptide();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestRealPeptideWithModifications()
         void TestRealPeptideWithModifications();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestGetDigestionPointsWithMethionine()
         void TestGetDigestionPointsWithMethionine();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestGetDigestionPointsWithMethionineAndSemiDigestion()
         void TestGetDigestionPointsWithMethionineAndSemiDigestion();
 
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void BadSeqeunce()
         void BadSeqeunce();
 
-    private:
-        class OkComparer : public IEqualityComparer<DigestionPointAndLength*> {
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TestNonSpecificOverride()
+        void TestNonSpecificOverride();
 
+    private:
+        class OkComparer : public IEqualityComparer<DigestionPointAndLength*>
+        {
         public:
             bool Equals(DigestionPointAndLength *x, DigestionPointAndLength *y) override;
 
             int GetHashCode(DigestionPointAndLength *obj) override;
-
         };
-
     };
 
-    class TestProtease : public IProtease {
-
+    class TestProtease : public IProtease
+    {
     public:
         std::vector<int> GetDigestionSites(AminoAcidPolymer *aminoAcidSequence) override;
 
@@ -215,6 +372,5 @@ namespace Test {
         int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) override;
 
         int MissedCleavages(const std::string &sequence) override;
-
     };
 }

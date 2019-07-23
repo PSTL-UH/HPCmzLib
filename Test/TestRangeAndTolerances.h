@@ -1,19 +1,13 @@
 ﻿#pragma once
 
-#define _USE_MATH_DEFINES
-#include <vector>
+#include <string>
 #include <iostream>
-#include <cmath>
-#include <limits>
 #include "stringhelper.h"
-
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MzSpectrum; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
 //
-// This file (TestSpectra.cs) is part of MassSpectrometry.Tests.
+// This file (TestRange.cs) is part of MassSpectrometry.Tests.
 //
 // MassSpectrometry.Tests is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published
@@ -28,7 +22,6 @@ namespace MassSpectrometry { class MzSpectrum; }
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry.Tests. If not, see <http://www.gnu.org/licenses/>.
 
-using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace NUnit::Framework;
 namespace Stopwatch = System::Diagnostics::Stopwatch;
@@ -36,20 +29,12 @@ namespace Stopwatch = System::Diagnostics::Stopwatch;
 namespace Test
 {
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] public sealed class TestSpectra
-    class TestSpectra final
+//ORIGINAL LINE: [TestFixture] public sealed class TestRangeAndTolerances
+    class TestRangeAndTolerances final
     {
     private:
         static Stopwatch *privateStopwatch;
 
-        MzSpectrum *_mzSpectrumA;
-    public:
-        virtual ~TestSpectra()
-        {
-            delete _mzSpectrumA;
-        }
-
-    private:
         static Stopwatch *getStopwatch();
         static void setStopwatch(Stopwatch *value);
 
@@ -63,115 +48,135 @@ namespace Test
         static void TearDown();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public void Setup()
-        void Setup();
+//ORIGINAL LINE: [Test] public void RangeSubRange()
+        void RangeSubRange();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumCount()
-        void SpectrumCount();
+//ORIGINAL LINE: [Test] public void RangeSubRangeReverseIsFalse()
+        void RangeSubRangeReverseIsFalse();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumFirstMZ()
-        void SpectrumFirstMZ();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsFalse()
+        void RangeOverlappingIsFalse();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumLastMZ()
-        void SpectrumLastMZ();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsFalseReverse()
+        void RangeOverlappingIsFalseReverse();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumBasePeakIntensity()
-        void SpectrumBasePeakIntensity();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsTrue()
+        void RangeOverlappingIsTrue();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumTIC()
-        void SpectrumTIC();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsTrueReverse()
+        void RangeOverlappingIsTrueReverse();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumGetIntensityFirst()
-        void SpectrumGetIntensityFirst();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsTrueLarger()
+        void RangeOverlappingIsTrueLarger();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumGetIntensityRandom()
-        void SpectrumGetIntensityRandom();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsTrueSmaller()
+        void RangeOverlappingIsTrueSmaller();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumGetMassFirst()
-        void SpectrumGetMassFirst();
+//ORIGINAL LINE: [Test] public void RangeOverlappingIsTrueItSelf()
+        void RangeOverlappingIsTrueItSelf();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumGetMassRandom()
-        void SpectrumGetMassRandom();
+//ORIGINAL LINE: [Test] public void RangeDoesContainItem()
+        void RangeDoesContainItem();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumContainsPeak()
-        void SpectrumContainsPeak();
+//ORIGINAL LINE: [Test] public void RangeDoesnotContainItemHigher()
+        void RangeDoesnotContainItemHigher();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumContainsPeakInRange()
-        void SpectrumContainsPeakInRange();
+//ORIGINAL LINE: [Test] public void RangeDoesnotContainItemLower()
+        void RangeDoesnotContainItemLower();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumContainsPeakInRangeEnd()
-        void SpectrumContainsPeakInRangeEnd();
+//ORIGINAL LINE: [Test] public void RangeDoesContainItemLowerBounds()
+        void RangeDoesContainItemLowerBounds();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumContainsPeakInRangeStart()
-        void SpectrumContainsPeakInRangeStart();
+//ORIGINAL LINE: [Test] public void RangeDoesContainItemUpperBounds()
+        void RangeDoesContainItemUpperBounds();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumContainsPeakInRangeStartEnd()
-        void SpectrumContainsPeakInRangeStartEnd();
+//ORIGINAL LINE: [Test] public void RangeCompareToBelow()
+        void RangeCompareToBelow();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumDoesntContainPeakInRange()
-        void SpectrumDoesntContainPeakInRange();
+//ORIGINAL LINE: [Test] public void RangeCompareToWithin()
+        void RangeCompareToWithin();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumMassRange()
-        void SpectrumMassRange();
+//ORIGINAL LINE: [Test] public void RangeCompareToAbove()
+        void RangeCompareToAbove();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void SpectrumFilterCount()
-        void SpectrumFilterCount();
+//ORIGINAL LINE: [Test] public void RangesAreEquivalentNotReference()
+        void RangesAreEquivalentNotReference();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void FilterByNumberOfMostIntenseTest()
-        void FilterByNumberOfMostIntenseTest();
+//ORIGINAL LINE: [Test] public void ToleranceParseAndWithin()
+        void ToleranceParseAndWithin();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void FilterByNumberOfMostIntenseRobTest()
-        void FilterByNumberOfMostIntenseRobTest();
+//ORIGINAL LINE: [Test] public void MassRangeFromDAWidth()
+        void MassRangeFromDAWidth();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void GetBasePeak()
-        void GetBasePeak();
+//ORIGINAL LINE: [Test] public void MassRangeFromDAMean()
+        void MassRangeFromDAMean();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void GetClosestPeak()
-        void GetClosestPeak();
+//ORIGINAL LINE: [Test] public void MassRangeFromDAMin()
+        void MassRangeFromDAMin();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Extract()
-        void Extract();
+//ORIGINAL LINE: [Test] public void MassRangeFromDAMax()
+        void MassRangeFromDAMax();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void CorrectOrder()
-        void CorrectOrder();
+//ORIGINAL LINE: [Test] public void MassRangeFromDANegative()
+        void MassRangeFromDANegative();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestFunctionToX()
-        void TestFunctionToX();
+//ORIGINAL LINE: [Test] public void RangeFromRange()
+        void RangeFromRange();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestGetClosestPeakXValue()
-        void TestGetClosestPeakXValue();
+//ORIGINAL LINE: [Test] public void SuperRange()
+        void SuperRange();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestDotProduct()
-        void TestDotProduct();
+//ORIGINAL LINE: [Test] public void TestDoubleRangeStuff()
+        void TestDoubleRangeStuff();
 
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestNumPeaksWithinRange()
-        void TestNumPeaksWithinRange();
+//ORIGINAL LINE: [Test] public void MassToleranceConstructorDaValue()
+        void MassToleranceConstructorDaValue();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void MassToleranceImplicitValue()
+        void MassToleranceImplicitValue();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ToleranceWithin1()
+        void ToleranceWithin1();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ToleranceNewTest()
+        void ToleranceNewTest();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void ToleranceMinMaxTest()
+        void ToleranceMinMaxTest();
+
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+//ORIGINAL LINE: [Test] public void TolerancePPMGetRange()
+        void TolerancePPMGetRange();
     };
 }

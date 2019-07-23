@@ -7,10 +7,37 @@
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace NUnit::Framework;
+namespace Stopwatch = System::Diagnostics::Stopwatch;
 
-namespace Test {
+namespace Test
+{
 
-    void ChromatogramTestFixture::ChromatogramTest() {
+System::Diagnostics::Stopwatch *TestChromatogram::privateStopwatch;
+
+    Stopwatch *TestChromatogram::getStopwatch()
+    {
+        return privateStopwatch;
+    }
+
+    void TestChromatogram::setStopwatch(Stopwatch *value)
+    {
+        privateStopwatch = value;
+    }
+
+    void TestChromatogram::Setup()
+    {
+        Stopwatch tempVar();
+        setStopwatch(&tempVar);
+        getStopwatch()->Start();
+    }
+
+    void TestChromatogram::TearDown()
+    {
+        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
+    }
+
+    void TestChromatogram::ChromatogramTest()
+    {
         Chromatogram<void> *a = new Chromatogram({1, 2, 3, 4, 5}, {1, 2, 6, 4, 2}, false);
         auto b = a->CreateSmoothChromatogram(SmoothingType::BoxCar, 4);
         Assert::IsTrue(b->GetTimes().SequenceEqual(std::vector<double> {2, 3, 4}));
@@ -34,16 +61,16 @@ namespace Test {
         auto thePeak = new ChromatographicPeak(1, 10);
         Assert::AreEqual(1, thePeak->getTime());
         Assert::AreEqual(10, thePeak->getIntensity());
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"(1, 10)", thePeak->ToString());
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        Assert::AreEqual("(1, 10)", thePeak->ToString());
 
         DoubleRange tempVar2(6.5, 6.5);
         auto elutionProfileEmpty = d->GetElutionProfile(&tempVar2);
         Assert::AreEqual(0, elutionProfileEmpty->TrapezoidalArea());
         Assert::AreEqual(0, elutionProfileEmpty->getSummedArea());
 
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"Count = 9 TIC = 32", d->ToString());
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        Assert::AreEqual("Count = 9 TIC = 32", d->ToString());
         Assert::AreEqual(10, d->GetApex()->Intensity);
         Assert::AreEqual(1, d->GetApex()->Time);
 
@@ -52,7 +79,8 @@ namespace Test {
         delete a;
     }
 
-    void ChromatogramTestFixture::TestGetApex() {
+    void TestChromatogram::TestGetApex()
+    {
         Chromatogram<void> *d = new Chromatogram({1, 2, 3, 4, 5, 6, 7, 8, 9}, {10, 0, 2, 6, 2, 0, 1, 10, 1}, false);
         DoubleRange tempVar(2, 6);
         Assert::AreEqual(6, d->GetApex(&tempVar)->Y);
@@ -60,10 +88,13 @@ namespace Test {
         delete d;
     }
 
-    void ChromatogramTestFixture::AnotherChromatogramTest() {
-        std::vector<std::vector<double>> timeintensities = {
-            {1, 2, 3, 4}, {
-            };
+    void TestChromatogram::AnotherChromatogramTest()
+    {
+        std::vector<std::vector<double>> timeintensities =
+        {
+            {1, 2, 3, 4},
+            {5, 6, 7, 8}
+        };
         Chromatogram<void> *a = new Chromatogram(timeintensities);
         Assert::AreEqual(1, a->FirstTime);
         Assert::AreEqual(4, a->LastTime);

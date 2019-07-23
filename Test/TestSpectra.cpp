@@ -1,85 +1,131 @@
 ﻿#include "TestSpectra.h"
+#include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
+#include "../MzLibUtil/PpmTolerance.h"
+#include "../MzLibUtil/Tolerance.h"
 #include "../MzLibUtil/DoubleRange.h"
 
-using namespace IO::MzML;
+using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace NUnit::Framework;
+namespace Stopwatch = System::Diagnostics::Stopwatch;
 
-namespace Test {
+namespace Test
+{
 
-    void SpectrumTestFixture::Setup() {
+System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
+
+    Stopwatch *TestSpectra::getStopwatch()
+    {
+        return privateStopwatch;
+    }
+
+    void TestSpectra::setStopwatch(Stopwatch *value)
+    {
+        privateStopwatch = value;
+    }
+
+    void TestSpectra::Setuppp()
+    {
+        Stopwatch tempVar();
+        setStopwatch(&tempVar);
+        getStopwatch()->Start();
+    }
+
+    void TestSpectra::TearDown()
+    {
+        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
+    }
+
+    void TestSpectra::Setup()
+    {
         std::vector<double> mz = {328.73795, 329.23935, 447.73849, 448.23987, 482.23792, 482.57089, 482.90393, 500.95358, 501.28732, 501.62131, 611.99377, 612.32806, 612.66187, 722.85217, 723.35345};
         std::vector<double> intensities = {81007096.0, 28604418.0, 78353512.0, 39291696.0, 122781408.0, 94147520.0, 44238040.0, 71198680.0, 54184096.0, 21975364.0, 44514172.0, 43061628.0, 23599424.0, 56022696.0, 41019144.0};
 
-        _mzSpectrumA = new MzmlMzSpectrum(mz, intensities, false);
+        _mzSpectrumA = new MzSpectrum(mz, intensities, false);
     }
 
-    void SpectrumTestFixture::SpectrumCount() {
+    void TestSpectra::SpectrumCount()
+    {
         Assert::AreEqual(15, _mzSpectrumA->getSize());
     }
 
-    void SpectrumTestFixture::SpectrumFirstMZ() {
+    void TestSpectra::SpectrumFirstMZ()
+    {
         Assert::AreEqual(328.73795, _mzSpectrumA->getFirstX());
     }
 
-    void SpectrumTestFixture::SpectrumLastMZ() {
+    void TestSpectra::SpectrumLastMZ()
+    {
         Assert::AreEqual(723.35345, _mzSpectrumA->getLastX());
     }
 
-    void SpectrumTestFixture::SpectrumBasePeakIntensity() {
-        double basePeakIntensity = _mzSpectrumA->getYofPeakWithHighestY();
+    void TestSpectra::SpectrumBasePeakIntensity()
+    {
+        double basePeakIntensity = _mzSpectrumA->getYofPeakWithHighestY().value();
 
         Assert::AreEqual(122781408.0, basePeakIntensity);
     }
 
-    void SpectrumTestFixture::SpectrumTIC() {
+    void TestSpectra::SpectrumTIC()
+    {
         double tic = _mzSpectrumA->getSumOfAllY();
 
         Assert::AreEqual(843998894.0, tic);
     }
 
-    void SpectrumTestFixture::SpectrumGetIntensityFirst() {
+    void TestSpectra::SpectrumGetIntensityFirst()
+    {
         Assert::AreEqual(81007096.0, _mzSpectrumA->getYArray()[0]);
     }
 
-    void SpectrumTestFixture::SpectrumGetIntensityRandom() {
+    void TestSpectra::SpectrumGetIntensityRandom()
+    {
         Assert::AreEqual(44238040.0, _mzSpectrumA->getYArray()[6]);
     }
 
-    void SpectrumTestFixture::SpectrumGetMassFirst() {
+    void TestSpectra::SpectrumGetMassFirst()
+    {
         Assert::AreEqual(328.73795, _mzSpectrumA->getFirstX());
     }
 
-    void SpectrumTestFixture::SpectrumGetMassRandom() {
+    void TestSpectra::SpectrumGetMassRandom()
+    {
         Assert::AreEqual(482.90393, _mzSpectrumA->getXArray()[6]);
     }
 
-    void SpectrumTestFixture::SpectrumContainsPeak() {
+    void TestSpectra::SpectrumContainsPeak()
+    {
         Assert::IsTrue(_mzSpectrumA->getSize() > 0);
     }
 
-    void SpectrumTestFixture::SpectrumContainsPeakInRange() {
+    void TestSpectra::SpectrumContainsPeakInRange()
+    {
         Assert::AreEqual(1, _mzSpectrumA->NumPeaksWithinRange(448.23987 - 0.001, 448.23987 + 0.001));
     }
 
-    void SpectrumTestFixture::SpectrumContainsPeakInRangeEnd() {
+    void TestSpectra::SpectrumContainsPeakInRangeEnd()
+    {
         Assert::AreEqual(0, _mzSpectrumA->NumPeaksWithinRange(448.23987 - 0.001, 448.23987));
     }
 
-    void SpectrumTestFixture::SpectrumContainsPeakInRangeStart() {
+    void TestSpectra::SpectrumContainsPeakInRangeStart()
+    {
         Assert::AreEqual(1, _mzSpectrumA->NumPeaksWithinRange(448.23987, 448.23987 + 0.001));
     }
 
-    void SpectrumTestFixture::SpectrumContainsPeakInRangeStartEnd() {
+    void TestSpectra::SpectrumContainsPeakInRangeStartEnd()
+    {
         Assert::AreEqual(0, _mzSpectrumA->NumPeaksWithinRange(448.23987, 448.23987));
     }
 
-    void SpectrumTestFixture::SpectrumDoesntContainPeakInRange() {
+    void TestSpectra::SpectrumDoesntContainPeakInRange()
+    {
         Assert::AreEqual(0, _mzSpectrumA->NumPeaksWithinRange(603.4243 - 0.001, 603.4243 + 0.001));
     }
 
-    void SpectrumTestFixture::SpectrumMassRange() {
+    void TestSpectra::SpectrumMassRange()
+    {
         MzRange *range = new MzRange(328.73795, 723.35345);
 
         Assert::AreEqual(0, _mzSpectrumA->getRange()->Minimum - range->Minimum, 1e-9);
@@ -88,64 +134,96 @@ namespace Test {
         delete range;
     }
 
-    void SpectrumTestFixture::SpectrumFilterCount() {
+    void TestSpectra::SpectrumFilterCount()
+    {
         auto filteredMzSpectrum = _mzSpectrumA->FilterByY(28604417, 28604419);
 
         Assert::AreEqual(1, filteredMzSpectrum.size()());
     }
 
-    void SpectrumTestFixture::FilterByNumberOfMostIntenseTest() {
+    void TestSpectra::FilterByNumberOfMostIntenseTest()
+    {
         Assert::AreEqual(5, _mzSpectrumA->FilterByNumberOfMostIntense(5).size()());
     }
 
-    void SpectrumTestFixture::FilterByNumberOfMostIntenseRobTest() {
+    void TestSpectra::FilterByNumberOfMostIntenseRobTest()
+    {
         std::vector<double> x = {50, 60, 70, 147.0764, 257.1244, 258.127, 275.135};
         std::vector<double> y = {1, 1, 1, 1, 1, 1, 1};
-        MzmlMzSpectrum *spectrum = new MzmlMzSpectrum(x, y, false);
+        MzSpectrum *spectrum = new MzSpectrum(x, y, false);
         Assert::AreEqual(7, spectrum->FilterByNumberOfMostIntense(200).size()());
 
         delete spectrum;
     }
 
-    void SpectrumTestFixture::GetBasePeak() {
+    void TestSpectra::GetBasePeak()
+    {
         Assert::AreEqual(122781408.0, _mzSpectrumA->getYofPeakWithHighestY());
     }
 
-    void SpectrumTestFixture::GetClosestPeak() {
+    void TestSpectra::GetClosestPeak()
+    {
         Assert::AreEqual(448.23987, _mzSpectrumA->GetClosestPeakXvalue(448));
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.9));
     }
 
-    void SpectrumTestFixture::Extract() {
+    void TestSpectra::Extract()
+    {
         Assert::AreEqual(3, _mzSpectrumA->Extract(500, 600).size()());
     }
 
-    void SpectrumTestFixture::CorrectOrder() {
-        _mzSpectrumA = new MzmlMzSpectrum({5, 6, 7}, {1, 2, 3}, false);
+    void TestSpectra::CorrectOrder()
+    {
+        _mzSpectrumA = new MzSpectrum({5, 6, 7}, {1, 2, 3}, false);
         Assert::IsTrue(_mzSpectrumA->FilterByNumberOfMostIntense(2).front().Mz < _mzSpectrumA->FilterByNumberOfMostIntense(2).ToList()[1].Mz);
     }
 
-    void SpectrumTestFixture::TestFunctionToX() {
-        _mzSpectrumA->ReplaceXbyApplyingFunction([&] (std::any b) {
+    void TestSpectra::TestFunctionToX()
+    {
+        _mzSpectrumA->ReplaceXbyApplyingFunction([&] (std::any b)
+        {
             -1;
         });
         Assert::AreEqual(-1, _mzSpectrumA->getXArray()[0]);
     }
 
-    void SpectrumTestFixture::TestGetClosestPeakXValue() {
+    void TestSpectra::TestGetClosestPeakXValue()
+    {
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.73849));
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447));
-        Assert::Throws<std::out_of_range>([&] () {
-            MzmlMzSpectrum tempVar(new double[0], new double[0], false);
-            (&tempVar)->GetClosestPeakXvalue(1);
-        }, L"No peaks in spectrum!");
+        MzSpectrum tempVar(new double[0], new double[0], false);
+        Assert::IsNull((&tempVar)->GetClosestPeakXvalue(1));
     }
 
-    void SpectrumTestFixture::TestNumPeaksWithinRange() {
+    void TestSpectra::TestDotProduct()
+    {
+        std::vector<double> array1 = {1};
+        std::vector<double> array2 = {2};
+        std::vector<double> array3 = {1, 2};
+        std::vector<double> array4 = {1, 1};
+
+        MzSpectrum *spec1 = new MzSpectrum(array1, array1, false);
+        MzSpectrum *spec2 = new MzSpectrum(array2, array1, false);
+        MzSpectrum *spec3 = new MzSpectrum(array3, array4, false);
+        Tolerance *tolerance = new PpmTolerance(10);
+
+        Assert::AreEqual(spec1->CalculateDotProductSimilarity(spec3, tolerance), spec3->CalculateDotProductSimilarity(spec1, tolerance)); //comparison side shouldn't matter
+        Assert::AreEqual(spec1->CalculateDotProductSimilarity(spec2, tolerance), 0); //orthogonal spectra give a score of zero
+        Assert::AreEqual(spec2->CalculateDotProductSimilarity(spec2, tolerance), 1); //identical spectra give a score of 1
+        Assert::IsTrue(tolerance->Within(spec3->CalculateDotProductSimilarity(spec2, tolerance), std::cos(M_PI / 4)));
+
+//C# TO C++ CONVERTER TODO TASK: A 'delete tolerance' statement was not added since tolerance was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete spec3' statement was not added since spec3 was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete spec2' statement was not added since spec2 was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete spec1' statement was not added since spec1 was passed to a method or constructor. Handle memory management manually.
+    }
+
+    void TestSpectra::TestNumPeaksWithinRange()
+    {
         std::vector<double> xArray = {1, 2, 3, 4, 5, 6, 7};
         std::vector<double> yArray = {1, 2, 1, 5, 1, 2, 1};
 
-        auto thisSpectrum = new MzmlMzSpectrum(xArray, yArray, false);
+        auto thisSpectrum = new MzSpectrum(xArray, yArray, false);
 
         Assert::AreEqual(7, thisSpectrum->NumPeaksWithinRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
 
@@ -171,8 +249,8 @@ namespace Test {
 
         Assert::AreEqual(0, thisSpectrum->NumPeaksWithinRange(-2, -1));
 
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        Assert::AreEqual(L"[1 to 7] m/z (Peaks 7)", thisSpectrum->ToString());
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        Assert::AreEqual("[1 to 7] m/z (Peaks 7)", thisSpectrum->ToString());
 
         //Assert.AreEqual(7, thisSpectrum.FilterByNumberOfMostIntense(7).Size);
         //Assert.AreEqual(1, thisSpectrum.FilterByNumberOfMostIntense(1).Size);
@@ -189,7 +267,8 @@ namespace Test {
 
         //Assert.AreEqual(1, thisSpectrum.WithRangeRemoved(new DoubleRange(double.MinValue, 6)).Size);
 
-        std::vector<DoubleRange*> xRanges = {
+        std::vector<DoubleRange*> xRanges =
+        {
             new DoubleRange(2, 5),
             new DoubleRange(3, 6)
         };
