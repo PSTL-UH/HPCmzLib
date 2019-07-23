@@ -71,5 +71,28 @@ namespace Test {
 
         static void Test_modification3_hash_set();
 
+        static void TestInvalidModificationHash();
+
+        static void TestFragmentationNoMod();
+
+        static void TestFragmentationModNoNeutralLoss();
+
+        static void Test_FragmentationModNeutralLoss();
+
+        static void Test_FragmentationTwoModNeutralLoss();
+
+        static void Test_FragmentationTwoModNeutralLossTwoFragTypes();
+        
+        static void TestCompactPeptideSerialization();
+
+        static void TestSerializationPeptideFromString();
+
+        static void TestSerializationPeptideFromProtein();
+
+        static void TestSerializationPeptideFromProteinWithMod();
+
+        static void TestFragmentNterminalModifiedPeptide();
+
+        static void TestFragmentCTerminalModifiedPeptide();
     };
 }

@@ -302,5 +302,611 @@ namespace Test {
         delete m2;
         delete m1;
     }
+
+void TestModifications::TestInvalidModificationHash()
+    {
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("K", motif);
+        Modification *m1 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        Modification *m2 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
+        Assert::IsFalse(m1->getValidModification());
+        Assert::IsFalse(m2->getValidModification());
+        Assert::True(m1->Equals(m2));
+        Assert::AreEqual(1, mods.size());
+
+        // test comparing invalid mods with null vs not-null MMs
+        m1 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::make_optional(1), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        m2 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        mods = std::vector<Modification*> {m1, m2};
+        Assert::IsFalse(m1->getValidModification());
+        Assert::IsFalse(m2->getValidModification());
+        Assert::False(m1->Equals(m2));
+        Assert::AreEqual(2, mods.size());
+
+        // test comparing invalid mods with null vs not-null IDs
+        m1 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        m2 = new Modification("", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        mods = std::vector<Modification*> {m1, m2};
+        Assert::IsFalse(m1->getValidModification());
+        Assert::IsFalse(m2->getValidModification());
+        Assert::False(m1->Equals(m2));
+        Assert::AreEqual(2, mods.size());
+
+//C# TO C++ CONVERTER TODO TASK: A 'delete m2' statement was not added since m2 was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete m1' statement was not added since m1 was passed to a method or constructor. Handle memory management manually.
+    }
+ void TestModifications::TestFragmentationNoMod()
+    {
+        // First we're checking to see if the fragment masses of an unmodified peptide a calculated correctly
+        auto prot = new Protein("PEPTIDE", "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        std::vector<Modification*> variableModifications;
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), variableModifications).ToList();
+
+        // check unmodified
+        auto unmodPeptide = ye.Where([&] (std::any p)
+        {
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete prot;
+            return p::AllModsOneIsNterminus->Count == 0;
+        }).First();
+        auto fragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        auto myUnmodFragmentMasses = fragments->Select([&] (std::any v)
+        {
+            static_cast<int>(std::round(v::NeutralMass::ToMz(1) * std::pow(10, 1))) / std::pow(10, 1);
+        }).ToList();
+        std::unordered_set<int> expectedMzs = {98, 227, 324, 425, 538, 653, 703, 574, 477, 376, 263, 148};
+
+        Assert::That(expectedMzs.SetEquals(myUnmodFragmentMasses));
+
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete prot;
+    }
+void TestModifications::TestFragmentationModNoNeutralLoss()
+    {
+        // Now we'll check the mass of modified peptide with no neutral losses
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+        Modification *mod = new Modification("oxidation", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("O1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        std::vector<Modification*> modlist = {mod};
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+
+        auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
+        {
+            {4, modlist}
+        });
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+
+        // check unmodified
+        auto unmodPeptide = ye.Where([&] (std::any p)
+        {
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+            return p::AllModsOneIsNterminus->Count == 0;
+        }).First();
+        auto myUnmodFragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        auto neutralMasses = std::vector<double>();
+        neutralMasses.AddRange(myUnmodFragments.Select([&] (std::any m)
+        {
+            m::NeutralMass;
+        }).ToList());
+        auto expectedMasses = std::vector<double> {97, 226, 323, 424, 537, 652, 147, 262, 375, 476, 573, 702};
+        for (int i = 0; i < neutralMasses.size(); i++)
+        {
+            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(std::make_optional(neutralMasses[i]), 0).value();
+        }
+
+        auto firstNotSecond = neutralMasses.Except(expectedMasses).ToList();
+        auto secondNotFirst = expectedMasses.Except(neutralMasses).ToList();
+
+        //this is the set without oxidation
+        Assert::AreEqual(12, myUnmodFragments.size());
+        Assert::AreEqual(0, firstNotSecond.size());
+        Assert::AreEqual(0, secondNotFirst.size());
+
+// with oxidation, no neutral loss
+        auto modPeptide = ye.Where([&] (std::any p)
+        {
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+            return p::AllModsOneIsNterminus->Count == 1;
+        }).First();
+
+        auto myModFragments = modPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        neutralMasses = std::vector<double>();
+        neutralMasses.AddRange(myModFragments->Select([&] (std::any m)
+        {
+            m::NeutralMass;
+        }).ToList());
+        expectedMasses = {97, 226, 323, 440, 553, 668, 147, 262, 375, 492, 589, 718};
+        for (int i = 0; i < neutralMasses.size(); i++)
+        {
+            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(std::make_optional(neutralMasses[i]), 0).value();
+        }
+
+        firstNotSecond = neutralMasses.Except(expectedMasses).ToList();
+        secondNotFirst = expectedMasses.Except(neutralMasses).ToList();
+
+        //this is the set with oxidation
+        Assert::AreEqual(12, myUnmodFragments.size());
+        Assert::AreEqual(0, firstNotSecond.size());
+        Assert::AreEqual(0, secondNotFirst.size());
+
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+    }
+ void TestModifications::Test_FragmentationModNeutralLoss()
+    {
+        // Now we'll check the mass of modified peptide with no neutral losses
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+        Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+        std::vector<Modification*> modlist = {mod};
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+
+        auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
+        {
+            {4, modlist}
+        });
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+
+        auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
+        {
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+            return v::AllModsOneIsNterminus->Count > 0;
+        }).First();
+
+        auto myModFragments = peptideWithNeutralMassMod->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        std::unordered_set<int> neutralMasses = std::unordered_set<int>(myModFragments.Select([&] (std::any m)
+        {
+            static_cast<int>(m::NeutralMass::ToMz(1));
+        }).ToList());
+        std::unordered_set<int> expectedMasses = {98,227, 324, 407, 520, 635, 505, 618, 733, 148, 263, 376, 459, 556, 685, 557, 654, 783, 782};
+
+        Assert::That(neutralMasses.SetEquals(expectedMasses));
+
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+    }
+
+ void TestModifications::Test_FragmentationTwoModNeutralLoss()
+    {
+        // Now we'll check the mass of modified peptide with 2 neutral loss mods
+        ModificationMotif motifone;
+        ModificationMotif::TryGetMotif("Q", motifone);
+        Modification *modone = new Modification("ammonia", "", "testModType", "", motifone, "Anywhere.", nullptr, std::make_optional(0), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        ModificationMotif motiftwo;
+        ModificationMotif::TryGetMotif("T", motiftwo);
+        Modification *modtwo = new Modification("phospho", "", "testModType", "", motiftwo, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        {
+            {
+                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
+            }
+        },
+        std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        std::vector<Modification*> modlistone = {modone};
+        std::vector<Modification*> modlisttwo = {modtwo};
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+
+        auto prot = new Protein("PEQTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
+        {
+            {3, modlistone},
+            {4, modlisttwo}
+        });
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+
+        auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
+        {
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete modtwo;
+        delete modone;
+            return v::AllModsOneIsNterminus->Count == 2;
+}).First();
+
+        auto myModFragments = peptideWithNeutralMassMod->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        std::unordered_set<int> neutralMasses = std::unordered_set<int>(myModFragments.Select([&] (std::any m)
+        {
+            static_cast<int>(m::NeutralMass::ToMz(1));
+        }).ToList());
+        std::unordered_set<int> expectedMasses = {98, 227, 355, 536, 649, 764, 438, 551, 666, 338, 519, 632, 747, 148, 263, 376, 557, 685, 814, 668, 797, 459, 587, 716, 813, 894};
+
+        Assert::That(neutralMasses.SetEquals(expectedMasses));
+
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete modtwo;
+        delete modone;
+    }
+
+   void TestModifications::Test_FragmentationTwoModNeutralLossTwoFragTypes()
+    {
+        // Now we'll check the mass of modified peptide with no neutral losses
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+
+        std::unordered_map<DissociationType, std::vector<double>> myNeutralLosses =
+        {
+            {
+                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
+            },
+            {
+//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+                DissociationType::ETD, std::vector<double>() { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() }
+            }
+        };
+
+        Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), myNeutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
+        std::vector<Modification*> modlist = {mod};
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+
+        auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
+        {
+            {4, modlist}
+        });
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+
+        auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
+        {
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+            return v::AllModsOneIsNterminus->Count == 1;
+        }).First();
+
+        auto myModFragmentsHCD = peptideWithNeutralMassMod->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+
+        auto neutralMassesHCD = myModFragmentsHCD->Select([&] (std::any m)
+        {
+            static_cast<int>(m::NeutralMass::ToMz(1));
+        });
+        auto expectedMassesHCD = std::unordered_set<int> {98, 227, 324, 407, 520, 635, 505, 618, 733, 148, 263, 376, 459, 556, 685, 557, 654, 783, 782};
+
+        Assert::That(expectedMassesHCD.SetEquals(neutralMassesHCD));
+
+        //Now try the other half
+        auto myModFragmentsETD = peptideWithNeutralMassMod->Fragment(DissociationType::ETD, FragmentationTerminus::Both);
+
+        auto neutralMassesETD = myModFragmentsETD->Select([&] (std::any m)
+        {
+            static_cast<int>(m::NeutralMass::ToMz(1));
+        });
+        auto expectedMassesETD = std::unordered_set<int> {115, 244, 341, 505, 618, 733, 522, 635, 750, 148, 263, 376, 540, 637, 766, 557, 654, 783, 133, 248, 361, 525, 622, 751, 542, 639, 768, 863};
+
+        Assert::That(expectedMassesHCD.SetEquals(neutralMassesHCD));
+
+        delete prot;
+//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+    }
+
+  void TestModifications::TestCompactPeptideSerialization()
+    {
+        // purpose of this test is to serialize/deserialize a CompactPeptide and make sure the deserialized peptide
+        // has the same properties as before it was serialized. This peptide is unmodified
+        std::string sequence = "PEPTIDE";
+        PeptideWithSetModifications *p = new PeptideWithSetModifications(sequence, std::unordered_map<std::string, Modification*>(), 0, nullptr, nullptr, 0, 7, 0);
+        CompactPeptide *cp = new CompactPeptide(p, FragmentationTerminus::Both);
+        CompactPeptide *deserializedCp = nullptr;
+
+        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestCompactPeptideSerialization");
+        FileSystem::createDirectory(dir);
+        std::string path = FileSystem::combine(dir, "myCompactPeptideIndex.ind");
+
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        auto messageTypes = typeof(CompactPeptide);
+        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        {
+            auto file = System::IO::File::Create(path);
+            ser->Serialize(file, cp);
+        }
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        {
+            auto file = System::IO::File::OpenRead(path);
+            deserializedCp = static_cast<CompactPeptide*>(ser->Deserialize(file));
+        }
+
+        Assert::That(cp->Equals(deserializedCp));
+
+        delete ser;
+//C# TO C++ CONVERTER TODO TASK: A 'delete cp' statement was not added since cp was passed to a method or constructor. Handle memory management manually.
+//C# TO C++ CONVERTER TODO TASK: A 'delete p' statement was not added since p was passed to a method or constructor. Handle memory management manually.
+    }
+ void TestModifications::TestSerializationPeptideFromString()
+    {
+        // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
+        // has the same properties as before it was serialized. This peptide is unmodified and generated from reading in a string
+        std::string sequence = "PEPTIDE";
+        PeptideWithSetModifications *peptide = new PeptideWithSetModifications(sequence, std::unordered_map<std::string, Modification*>(), 0, nullptr, nullptr, 1, 7, 0);
+        PeptideWithSetModifications *deserializedPeptide = nullptr;
+
+        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromString");
+        FileSystem::createDirectory(dir);
+        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        auto messageTypes = typeof(PeptideWithSetModifications);
+        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        {
+            auto file = System::IO::File::Create(path);
+            ser->Serialize(file, peptide);
+        }
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        {
+            auto file = System::IO::File::OpenRead(path);
+            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        }
+
+        deserializedPeptide->SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*>(), std::unordered_map<std::string, Protein*>());
+
+        // not asserting any protein properties - since the peptide was created from a sequence string it didn't have a protein to begin with
+
+        Assert::That(peptide->Equals(deserializedPeptide));
+        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
+        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
+
+        std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+        {
+            v::NeutralMass;
+        }).ToList();
+        std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+        {
+            v::NeutralMass;
+        }).ToList();
+        Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
+
+        delete ser;
+//C# TO C++ CONVERTER TODO TASK: A 'delete peptide' statement was not added since peptide was passed to a method or constructor. Handle memory management manually.
+    }
+
+void TestModifications::TestSerializationPeptideFromProtein()
+    {
+        // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
+        // has the same properties as before it was serialized. This peptide is unmodified and generated from digesting a protein
+        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification>>(), std::vector<ProteolysisProduct>(), "MyProtein", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+
+        DigestionParams tempVar();
+        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).front();
+        PeptideWithSetModifications *deserializedPeptide = nullptr;
+
+        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromProtein");
+        FileSystem::createDirectory(dir);
+        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        auto messageTypes = typeof(PeptideWithSetModifications);
+        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        {
+            auto file = System::IO::File::Create(path);
+            ser->Serialize(file, peptide);
+        }
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        {
+            auto file = System::IO::File::OpenRead(path);
+            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        }
+
+        deserializedPeptide->SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*>(), std::unordered_map<std::string, Protein*>
+        {
+            {protein->getAccession(), protein}
+        });
+
+        Assert::That(peptide->getDigestionParams()->Equals(deserializedPeptide->getDigestionParams()));
+        Assert::That(peptide->Equals(deserializedPeptide));
+        Assert::That(deserializedPeptide->getProtein()->getName() == peptide->getProtein()->getName());
+        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
+        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
+
+        std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+                                                                                                                                                    {
+            v::NeutralMass;
+        }).ToList();
+        std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+        {
+            v::NeutralMass;
+        }).ToList();
+
+        Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
+
+        delete ser;
+//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+    }
+
+void TestModifications::TestSerializationPeptideFromProteinWithMod()
+    {
+        // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
+        // has the same properties as before it was serialized. This peptide is modified with a phosphorylation
+
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("T", motif);
+
+        std::unordered_map<DissociationType, std::vector<double>> myNeutralLosses =
+        {
+            {
+                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
+            },
+            {
+//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+                DissociationType::ETD, std::vector<double>() { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() }
+            }
+        };
+
+        Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), myNeutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        std::unordered_map<int, std::vector<Modification*>> mods =
+        {
+            {
+                4, {mod}
+            }
+        };
+
+        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "MyProtein", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+
+        DigestionParams tempVar();
+        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).Where([&] (std::any v)
+        {
+        delete protein;
+        delete mod;
+            return v::AllModsOneIsNterminus->Count == 1;
+        }).First();
+        PeptideWithSetModifications *deserializedPeptide = nullptr;
+
+        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromProteinWithMod");
+        FileSystem::createDirectory(dir);
+        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        auto messageTypes = typeof(PeptideWithSetModifications);
+        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        {
+            auto file = System::IO::File::Create(path);
+            ser->Serialize(file, peptide);
+        }
+
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        {
+            auto file = System::IO::File::OpenRead(path);
+            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        }
+
+        std::unordered_map<std::string, Modification*> stringToMod =
+        {
+            {mods.Values->First().First().IdWithMotif, mods.Values->First().First()}
+        };
+
+        deserializedPeptide->SetNonSerializedPeptideInfo(stringToMod, std::unordered_map<std::string, Protein*>
+        {
+            {protein->getAccession(), protein}
+        });
+
+        Assert::That(peptide->Equals(deserializedPeptide));
+        Assert::That(deserializedPeptide->getProtein()->getName() == peptide->getProtein()->getName());
+        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
+        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
+
+        std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+        {
+            v::NeutralMass;
+        }).ToList();
+        std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
+        {
+            v::NeutralMass;
+        }).ToList();
+
+        Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
+
+        delete ser;
+//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+        delete mod;
+    }
+
+    void TestModifications::TestFragmentNterminalModifiedPeptide()
+    {
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("P", motif);
+        Modification *nTermMod = new Modification("acetylation", "", "testModType", "", motif, "N-terminal.", ChemicalFormula::ParseFormula("C2H2O1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        std::unordered_map<int, std::vector<Modification*>> mods =
+        {
+            {
+                1, {nTermMod}
+            }
+        };
+
+        Protein *protein = new Protein("PEPTIDE", "", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+        DigestionParams tempVar();
+        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).Where([&] (std::any p)
+        {
+        delete protein;
+        delete nTermMod;
+            return p::AllModsOneIsNterminus->Count == 1;
+        }).First();
+        Assert::That(peptide->getFullSequence() == "[testModType:acetylation on P]PEPTIDE");
+
+        auto fragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        auto roundedFragments = fragments.Select([&] (std::any f)
+        {
+            (int)f.NeutralMass;
+        }).ToList();
+        Assert::That(roundedFragments.SequenceEqual(std::vector<int> {139, 268, 365, 466, 579, 694, 147, 262, 375, 476, 573, 702}));
+
+        delete protein;
+        delete nTermMod;
+    }
+   void TestModifications::TestFragmentCTerminalModifiedPeptide()
+    {
+        ModificationMotif motif;
+        ModificationMotif::TryGetMotif("E", motif);
+        Modification *cTermMod = new Modification("acetylation", "", "testModType", "", motif, "C-terminal.", ChemicalFormula::ParseFormula("C2H2O1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        std::unordered_map<int, std::vector<Modification*>> mods =
+        {
+            {
+                7, {cTermMod}
+            }
+        };
+
+        Protein *protein = new Protein("PEPTIDE", "", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+        DigestionParams tempVar();
+        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).Where([&] (std::any p)
+        {
+        delete protein;
+        delete cTermMod;
+            return p::AllModsOneIsNterminus->Count == 1;
+        }).First();
+        Assert::That(peptide->getFullSequence() == "PEPTIDE[testModType:acetylation on E]");
+
+        auto fragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        auto roundedFragments = fragments.Select([&] (std::any f)
+        {
+            (int)f.NeutralMass;
+        }).ToList();
+        Assert::That(roundedFragments.SequenceEqual(std::vector<int> {97, 226, 323, 424, 537, 652, 189, 304, 417, 518, 615, 744}));
+
+        delete protein;
+        delete cTermMod;
+    }
+
 #endif
 }
