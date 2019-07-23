@@ -10,6 +10,7 @@
 #include "stringhelper.h"
 
 //using namespace Proteomics::ProteolyticDigestion;
+#include "VariantApplication.h"
 
 namespace Proteomics
 {
@@ -69,6 +70,37 @@ namespace Proteomics
         privateSpliceSites = spliceSites;
     }
 
+    Protein::Protein(std::string variantBaseSequence,
+                     Protein *protein,
+                     std::vector<SequenceVariation*> appliedSequenceVariations,
+                     std::vector<ProteolysisProduct*> applicableProteolysisProducts,
+                     std::unordered_map<int, std::vector<Modification*>> oneBasedModifications,
+                     std::string sampleNameForVariants) {
+        Protein(variantBaseSequence,
+                VariantApplication::GetAccession(protein, appliedSequenceVariations),
+                protein->getOrganism(),
+                protein->getGeneNames(),
+                oneBasedModifications,
+                applicableProteolysisProducts,
+                GetName(appliedSequenceVariations, protein->getName()),
+                GetName(appliedSequenceVariations, protein->getFullName()),
+                protein->getIsDecoy(),
+                protein->getIsContaminant(),
+                protein->getDatabaseReferences(),
+                protein->getSequenceVariations(),
+                appliedSequenceVariations,
+                sampleNameForVariants,
+                protein->getDisulfideBonds(),
+                protein->getSpliceSites(),
+                protein->getDatabaseFilePath());
+
+        privateNonVariantProtein = protein->getNonVariantProtein();
+        std::unordered_map<int, std::vector<Modification*>> v = getNonVariantProtein()->getOriginalNonVariantModifications();
+        std::unordered_map<int, std::vector<Modification*>> &v2 =v;
+        setOriginalNonVariantModifications(v2);
+
+    }
+    
     std::unordered_map<int, std::vector<Modification*>> Protein::getOneBasedPossibleLocalizedModifications() const
     {
         return privateOneBasedPossibleLocalizedModifications;

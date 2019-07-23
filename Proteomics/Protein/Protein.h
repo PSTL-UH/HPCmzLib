@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "VariantApplication.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -20,6 +19,9 @@
 #include "ProteolysisProduct.h"
 //namespace Proteomics { class DatabaseReference; }
 #include "DatabaseReference.h"
+
+//#include "VariantApplication.h"
+namespace Proteomics { class VariantApplication; }
 
 #include "../ProteolyticDigestion/ProteinDigestion.h"
 using namespace Proteomics::ProteolyticDigestion;
@@ -101,36 +103,6 @@ namespace Proteomics
                 std::vector<ProteolysisProduct*> applicableProteolysisProducts,
                 std::unordered_map<int, std::vector<Modification*>> oneBasedModifications,
                 std::string sampleNameForVariants);
-#ifdef LATER
-
-        this( variantBaseSequence,
-              VariantApplication::GetAccession(protein, appliedSequenceVariations),
-              organism: protein::Organism,
-              geneNames: std::vector<std::tuple<std::string, std::string>>(protein::GeneNames),
-              oneBasedModifications: oneBasedModifications != nullptr ? oneBasedModifications::ToDictionary([&] (std::any x)
-                                                                                                            {
-                                                                                                                x::Key;
-                                                                                                            }, [&] (std::any x)
-                                                                                                            {
-                                                                                                                x->Value;
-                                                                                                            }) :
-                                                                          std::unordered_map<int, std::vector<Modification*>>(),
-              proteolysisProducts: std::vector<ProteolysisProduct*>((applicableProteolysisProducts != nullptr) ? applicableProteolysisProducts : std::vector<ProteolysisProduct*>()),
-              name: GetName(appliedSequenceVariations, protein->Name),
-              fullName: GetName(appliedSequenceVariations, protein->FullName),
-              isDecoy: protein::IsDecoy,
-              isContaminant: protein::IsContaminant,
-              databaseReferences: std::vector<DatabaseReference*>(protein::DatabaseReferences),
-              sequenceVariations: std::vector<SequenceVariation*>(protein::SequenceVariations),
-              disulfideBonds: std::vector<DisulfideBond*>(protein::DisulfideBonds),
-              spliceSites: std::vector<SpliceSite*>(protein::SpliceSites),
-              databaseFilePath: protein::DatabaseFilePath) {
-            NonVariantProtein = protein::NonVariantProtein;
-            setOriginalNonVariantModifications(getNonVariantProtein()->getOriginalNonVariantModifications());
-            AppliedSequenceVariations = ((appliedSequenceVariations != nullptr) ? appliedSequenceVariations : std::vector<SequenceVariation*>())->ToList();
-            SampleNameForVariants = sampleNameForVariants;
-        };
-#endif
         
         /// <summary>
         /// Modifications (values) located at one-based protein positions (keys)
