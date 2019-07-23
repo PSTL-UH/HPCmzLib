@@ -1,4 +1,4 @@
-﻿#include "ChemicalFormulaTestFixture.h"
+﻿#include "TestChemicalFormula.h"
 #include "../Chemistry/Element.h"
 #include "../Chemistry/PeriodicTable.h"
 #include "../MzLibUtil/MzLibException.h"

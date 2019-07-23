@@ -8,27 +8,35 @@
 #
 include ../Makefile.defs
 
-CEXECS = ChemicalFormulaTestFixture	\
-	ElementsAndIsotopesTests	\
+CEXECS = TestChemicalFormula		\
+	TestElementsAndIsotopes		\
 	TestAminoAcids			\
 	TestFragments			\
 	TestModifications		\
 	TestPeptides			
 
-#	DatabaseLoaderTests	  	\
-#	FakeMsDataFile 		        \
-#	MassTestFixture		        \
-#	MyTests 			\
-#	SetUpTests	                \
-#	TestChromatogram		\
-#	TestDataFile			\
-#	TestIsolation			\
-#	TestMzML			\
-#	TestProteinReader		\
-#	TestProteomicsReadWrite		\
-#	TestRange			\
-#	TestSpectrap			\
-#	TestTolerance
+#	FakeMsDataFile                       \
+#	FixtureSetUp                         \
+#	SpectrumProcessingAndFiltering       \
+#	TestChromatogram                     \
+#	TestDigestionMotif                   \
+#	TestIsolation                        \
+#	TestMassMzCalculations               \
+#	TestMetaMorpheus                     \
+#	TestMgf                              \
+#	TestModFits                          \
+#	TestMsDataFile                       \
+#	TestMzML                             \
+#	TestPeptideWithSetMods               \
+#	TestProductMassesMightHaveDuplicates \
+#	TestProteinDigestion                 \
+#	TestProteinProperties                \
+#	TestPtmListLoader                    \
+#	TestRangeAndTolerances               \
+#	TestRetentionTimePrediction          \
+#	TestSeqCoverage                      \
+#	TestSpectra                          \
+#	TestVariantProtein
 
 
 .SUFFIXES: .cxx .h  
@@ -43,10 +51,10 @@ cxxtests: $(CEXECS)
 ###################################################################################################
 ### CXXTESTS                                                                                      ###
 ###################################################################################################
-ElementsAndIsotopesTests: ElementsAndIsotopesTests.o 
+TestElementsAndIsotopes: TestElementsAndIsotopes.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
-ChemicalFormulaTestFixture: ChemicalFormulaTestFixture.o
+TestChemicalFormula: TestChemicalFormula.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
 TestAminoAcids: TestAminoAcids.o 

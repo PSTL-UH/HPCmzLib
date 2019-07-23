@@ -6,7 +6,8 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class OldSchoolModification; }
+//namespace Proteomics { class OldSchoolModification; }
+#include "OldSchoolModification.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev

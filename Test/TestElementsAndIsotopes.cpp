@@ -1,4 +1,4 @@
-﻿#include "ElementsAndIsotopesTests.h"
+﻿#include "TestElementsAndIsotopes.h"
 #include "../Chemistry/Element.h"
 #include "../Chemistry/Isotope.h"
 #include "../Chemistry/PeriodicTable.h"

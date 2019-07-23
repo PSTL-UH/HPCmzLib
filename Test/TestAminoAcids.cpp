@@ -1,5 +1,5 @@
 ﻿#include "TestAminoAcids.h"
-#include "../Proteomics/Residue.h"
+#include "../Proteomics/Proteomics.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 #include "Assert.h"

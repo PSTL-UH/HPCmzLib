@@ -3,8 +3,8 @@
 *~
 *\#
 typescript
-Test/ChemicalFormulaTestFixture
-Test/ElementsAndIsotopesTests
+Test/TestChemicalFormula
+Test/TestElementsAndIsotopes
 Test/TestModifications
 Test/TestAminoAcids
 Test/elements.dat

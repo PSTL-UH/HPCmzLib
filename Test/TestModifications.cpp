@@ -1,19 +1,8 @@
 ﻿#include "TestModifications.h"
-#include "../Proteomics/ModificationMotif.h"
-#include "../Proteomics/ModificationWithMass.h"
-#include "../Proteomics/TerminusLocalization.h"
-#include "../Proteomics/Modification.h"
+#include "../Proteomics/Proteomics.h"
 #include "../Chemistry/ChemicalFormula.h"
-#include "../Proteomics/ModificationWithMassAndCf.h"
 //#include "../UsefulProteomicsDatabases/PtmListLoader.h"
-#include "../Proteomics/OldSchoolModification.h"
-#include "../Proteomics/ModificationSites.h"
-#include "../Proteomics/ModificationCollection.h"
-#include "../Chemistry/Interfaces/IHasMass.h"
-#include "../Proteomics/OldSchoolModificationWithMultiplePossibilities.h"
 #include "../MzLibUtil/MzLibException.h"
-#include "../Proteomics/ChemicalFormulaModification.h"
-#include "../Proteomics/ModificationWithLocation.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 
@@ -89,8 +78,11 @@ namespace Test {
     void TestModifications::Test_modificationsHashCode() {
         ModificationMotif *motif;
         ModificationMotif::TryGetMotif("M", &motif);
-        auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
-        auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
+//        auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
+//        auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
+        auto mod1 = new Modification("mod", "", "type", "", motif, "Anywhere.", nullptr, std::make_optional(1), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        auto mod2 = new Modification("mod2", "", "type", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+
 
         Assert::AreNotEqual(mod1->GetHashCode(), mod2->GetHashCode());
         Assert::IsFalse(mod1->Equals(mod2));
@@ -105,11 +97,13 @@ namespace Test {
     void TestModifications::Test_ModificationWithNoMassWritten() {
         ModificationMotif *motif;
         ModificationMotif::TryGetMotif("M", &motif);
-        auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
+//        auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
+        auto mod1 = new Modification("mod of M", "", "type", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
 
         auto mod1string = mod1->ToString();
         Assert::IsTrue(!mod1string.find("MM") != std::string::npos);
-        auto modAfterWriteRead = dynamic_cast<ModificationWithMassAndCf*>(PtmListLoader::ReadModsFromString(mod1string + "\r\n" + "//").front());
+        std::vector<(Modification, string)> errors;
+        auto modAfterWriteRead = dynamic_cast<Modification*>(PtmListLoader::ReadModsFromString(mod1string + "\r\n" + "//", errors).front());
         Assert::IsTrue(mod1->Equals( modAfterWriteRead));
 
         delete mod1;
@@ -165,25 +159,29 @@ namespace Test {
 #ifdef LATER
     
     void TestModifications::ModificationCollectionTest() {
-        OldSchoolModification tempVar(1, "Mod1");
+      OldSchoolModification tempVar(1, "Mod1");
         ModificationCollection *a = new ModificationCollection({&tempVar, new OldSchoolModification(2, "Mod2")});
 
         double lala = 0;
         System::Collections::IEnumerable *aasdf = a;
-        for (auto jadfk : aasdf) {
+        for (auto jadfk : aasdf)
+        {
             lala += (dynamic_cast<IHasMass*>(jadfk))->getMonoisotopicMass();
         }
         Assert::AreEqual(3, lala);
 
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod2", a->ToString());
         OldSchoolModification tempVar2(3, "Mod3");
         a->Add(&tempVar2);
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod2 | Mod3", a->ToString());
         OldSchoolModification tempVar3(2, "Mod2");
         Assert::IsTrue(a->Contains(&tempVar3));
         std::vector<IHasMass*> myArray(4);
         a->CopyTo(myArray, 1);
-        Assert::AreEqual(3, myArray.Sum([&] (std::any b) {
+        Assert::AreEqual(3, myArray.Sum([&] (std::any b)
+        {
         delete a;
             return b == nullptr ? 0 : 1;
         }));
@@ -191,16 +189,18 @@ namespace Test {
         Assert::IsFalse(a->getIsReadOnly());
         OldSchoolModification tempVar4(2, "Mod2");
         a->Remove(&tempVar4);
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("Mod1 | Mod3", a->ToString());
         double ok = 0;
-        for (auto b : a) {
+        for (auto b : a)
+        {
             ok += b->MonoisotopicMass;
         }
-        Assert::AreEqual((double)4, ok);
+        Assert::AreEqual(4, ok);
 
         a->Clear();
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("", a->ToString());
-
         delete a;
     }
 
@@ -250,6 +250,28 @@ namespace Test {
 
         delete b;
         delete a;
+    }
+
+    void TestModifications::ModificationCollectionTestTest()    {
+        OldSchoolModification *mod1 = new OldSchoolModification(10, "mass 10 modification");
+        OldSchoolModification *mod2 = new OldSchoolModification(100, "mass 100 modification");
+        OldSchoolModification *mod3 = new OldSchoolModification(1000, "mass 1000 modification");
+        ModificationCollection *a = new ModificationCollection({mod1, mod2, mod3, mod1});
+        ModificationCollection *b = new ModificationCollection({mod1, mod3, mod1, mod2});
+        Assert::IsTrue(a->Equals(b));
+        ModificationCollection *c = new ModificationCollection({mod1});
+        Assert::IsFalse(c->Equals(b));
+
+        delete c;
+        //C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a
+        // method or constructor. Handle memory management manually.
+        delete a;
+        //C# TO C++ CONVERTER TODO TASK: A 'delete mod3' statement was not added since mod3 was passed to
+        // a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete mod2' statement was not added since mod2 was passed to
+        // a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to
+        //a method or constructor. Handle memory management manually.
     }
 
     void TestModifications::ModificationCollectionScrambledEquals() {

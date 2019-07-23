@@ -59,6 +59,8 @@ namespace Test {
 
         static void ModificationWithMultiplePossibilitiesTest();
 
+        static void ModificationCollectionTestTest();    
+
         static void ModificationSitesTest55();
 
         static void ChemicalFormulaModificaiton();

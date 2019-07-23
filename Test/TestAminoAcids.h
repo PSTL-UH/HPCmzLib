@@ -20,6 +20,7 @@
 
 //using namespace NUnit::Framework;
 #include "../Proteomics/Proteomics.h"
+
 using namespace Proteomics;
 
 namespace Test {
