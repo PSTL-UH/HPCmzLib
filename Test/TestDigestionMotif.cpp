@@ -1,97 +1,110 @@
 ﻿#include "TestDigestionMotif.h"
-#include "../Proteomics/Modifications/Modification.h"
-#include "../Proteomics/Protein/Protein.h"
+#include "../Proteomics/Proteomics.h"
 #include "../MzLibUtil/MzLibException.h"
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+
+#include <limits>
+#include "Assert.h"
 
 using namespace MzLibUtil;
-using namespace NUnit::Framework;
 using namespace Proteomics;
 using namespace Proteomics::ProteolyticDigestion;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    
+    std::cout <<++i << "TestParseProtease" << std::endl;    
+    Test::TestDigestionMotif::TestParseProtease();
+
+    std::cout <<++i << "TestBasicProtease1" << std::endl;    
+    Test::TestDigestionMotif::TestBasicProtease1();
+
+    std::cout <<++i << "TestBasicProtease2" << std::endl;    
+    Test::TestDigestionMotif::TestBasicProtease2();
+
+    std::cout <<++i << "TestWildCardExclusion" << std::endl;    
+    Test::TestDigestionMotif::TestWildCardExclusion();
+
+    std::cout <<++i << "TestMultiLetterProtease" << std::endl;    
+    Test::TestDigestionMotif::TestMultiLetterProtease();
+
+    std::cout <<++i << "TestNTerminusProtease" << std::endl;    
+    Test::TestDigestionMotif::TestNTerminusProtease();
+
+#ifdef LATER
+    // Tests for Exception handling
+    std::cout <<++i << "TestSyntax" << std::endl;    
+    Test::TestDigestionMotif::TestSyntax();
+#endif
+    return 0;
+}
 
 namespace Test
 {
 
-System::Diagnostics::Stopwatch *TestDigestionMotif::privateStopwatch;
-
-    Stopwatch *TestDigestionMotif::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestDigestionMotif::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestDigestionMotif::Setup()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestDigestionMotif::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
-
     void TestDigestionMotif::TestParseProtease()
     {
         auto argn = DigestionMotif::ParseDigestionMotifsFromString("|D");
-        Assert::AreEqual(argn.size(), 1);
+        Assert::AreEqual( (int)argn.size(), 1);
 
         auto c = argn[0];
-        Assert::AreEqual(c->InducingCleavage, "D");
-        Assert::AreEqual(c->PreventingCleavage, nullptr);
+        Assert::AreEqual(c->InducingCleavage.c_str(), "D");
+        Assert::AreEqual((int)c->PreventingCleavage.size(), 0);
         Assert::AreEqual(c->CutIndex, 0);
 
         auto chymotrypsin = DigestionMotif::ParseDigestionMotifsFromString("F[P]|,W[P]|,Y[P]|");
-        Assert::AreEqual(chymotrypsin.size(), 3);
+        Assert::AreEqual((int)chymotrypsin.size(), 3);
     }
 
     void TestDigestionMotif::TestBasicProtease1()
     {
         auto empty = std::vector<Modification*>();
-        DigestionParams *myDigestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *myDigestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024,
+                                                                 InitiatorMethionineBehavior::Variable, 2,
+                                                                 CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         // create a protein
         Protein *myProtein = new Protein("PROTEIN", "myAccession");
 
         // digest it into peptides
-        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty).ToList();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string first = myPeptides.front().ToString();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string last = myPeptides.back().ToString();
+        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty);
+        std::string first = myPeptides.front()->ToString();
+        std::string last =  myPeptides.back()->ToString();
 
-        Assert::AreEqual(first, "PR");
-        Assert::AreEqual(last, "OTEIN");
+        Assert::AreEqual(first.c_str(), "PR");
+        Assert::AreEqual(last.c_str(), "OTEIN");
 
         delete myProtein;
-//C# TO C++ CONVERTER TODO TASK: A 'delete myDigestionParams' statement was not added since myDigestionParams was passed to a method or constructor. Handle memory management manually.
+        delete myDigestionParams;
     }
 
     void TestDigestionMotif::TestBasicProtease2()
     {
         auto empty = std::vector<Modification*>();
-        DigestionParams *myDigestionParams = new DigestionParams("Lys-C (don't cleave before proline)", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *myDigestionParams = new DigestionParams("Lys-C (don't cleave before proline)", 0, 1,
+                                                                 std::numeric_limits<int>::max(), 1024,
+                                                                 InitiatorMethionineBehavior::Variable, 2,
+                                                                 CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         // create a protein
         Protein *myProtein = new Protein("MKPKPKPMKA", "myAccession");
 
         // digest it into peptides
-        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty).ToList();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string first = myPeptides.front().ToString();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string last = myPeptides.back().ToString();
+        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty);
+        std::string first = myPeptides.front()->ToString();
+        std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first, "MKPKPKPMK");
-        Assert::AreEqual(last, "A");
+        Assert::AreEqual(first.c_str(), "MKPKPKPMK");
+        Assert::AreEqual(last.c_str(), "A");
 
         delete myProtein;
-//C# TO C++ CONVERTER TODO TASK: A 'delete myDigestionParams' statement was not added since myDigestionParams was passed to a method or constructor. Handle memory management manually.
+        delete myDigestionParams;
     }
 
     void TestDigestionMotif::TestWildCardExclusion()
@@ -101,70 +114,71 @@ System::Diagnostics::Stopwatch *TestDigestionMotif::privateStopwatch;
         Protease *multiletter = new Protease("multiletter", CleavageSpecificity::Full, "", "", digestionmotifs);
         ProteaseDictionary::getDictionary().emplace(multiletter->getName(), multiletter);
 
-        DigestionParams *myDigestionParams = new DigestionParams("multiletter", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *myDigestionParams = new DigestionParams("multiletter", 0, 1, std::numeric_limits<int>::max(),
+                                                                 1024, InitiatorMethionineBehavior::Variable, 2,
+                                                                 CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         // create a protein
         Protein *myProtein = new Protein("PROPRPPM", "myAccession");
 
         // digest it into peptides
-        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty).ToList();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string first = myPeptides.front().ToString();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string last = myPeptides.back().ToString();
+        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty);
+        std::string first = myPeptides.front()->ToString();
+        std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first, "PRO");
-        Assert::AreEqual(last, "PRPPM");
+        Assert::AreEqual(first.c_str(), "PRO");
+        Assert::AreEqual(last.c_str(), "PRPPM");
 
         delete myProtein;
-//C# TO C++ CONVERTER TODO TASK: A 'delete myDigestionParams' statement was not added since myDigestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete multiletter' statement was not added since multiletter was passed to a method or constructor. Handle memory management manually.
+        delete myDigestionParams;
+        delete multiletter;
     }
 
     void TestDigestionMotif::TestMultiLetterProtease()
     {
         auto empty = std::vector<Modification*>();
-        DigestionParams *myDigestionParams = new DigestionParams("collagenase", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *myDigestionParams = new DigestionParams("collagenase", 0, 1, std::numeric_limits<int>::max() ,
+                                                                 1024, InitiatorMethionineBehavior::Variable, 2,
+                                                                 CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         // create a protein
         Protein *myProtein = new Protein("ABCGPXGPMFKCGPMKK", "myAccession");
 
         // digest it into peptides
-        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty).ToList();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string first = myPeptides.front().ToString();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string last = myPeptides.back().ToString();
+        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty);
+        std::string first = myPeptides.front()->ToString();
+        std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first, "ABCGPX");
-        Assert::AreEqual(last, "GPMFKCGPMKK");
+        Assert::AreEqual(first.c_str(), "ABCGPX");
+        Assert::AreEqual(last.c_str(), "GPMFKCGPMKK");
 
         delete myProtein;
-//C# TO C++ CONVERTER TODO TASK: A 'delete myDigestionParams' statement was not added since myDigestionParams was passed to a method or constructor. Handle memory management manually.
+        delete myDigestionParams;
     }
 
     void TestDigestionMotif::TestNTerminusProtease()
     {
         auto empty = std::vector<Modification*>();
-        DigestionParams *myDigestionParams = new DigestionParams("Asp-N", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *myDigestionParams = new DigestionParams("Asp-N", 0, 1, std::numeric_limits<int>::max(), 1024,
+                                                                 InitiatorMethionineBehavior::Variable, 2,
+                                                                 CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         // create a protein
         Protein *myProtein = new Protein("PADDMSKDPDMMAASMDJSSM", "myAccession");
 
         // digest it into peptides
-        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty).ToList();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string first = myPeptides.front().ToString();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        std::string last = myPeptides.back().ToString();
+        auto myPeptides = myProtein->Digest(myDigestionParams, empty, empty);
+        std::string first = myPeptides.front()->ToString();
+        std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first, "PA");
-        Assert::AreEqual(last, "DJSSM");
+        Assert::AreEqual(first.c_str(), "PA");
+        Assert::AreEqual(last.c_str(), "DJSSM");
 
         delete myProtein;
-//C# TO C++ CONVERTER TODO TASK: A 'delete myDigestionParams' statement was not added since myDigestionParams was passed to a method or constructor. Handle memory management manually.
+        delete myDigestionParams;
     }
 
+#ifdef LATER
     void TestDigestionMotif::TestSyntax()
     {
         Assert::Throws<MzLibException*>([&] ()
@@ -173,4 +187,5 @@ System::Diagnostics::Stopwatch *TestDigestionMotif::privateStopwatch;
             Assert::Fail("Exception shold be thrown for incorrect syntax.");
         });
     }
+#endif
 }

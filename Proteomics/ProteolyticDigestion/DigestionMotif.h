@@ -27,10 +27,10 @@ namespace Proteomics
             DigestionMotif(const std::string &inducingCleavage, const std::string &preventingCleavage, int cutIndex, const std::string &excludeFromWildcard);
 
             // parsing cleavage rules syntax
-            static std::vector<DigestionMotif*> ParseDigestionMotifsFromString(std::string &motifsString);
+            static std::vector<DigestionMotif*> ParseDigestionMotifsFromString(std::string motifsString);
 
         private:
-            static DigestionMotif *ParseDigestionMotifFromString(std::string &motifString);
+            static DigestionMotif *ParseDigestionMotifFromString(std::string motifString);
 
         public:
             bool Fits(const std::string &sequence, int location);

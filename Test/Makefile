@@ -11,15 +11,15 @@ include ../Makefile.defs
 CEXECS = TestChemicalFormula		\
 	TestElementsAndIsotopes		\
 	TestAminoAcids			\
-	TestFragments			\
 	TestModifications		\
+	TestFragments			\
+	TestDigestionMotif		\
 	TestPeptides			
 
 #	FakeMsDataFile                       \
 #	FixtureSetUp                         \
 #	SpectrumProcessingAndFiltering       \
 #	TestChromatogram                     \
-#	TestDigestionMotif                   \
 #	TestIsolation                        \
 #	TestMassMzCalculations               \
 #	TestMetaMorpheus                     \
@@ -64,6 +64,10 @@ TestModifications: TestModifications.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
 TestPeptides: TestPeptides.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+#
+TestDigestionMotif: TestDigestionMotif.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 

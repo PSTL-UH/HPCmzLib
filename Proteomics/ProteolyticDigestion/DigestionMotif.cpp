@@ -17,7 +17,7 @@ std::vector<char> DigestionMotif::Z = {'E', 'Q'};
         {
         }
 
-        std::vector<DigestionMotif*> DigestionMotif::ParseDigestionMotifsFromString(std::string &motifsString)
+        std::vector<DigestionMotif*> DigestionMotif::ParseDigestionMotifsFromString(std::string motifsString)
         {
             motifsString = StringHelper::replace(StringHelper::replace(motifsString, "\"", ""), " ", "");
             
@@ -52,7 +52,7 @@ std::vector<char> DigestionMotif::Z = {'E', 'Q'};
             return motifs;
         }
 
-        DigestionMotif *DigestionMotif::ParseDigestionMotifFromString(std::string &motifString)
+        DigestionMotif *DigestionMotif::ParseDigestionMotifFromString(std::string motifString)
         {
             std::string inducingCleavage;
             std::string preventingCleavage = "";
