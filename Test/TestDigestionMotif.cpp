@@ -14,27 +14,27 @@ int main ( int argc, char **argv )
 {
 
     int i=0;
-    std::cout << i << "PeriodicTableLoader" << std::endl;    
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     Chemistry::PeriodicTable::Load (elr);
     
-    std::cout <<++i << "TestParseProtease" << std::endl;    
+    std::cout <<++i << ". TestParseProtease" << std::endl;    
     Test::TestDigestionMotif::TestParseProtease();
 
-    std::cout <<++i << "TestBasicProtease1" << std::endl;    
+    std::cout <<++i << ". TestBasicProtease1" << std::endl;    
     Test::TestDigestionMotif::TestBasicProtease1();
 
-    std::cout <<++i << "TestBasicProtease2" << std::endl;    
+    std::cout <<++i << ". TestBasicProtease2" << std::endl;    
     Test::TestDigestionMotif::TestBasicProtease2();
 
-    std::cout <<++i << "TestWildCardExclusion" << std::endl;    
+    std::cout <<++i << ". TestWildCardExclusion" << std::endl;    
     Test::TestDigestionMotif::TestWildCardExclusion();
 
-    std::cout <<++i << "TestMultiLetterProtease" << std::endl;    
+    std::cout <<++i << ". TestMultiLetterProtease" << std::endl;    
     Test::TestDigestionMotif::TestMultiLetterProtease();
 
-    std::cout <<++i << "TestNTerminusProtease" << std::endl;    
+    std::cout <<++i << ". TestNTerminusProtease" << std::endl;    
     Test::TestDigestionMotif::TestNTerminusProtease();
 
 #ifdef LATER
@@ -54,7 +54,8 @@ namespace Test
         Assert::AreEqual( (int)argn.size(), 1);
 
         auto c = argn[0];
-        Assert::AreEqual(c->InducingCleavage.c_str(), "D");
+        std::string a = "D";
+        Assert::AreEqual(c->InducingCleavage, a);
         Assert::AreEqual((int)c->PreventingCleavage.size(), 0);
         Assert::AreEqual(c->CutIndex, 0);
 
@@ -77,8 +78,11 @@ namespace Test
         std::string first = myPeptides.front()->ToString();
         std::string last =  myPeptides.back()->ToString();
 
-        Assert::AreEqual(first.c_str(), "PR");
-        Assert::AreEqual(last.c_str(), "OTEIN");
+        std::string a = "PR";
+        std::string b = "OTEIN";
+        
+        Assert::AreEqual(first, a);
+        Assert::AreEqual(last, b);
 
         delete myProtein;
         delete myDigestionParams;
@@ -100,8 +104,10 @@ namespace Test
         std::string first = myPeptides.front()->ToString();
         std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first.c_str(), "MKPKPKPMK");
-        Assert::AreEqual(last.c_str(), "A");
+        std::string a = "MKPKPKPMK";
+        std::string b = "A";
+        Assert::AreEqual(first, a);
+        Assert::AreEqual(last, b);
 
         delete myProtein;
         delete myDigestionParams;
@@ -126,8 +132,10 @@ namespace Test
         std::string first = myPeptides.front()->ToString();
         std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first.c_str(), "PRO");
-        Assert::AreEqual(last.c_str(), "PRPPM");
+        std::string a = "PRO";
+        std::string b = "PRPPM";
+        Assert::AreEqual(first, a);
+        Assert::AreEqual(last, b);
 
         delete myProtein;
         delete myDigestionParams;
@@ -149,8 +157,10 @@ namespace Test
         std::string first = myPeptides.front()->ToString();
         std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first.c_str(), "ABCGPX");
-        Assert::AreEqual(last.c_str(), "GPMFKCGPMKK");
+        std::string a = "ABCGPX";
+        std::string b = "GPMFKCGPMKK";
+        Assert::AreEqual(first, a);
+        Assert::AreEqual(last, b);
 
         delete myProtein;
         delete myDigestionParams;
@@ -171,8 +181,10 @@ namespace Test
         std::string first = myPeptides.front()->ToString();
         std::string last = myPeptides.back()->ToString();
 
-        Assert::AreEqual(first.c_str(), "PA");
-        Assert::AreEqual(last.c_str(), "DJSSM");
+        std::string a = "PA";
+        std::string b = "DJSSM";
+        Assert::AreEqual(first, a);
+        Assert::AreEqual(last, b);
 
         delete myProtein;
         delete myDigestionParams;

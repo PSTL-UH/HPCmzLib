@@ -435,12 +435,11 @@ namespace Proteomics
                 m.ToString();
             }));
 #endif
-            StringBuilder *sb = new StringBuilder();
-            sb->appendLine(getFullSequence());
+            std::string sb = getFullSequence();
             for (auto m : getAllModsOneIsNterminus() ) {
-                sb->appendLine(std::to_string(static_cast<int>(std::get<0>(m))) + std::get<1>(m)->ToString() );
+                sb += "\t" + std::to_string(static_cast<int>(std::get<0>(m))) + std::get<1>(m)->ToString();
             }
-            return sb->toString();
+            return sb;
         }
 
         bool PeptideWithSetModifications::Equals(PeptideWithSetModifications* q)
