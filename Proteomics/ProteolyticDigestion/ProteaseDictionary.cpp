@@ -16,7 +16,7 @@ namespace Proteomics
 
         std::unordered_map<std::string, Protease*> ProteaseDictionary::privateDictionary;
 
-        ProteaseDictionary::StaticConstructor::StaticConstructor()
+        void ProteaseDictionary::StaticConstructor()
         {
 #ifdef ORIG
             auto pathToProgramFiles = Environment::GetFolderPath(Environment::SpecialFolder::ProgramFiles);
@@ -35,10 +35,11 @@ namespace Proteomics
             setDictionary(LoadProteaseDictionary(path));                
         }
 
-        ProteaseDictionary::StaticConstructor ProteaseDictionary::staticConstructor;
-
         std::unordered_map<std::string, Protease*> ProteaseDictionary::getDictionary()
         {
+            if (privateDictionary.size() == 0 ) {
+                ProteaseDictionary::StaticConstructor();
+            }
             return privateDictionary;
         }
 
@@ -80,7 +81,7 @@ namespace Proteomics
 #ifdef ORIG
                     auto cleavageSpecificity = (std::any_cast<CleavageSpecificity>(Enum::Parse(typeof(CleavageSpecificity), fields[4], true)));
 #endif
-                    auto cleavageSpecificity = (static_cast<CleavageSpecificity>(std::stoi(fields[4])));
+                    auto cleavageSpecificity = CleavageSpecificityExtension::ParseString(fields[4]);
                     std::string psiMsAccessionNumber = fields[5];
                     std::string psiMsName = fields[6];
                     auto protease = new Protease(name, cleavageSpecificity, psiMsAccessionNumber, psiMsName, motifList);

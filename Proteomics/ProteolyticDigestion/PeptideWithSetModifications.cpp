@@ -132,10 +132,6 @@ namespace Proteomics
                         return "";
                     }
                 }
-                else
-                {
-                    pep_n_term_variable_mod = AllModsOneIsNterminus_iterator->second;
-                }
 
                 for (int r = 0; r < getLength(); r++)
                 {
@@ -157,10 +153,6 @@ namespace Proteomics
                             return "";
                         }
                     }
-                    else
-                    {
-                        residue_variable_mod = AllModsOneIsNterminus2_iterator->second;
-                    }
                 }
 
                 // variable modification on peptide C-terminus
@@ -179,10 +171,6 @@ namespace Proteomics
                         delete subsequence;
                         return "";
                     }
-                }
-                else
-                {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus3_iterator->second;
                 }
 
                 _sequenceWithChemicalFormulas = subsequence->toString();
@@ -380,10 +368,7 @@ namespace Proteomics
                         sbsequence->append('[' + pep_n_term_variable_mod->getModificationType() + ":" + pep_n_term_variable_mod->getIdWithMotif() + ']');
                     }
                 }
-                else
-                {
-                    pep_n_term_variable_mod = AllModsOneIsNterminus_iterator->second;
-                }
+
                 for (int r = 0; r < getLength(); r++)
                 {
                     sbsequence->append(this->operator[](r));
@@ -398,10 +383,6 @@ namespace Proteomics
                             sbsequence->append('[' + residue_variable_mod->getModificationType() + ":" + residue_variable_mod->getIdWithMotif() + ']');
                         }
                     }
-                    else
-                    {
-                        residue_variable_mod = AllModsOneIsNterminus_iterator->second;
-                    }
                 }
 
                 // variable modification on peptide C-terminus
@@ -414,10 +395,6 @@ namespace Proteomics
                     {
                         sbsequence->append('[' + pep_c_term_variable_mod->getModificationType() + ":" + pep_c_term_variable_mod->getIdWithMotif() + ']');
                     }
-                }
-                else
-                {
-                    pep_c_term_variable_mod = AllModsOneIsNterminus_iterator2->second;
                 }
 
                 essentialSequence = sbsequence->toString();
@@ -438,10 +415,6 @@ namespace Proteomics
                 modToReplace = dictWithLocalizedMass_iterator->second;
                 massOfExistingMod = modToReplace->getMonoisotopicMass().value();
                 dictWithLocalizedMass.erase(j + 2);
-            }
-            else
-            {
-                modToReplace = dictWithLocalizedMass_iterator->second;
             }
 
             Modification tempVar("", "", "", "", nullptr, "Anywhere.", nullptr, std::make_optional(massToLocalize + massOfExistingMod), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
@@ -569,10 +542,6 @@ namespace Proteomics
                                 delete baseSequenceSb;
                                 throw MzLibUtil::MzLibException("Could not find modification while reading string: " + getFullSequence());
                             }
-                            else
-                            {
-                                mod = idToMod_iterator->second;
-                            }
 
                             if ( (mod->getLocationRestriction().find("C-terminal.") != std::string::npos) &&
                                  (r == ((int)getFullSequence().length() - 1))    ) 
@@ -622,10 +591,6 @@ namespace Proteomics
                 protein = idToProtein_iterator->second;
                 throw MzLibUtil::MzLibException("Could not find protein accession after deserialization! " + ProteinAccession);
             }
-            else
-            {
-                protein = idToProtein_iterator->second;
-            }
 
             setProtein(protein);
         }
@@ -642,10 +607,6 @@ namespace Proteomics
                 mod = AllModsOneIsNterminus_iterator->second;
                 subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
             }
-            else
-            {
-                mod = AllModsOneIsNterminus_iterator->second;
-            }
 
             for (int r = 0; r < getLength(); r++)
             {
@@ -658,10 +619,6 @@ namespace Proteomics
                     mod = AllModsOneIsNterminus_iterator->second;
                     subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
                 }
-                else
-                {
-                    mod = AllModsOneIsNterminus_iterator->second;
-                }
             }
 
             // modification on peptide C-terminus
@@ -670,10 +627,6 @@ namespace Proteomics
             {
                 mod = AllModsOneIsNterminus_iterator2->second;
                 subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
-            }
-            else
-            {
-                mod = AllModsOneIsNterminus_iterator2->second;
             }
 
             setFullSequence(subsequence->toString());

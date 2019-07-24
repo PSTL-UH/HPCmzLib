@@ -22,16 +22,7 @@ namespace Proteomics
         private:
             static std::unordered_map<std::string, Protease*> privateDictionary;
 
-            private:
-                class StaticConstructor
-                {
-                public:
-                    StaticConstructor();
-                };
-
-            private:
-                static ProteaseDictionary::StaticConstructor staticConstructor;
-
+            static void StaticConstructor();
 
             public:
                 static std::unordered_map<std::string, Protease*> getDictionary();
