@@ -10,11 +10,16 @@ namespace Chemistry {
 std::unordered_map<std::string, Element*> PeriodicTable::_elements = std::unordered_map<std::string, Element*>();
 std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Constants::MaximumNumberOfElementsAllowed);
 
+    void PeriodicTable::Load(const std::string &elr ) {
+        UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    }
+
     void PeriodicTable::Load() {
         const std::string elfile="elements.dat";
         const std::string &elr=elfile;
         UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     }
+
     
     void PeriodicTable::Add(Element *element) {
         if (_elements.find(element->getAtomicSymbol()) == _elements.end()) {

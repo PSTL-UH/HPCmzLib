@@ -92,25 +92,26 @@ namespace Proteomics {
             
             return FragmentIonCaps.find(fragmentType)->second;
         }
-    }
+    
 
-    // Added by Edgar for the C++ version 
-    std::vector<AminoAcidPolymer::FragmentTypes> GetValues(){
-        return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesValues;
-
-    }
-    std::vector<std::string> GetNames(){
-        return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesNames;
-    }
-    std::string GetName( AminoAcidPolymer::FragmentTypes fragmentType){
-        std::string defstring; // empty string
-        int i=0;
-        for (  auto f: GetValues() ) {
-            if ( f == fragmentType ) {
-                return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesNames[i];
-            }
-            i++;
+        // Added by Edgar for the C++ version 
+        std::vector<AminoAcidPolymer::FragmentTypes> FragmentTypesExtension::GetValues(){
+            return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesValues;
         }
-        return defstring;
+
+        std::vector<std::string> FragmentTypesExtension::GetNames(){
+            return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesNames;
+        }
+        std::string FragmentTypesExtension::GetName( AminoAcidPolymer::FragmentTypes fragmentType){
+            std::string defstring; // empty string
+            int i=0;
+            for (  auto f: GetValues() ) {
+                if ( f == fragmentType ) {
+                    return AminoAcidPolymer::FragmentTypesExtension::FragmentTypesNames[i];
+                }
+                i++;
+            }
+            return defstring;
+        }
     }
 }

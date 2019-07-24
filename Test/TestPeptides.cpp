@@ -7,50 +7,237 @@
 #include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "TestChemicalFormula.h"
 
-using namespace Chemistry;
-using namespace MzLibUtil;
-using namespace NUnit::Framework;
-using namespace Proteomics::AminoAcidPolymer;
-using namespace Proteomics::Fragmentation;
-using namespace Proteomics::ProteolyticDigestion;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+#include "Assert.h"
+
+int main ( int argc, char **argv )
+{
+    
+    int i=0;
+    std::cout << i << "PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    Chemistry::PeriodicTable::Load (elr);
+    
+    std::cout <<++i << "TestPeptideTestReal" << std::endl;    
+    Test::TestPeptides::PeptideTestReal();
+    
+    std::cout <<++i << "PeptideMassGlycine" << std::endl;    
+    Test::TestPeptides::PeptideMassGlycine();
+
+    std::cout <<++i << "AApolymerNullEquals" << std::endl;    
+    Test::TestPeptides::AApolymerNullEquals();
+
+#ifdef LATER
+    std::cout <<++i << "PeptideCountElements" << std::endl;    
+    Test::TestPeptides::PeptideCountElements();
+    
+    std::cout <<++i << "PeptideMassTryptic" << std::endl;    
+    Test::TestPeptides::PeptideMassTryptic();
+    
+    std::cout <<++i << "PeptideAminoAcidCount" << std::endl;    
+    Test::TestPeptides::PeptideAminoAcidCount();
+    
+    std::cout <<++i << "ParseNTerminalChemicalFormula" << std::endl;    
+    Test::TestPeptides::ParseNTerminalChemicalFormula();
+    
+    std::cout <<++i << "ParseCTerminalChemicalFormula" << std::endl;    
+    Test::TestPeptides::ParseCTerminalChemicalFormula();
+    
+    std::cout <<++i << "ParseCTerminalChemicalFormulaWithLastResidueMod" << std::endl;    
+    Test::TestPeptides::ParseCTerminalChemicalFormulaWithLastResidueMod();
+
+    std::cout <<++i << "ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation" << std::endl;    
+    Test::TestPeptides::ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation();
+
+    std::cout <<++i << "ParseNAndCTerminalChemicalFormula" << std::endl;    
+    Test::TestPeptides::ParseNAndCTerminalChemicalFormula();
+
+    std::cout <<++i << "EmptyStringPeptideConstructorLength" << std::endl;    
+    Test::TestPeptides::EmptyStringPeptideConstructorLength();
+
+    std::cout <<++i << "EmptyStringPeptideConstructorToString" << std::endl;    
+    Test::TestPeptides::EmptyStringPeptideConstructorToString();
+
+    std::cout <<++i << "ParseDoubleModificationToString" << std::endl;    
+    Test::TestPeptides::ParseDoubleModificationToString();
+
+    std::cout <<++i << "ParseNamedChemicalModificationInvalidName" << std::endl;    
+    Test::TestPeptides::ParseNamedChemicalModificationInvalidName();
+
+    std::cout <<++i << "SetAminoAcidModification" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModification();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTyped" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTyped();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTypedMultipleLocations" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTypedAny" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTypedAny();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTypedAll" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTypedAll();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTypedNone" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTypedNone();
+
+    std::cout <<++i << "SetAminoAcidModificationStronglyTypedTermini" << std::endl;    
+    Test::TestPeptides::SetAminoAcidModificationStronglyTypedTermini();
+
+    std::cout <<++i << "SetAminoAcidCharacterModification" << std::endl;    
+    Test::TestPeptides::SetAminoAcidCharacterModification();
+
+    std::cout <<++i << "SetResiduePositionModification" << std::endl;    
+    Test::TestPeptides::SetResiduePositionModification();
+
+    std::cout <<++i << "SetResiduePositionModificationOutOfRangeUpper" << std::endl;    
+    Test::TestPeptides::SetResiduePositionModificationOutOfRangeUpper();
+
+    std::cout <<++i << "SetResiduePositionModificationOutOfRangeLower" << std::endl;    
+    Test::TestPeptides::SetResiduePositionModificationOutOfRangeLower();
+
+    std::cout <<++i << "SetCTerminusModStringRepresentation" << std::endl;    
+    Test::TestPeptides::SetCTerminusModStringRepresentation();
+
+    std::cout <<++i << "SetCTerminusModStringRepresentationofChemicalModification" << std::endl;    
+    Test::TestPeptides::SetCTerminusModStringRepresentationofChemicalModification();
+
+    std::cout <<++i << "SetNAndCTerminusMod" << std::endl;    
+    Test::TestPeptides::SetNAndCTerminusMod();
+
+    std::cout <<++i << "SetSameNAndCTerminusMod" << std::endl;    
+    Test::TestPeptides::SetSameNAndCTerminusMod();
+
+    std::cout <<++i << "ClearNTerminusMod" << std::endl;    
+    Test::TestPeptides::ClearNTerminusMod();
+
+    std::cout <<++i << "ClearCTerminusMod" << std::endl;    
+    Test::TestPeptides::ClearCTerminusMod();
+
+    std::cout <<++i << "ClearAllMods" << std::endl;    
+    Test::TestPeptides::ClearAllMods();
+
+    std::cout <<++i << "ClearModificationsBySites" << std::endl;    
+    Test::TestPeptides::ClearModificationsBySites();
+
+    std::cout <<++i << "EmptyPeptideLengthIsZero" << std::endl;    
+    Test::TestPeptides::EmptyPeptideLengthIsZero();
+
+    std::cout <<++i << "EmptyPeptideSequenceIsEmpty" << std::endl;    
+    Test::TestPeptides::EmptyPeptideSequenceIsEmpty();
+
+    std::cout <<++i << "EmptyPeptideFormulaIsH2O" << std::endl;    
+    Test::TestPeptides::EmptyPeptideFormulaIsH2O();
+
+    std::cout <<++i << "PeptideEquality" << std::endl;    
+    Test::TestPeptides::PeptideEquality();
+
+    std::cout <<++i << "PeptideInEqualityAminoAcidSwitch" << std::endl;    
+    Test::TestPeptides::PeptideInEqualityAminoAcidSwitch();
+
+    std::cout <<++i << "PeptideInEqualityAminoAcidModification" << std::endl;    
+    Test::TestPeptides::PeptideInEqualityAminoAcidModification();
+
+    std::cout <<++i << "PeptideCloneEquality" << std::endl;    
+    Test::TestPeptides::PeptideCloneEquality();
+
+    std::cout <<++i << "PeptideCloneNotSameReference" << std::endl;    
+    Test::TestPeptides::PeptideCloneNotSameReference();
+
+    std::cout <<++i << "PeptideCloneWithModifications" << std::endl;    
+    Test::TestPeptides::PeptideCloneWithModifications();
+
+    std::cout <<++i << "PeptideCloneWithoutModifications" << std::endl;    
+    Test::TestPeptides::PeptideCloneWithoutModifications();
+
+    std::cout <<++i << "PeptideCloneWithModification" << std::endl;    
+    Test::TestPeptides::PeptideCloneWithModification();
+
+    std::cout <<++i << "PeptideParitalCloneInternal" << std::endl;    
+    Test::TestPeptides::PeptideParitalCloneInternal();
+
+    std::cout <<++i << "PeptideParitalClonelWithInternalModification" << std::endl;    
+    Test::TestPeptides::PeptideParitalClonelWithInternalModification();
+
+    std::cout <<++i << "PeptideHashing" << std::endl;    
+    Test::TestPeptides::PeptideHashing();
+
+    std::cout <<++i << "ClearMods" << std::endl;    
+    Test::TestPeptides::ClearMods();
+
+    std::cout <<++i << "PeptideParitalClonelWithInternalModificationTwoMods" << std::endl;    
+    Test::TestPeptides::PeptideParitalClonelWithInternalModificationTwoMods();
+
+    std::cout <<++i << "PeptideParitalCloneInternalWithCTerminusModification" << std::endl;    
+    Test::TestPeptides::PeptideParitalCloneInternalWithCTerminusModification();
+
+    std::cout <<++i << "GetLeucineSequence" << std::endl;    
+    Test::TestPeptides::GetLeucineSequence();
+
+    std::cout <<++i << "GetLeucineSequenceNoReplacement" << std::endl;    
+    Test::TestPeptides::GetLeucineSequenceNoReplacement();
+
+    std::cout <<++i << "GetSequenceCoverage" << std::endl;    
+    Test::TestPeptides::GetSequenceCoverage();
+
+    std::cout <<++i << "GenerateIsotopologues" << std::endl;    
+    Test::TestPeptides::GenerateIsotopologues();
+
+    std::cout <<++i << "GetSequenceCoverageFraction" << std::endl;    
+    Test::TestPeptides::GetSequenceCoverageFraction();
+
+    std::cout <<++i << "TerminusModification" << std::endl;    
+    Test::TestPeptides::TerminusModification();
+
+    std::cout <<++i << "DigestionTest" << std::endl;    
+    Test::TestPeptides::DigestionTest();
+
+    std::cout <<++i << "TestChemicalFormula" << std::endl;    
+    Test::TestPeptides::TestChemicalFormula();
+
+    std::cout <<++i << "TestChemicalFormula2" << std::endl;    
+    Test::TestPeptides::TestChemicalFormula2();
+
+    std::cout <<++i << "TestMultipleModificationsAtSingleResidue" << std::endl;    
+    Test::TestPeptides::TestMultipleModificationsAtSingleResidue();
+
+    std::cout <<++i << "TestAApolymerContains" << std::endl;    
+    Test::TestPeptides::TestAApolymerContains();
+
+    std::cout <<++i << "TestLeucineSequence" << std::endl;    
+    Test::TestPeptides::TestLeucineSequence();
+
+    std::cout <<++i << "TestClearModifications" << std::endl;    
+    Test::TestPeptides::TestClearModifications();
+
+    std::cout <<++i << "TestGetSubPeptide" << std::endl;    
+    Test::TestPeptides::TestGetSubPeptide();
+
+    std::cout <<++i << "TestRealPeptideWithModifications" << std::endl;    
+    Test::TestPeptides::TestRealPeptideWithModifications();
+
+    std::cout <<++i << "TestGetDigestionPointsWithMethionine" << std::endl;    
+    Test::TestPeptides::TestGetDigestionPointsWithMethionine();
+
+    std::cout <<++i << "TestGetDigestionPointsWithMethionineAndSemiDigestion" << std::endl;    
+    Test::TestPeptides::TestGetDigestionPointsWithMethionineAndSemiDigestion();
+
+    std::cout <<++i << "BadSeqeunce" << std::endl;    
+    Test::TestPeptides::BadSeqeunce();
+
+    std::cout <<++i << "TestNonSpecificOverride" << std::endl;    
+    Test::TestPeptides::TestNonSpecificOverride();
+#endif
+    return 0;
+}        
 
 namespace Test
 {
 
-System::Diagnostics::Stopwatch *TestPeptides::privateStopwatch;
-
-    Stopwatch *TestPeptides::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestPeptides::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestPeptides::Setuppp()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestPeptides::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
-
-    void TestPeptides::SetUp()
-    {
-        _mockPeptideEveryAminoAcid = new Peptide("ACDEFGHIKLMNPQRSTVWY");
-        _mockTrypticPeptide = new Peptide("TTGSSSSSSSK");
-    }
-
     void TestPeptides::PeptideTestReal()
     {
-        _mockPeptideEveryAminoAcid = new Peptide("LDNLQQEIDFLTALYQAELSQMQTQISETNVILSMDNNR");
+        Peptide *pep = new Peptide("LDNLQQEIDFLTALYQAELSQMQTQISETNVILSMDNNR");
     }
 
     void TestPeptides::PeptideMassGlycine()
@@ -62,18 +249,19 @@ System::Diagnostics::Stopwatch *TestPeptides::privateStopwatch;
 
         Assert::AreEqual(formula, formula2);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was passed to a method or constructor. Handle memory management manually.
+        delete formula;
         delete pep;
     }
 
     void TestPeptides::AApolymerNullEquals()
     {
         Peptide *pep = new Peptide("G");
-        Assert::IsFalse(pep->Equals(std::any()));
+        Assert::IsFalse(pep->Equals(nullptr));
 
         delete pep;
     }
 
+#ifdef LATER    
     void TestPeptides::PeptideCountElements()
     {
         Peptide *pep = new Peptide("G");
@@ -957,4 +1145,5 @@ System::Diagnostics::Stopwatch *TestPeptides::privateStopwatch;
     {
         throw NotImplementedException();
     }
+#endif
 }

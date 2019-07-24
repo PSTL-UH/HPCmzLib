@@ -1,7 +1,7 @@
 ﻿#include "TestDigestionMotif.h"
+#include "../Chemistry/Chemistry.h"
 #include "../Proteomics/Proteomics.h"
-#include "../MzLibUtil/MzLibException.h"
-#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+//#include "../MzLibUtil/MzLibException.h"
 
 #include <limits>
 #include "Assert.h"
@@ -17,7 +17,7 @@ int main ( int argc, char **argv )
     std::cout << i << "PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
-    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
     
     std::cout <<++i << "TestParseProtease" << std::endl;    
     Test::TestDigestionMotif::TestParseProtease();

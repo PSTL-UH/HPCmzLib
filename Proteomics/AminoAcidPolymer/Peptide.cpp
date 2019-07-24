@@ -74,7 +74,7 @@ namespace Proteomics {
         std::vector<Peptide*> Peptide::GenerateAllModificationCombinations() {
             // Get all the modifications that are isotopologues
             auto is = GetUniqueModifications<ModificationWithMultiplePossibilitiesCollection*>();
-            std::vector<ModificationWithMultiplePossibilitiesCollection*> isotopologues(is->begin(), is->end());
+            std::vector<ModificationWithMultiplePossibilitiesCollection*> isotopologues(is.begin(), is.end());
             std::vector<Peptide*> res;
             
             // Base condition, no more isotopologues to make, so just return

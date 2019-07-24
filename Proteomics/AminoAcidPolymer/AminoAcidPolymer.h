@@ -283,9 +283,23 @@ namespace Proteomics
             bool ContainsModifications();
 
             template<typename T>
-            // ISet<T> *GetUniqueModifications();
-            std::set<T> *GetUniqueModifications();
-            // static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
+            std::unordered_set<T> GetUniqueModifications()  {
+                //static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
+                
+                std::unordered_set<T> uniqueMods;
+
+                if (_modifications.empty()) {
+                    return uniqueMods;
+                }
+                
+                for (auto mod : _modifications) {
+                    if (dynamic_cast<T>(mod) != nullptr) {
+                        uniqueMods.insert(static_cast<T>(mod));
+                    }
+                }
+                return uniqueMods;
+            }
+
 
             /// <summary>
             /// Counts the total number of modifications on this polymer that are not null

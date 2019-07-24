@@ -77,4 +77,5 @@ TestDigestionMotif: TestDigestionMotif.o
 clean:
 	rm -rf *.o *~
 
-	rm -f ChemicalFormulaTestFixture DatabaseLoaderTests ElementsAndIsotopesTests FakeMsDataFile	   rm -f TestPeptides TestAminoAcids TestModifications
+	rm -f TestChemicalFormula TestElementsAndIsotopes TestDigestionMotif
+	rm -f TestPeptides TestAminoAcids TestModifications

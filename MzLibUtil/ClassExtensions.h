@@ -29,13 +29,45 @@ namespace MzLibUtil {
         static std::vector<double> BoxCarSmooth(std::vector<double> &data, int points);
 
         template<typename T>
-        static std::vector<T> SubArray(std::vector<T> &data, int index, int length);
+        static std::vector<T> SubArray(std::vector<T> &data, int index, int length) {
+            std::vector<T> result(length);
+            std::copy(data.at(index), data.at(index+length), result.begin()) ;
+            return result;
+        }
 
         /// <summary>
         /// Checks if two collections are equivalent, regardless of the order of their contents
         /// </summary>
         template<typename T>
-        static bool ScrambledEquals(std::vector<T> &list1, std::vector<T> &list2);
-
-    };
-}
+        static bool ScrambledEquals(std::vector<T> list1, std::vector<T> list2) {
+            auto cnt = std::unordered_map<T, int>();
+            for (auto s : list1) {
+                if (cnt.find(s) != cnt.end()) {
+                    cnt[s]++;
+                }
+                else {
+                    cnt.emplace(s, 1);
+                }
+            }
+            for (auto s : list2) {
+                if (cnt.find(s) != cnt.end()) {
+                    cnt[s]--;
+                }
+                else {
+                    return false;
+                }
+            }
+//        return cnt.Values->All([&] (std::any c) {
+//                return (c == 0);
+//        });
+            for (std::pair<T, int> element : cnt)
+            {
+                if ( element.second != 0 ) {
+                    return false;
+                }
+            }
+            return true;        
+        }       
+            
+        };
+    }

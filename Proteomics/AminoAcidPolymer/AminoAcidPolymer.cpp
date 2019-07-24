@@ -25,11 +25,11 @@ using namespace MzLibUtil;
 namespace Proteomics {
 
     namespace AminoAcidPolymer {
-//    AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
-//    }
+        AminoAcidPolymer::AminoAcidPolymer() : AminoAcidPolymer("", new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H")), new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH")) ) {
+    }
 
-//    AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(ChemicalFormula::ParseFormula("H")) {
-//    }
+        AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence) : AminoAcidPolymer(sequence, new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H")), new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH")) ) {
+    }
 
     AminoAcidPolymer::AminoAcidPolymer(const std::string &sequence, IHasChemicalFormula *nTerm, IHasChemicalFormula *cTerm) {
         setMonoisotopicMass(0);
@@ -668,24 +668,6 @@ namespace Proteomics {
         return result;
     }
     
-template<typename T>
-   std::set<T> *AminoAcidPolymer::GetUniqueModifications() {
-        static_assert(std::is_base_of<IHasMass, T>::value, "T must inherit from IHasMass");
-
-        std::unordered_set<T> uniqueMods;
-
-        if (_modifications.empty()) {
-            return uniqueMods;
-        }
-
-        for (auto mod : _modifications) {
-            if (dynamic_cast<T>(mod) != nullptr) {
-                uniqueMods.insert(static_cast<T>(mod));
-            }
-        }
-        return uniqueMods;
-    }
-
     int AminoAcidPolymer::ModificationCount() {
         int counter=0;
         if ( _modifications.empty() > 0 ) {

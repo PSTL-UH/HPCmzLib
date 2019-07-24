@@ -23,52 +23,24 @@
 // License along with CSMSL.Tests. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Chemistry;
-using namespace NUnit::Framework;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 namespace Test
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] public static class TestMassMzCalculations
     class TestMassMzCalculations final
     {
-    private:
-        static Stopwatch *privateStopwatch;
-
-        static Stopwatch *getStopwatch();
-        static void setStopwatch(Stopwatch *value);
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public static void Setup()
-        static void Setup();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TearDown] public static void TearDown()
-        static void TearDown();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MassToMzToMass()
         static void MassToMzToMass();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MassToMzPositiveCharge()
         static void MassToMzPositiveCharge();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MassToMzPositiveCharge_plus3()
         static void MassToMzPositiveCharge_plus3();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MassToMzNegativeCharge()
         static void MassToMzNegativeCharge();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MzToMassPostitiveCharge()
         static void MzToMassPostitiveCharge();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void MzToMassNegativeCharge()
         static void MzToMassNegativeCharge();
     };
 
@@ -83,6 +55,6 @@ namespace Test
     public:
         double getMonoisotopicMass() const override;
 
-        std::string ToString() override;
+        std::string ToString();
     };
 }

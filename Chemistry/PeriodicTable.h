@@ -50,12 +50,15 @@ namespace Chemistry {
 //        static std::vector<Element*> const _elementsArray;
         static std::vector<Element*> _elementsArray;
 
+
+    public:
         /// <summary>
         /// Populate the periodic table by calling this method
         /// </summary>
+        static void Load(const std::string &elementLocation);
         static void Load();
 
-    public:
+
         /// <summary>
         /// Fast method for getting an element by its atomic symbol
         /// </summary>

@@ -24,42 +24,4 @@ namespace MzLibUtil {
         return smoothedData;
     }
 
-template<typename T>
-    std::vector<T> ClassExtensions::SubArray(std::vector<T> &data, int index, int length) {
-        std::vector<T> result(length);
-//        Array::Copy(data, index, result, 0, length);
-        std::copy(data.at(index), data.at(index+length), result.begin()) ;
-        return result;
-    }
-
-template<typename T>
-    bool ClassExtensions::ScrambledEquals(std::vector<T> &list1, std::vector<T> &list2) {
-        auto cnt = std::unordered_map<T, int>();
-        for (auto s : list1) {
-            if (cnt.find(s) != cnt.end()) {
-                cnt[s]++;
-            }
-            else {
-                cnt.emplace(s, 1);
-            }
-        }
-        for (auto s : list2) {
-            if (cnt.find(s) != cnt.end()) {
-                cnt[s]--;
-            }
-            else {
-                return false;
-            }
-        }
-//        return cnt.Values->All([&] (std::any c) {
-//                return (c == 0);
-//        });
-        for (std::pair<T, int> element : cnt)
-        {
-            if ( element.second != 0 ) {
-                return false;
-            }
-        }
-        return true;        
-    }
 }
