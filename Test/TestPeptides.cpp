@@ -7,24 +7,28 @@
 #include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "TestChemicalFormula.h"
 
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+
+
 #include "Assert.h"
 
 int main ( int argc, char **argv )
 {
     
     int i=0;
-    std::cout << i << "PeriodicTableLoader" << std::endl;    
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
-    Chemistry::PeriodicTable::Load (elr);
+//    Chemistry::PeriodicTable::Load (elr);
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     
-    std::cout <<++i << "TestPeptideTestReal" << std::endl;    
+    std::cout <<++i << ". TestPeptideTestReal" << std::endl;    
     Test::TestPeptides::PeptideTestReal();
     
-    std::cout <<++i << "PeptideMassGlycine" << std::endl;    
+    std::cout <<++i << ". PeptideMassGlycine" << std::endl;    
     Test::TestPeptides::PeptideMassGlycine();
 
-    std::cout <<++i << "AApolymerNullEquals" << std::endl;    
+    std::cout <<++i << ". AApolymerNullEquals" << std::endl;    
     Test::TestPeptides::AApolymerNullEquals();
 
 #ifdef LATER

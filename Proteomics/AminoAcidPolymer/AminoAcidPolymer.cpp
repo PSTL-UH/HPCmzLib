@@ -103,7 +103,7 @@ namespace Proteomics {
     }
 
     void AminoAcidPolymer::setCTerminus(IHasChemicalFormula *value) {
-        ReplaceTerminus(_cTerminus, value);
+        ReplaceTerminus(&_cTerminus, value);
     }
 
     IHasChemicalFormula *AminoAcidPolymer::getNTerminus() const {
@@ -111,7 +111,7 @@ namespace Proteomics {
     }
 
     void AminoAcidPolymer::setNTerminus(IHasChemicalFormula *value) {
-        ReplaceTerminus(_nTerminus, value);
+        ReplaceTerminus(&_nTerminus, value);
     }
 
     int AminoAcidPolymer::getLength() const {
@@ -1065,12 +1065,12 @@ namespace Proteomics {
         return true;
     }
 
-    void AminoAcidPolymer::ReplaceTerminus(IHasChemicalFormula *&terminus, IHasChemicalFormula *value) {
-        if (terminus != nullptr) {
-            setMonoisotopicMass(getMonoisotopicMass() - terminus->getMonoisotopicMass());
+    void AminoAcidPolymer::ReplaceTerminus(IHasChemicalFormula **terminus, IHasChemicalFormula *value) {
+        if (*terminus != nullptr) {
+            setMonoisotopicMass(getMonoisotopicMass() - (*terminus)->getMonoisotopicMass());
         }
 
-        terminus = value;
+        *terminus = value;
 
         if (value != nullptr) {
             setMonoisotopicMass(getMonoisotopicMass() + value->getMonoisotopicMass());

@@ -29,21 +29,21 @@ std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Cons
     }
 
     Element *PeriodicTable::GetElement(const std::string &atomicSymbol) {
-        if ( _elementsArray.size() == 0 ) {
+        if ( _elements.size() == 0 ) {
             PeriodicTable::Load();
         }
         return _elements[atomicSymbol];
     }
 
     Element *PeriodicTable::GetElement(int atomicNumber) {
-        if ( _elementsArray.size() == 0 ) {
+        if ( _elements.size() == 0 ) {
             PeriodicTable::Load();
         }
         return _elementsArray[atomicNumber];
     }
 
     bool PeriodicTable::ValidateAbundances(double epsilon) {
-        if ( _elementsArray.size() == 0 ) {
+        if ( _elements.size() == 0 ) {
             PeriodicTable::Load();
         }
         for (auto e : _elements) {
@@ -64,7 +64,7 @@ std::vector<Element*> PeriodicTable::_elementsArray = std::vector<Element*>(Cons
     }
 
     bool PeriodicTable::ValidateAverageMasses(double epsilon) {
-        if ( _elementsArray.size() == 0 ) {
+        if ( _elements.size() == 0 ) {
             PeriodicTable::Load();
         }
         for (auto e : _elements) {

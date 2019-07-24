@@ -71,12 +71,12 @@ namespace Proteomics
             /// The C-terminus chemical formula cap. This is different from the C-Terminus
             ///  modification.
             /// </summary>
-            IHasChemicalFormula *_cTerminus;
+            IHasChemicalFormula *_cTerminus=nullptr;
 
             /// <summary>
             /// The N-terminus chemical formula cap. This is different from the N-Terminus modification.
             /// </summary>
-            IHasChemicalFormula *_nTerminus;
+            IHasChemicalFormula *_nTerminus=nullptr;
 
             /// <summary>
             /// All of the modifications indexed by position from N to C. This array is 2 bigger than
@@ -433,7 +433,7 @@ namespace Proteomics
             bool Equals(AminoAcidPolymer *other);
                         
         private:
-            void ReplaceTerminus(IHasChemicalFormula *&terminus, IHasChemicalFormula *value);
+            void ReplaceTerminus(IHasChemicalFormula **terminus, IHasChemicalFormula *value);
             
             /// <summary>
             /// Replaces a modification (if present) at the specific index in the residue (0-based for N and C termini)

@@ -161,6 +161,10 @@ namespace Proteomics {
         }
         
         Residue *Residue::GetResidue(const std::string &symbol) {
+            if ( ResiduesByLetter.size() == 0 ) {
+                Residue::StaticConstructor() ;
+            }
+
             if ( symbol.length() == 1 )
                 return ResiduesByLetter[symbol[0]];
             else {
@@ -169,15 +173,25 @@ namespace Proteomics {
         }
         
         Residue *Residue::GetResidue(char letter) {
+            if ( ResiduesByLetter.size() == 0 ) {
+                Residue::StaticConstructor() ;
+            }
             return ResiduesByLetter[letter];
         }
         
         bool Residue::TryGetResidue(char letter, Residue **residue) {
+            if ( ResiduesByLetter.size() == 0 ) {
+                Residue::StaticConstructor() ;
+            }
             *residue = ResiduesByLetter[letter];
             return *residue != nullptr;
         }
         
         bool Residue::TryGetResidue(const std::string &name, Residue **residue) {
+            if ( ResiduesDictionary.size() == 0 ) {
+                Residue::StaticConstructor() ;
+            }
+
             std::unordered_map<std::string, Residue*>::const_iterator s = ResiduesDictionary.find(name);
             if ( s != ResiduesDictionary.end() ){
                 *residue = ResiduesDictionary[name];
