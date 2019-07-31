@@ -37,6 +37,7 @@ using namespace MzLibUtil;
 
 #include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
 #include "../Proteomics/AminoAcidPolymer/Peptide.h"
+#include "../Proteomics/AminoAcidPolymer/ChemicalFormulaModification.h"
 using namespace Proteomics::AminoAcidPolymer;
 
 #include "../Proteomics/Fragmentation/Fragmentation.h"
