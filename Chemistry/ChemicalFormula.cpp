@@ -407,7 +407,8 @@ namespace Chemistry {
         int isotopeCount=0;
         std::unordered_map<Isotope*, int>::const_iterator Is_iter = getIsotopes().find(isotope);
         if (Is_iter != getIsotopes().end() ) {
-            isotopeCount = Is_iter->second;
+            //isotopeCount = Is_iter->second;
+            isotopeCount = getIsotopes()[isotope];
         }
         return isotopeCount;
     }
@@ -426,7 +427,8 @@ namespace Chemistry {
         int ElementCount=0;
         std::unordered_map<Element*, int>::const_iterator El_iter = getElements().find(element);
         if (El_iter != getElements().end() ) {
-            ElementCount = El_iter->second;
+            //ElementCount = El_iter->second;
+            ElementCount = getElements()[element];
         }
         return isotopeCount + ElementCount;
     }

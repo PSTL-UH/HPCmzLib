@@ -41,8 +41,8 @@ namespace Proteomics {
                 if (site == ModificationSites::None) {
                     continue;
                 }
-                std::bitset<8> bsites((int)sites);
-                std::bitset<8> bsite((int)site);
+                std::bitset<32> bsites((int)sites);
+                std::bitset<32> bsite((int)site);
                 if ((bsites & bsite) == bsite) {
                     //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                     // yield return site;

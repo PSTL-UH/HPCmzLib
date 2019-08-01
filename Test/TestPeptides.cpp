@@ -12,6 +12,10 @@
 
 #include "Assert.h"
 
+
+Peptide *_mockPeptideEveryAminoAcid;
+Peptide *_mockTrypticPeptide;
+
 int main ( int argc, char **argv )
 {
     
@@ -21,6 +25,10 @@ int main ( int argc, char **argv )
     const std::string &elr=elfile;
 //    Chemistry::PeriodicTable::Load (elr);
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+
+    
+    _mockPeptideEveryAminoAcid = new Peptide("ACDEFGHIKLMNPQRSTVWY");
+    _mockTrypticPeptide = new Peptide("TTGSSSSSSSK");
     
     std::cout <<++i << ". TestPeptideTestReal" << std::endl;    
     Test::TestPeptides::PeptideTestReal();
@@ -31,18 +39,14 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". AApolymerNullEquals" << std::endl;    
     Test::TestPeptides::AApolymerNullEquals();
 
-
-    // ElementCountWithIsotopes is on line 480 of Proteomics/AminoAcidPolymer/AminoAcidPolymer.cpp
-    // in ElementCountWithIsotopes function at line 508 -> count += ChemicalFormula::ParseFormula("H2O")->CountWithIsotopes(e);
-    // thats why count =2 rather than 5 for element H    
     std::cout <<++i << ". PeptideCountElements" << std::endl;    
     Test::TestPeptides::PeptideCountElements();
 
-#ifdef LATER   
     //_mockTrypticPeptide undefined, not sure where to find it
     std::cout <<++i << ". PeptideMassTryptic" << std::endl;    
     Test::TestPeptides::PeptideMassTryptic();
 
+#ifdef LATER   
     // not sure where _mockPeptideEveryAminoAcid is defined
     std::cout <<++i << ". PeptideAminoAcidCount" << std::endl;    
     Test::TestPeptides::PeptideAminoAcidCount();
@@ -284,10 +288,6 @@ namespace Test
         // OldSchoolModification tempVar(1);
         OldSchoolModification *tempVar = new OldSchoolModification(1);
         pep->AddModification(tempVar);
-
-        // ElementCountWithIsotopes is on line 480 of Proteomics/AminoAcidPolymer/AminoAcidPolymer.cpp
-        // in ElementCountWithIsotopes function at line 508 -> count += ChemicalFormula::ParseFormula("H2O")->CountWithIsotopes(e);
-        // thats why count =2 rather than 5 for element H
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H"));
 
         OldSchoolChemicalFormulaModification *tempVar2 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H{1}"));
@@ -297,8 +297,7 @@ namespace Test
         // OldSchoolChemicalFormulaModification tempVar3(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
         OldSchoolChemicalFormulaModification *tempVar3 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
         
-        // this line causes seg fault
-        // pep->AddModification(tempVar3);
+        pep->AddModification(tempVar3);
         Assert::AreEqual(6, pep->ElementCountWithIsotopes("H"));
 
         Isotope *isotope = PeriodicTable::GetElement("H")->getPrincipalIsotope();
@@ -307,18 +306,16 @@ namespace Test
         delete pep;
     }
  
- #ifdef LATER 
     void TestPeptides::PeptideMassTryptic()
     {
         ChemicalFormula *formula = new ChemicalFormula(ChemicalFormula::ParseFormula("C37H66N12O21"));
-        ChemicalFormula *formula2;
-        // not sure where _mockTrypticPeptide is defined
-        formula2 = _mockTrypticPeptide->GetChemicalFormula();
-        Assert::AreEqual(formula, formula2);
+        ChemicalFormula *formula2 = _mockTrypticPeptide->GetChemicalFormula();
+        Assert::IsTrue(formula->Equals(formula2));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was passed to a method or constructor. Handle memory management manually.
+        delete formula;
     }
 
+ #ifdef LATER 
     void TestPeptides::PeptideAminoAcidCount()
     {
         // not sure where _mockPeptideEveryAminoAcid is defined

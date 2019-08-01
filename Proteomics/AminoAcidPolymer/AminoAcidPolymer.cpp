@@ -801,8 +801,6 @@ namespace Proteomics {
 
     int AminoAcidPolymer::AddModification(IHasMass *modification, Terminus terminus) {
         IHasMass *currentMod;
-        std::vector<IHasMass*> vec;
-        std::vector<IHasMass*> &v = vec;
         int count = 0;
 
         std::bitset<32> b1((int)terminus);
@@ -811,24 +809,38 @@ namespace Proteomics {
 //      if ((terminus & Terminus::N) == Terminus::N) {
         if ((b1 & b2) == b2) {
             currentMod= getNTerminusModification();
-//          ModificationCollection tempVar({currentMod, modification});
-            v.push_back(currentMod);
-            v.push_back(modification);
-            ModificationCollection tempVar(v);
-            
-            setNTerminusModification(currentMod == nullptr ? modification : &tempVar);
+            if ( currentMod != nullptr ) {
+                std::vector<IHasMass*> vec;
+                std::vector<IHasMass*> &v = vec;
+
+                // ModificationCollection tempVar({currentMod, modification});
+                v.push_back(currentMod);
+                v.push_back(modification);
+                ModificationCollection tempVar(v);
+                setNTerminusModification(&tempVar);
+            }
+            else  {
+                setNTerminusModification(modification);
+            }
             count++;
         }
 
 //      if ((terminus & Terminus::C) == Terminus::C) {
         if ((b1 & b3) == b3) {
             currentMod = getCTerminusModification();
-//          ModificationCollection tempVar2({currentMod, modification});
-            v.push_back(currentMod);
-            v.push_back(modification);
-            ModificationCollection tempVar2(v);
+            if ( currentMod != nullptr) {
+                std::vector<IHasMass*> vec;
+                std::vector<IHasMass*> &v = vec;
 
-            setCTerminusModification(currentMod == nullptr ? modification : &tempVar2);
+                // ModificationCollection tempVar2({currentMod, modification});
+                v.push_back(currentMod);
+                v.push_back(modification);
+                ModificationCollection tempVar2(v);
+
+                setCTerminusModification(&tempVar2);
+            }
+            else {
+                setCTerminusModification(modification);            }
             count++;
         }
         return count;
@@ -845,50 +857,72 @@ namespace Proteomics {
 
         int count = 0;
         IHasMass *currentMod;
-        std::vector<IHasMass*> vec;
-        std::vector<IHasMass*>& v = vec;
         
         std::bitset<32> b1((int)sites);
         std::bitset<32> b2((int)ModificationSites::NPep);
         
-//        if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
+        // if ((sites & ModificationSites::NPep) == ModificationSites::NPep) {
         if ((b1 & b2) == b2) {
             currentMod = getNTerminusModification();
-//          ModificationCollection tempVar({currentMod, modification});
-            v.push_back(currentMod);
-            v.push_back(modification);
-            ModificationCollection tempVar(v);
+            if (currentMod != nullptr ) {
+                std::vector<IHasMass*> vec;
+                std::vector<IHasMass*>& v = vec;
+
+                // ModificationCollection tempVar({currentMod, modification});
+                v.push_back(currentMod);
+                v.push_back(modification);
+                ModificationCollection tempVar(v);
             
-            setNTerminusModification(currentMod == nullptr ? modification : &tempVar);
+                setNTerminusModification(&tempVar);
+            }
+            else {
+                setNTerminusModification(modification);
+            }
             count++;
         }
 
         for (int i = 0; i < getLength(); i++) {
             ModificationSites site = residues[i]->getSite();
             std::bitset<32> b3((int)site);
-//            if ((sites & site) == site) {
+            // if ((sites & site) == site) {
             if ((b1 & b3) == b3) {
                 currentMod = _modifications[i + 1];
-//              ModificationCollection tempVar2({currentMod, modification});
-                v.push_back(currentMod);
-                v.push_back(modification);
-                ModificationCollection tempVar2(v);
-                
-                ReplaceMod(i + 1, currentMod == nullptr ? modification : &tempVar2);
+                if (currentMod != nullptr ) {
+                    std::vector<IHasMass*> vec;
+                    std::vector<IHasMass*>& v = vec;
+
+                    // ModificationCollection tempVar2({currentMod, modification});
+                    v.push_back(currentMod);
+                    v.push_back(modification);
+                    ModificationCollection tempVar2(v);
+                    
+                    ReplaceMod(i + 1, &tempVar2);
+                }
+                else { 
+                    ReplaceMod(i + 1, modification);
+               }
                 count++;
             }
         }
 
         std::bitset<32> b4((int)ModificationSites::PepC);
-//        if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
+        // if ((sites & ModificationSites::PepC) == ModificationSites::PepC) {
         if ((b1 & b4) == b4) {
             currentMod = getCTerminusModification();
-//          ModificationCollection tempVar3({currentMod, modification});
-            v.push_back(currentMod);
-            v.push_back(modification);
-            ModificationCollection tempVar3(v);
-            
-            setCTerminusModification(currentMod == nullptr ? modification : &tempVar3);
+            if (currentMod != nullptr ) {
+                std::vector<IHasMass*> vec;
+                std::vector<IHasMass*>& v = vec;
+
+                // ModificationCollection tempVar3({currentMod, modification});
+                v.push_back(currentMod);
+                v.push_back(modification);
+                ModificationCollection tempVar3(v);
+                
+                setCTerminusModification(&tempVar3);
+            }
+            else {
+                setCTerminusModification(modification);
+            }
             count++;
         }
 
@@ -1087,19 +1121,19 @@ namespace Proteomics {
 
         IHasMass *oldMod = _modifications[index]; // Get the mod at the index, if present
 
-//        if ( oldMod->Equals(mod)) {
-        if ( oldMod->getMonoisotopicMass() == mod->getMonoisotopicMass() ) {
-            return; // Same modifications, no change is required
+        if ( oldMod != nullptr ) {
+            if ( oldMod->getMonoisotopicMass() == mod->getMonoisotopicMass() ) {
+                return; // Same modifications, no change is required
+            }
+
+            // remove the old mod mass
+            setMonoisotopicMass(getMonoisotopicMass() - oldMod->getMonoisotopicMass()); 
+            _modifications[index] = mod;
+            // add the new mod mass        
+            setMonoisotopicMass(getMonoisotopicMass() + mod->getMonoisotopicMass()); 
         }
-
-        if (oldMod != nullptr) {
-            setMonoisotopicMass(getMonoisotopicMass() - oldMod->getMonoisotopicMass()); // remove the old mod mass
-        }
-
-        _modifications[index] = mod;
-
-        if (mod != nullptr) {
-            setMonoisotopicMass(getMonoisotopicMass() + mod->getMonoisotopicMass()); // add the new mod mass
+        else {
+            _modifications[index] = mod;
         }
     }
 
