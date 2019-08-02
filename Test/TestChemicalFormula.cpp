@@ -833,8 +833,6 @@ namespace Test {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NOC-2");
         ChemicalFormula *formulaB = ChemicalFormula::ParseFormula("H3NO");
 
-    	//False but should be true.  Check ChemicalFormula::ParseFormula on line 159 of Chemistry/ChemiaclFormula.cpp
-    	std::cout << "formula A " << formulaA->getFormula() << ", formula B " << formulaB->getFormula() << std::endl;
         Assert::IsTrue(formulaA->Equals(formulaB));
     }
 
@@ -952,9 +950,6 @@ namespace Test {
         ChemicalFormula *formulaC = ChemicalFormula::ParseFormula("C2H5Fe-1NO2");
 
         formulaA->Remove(formulaB);
-
-        //False but should be true.  Check ChemicalFormula::ParseFormula on line 159 of Chemistry/ChemiaclFormula.cpp
-        std::cout << "formula A " << formulaA->getFormula() << ", formula C " << formulaC->getFormula() << std::endl;
         Assert::IsTrue(formulaA->Equals(formulaC));
     }
 

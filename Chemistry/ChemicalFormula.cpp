@@ -256,10 +256,12 @@ namespace Chemistry {
         }
  #endif       
         for ( auto k: privateElements ) {
-            k.second *= multiplier;
+            // k.second *= multiplier;
+            privateElements[k.first] = k.second * multiplier;
         }
         for ( auto k: privateIsotopes ) {
-            k.second *= multiplier;
+            // k.second *= multiplier;
+            privateIsotopes[k.first]  = k.second * multiplier;
         }
     }
 
