@@ -38,6 +38,7 @@ using namespace MzLibUtil;
 #include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
 #include "../Proteomics/AminoAcidPolymer/Peptide.h"
 #include "../Proteomics/AminoAcidPolymer/ChemicalFormulaModification.h"
+#include "../Proteomics/AminoAcidPolymer/ChemicalFormulaTerminus.h"
 using namespace Proteomics::AminoAcidPolymer;
 
 #include "../Proteomics/Fragmentation/Fragmentation.h"
@@ -45,7 +46,6 @@ using namespace Proteomics::Fragmentation;
 
 #include "../Proteomics/ProteolyticDigestion/ProteinDigestion.h"
 using namespace Proteomics::ProteolyticDigestion;
-
 
 namespace Test
 {

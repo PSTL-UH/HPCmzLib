@@ -42,15 +42,11 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". PeptideCountElements" << std::endl;    
     Test::TestPeptides::PeptideCountElements();
 
-    //_mockTrypticPeptide undefined, not sure where to find it
     std::cout <<++i << ". PeptideMassTryptic" << std::endl;    
     Test::TestPeptides::PeptideMassTryptic();
-
-#ifdef LATER   
-    // not sure where _mockPeptideEveryAminoAcid is defined
+ 
     std::cout <<++i << ". PeptideAminoAcidCount" << std::endl;    
     Test::TestPeptides::PeptideAminoAcidCount();
-#endif    
 
     std::cout <<++i << ". ParseNTerminalChemicalFormula" << std::endl;    
     Test::TestPeptides::ParseNTerminalChemicalFormula();
@@ -61,7 +57,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". ParseCTerminalChemicalFormulaWithLastResidueMod" << std::endl;    
     Test::TestPeptides::ParseCTerminalChemicalFormulaWithLastResidueMod();
 
-#ifdef LATER  
+#ifdef LATER
+    // many asserts, but also throws exception
     std::cout <<++i << ". ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation" << std::endl;    
     Test::TestPeptides::ParseCTerminalChemicalFormulaWithLastResidueModStringRepresentation();
 #endif
@@ -83,62 +80,82 @@ int main ( int argc, char **argv )
     std::cout <<++i << "ParseNamedChemicalModificationInvalidName" << std::endl;    
     Test::TestPeptides::ParseNamedChemicalModificationInvalidName();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidModification();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModificationStronglyTyped" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTyped();
 
+    // requires overloading of | operator
     std::cout <<++i << "SetAminoAcidModificationStronglyTypedMultipleLocations" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModificationStronglyTypedAny" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedAny();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModificationStronglyTypedAll" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedAll();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModificationStronglyTypedNone" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedNone();
 
+    // requires overloading of | operator
     std::cout <<++i << "SetAminoAcidModificationStronglyTypedTermini" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedTermini();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidCharacterModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidCharacterModification();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetResiduePositionModification" << std::endl;    
     Test::TestPeptides::SetResiduePositionModification();
 
+    // throws exception
     std::cout <<++i << "SetResiduePositionModificationOutOfRangeUpper" << std::endl;    
     Test::TestPeptides::SetResiduePositionModificationOutOfRangeUpper();
 
+    // throws exception
     std::cout <<++i << "SetResiduePositionModificationOutOfRangeLower" << std::endl;    
     Test::TestPeptides::SetResiduePositionModificationOutOfRangeLower();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetCTerminusModStringRepresentation" << std::endl;    
     Test::TestPeptides::SetCTerminusModStringRepresentation();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetCTerminusModStringRepresentationofChemicalModification" << std::endl;    
     Test::TestPeptides::SetCTerminusModStringRepresentationofChemicalModification();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetNAndCTerminusMod();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetSameNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetSameNAndCTerminusMod();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "ClearNTerminusMod" << std::endl;    
     Test::TestPeptides::ClearNTerminusMod();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "ClearCTerminusMod" << std::endl;    
     Test::TestPeptides::ClearCTerminusMod();
 
+    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "ClearAllMods" << std::endl;    
     Test::TestPeptides::ClearAllMods();
 
+    // need overloaded | operator
     std::cout <<++i << "ClearModificationsBySites" << std::endl;    
     Test::TestPeptides::ClearModificationsBySites();
+#endif
 
     std::cout <<++i << "EmptyPeptideLengthIsZero" << std::endl;    
     Test::TestPeptides::EmptyPeptideLengthIsZero();
@@ -152,6 +169,7 @@ int main ( int argc, char **argv )
     std::cout <<++i << "PeptideEquality" << std::endl;    
     Test::TestPeptides::PeptideEquality();
 
+#ifdef LATER
     std::cout <<++i << "PeptideInEqualityAminoAcidSwitch" << std::endl;    
     Test::TestPeptides::PeptideInEqualityAminoAcidSwitch();
 
@@ -281,23 +299,21 @@ namespace Test
         delete pep;
     }
 
-
     void TestPeptides::PeptideCountElements()
     {
         Peptide *pep = new Peptide("G");
-        // OldSchoolModification tempVar(1);
-        OldSchoolModification *tempVar = new OldSchoolModification(1);
-        pep->AddModification(tempVar);
+        OldSchoolModification tempVar(1);
+        // OldSchoolModification *tempVar = new OldSchoolModification(1);
+        pep->AddModification(&tempVar);
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H"));
 
-        OldSchoolChemicalFormulaModification *tempVar2 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H{1}"));
-        pep->AddModification(tempVar2);
+        OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H{1}"));
+        pep->AddModification(&tempVar2);
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H")); // NOTHING HAS BEEN ADDED!
 
-        // OldSchoolChemicalFormulaModification tempVar3(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
-        OldSchoolChemicalFormulaModification *tempVar3 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
+        OldSchoolChemicalFormulaModification tempVar3(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
         
-        pep->AddModification(tempVar3);
+        pep->AddModification(&tempVar3);
         Assert::AreEqual(6, pep->ElementCountWithIsotopes("H"));
 
         Isotope *isotope = PeriodicTable::GetElement("H")->getPrincipalIsotope();
@@ -310,18 +326,18 @@ namespace Test
     {
         ChemicalFormula *formula = new ChemicalFormula(ChemicalFormula::ParseFormula("C37H66N12O21"));
         ChemicalFormula *formula2 = _mockTrypticPeptide->GetChemicalFormula();
+
         Assert::IsTrue(formula->Equals(formula2));
 
         delete formula;
     }
 
- #ifdef LATER 
+
     void TestPeptides::PeptideAminoAcidCount()
     {
-        // not sure where _mockPeptideEveryAminoAcid is defined
         Assert::AreEqual(20, _mockPeptideEveryAminoAcid->getLength());
     }
-#endif
+
 
     void TestPeptides::ParseNTerminalChemicalFormula()
     {
@@ -334,7 +350,6 @@ namespace Test
         Assert::IsTrue(formulaA->Equals(formulaB));
 //C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
         delete formulaA;
-        delete formulaB;
         delete peptide;
     }
 
@@ -477,6 +492,8 @@ namespace Test
     {
         auto Asparagine = Residue::GetResidue("N");
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, Asparagine);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -486,6 +503,8 @@ namespace Test
     void TestPeptides::SetAminoAcidModificationStronglyTyped()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::N);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -495,6 +514,8 @@ namespace Test
     void TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // need overload of operator |
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::N | ModificationSites::F | ModificationSites::V);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -504,24 +525,30 @@ namespace Test
     void TestPeptides::SetAminoAcidModificationStronglyTypedAny()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::Any);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
-
+ 
     void TestPeptides::SetAminoAcidModificationStronglyTypedAll()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::All);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("[Fe]-A[Fe]C[Fe]D[Fe]E[Fe]F[Fe]G[Fe]H[Fe]I[Fe]K[Fe]L[Fe]M[Fe]N[Fe]P[Fe]Q[Fe]R[Fe]S[Fe]T[Fe]V[Fe]W[Fe]Y[Fe]-[Fe]", _mockPeptideEveryAminoAcid->ToString());
     }
-
+  
     void TestPeptides::SetAminoAcidModificationStronglyTypedNone()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::None);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -531,6 +558,8 @@ namespace Test
     void TestPeptides::SetAminoAcidModificationStronglyTypedTermini()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // need overload of operator |
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::NPep | ModificationSites::PepC);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -540,7 +569,9 @@ namespace Test
     void TestPeptides::SetAminoAcidCharacterModification()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, 'D');
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, 'D');
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACD[Fe]EFGHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
@@ -549,6 +580,8 @@ namespace Test
     void TestPeptides::SetResiduePositionModification()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+
+        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, 5);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -563,6 +596,7 @@ namespace Test
             _mockPeptideEveryAminoAcid->SetModification(&tempVar, 25);
         }, Throws::TypeOf<MzLibException*>());
     }
+
 
     void TestPeptides::SetResiduePositionModificationOutOfRangeLower()
     {
@@ -655,6 +689,7 @@ namespace Test
 
         delete peptide;
     }
+#endif
 
     void TestPeptides::EmptyPeptideLengthIsZero()
     {
@@ -681,26 +716,33 @@ namespace Test
         ChemicalFormula *formulaB;
         formulaB = pepA->GetChemicalFormula();
 
-        Assert::AreEqual(h2O, formulaB);
-
+        // Assert::AreEqual(h2O, formulaB);
+        Assert::IsTrue(h2O->Equals(formulaB));
 //C# TO C++ CONVERTER TODO TASK: A 'delete h2O' statement was not added since h2O was passed to a method or constructor. Handle memory management manually.
         delete pepA;
+        delete h2O;
     }
 
     void TestPeptides::PeptideEquality()
     {
         Peptide *pepA = new Peptide("DEREK");
         Peptide *pepB = new Peptide("DEREK");
-        Assert::AreEqual(pepA, pepB);
+        // Assert::AreEqual(pepA, pepB);
+        Assert::IsTrue(pepA->Equals(pepB));
 
         Peptide *pepC = new Peptide("DEREKK");
-        Assert::AreNotEqual(pepA, pepC);
+        // Assert::AreNotEqual(pepA, pepC);
+        Assert::IsFalse(pepA->Equals(pepC));
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        delete pepA;
+        delete pepB;
+        delete pepC;
     }
 
+#ifdef LATER
     void TestPeptides::PeptideInEqualityAminoAcidSwitch()
     {
         Peptide *pepA = new Peptide("DEREK");
