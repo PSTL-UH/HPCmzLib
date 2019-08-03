@@ -1,7 +1,9 @@
 ﻿#include "TestFragments.h"
-#include "../Chemistry/ChemicalFormula.h"
-#include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "TestPeptides.h"
+
+#include "../Chemistry/ChemicalFormula.h"
+#include "../Chemistry/PeriodicTable.h"
+#include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "../Proteomics/Protein/Protein.h"
 #include "../Proteomics/Modifications/Modification.h"
@@ -9,48 +11,166 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../Chemistry/Constants.h"
 
-using namespace Chemistry;
-using namespace MassSpectrometry;
-using namespace MzLibUtil;
-using namespace NUnit::Framework;
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+#include "Assert.h"
+
 using namespace Proteomics;
-using namespace Proteomics::AminoAcidPolymer;
-using namespace Proteomics::Fragmentation;
-using namespace Proteomics::ProteolyticDigestion;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+Peptide *_mockPeptideEveryAminoAcid;
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
+
+
+    _mockPeptideEveryAminoAcid = new Peptide("ACDEFGHIKLMNPQRSTVWY");
+
+#ifdef LATER
+    // uses exceptions
+    std::cout << ++i << ". FragmentNumberToHigh" << std::endl;    
+    Test::TestFragments::FragmentNumberToHigh();
+#endif
+    
+    std::cout << ++i << ". FragmentName " << std::endl;    
+    Test::TestFragments::FragmentName();
+    
+    std::cout << ++i << ". FragmentAllBIons " << std::endl;    
+    Test::TestFragments::FragmentAllBIons();
+    
+    std::cout << ++i << ". FragmentAnotherTest " << std::endl;    
+    Test::TestFragments::FragmentAnotherTest();
+    
+#ifdef LATER
+    std::cout << ++i << ". TestDissociationProductTypes" << std::endl;    
+    Test::TestFragments::TestDissociationProductTypes(DissociationType dissociationType, std::vector<ProductType> &expectedProductTypes);
+    
+    std::cout << ++i << ". FragmentNTermModTest " << std::endl;    
+    Test::TestFragments::FragmentNTermModTest();
+    
+    std::cout << ++i << ". FragmentModifications " << std::endl;    
+    Test::TestFragments::FragmentModifications();
+    
+    std::cout << ++i << ". ChemicalFormulaFragment " << std::endl;    
+    Test::TestFragments::ChemicalFormulaFragment();
+    
+    std::cout << ++i << ". TestGetSiteDeterminingFragments " << std::endl;    
+    Test::TestFragments::TestGetSiteDeterminingFragments();
+    
+    std::cout << ++i << ". TestFormulaTerminusMods " << std::endl;    
+    Test::TestFragments::TestFormulaTerminusMods();
+    
+    std::cout << ++i << ". CleavageIndicesTest " << std::endl;    
+    Test::TestFragments::CleavageIndicesTest();
+    
+    std::cout << ++i << ". TestGetIonCapFailFail " << std::endl;    
+    Test::TestFragments::TestGetIonCapFailFail();
+    
+    std::cout << ++i << ". TestGetTerminusFail " << std::endl;    
+    Test::TestFragments::TestGetTerminusFail();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_UnmodifiedPeptide " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_UnmodifiedPeptide();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_nTerminalModifiedPeptide " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_nTerminalModifiedPeptide();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_cTerminalModifiedPeptide " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_cTerminalModifiedPeptide();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_internallyModifiedPeptide " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_internallyModifiedPeptide();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_cTerminalModifiedPeptide_NeutralLoss " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_cTerminalModifiedPeptide_NeutralLoss();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_internallyModifiedPeptide_NeutralLoss " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_internallyModifiedPeptide_NeutralLoss();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_AnyActivationType_and_HCD " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_AnyActivationType_and_HCD();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_CID_and_HCD " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_CID_and_HCD();
+    
+    std::cout << ++i << ". Test_GetTheoreticalFragments_ProductTypeLabel " << std::endl;    
+    Test::TestFragments::Test_GetTheoreticalFragments_ProductTypeLabel();
+    
+    std::cout << ++i << ". Test_Fragment_DiagnosticIons " << std::endl;    
+    Test::TestFragments::Test_Fragment_DiagnosticIons();
+    
+    std::cout << ++i << ". Test_Fragment_MolecularIon_NeutralLoss " << std::endl;    
+    Test::TestFragments::Test_Fragment_MolecularIon_NeutralLoss();
+    
+    std::cout << ++i << ". Test_Fragment_DiagnosticIons_unmatchedDissociationType " << std::endl;    
+    Test::TestFragments::Test_Fragment_DiagnosticIons_unmatchedDissociationType();
+    
+    std::cout << ++i << ". Test_Fragment_MolecularIon_NeutralLoss_unmatchedDissociationType " << std::endl;    
+    Test::TestFragments::Test_Fragment_MolecularIon_NeutralLoss_unmatchedDissociationType();
+    
+    std::cout << ++i << ". Test_NeutralMassShiftFromProductType " << std::endl;    
+    Test::TestFragments::Test_NeutralMassShiftFromProductType();
+    
+    std::cout << ++i << ". Test_NeutralMassShiftFromProductType_Exceptions " << std::endl;    
+    Test::TestFragments::Test_NeutralMassShiftFromProductType_Exceptions();
+    
+    std::cout << ++i << ". Test_CustomDissociationType " << std::endl;    
+    Test::TestFragments::Test_CustomDissociationType();
+    
+    std::cout << ++i << ". Test_TerminusSpecificProductTypes " << std::endl;    
+    Test::TestFragments::Test_TerminusSpecificProductTypes();
+    
+    std::cout << ++i << ". Test_TerminusSpecificProductTypesFromPeptideWithSetMods " << std::endl;    
+    Test::TestFragments::Test_TerminusSpecificProductTypesFromPeptideWithSetMods();
+    
+    std::cout << ++i << ". Test_MatchedFragmentIonToString " << std::endl;    
+    Test::TestFragments::Test_MatchedFragmentIonToString();
+    
+    std::cout << ++i << ". Test_CID_Fragmentation_No_Unmodified_B1_ions " << std::endl;    
+    Test::TestFragments::Test_CID_Fragmentation_No_Unmodified_B1_ions();
+    
+    std::cout << ++i << ". Test_ETD_ECD_EThcD_Fragmentation_No_FragmentsAtProline" << std::endl;    
+    Test::TestFragments::Test_ETD_ECD_EThcD_Fragmentation_No_FragmentsAtProline(DissociationType dissociationType, int fragmentCount);
+    
+    std::cout << ++i << ". CheckProlineFragments " << std::endl;    
+    Test::TestFragments::CheckProlineFragments();
+    
+    std::cout << ++i << ". CheckProlineFragments2 " << std::endl;    
+    Test::TestFragments::CheckProlineFragments2();
+    
+    std::cout << ++i << ". CheckProlineFragments3 " << std::endl;    
+    Test::TestFragments::CheckProlineFragments3();
+    
+    std::cout << ++i << ". CheckProlineFragments4 " << std::endl;    
+    Test::TestFragments::CheckProlineFragments4();
+
+    std::cout << ++i << ". TestFragmentAnnotations " << std::endl;    
+    Test::TestFragments::TestFragmentAnnotations();
+    
+    std::cout << ++i << ". TestFragmentErrors " << std::endl;    
+    Test::TestFragments::TestFragmentErrors();
+    
+    std::cout << ++i << ". TestFragmentEquality " << std::endl;    
+    Test::TestFragments::TestFragmentEquality();
+    
+    std::cout << ++i << ". TestThatDiagnosticIonsDontDuplicate " << std::endl;    
+    Test::TestFragments::TestThatDiagnosticIonsDontDuplicate();
+#endif
+    
+    return 0;
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestFragments::privateStopwatch;
-
-    Stopwatch *TestFragments::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestFragments::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestFragments::Setup()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestFragments::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
-
-    void TestFragments::SetUp()
-    {
-        _mockPeptideEveryAminoAcid = new Peptide("ACDEFGHIKLMNPQRSTVWY");
-    }
-
+#ifdef LATER
     void TestFragments::FragmentNumberToHigh()
     {
         Assert::Throws<std::out_of_range>([&] ()
@@ -58,26 +178,28 @@ System::Diagnostics::Stopwatch *TestFragments::privateStopwatch;
             _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b, 25).ToList();
         });
     }
-
+#endif
+    
     void TestFragments::FragmentName()
     {
-        Fragment *fragment = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::a, 1).ToArray()[0];
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        Fragment *fragment = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::a, 1)[0];
+
         Assert::AreEqual("a1", fragment->ToString());
     }
 
     void TestFragments::FragmentAllBIons()
     {
-        std::vector<Fragment*> fragments = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b).ToList();
-        Assert::AreEqual(19, fragments.size());
+        std::vector<Fragment*> fragments = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b);
+        Assert::AreEqual((long unsigned int) 19, fragments.size());
     }
 
     void TestFragments::FragmentAnotherTest()
     {
-        std::vector<Fragment*> fragments = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b, 1, 2).ToList();
-        Assert::AreEqual(2, fragments.size());
+        std::vector<Fragment*> fragments = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b, 1, 2);
+        Assert::AreEqual((long unsigned int)2, fragments.size());
     }
 
+#ifdef LATER
     void TestFragments::TestDissociationProductTypes(DissociationType dissociationType, std::vector<ProductType> &expectedProductTypes)
     {
         std::vector<ProductType> d = DissociationTypeCollection::ProductsFromDissociationType[dissociationType];
@@ -1612,4 +1734,5 @@ System::Diagnostics::Stopwatch *TestFragments::privateStopwatch;
         delete p;
 //C# TO C++ CONVERTER TODO TASK: A 'delete modWithDiagnosticIons' statement was not added since modWithDiagnosticIons was passed to a method or constructor. Handle memory management manually.
     }
+#endif
 }

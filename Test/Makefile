@@ -65,11 +65,13 @@ TestModifications: TestModifications.o
 #
 TestPeptides: TestPeptides.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
-
 #
 TestDigestionMotif: TestDigestionMotif.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
+#
+TestFragments: TestFragments.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 ###################################################################################################
 
