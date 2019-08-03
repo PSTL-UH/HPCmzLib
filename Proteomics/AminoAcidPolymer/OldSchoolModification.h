@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../Chemistry/Interfaces/IHasMass.h"
+#include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "ModificationSites.h"
 #include <string>
 #include <cmath>
@@ -33,7 +33,8 @@ namespace Proteomics {
         /// Represents a modification with a mass and name and default amino acid sites of modification
         /// </summary>
         //    class OldSchoolModification : public IHasMass, public IEquatable<OldSchoolModification*> {
-        class OldSchoolModification : public IHasMass {
+        // class OldSchoolModification : public IHasMass {
+        class OldSchoolModification : public IHasChemicalFormula {
         private:
             std::string privateName;
             double privateMonoisotopicMass = 0;

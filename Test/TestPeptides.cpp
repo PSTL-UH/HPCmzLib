@@ -79,11 +79,13 @@ int main ( int argc, char **argv )
     // test is supposed to throw exception
     std::cout <<++i << "ParseNamedChemicalModificationInvalidName" << std::endl;    
     Test::TestPeptides::ParseNamedChemicalModificationInvalidName();
-
+#endif
+    
     // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidModification();
 
+#ifdef LATER
     // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
     std::cout <<++i << "SetAminoAcidModificationStronglyTyped" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTyped();
@@ -302,9 +304,9 @@ namespace Test
     void TestPeptides::PeptideCountElements()
     {
         Peptide *pep = new Peptide("G");
-        OldSchoolModification tempVar(1);
-        // OldSchoolModification *tempVar = new OldSchoolModification(1);
-        pep->AddModification(&tempVar);
+        //OldSchoolModification tempVar(1);
+        //OldSchoolModification *tempVar = new OldSchoolModification(1);
+        //pep->AddModification(&tempVar);
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H"));
 
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H{1}"));
@@ -488,6 +490,8 @@ namespace Test
         }, Throws::TypeOf<MzLibException*>());
     }
 
+#endif
+    
     void TestPeptides::SetAminoAcidModification()
     {
         auto Asparagine = Residue::GetResidue("N");
@@ -496,10 +500,11 @@ namespace Test
         // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, Asparagine);
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMN[Fe]PQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTyped()
     {
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));

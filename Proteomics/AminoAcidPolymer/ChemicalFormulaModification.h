@@ -31,7 +31,8 @@ using namespace Chemistry;
 
 namespace Proteomics {
     namespace AminoAcidPolymer    {
-        class OldSchoolChemicalFormulaModification : public OldSchoolModification, public IHasChemicalFormula {
+        //class OldSchoolChemicalFormulaModification : public OldSchoolModification, public IHasChemicalFormula {
+        class OldSchoolChemicalFormulaModification : public OldSchoolModification {
         private:
             ChemicalFormula *privateThisChemicalFormula;
             

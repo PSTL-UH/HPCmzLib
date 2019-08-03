@@ -8,7 +8,7 @@ public:
 //            std::cout << "is equal" << std::endl;
         }
         else {
-            std::cout << "  Assert.h: " << a << "is NOT equal " << b << std::endl;
+            std::cout << "  Assert.h: " << a << " is NOT equal " << b << std::endl;
 //            std::abort();
         }
     }
@@ -18,7 +18,7 @@ public:
 //            std::cout << "is equal" << std::endl;
         }
         else {
-            std::cout << "  Assert.h: " << a << "is NOT equal " << b << "within " << tol << std::endl;
+            std::cout << "  Assert.h: " << a << " is NOT equal " << b << "within " << tol << std::endl;
 //            std::abort();
         }
     }
@@ -28,7 +28,7 @@ public:
 //            std::cout << "is equal" << std::endl;
         }
         else {
-            std::cout << "  Assert.h: " << a << "is NOT equal " << s << std::endl;
+            std::cout << "  Assert.h: " << a << " is NOT equal " << s << std::endl;
 //            std::abort();
         }
     }
@@ -39,7 +39,7 @@ public:
 //            std::cout << "is not equal" << std::endl;
         }
         else {
-            std::cout << "  Assert.h: " << a << "is EQUAL but should not be " << b << std::endl;
+            std::cout << "  Assert.h: " << a << " is EQUAL but should not be " << b << std::endl;
 //            std::abort();
         }
     }
@@ -59,7 +59,7 @@ public:
     template <class T>
     static void IsNull ( T a) {
         if ( a != nullptr ) {
-            std::cout << "  Assert.h: is not NULL  but should be"  << std::endl;
+            std::cout << "  Assert.h: is not NULL but should be"  << std::endl;
 //            std::abort();
         }
     }
