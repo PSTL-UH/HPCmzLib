@@ -40,7 +40,7 @@ namespace Chemistry {
         int privateAtomicNumber = 0;
         std::string privateAtomicSymbol;
         double privateAverageMass = 0;
-        Isotope *privatePrincipalIsotope;
+        Isotope *privatePrincipalIsotope = nullptr;
 
         // Two data stores for isotopes! An array for fast access and a list for enumeration!
 
