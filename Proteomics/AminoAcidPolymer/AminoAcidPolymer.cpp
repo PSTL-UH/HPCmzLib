@@ -13,6 +13,7 @@
 #include "ModificationCollection.h"
 #include "ChemicalFormulaModification.h"
 
+#include <iostream>
 #include <stdio.h>
 #include <bitset>
 
@@ -58,7 +59,7 @@ namespace Proteomics {
         std::vector<Residue*> otherAminoAcids = aminoAcidPolymer->residues;
 
         if (includeModifications && aminoAcidPolymer->ContainsModifications()) {
-            _modifications = std::vector<IHasMass*>(length + 2);
+            _modifications = std::vector<IHasMass*>(length + 2, nullptr);
             for (int i = 0; i < length; i++) {
                 auto aa = otherAminoAcids[i + firstResidue];
                 residues[i] = aa;
@@ -406,8 +407,9 @@ namespace Proteomics {
             modSeqSb->append(']');
         }
 
+        std::string s =  modSeqSb->toString();
         delete modSeqSb;
-        return modSeqSb->toString();
+        return s;
     }
 
     int AminoAcidPolymer::ResidueCount() {
@@ -852,7 +854,7 @@ namespace Proteomics {
 
     int AminoAcidPolymer::AddModification(IHasMass *modification, ModificationSites sites) {
         if (_modifications.empty()) {
-            _modifications = std::vector<IHasMass*>(getLength() + 2);
+            _modifications = std::vector<IHasMass*>(getLength() + 2, nullptr);
         }
 
         int count = 0;
@@ -1116,7 +1118,7 @@ namespace Proteomics {
         // unneeded bounds checking
 
         if (_modifications.empty()) {
-            _modifications = std::vector<IHasMass*>(getLength() + 2);
+            _modifications = std::vector<IHasMass*>(getLength() + 2, nullptr);
         }
 
         IHasMass *oldMod = _modifications[index]; // Get the mod at the index, if present
@@ -1154,7 +1156,7 @@ namespace Proteomics {
                     modSb->clear();
 
                     IHasMass *modification2=nullptr;
-                    OldSchoolChemicalFormulaModification *modification;
+                    OldSchoolChemicalFormulaModification *modification=nullptr;
                     try {
                          modification = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula(modString));
                          monoMass += modification->getMonoisotopicMass();
@@ -1176,16 +1178,16 @@ namespace Proteomics {
                     // monoMass += modification->getMonoisotopicMass();
 
                     if (_modifications.empty()) {
-                        _modifications = std::vector<IHasMass*>(getLength() + 2);
+                        _modifications = std::vector<IHasMass*>(getLength() + 2, nullptr);
                     }
 
                     if (cterminalMod) {
                         // _modifications[index + 1] = modification;
-                        _modifications[index + 1] = modification2;
+                        _modifications[index + 1] = modification == nullptr ? modification2 : modification;
                     }
                     else {
                         // _modifications[index] = modification;
-                        _modifications[index] = modification2;
+                        _modifications[index] = modification == nullptr ? modification2 : modification;
                     }
 
                     cterminalMod = false;
@@ -1231,10 +1233,11 @@ namespace Proteomics {
 
         setLength(index);
         setMonoisotopicMass(getMonoisotopicMass() + monoMass);
-//        Array::Resize(residues, getLength());
+
+        // Array::Resize(residues, getLength());
         residues.resize(getLength());
         if (_modifications.size() > 0) {
-//            Array::Resize(_modifications, getLength() + 2);
+            // Array::Resize(_modifications, getLength() + 2);
             _modifications.resize(getLength() + 2);
         }
 
