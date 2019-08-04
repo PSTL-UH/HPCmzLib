@@ -14,6 +14,7 @@ CEXECS = TestChemicalFormula		\
 	TestModifications		\
 	TestFragments			\
 	TestDigestionMotif		\
+	TestMetaMorpheus                \
 	TestPeptides			
 
 #	FakeMsDataFile                       \
@@ -22,7 +23,6 @@ CEXECS = TestChemicalFormula		\
 #	TestChromatogram                     \
 #	TestIsolation                        \
 #	TestMassMzCalculations               \
-#	TestMetaMorpheus                     \
 #	TestMgf                              \
 #	TestModFits                          \
 #	TestMsDataFile                       \
@@ -68,9 +68,11 @@ TestPeptides: TestPeptides.o
 #
 TestDigestionMotif: TestDigestionMotif.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
-
 #
 TestFragments: TestFragments.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+TestMetaMorpheus: TestMetaMorpheus.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 ###################################################################################################
@@ -80,4 +82,4 @@ clean:
 	rm -rf *.o *~
 
 	rm -f TestChemicalFormula TestElementsAndIsotopes TestDigestionMotif
-	rm -f TestPeptides TestAminoAcids TestModifications
+	rm -f TestPeptides TestAminoAcids TestModifications TestFragments TestMetaMorpheus

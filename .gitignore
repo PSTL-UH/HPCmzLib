@@ -10,5 +10,6 @@ Test/TestAminoAcids
 Test/TestPeptides
 Test/TestDigestionMotif
 Test/TestFragments
+Test/TestMetaMorpheus
 Test/elements.dat
 lib/

@@ -5,45 +5,63 @@
 #include "../Chemistry/ChemicalFormula.h"
 #include "../MassSpectrometry/Enums/DissociationType.h"
 
-using namespace Chemistry;
-using namespace MassSpectrometry;
-using namespace NUnit::Framework;
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+#include "Assert.h"
+#include <limits>
+
 using namespace Proteomics;
-using namespace Proteomics::Fragmentation;
-using namespace Proteomics::ProteolyticDigestion;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+Peptide *_mockPeptideEveryAminoAcid;
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
+
+    std::cout << ++i << ". TestCompactPeptideMasses_UnmodifiedPeptide" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_UnmodifiedPeptide();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_nTerminalModifiedPeptide" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_cTerminalModifiedPeptide" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_cTerminalModifiedPeptide();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_internallyModifiedPeptide" << std::endl;
+    Test::TestCompactPeptide::TestCompactPeptideMasses_internallyModifiedPeptide();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_cTerminalModifiedPeptide_NeutralLoss" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_cTerminalModifiedPeptide_NeutralLoss();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_internallyModifiedPeptide_NeutralLoss" << std::endl;        
+    Test::TestCompactPeptide::TestCompactPeptideMasses_internallyModifiedPeptide_NeutralLoss();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_AnyActivationType_and_HCD" << std::endl;    
+    Test::TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_AnyActivationType_and_HCD();
+
+    std::cout << ++i << ". TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_CID_and_HCD" << std::endl;    
+    Test::TestCompactPeptide::TestCompactPeptideMasses_nTerminalModifiedPeptide_NeutralLoss_DissociationTypes_CID_and_HCD();
+
+    return 0;
+}
+
 
 namespace Test
 {
 
-System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
-
-    Stopwatch *TestCompactPeptide::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestCompactPeptide::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestCompactPeptide::Setuppp()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestCompactPeptide::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
-
     void TestCompactPeptide::TestCompactPeptideMasses_UnmodifiedPeptide()
     {
         Protein *p = new Protein("PET", "accession");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Variable,
+                                                               2, CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
@@ -52,7 +70,8 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -66,7 +85,8 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -77,7 +97,8 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -86,9 +107,18 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Variable,
+                                                               2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -96,8 +126,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -111,8 +143,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -123,8 +157,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -133,9 +169,19 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("T", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable,
+                                                               2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -143,8 +189,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -158,8 +206,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -170,8 +220,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -180,9 +232,19 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("E", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2,
+                                                               CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -190,8 +252,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -207,8 +271,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation 
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -221,8 +287,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Assert::That(expectedCTerminalMasses.SetEquals(foundCTerminalMasses));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -231,15 +299,24 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -247,8 +324,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -262,8 +341,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -274,8 +355,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -284,15 +367,24 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("T", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2,
+                                                               CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -300,8 +392,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -317,8 +411,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -331,8 +427,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Assert::That(expectedCTerminalMasses.SetEquals(foundCTerminalMasses));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -341,23 +439,34 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("E", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::HCD, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto allFragmentNeutralMasses = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
 
         //evaluate N-terminal masses
         auto n = allFragmentNeutralMasses->Where([&] (std::any f)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+            // was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+            // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return f::TerminusFragment->Terminus == FragmentationTerminus::N;
         }).ToList();
@@ -370,8 +479,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         //evaluate C-terminal masses
         auto c = allFragmentNeutralMasses->Where([&] (std::any f)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+            // was passed to a method or constructor. Handle memory management manually.
+            // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+            // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return f::TerminusFragment->Terminus == FragmentationTerminus::C;
         }).ToList();
@@ -381,8 +492,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
             static_cast<int>(std::round(v::NeutralMass * std::pow(10, 1))) / std::pow(10, 1);
         })));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was
+        // passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was
+        // passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -391,15 +504,24 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::AnyActivationType, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -407,8 +529,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -422,8 +546,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -434,8 +560,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 
@@ -444,15 +572,24 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         Protein *p = new Protein("PET", "accession");
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt,
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::CID, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>(), "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         std::unordered_map<DissociationType, std::vector<double>>(), "");
+        
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation},
+                                                      std::vector<Modification*>()).front();
 
         auto aCompactPeptide = new CompactPeptide(aPeptideWithSetModifications, FragmentationTerminus::Both);
 
@@ -460,8 +597,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto nTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::N;
         });
@@ -475,8 +614,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         auto cTerminalMasses = aCompactPeptide->TerminalMasses.Where([&] (std::any v)
         {
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
             return v->Terminus == FragmentationTerminus::C;
         });
@@ -487,8 +628,10 @@ System::Diagnostics::Stopwatch *TestCompactPeptide::privateStopwatch;
         })));
 
         delete aCompactPeptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams
+        // was passed to a method or constructor. Handle memory management manually.
+        // C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation
+        // was passed to a method or constructor. Handle memory management manually.
         delete p;
     }
 }
