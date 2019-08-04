@@ -2,9 +2,9 @@
 
 #include "../Chemistry/Interfaces/IHasChemicalFormula.h"
 #include "ModificationSites.h"
+#include "../Chemistry/ChemicalFormula.h"
 #include <string>
 #include <cmath>
-#include <any>
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -61,7 +61,6 @@ namespace Proteomics {
             /// The monoisotopic mass of the modification, commoningly known as the delta mass
             /// </summary>
             double getMonoisotopicMass() const override;
-            // void setMonoisotopicMass(double value) override;
             void setMonoisotopicMass(double value);
             
             /// <summary>
@@ -83,6 +82,10 @@ namespace Proteomics {
             //  bool Equals(OldSchoolModification *other) override;
             bool Equals(OldSchoolModification *other);
             
+
+            // Edgar: added for C++ version since we changed the parent class
+            // from IHasMass to IHasChemicalFormula
+            ChemicalFormula *getThisChemicalFormula() const;
         };
     }
 }

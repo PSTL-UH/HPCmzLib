@@ -60,16 +60,9 @@ namespace Proteomics {
         }
         
         int OldSchoolModification::GetHashCode() {
-            // return getMonoisotopicMass().GetHashCode();
             return StringHelper::GetHashCode(std::to_string(getMonoisotopicMass()));
         }
         
-        // EG: Not required anymore
-        //    bool OldSchoolModification::Equals(OldSchoolModification *modObj) {
-        //        OldSchoolModification *modObj = dynamic_cast<OldSchoolModification*>(obj);
-        //        return modObj != nullptr && Equals(modObj);
-        //    }
-
         bool OldSchoolModification::Equals(OldSchoolModification *other) {
             if (this == other) {
                 return true;
@@ -83,13 +76,19 @@ namespace Proteomics {
                 return false;
             }
             
-#ifdef ORIG
-            if (!getSites() == (other->getSites())) {
+            if (getSites() != other->getSites()) {
                 return false;
             }
-#endif
             
             return true;
         }
+
+        // Edgar: added for C++ version since we changed the parent class
+        // from IHasMass to IHasChemicalFormula
+        ChemicalFormula * OldSchoolModification::getThisChemicalFormula() const {
+            ChemicalFormula *chemicalFormula = new ChemicalFormula();
+            return chemicalFormula;
+        }
+
     }
 }
