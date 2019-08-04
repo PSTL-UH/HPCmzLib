@@ -93,10 +93,6 @@ namespace Proteomics
                         currentModification = AllModsOneIsNterminus_iterator->second;
                         mass += static_cast<double>(currentModification->getMonoisotopicMass().value());
                     }
-                    else
-                    {
-                        currentModification = AllModsOneIsNterminus_iterator->second;
-                    }
 
                     // N-terminal mod
                     std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = peptide->getAllModsOneIsNterminus().find(1);
@@ -104,10 +100,6 @@ namespace Proteomics
                     {
                         currentModification = AllModsOneIsNterminus_iterator2->second;
                         mass += static_cast<double>(currentModification->getMonoisotopicMass().value());
-                    }
-                    else
-                    {
-                        currentModification = AllModsOneIsNterminus_iterator2->second;
                     }
 
                     if (r != peptide->getLength() - 1)
@@ -143,10 +135,6 @@ namespace Proteomics
                         currentModification = AllModsOneIsNterminus_iterator->second;
                         mass += static_cast<double>(currentModification->getMonoisotopicMass().value());
                     }
-                    else
-                    {
-                        currentModification = AllModsOneIsNterminus_iterator->second;
-                    }
 
                     // C-terminal mod
                     std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = peptide->getAllModsOneIsNterminus().find(peptide->getLength() + 2);
@@ -155,10 +143,6 @@ namespace Proteomics
                     {
                         currentModification = AllModsOneIsNterminus_iterator2->second;
                         mass += static_cast<double>(currentModification->getMonoisotopicMass().value());
-                    }
-                    else
-                    {
-                        currentModification = AllModsOneIsNterminus_iterator2->second;
                     }
 
                     if (r != -1)

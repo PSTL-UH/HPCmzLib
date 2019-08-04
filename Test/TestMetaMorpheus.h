@@ -14,6 +14,11 @@ using namespace Chemistry;
 #include "../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
 
+#include "../Proteomics/AminoAcidPolymer/Fragment.h"
+#include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
+#include "../Proteomics/AminoAcidPolymer/Peptide.h"
+#include "../Proteomics/AminoAcidPolymer/ChemicalFormulaModification.h"
+#include "../Proteomics/AminoAcidPolymer/ChemicalFormulaTerminus.h"
 using namespace Proteomics;
 
 #include "../Proteomics/Fragmentation/Fragmentation.h"
