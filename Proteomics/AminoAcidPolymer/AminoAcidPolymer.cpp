@@ -596,8 +596,9 @@ namespace Proteomics {
                         if (mod != nullptr) {
                             monoMass += mod->getMonoisotopicMass();
                             if (isChemicalFormula) {
-//C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables in 'is' expressions:
-//ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
+                                // C# TO C++ CONVERTER TODO TASK: C++ has no equivalent to C# pattern variables in 'is'
+                                // expressions:
+                                // ORIGINAL LINE: if (mod is IHasChemicalFormula modFormula)
                                 if (dynamic_cast<IHasChemicalFormula*>(mod) != nullptr ) {
                                     formula->Add(dynamic_cast<IHasChemicalFormula*>(mod));
                                 }
@@ -802,7 +803,7 @@ namespace Proteomics {
     }
 
     int AminoAcidPolymer::AddModification(IHasMass *modification, Terminus terminus) {
-        IHasMass *currentMod;
+        IHasMass *currentMod=nullptr;
         int count = 0;
 
         std::bitset<32> b1((int)terminus);
@@ -858,7 +859,7 @@ namespace Proteomics {
         }
 
         int count = 0;
-        IHasMass *currentMod;
+        IHasMass *currentMod=nullptr;
         
         std::bitset<32> b1((int)sites);
         std::bitset<32> b2((int)ModificationSites::NPep);

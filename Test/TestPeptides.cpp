@@ -304,9 +304,6 @@ namespace Test
     void TestPeptides::PeptideCountElements()
     {
         Peptide *pep = new Peptide("G");
-        //OldSchoolModification tempVar(1);
-        //OldSchoolModification *tempVar = new OldSchoolModification(1);
-        //pep->AddModification(&tempVar);
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H"));
 
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H{1}"));
@@ -314,7 +311,6 @@ namespace Test
         Assert::AreEqual(5, pep->ElementCountWithIsotopes("H")); // NOTHING HAS BEEN ADDED!
 
         OldSchoolChemicalFormulaModification tempVar3(ChemicalFormula::ParseFormula("H{1}"), ModificationSites::G);
-        
         pep->AddModification(&tempVar3);
         Assert::AreEqual(6, pep->ElementCountWithIsotopes("H"));
 

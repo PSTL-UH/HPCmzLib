@@ -21,7 +21,6 @@ echo "  TestModifications  "
 make TestModifications
 ./TestModifications
 
-
 echo " "
 echo "  TestDigestionMotif  "
 make TestDigestionMotif
@@ -32,7 +31,7 @@ echo "  TestPeptides  "
 make TestPeptides
 ./TestPeptides
 
-#echo " "
-#echo "  TestFragments  "
-#make TestFragments
-#./TestFragments
+echo " "
+echo "  TestFragments  "
+make TestFragments
+./TestFragments
