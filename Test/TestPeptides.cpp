@@ -9,7 +9,7 @@
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
-
+#include <limits>
 #include "Assert.h"
 
 
@@ -77,197 +77,223 @@ int main ( int argc, char **argv )
 
 #ifdef LATER
     // test is supposed to throw exception
-    std::cout <<++i << "ParseNamedChemicalModificationInvalidName" << std::endl;    
+    std::cout <<++i << ". ParseNamedChemicalModificationInvalidName" << std::endl;    
     Test::TestPeptides::ParseNamedChemicalModificationInvalidName();
 #endif
     
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidModification" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidModification();
 
-#ifdef LATER
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidModificationStronglyTyped" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTyped" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTyped();
 
+#ifdef LATER
     // requires overloading of | operator
-    std::cout <<++i << "SetAminoAcidModificationStronglyTypedMultipleLocations" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTypedMultipleLocations" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations();
+#endif
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidModificationStronglyTypedAny" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTypedAny" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedAny();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidModificationStronglyTypedAll" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTypedAll" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedAll();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidModificationStronglyTypedNone" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTypedNone" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedNone();
 
-    // requires overloading of | operator
-    std::cout <<++i << "SetAminoAcidModificationStronglyTypedTermini" << std::endl;    
+#ifdef LATER
+    // requires overloading of | operator 
+    std::cout <<++i << ". SetAminoAcidModificationStronglyTypedTermini" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedTermini();
+#endif
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetAminoAcidCharacterModification" << std::endl;    
+    std::cout <<++i << ". SetAminoAcidCharacterModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidCharacterModification();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetResiduePositionModification" << std::endl;    
+    std::cout <<++i << ". SetResiduePositionModification" << std::endl;    
     Test::TestPeptides::SetResiduePositionModification();
 
-    // throws exception
-    std::cout <<++i << "SetResiduePositionModificationOutOfRangeUpper" << std::endl;    
+#ifdef LATER
+    // Uses Assert::That and throws exception
+    std::cout <<++i << ". SetResiduePositionModificationOutOfRangeUpper" << std::endl;    
     Test::TestPeptides::SetResiduePositionModificationOutOfRangeUpper();
 
-    // throws exception
-    std::cout <<++i << "SetResiduePositionModificationOutOfRangeLower" << std::endl;    
+    // Uses Assert::That and throws exception
+    std::cout <<++i << ". SetResiduePositionModificationOutOfRangeLower" << std::endl;    
     Test::TestPeptides::SetResiduePositionModificationOutOfRangeLower();
+#endif
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetCTerminusModStringRepresentation" << std::endl;    
+    std::cout <<++i << ". SetCTerminusModStringRepresentation" << std::endl;    
     Test::TestPeptides::SetCTerminusModStringRepresentation();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetCTerminusModStringRepresentationofChemicalModification" << std::endl;    
+    std::cout <<++i << ". SetCTerminusModStringRepresentationofChemicalModification" << std::endl;    
     Test::TestPeptides::SetCTerminusModStringRepresentationofChemicalModification();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetNAndCTerminusMod" << std::endl;    
+    std::cout <<++i << ". SetNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetNAndCTerminusMod();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "SetSameNAndCTerminusMod" << std::endl;    
+#ifdef LATER
+    // requires overloaded | operator
+    std::cout <<++i << ". SetSameNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetSameNAndCTerminusMod();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "ClearNTerminusMod" << std::endl;    
+    // Seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(Terminus::N);
+    std::cout <<++i << ". ClearNTerminusMod" << std::endl;    
     Test::TestPeptides::ClearNTerminusMod();
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "ClearCTerminusMod" << std::endl;    
+    // seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(Terminus::C);
+    std::cout <<++i << ". ClearCTerminusMod" << std::endl;    
     Test::TestPeptides::ClearCTerminusMod();
+#endif
 
-    // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-    std::cout <<++i << "ClearAllMods" << std::endl;    
+    // No seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(); unlike other Clear terminus tests.  Because there is no Terminus argument?
+    std::cout <<++i << ". ClearAllMods" << std::endl;    
     Test::TestPeptides::ClearAllMods();
 
+#ifdef LATER
     // need overloaded | operator
-    std::cout <<++i << "ClearModificationsBySites" << std::endl;    
+    std::cout <<++i << ". ClearModificationsBySites" << std::endl;    
     Test::TestPeptides::ClearModificationsBySites();
 #endif
 
-    std::cout <<++i << "EmptyPeptideLengthIsZero" << std::endl;    
+    std::cout <<++i << ". EmptyPeptideLengthIsZero" << std::endl;    
     Test::TestPeptides::EmptyPeptideLengthIsZero();
 
-    std::cout <<++i << "EmptyPeptideSequenceIsEmpty" << std::endl;    
+    std::cout <<++i << ". EmptyPeptideSequenceIsEmpty" << std::endl;    
     Test::TestPeptides::EmptyPeptideSequenceIsEmpty();
 
-    std::cout <<++i << "EmptyPeptideFormulaIsH2O" << std::endl;    
+    std::cout <<++i << ". EmptyPeptideFormulaIsH2O" << std::endl;    
     Test::TestPeptides::EmptyPeptideFormulaIsH2O();
 
-    std::cout <<++i << "PeptideEquality" << std::endl;    
+    std::cout <<++i << ". PeptideEquality" << std::endl;    
     Test::TestPeptides::PeptideEquality();
 
-#ifdef LATER
-    std::cout <<++i << "PeptideInEqualityAminoAcidSwitch" << std::endl;    
+    std::cout <<++i << ". PeptideInEqualityAminoAcidSwitch" << std::endl;    
     Test::TestPeptides::PeptideInEqualityAminoAcidSwitch();
 
-    std::cout <<++i << "PeptideInEqualityAminoAcidModification" << std::endl;    
+    // contains two asserts, both are Assert::AreNotEqual(pepA, pepB);
+    // changing the second one to Assert::IsFalse(pepA->Equals(pepB)); leads to a seg fault
+    // This behavior does not happen when changing the first assert to Assert::IsFalse(pepA->Equals(pepB));
+    std::cout <<++i << ". PeptideInEqualityAminoAcidModification" << std::endl;    
     Test::TestPeptides::PeptideInEqualityAminoAcidModification();
 
-    std::cout <<++i << "PeptideCloneEquality" << std::endl;    
+    std::cout <<++i << ". PeptideCloneEquality" << std::endl;    
     Test::TestPeptides::PeptideCloneEquality();
 
-    std::cout <<++i << "PeptideCloneNotSameReference" << std::endl;    
+    std::cout <<++i << ". PeptideCloneNotSameReference" << std::endl;    
     Test::TestPeptides::PeptideCloneNotSameReference();
 
-    std::cout <<++i << "PeptideCloneWithModifications" << std::endl;    
+    std::cout <<++i << ". PeptideCloneWithModifications" << std::endl;    
     Test::TestPeptides::PeptideCloneWithModifications();
 
-    std::cout <<++i << "PeptideCloneWithoutModifications" << std::endl;    
+    std::cout <<++i << ". PeptideCloneWithoutModifications" << std::endl;    
     Test::TestPeptides::PeptideCloneWithoutModifications();
 
-    std::cout <<++i << "PeptideCloneWithModification" << std::endl;    
+    std::cout <<++i << ". PeptideCloneWithModification" << std::endl;    
     Test::TestPeptides::PeptideCloneWithModification();
 
-    std::cout <<++i << "PeptideParitalCloneInternal" << std::endl;    
+    std::cout <<++i << ". PeptideParitalCloneInternal" << std::endl;    
     Test::TestPeptides::PeptideParitalCloneInternal();
 
-    std::cout <<++i << "PeptideParitalClonelWithInternalModification" << std::endl;    
+    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
+    std::cout <<++i << ". PeptideParitalClonelWithInternalModification" << std::endl;    
     Test::TestPeptides::PeptideParitalClonelWithInternalModification();
 
-    std::cout <<++i << "PeptideHashing" << std::endl;    
+    std::cout <<++i << ". PeptideHashing" << std::endl;    
     Test::TestPeptides::PeptideHashing();
 
-    std::cout <<++i << "ClearMods" << std::endl;    
+#ifdef LATER
+    // issues with CLearModifications() function leads to seg fault
+    std::cout <<++i << ". ClearMods" << std::endl;    
     Test::TestPeptides::ClearMods();
+#endif
 
-    std::cout <<++i << "PeptideParitalClonelWithInternalModificationTwoMods" << std::endl;    
+    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
+    std::cout <<++i << ". PeptideParitalClonelWithInternalModificationTwoMods" << std::endl;    
     Test::TestPeptides::PeptideParitalClonelWithInternalModificationTwoMods();
 
-    std::cout <<++i << "PeptideParitalCloneInternalWithCTerminusModification" << std::endl;    
+    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
+    std::cout <<++i << ". PeptideParitalCloneInternalWithCTerminusModification" << std::endl;    
     Test::TestPeptides::PeptideParitalCloneInternalWithCTerminusModification();
 
-    std::cout <<++i << "GetLeucineSequence" << std::endl;    
+    std::cout <<++i << ". GetLeucineSequence" << std::endl;    
     Test::TestPeptides::GetLeucineSequence();
 
-    std::cout <<++i << "GetLeucineSequenceNoReplacement" << std::endl;    
+    std::cout <<++i << ". GetLeucineSequenceNoReplacement" << std::endl;    
     Test::TestPeptides::GetLeucineSequenceNoReplacement();
 
-    std::cout <<++i << "GetSequenceCoverage" << std::endl;    
+#ifdef LATER
+    // error: ‘class Proteomics::AminoAcidPolymer::Peptide’ has no member named ‘GetSequenceCoverage’
+    std::cout <<++i << ". GetSequenceCoverage" << std::endl;    
     Test::TestPeptides::GetSequenceCoverage();
 
-    std::cout <<++i << "GenerateIsotopologues" << std::endl;    
+    std::cout <<++i << ". GenerateIsotopologues" << std::endl;    
     Test::TestPeptides::GenerateIsotopologues();
 
-    std::cout <<++i << "GetSequenceCoverageFraction" << std::endl;    
+    // error: ‘class Proteomics::AminoAcidPolymer::Peptide’ has no member named ‘GetSequenceCoverageFraction’;
+    std::cout <<++i << ". GetSequenceCoverageFraction" << std::endl;    
     Test::TestPeptides::GetSequenceCoverageFraction();
+#endif
 
-    std::cout <<++i << "TerminusModification" << std::endl;    
+    std::cout <<++i << ". TerminusModification" << std::endl;    
     Test::TestPeptides::TerminusModification();
 
-    std::cout <<++i << "DigestionTest" << std::endl;    
+#ifdef LATER
+    // class TestProtease is in a LATER ifdef block in TestPeptides.h
+    std::cout <<++i << ". DigestionTest" << std::endl;    
     Test::TestPeptides::DigestionTest();
+#endif
 
-    std::cout <<++i << "TestChemicalFormula" << std::endl;    
+    std::cout <<++i << ". TestChemicalFormula" << std::endl;    
     Test::TestPeptides::TestChemicalFormula();
 
-    std::cout <<++i << "TestChemicalFormula2" << std::endl;    
+#ifdef LATER
+    // Throws expcetion
+    std::cout <<++i << ". TestChemicalFormula2" << std::endl;    
     Test::TestPeptides::TestChemicalFormula2();
 
-    std::cout <<++i << "TestMultipleModificationsAtSingleResidue" << std::endl;    
+    // Requires overloading of | operator
+    std::cout <<++i << ". TestMultipleModificationsAtSingleResidue" << std::endl;    
     Test::TestPeptides::TestMultipleModificationsAtSingleResidue();
+#endif
 
-    std::cout <<++i << "TestAApolymerContains" << std::endl;    
+    std::cout <<++i << ". TestAApolymerContains" << std::endl;    
     Test::TestPeptides::TestAApolymerContains();
 
-    std::cout <<++i << "TestLeucineSequence" << std::endl;    
+    std::cout <<++i << ". TestLeucineSequence" << std::endl;    
     Test::TestPeptides::TestLeucineSequence();
 
-    std::cout <<++i << "TestClearModifications" << std::endl;    
+#ifdef LATER
+    // Requires overloading of | operator
+    std::cout <<++i << ". TestClearModifications" << std::endl;    
     Test::TestPeptides::TestClearModifications();
+#endif
 
-    std::cout <<++i << "TestGetSubPeptide" << std::endl;    
+    std::cout <<++i << ". TestGetSubPeptide" << std::endl;    
     Test::TestPeptides::TestGetSubPeptide();
 
-    std::cout <<++i << "TestRealPeptideWithModifications" << std::endl;    
+    std::cout <<++i << ". TestRealPeptideWithModifications" << std::endl;    
     Test::TestPeptides::TestRealPeptideWithModifications();
 
-    std::cout <<++i << "TestGetDigestionPointsWithMethionine" << std::endl;    
+#ifdef LATER
+    // uses class TestProtease which is in a LATER ifdef block in TestPeptides.h
+    std::cout <<++i << ". TestGetDigestionPointsWithMethionine" << std::endl;    
     Test::TestPeptides::TestGetDigestionPointsWithMethionine();
 
-    std::cout <<++i << "TestGetDigestionPointsWithMethionineAndSemiDigestion" << std::endl;    
+    // uses class TestProtease which is in a LATER ifdef block in TestPeptides.h,
+    // also uses OkComparer which is in a LATER ifdef block in TestPeptides.h
+    std::cout <<++i << ". TestGetDigestionPointsWithMethionineAndSemiDigestion" << std::endl;    
     Test::TestPeptides::TestGetDigestionPointsWithMethionineAndSemiDigestion();
 
-    std::cout <<++i << "BadSeqeunce" << std::endl;    
+    // throws exception
+    std::cout <<++i << ". BadSeqeunce" << std::endl;    
     Test::TestPeptides::BadSeqeunce();
-
-    std::cout <<++i << "TestNonSpecificOverride" << std::endl;    
-    Test::TestPeptides::TestNonSpecificOverride();
 #endif
+
+    std::cout <<++i << ". TestNonSpecificOverride" << std::endl;    
+    Test::TestPeptides::TestNonSpecificOverride();
+
     return 0;
 }        
 
@@ -286,7 +312,6 @@ namespace Test
         ChemicalFormula *formula2;
         formula2 = pep->GetChemicalFormula();
 
-        // Assert::AreEqual(formula, formula2);
         Assert::IsTrue(formula->Equals(formula2));
 
         delete formula;
@@ -344,9 +369,8 @@ namespace Test
         ChemicalFormula *formulaB;
         formulaB = peptide->GetChemicalFormula();
 
-        // Assert::AreEqual(formulaA, formulaB);
         Assert::IsTrue(formulaA->Equals(formulaB));
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+
         delete formulaA;
         delete peptide;
     }
@@ -358,12 +382,10 @@ namespace Test
         ChemicalFormula *formulaB;
         formulaB = peptide->GetChemicalFormula();
 
-        // Assert::AreEqual(formulaA, formulaB);
         Assert::IsTrue(formulaA->Equals(formulaB));
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+
         delete peptide;
         delete formulaA;
-        delete formulaB;
     }
 
     void TestPeptides::ParseCTerminalChemicalFormulaWithLastResidueMod()
@@ -373,12 +395,10 @@ namespace Test
         ChemicalFormula *formulaB;
         formulaB = peptide->GetChemicalFormula();
 
-        // Assert::AreEqual(formulaA, formulaB);
         Assert::IsTrue(formulaA->Equals(formulaB));
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+
         delete peptide;
         delete formulaA;
-        delete formulaB;
     }
 
 
@@ -429,6 +449,7 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
         delete peptide;
+        delete formulaA;
     }
 #endif
 
@@ -440,12 +461,10 @@ namespace Test
         ChemicalFormula *formulaB;
         formulaB = peptide->GetChemicalFormula();
 
-        // Assert::AreEqual(formulaA, formulaB);
         Assert::IsTrue(formulaA->Equals(formulaB));
-//C# TO C++ CONVERTER TODO TASK: A 'delete formulaA' statement was not added since formulaA was passed to a method or constructor. Handle memory management manually.
+
         delete peptide;
         delete formulaA;
-        delete formulaB;
     }
 
     void TestPeptides::EmptyStringPeptideConstructorLength()
@@ -491,74 +510,71 @@ namespace Test
     void TestPeptides::SetAminoAcidModification()
     {
         auto Asparagine = Residue::GetResidue("N");
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, Asparagine);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, Asparagine);
 
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMN[Fe]PQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
-#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTyped()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::N);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::N);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMN[Fe]PQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
         // need overload of operator |
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::N | ModificationSites::F | ModificationSites::V);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::N | ModificationSites::F | ModificationSites::V);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEF[Fe]GHIKLMN[Fe]PQRSTV[Fe]WY", _mockPeptideEveryAminoAcid->ToString());
     }
+#endif
 
     void TestPeptides::SetAminoAcidModificationStronglyTypedAny()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::Any);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::Any);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
- 
+
     void TestPeptides::SetAminoAcidModificationStronglyTypedAll()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::All);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::All);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("[Fe]-A[Fe]C[Fe]D[Fe]E[Fe]F[Fe]G[Fe]H[Fe]I[Fe]K[Fe]L[Fe]M[Fe]N[Fe]P[Fe]Q[Fe]R[Fe]S[Fe]T[Fe]V[Fe]W[Fe]Y[Fe]-[Fe]", _mockPeptideEveryAminoAcid->ToString());
     }
-  
+
     void TestPeptides::SetAminoAcidModificationStronglyTypedNone()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::None);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::None);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTypedTermini()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
         // need overload of operator |
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::NPep | ModificationSites::PepC);
@@ -566,12 +582,12 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("[Fe]-ACDEFGHIKLMNPQRSTVWY-[Fe]", _mockPeptideEveryAminoAcid->ToString());
     }
+#endif
 
     void TestPeptides::SetAminoAcidCharacterModification()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
         _mockPeptideEveryAminoAcid->SetModification(tempVar, 'D');
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
@@ -580,15 +596,15 @@ namespace Test
 
     void TestPeptides::SetResiduePositionModification()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // error: ‘Chemistry::IHasMass’ is an ambiguous base of ‘Proteomics::AminoAcidPolymer::OldSchoolChemicalFormulaModification’
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, 5);
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, 5);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEF[Fe]GHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::SetResiduePositionModificationOutOfRangeUpper()
     {
         Assert::That([&] ()
@@ -607,11 +623,13 @@ namespace Test
             _mockPeptideEveryAminoAcid->SetModification(&tempVar, 0);
         }, Throws::TypeOf<MzLibException*>());
     }
+#endif
 
     void TestPeptides::SetCTerminusModStringRepresentation()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, Terminus::C);
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
+
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY-[Fe]", _mockPeptideEveryAminoAcid->ToString());
@@ -625,24 +643,26 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY-[Test]", _mockPeptideEveryAminoAcid->ToString());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete formula' statement was not added since formula was passed to a method or constructor. Handle memory management manually.
+        delete formula;
     }
 
     void TestPeptides::SetNAndCTerminusMod()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, Terminus::C);
-        OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H2NO"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar2, Terminus::N);
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C);
+
+        auto tempVar2 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H2NO"));
+        _mockPeptideEveryAminoAcid->SetModification(tempVar2, Terminus::N);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("[H2NO]-ACDEFGHIKLMNPQRSTVWY-[Fe]", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::SetSameNAndCTerminusMod()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, Terminus::C | Terminus::N);
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C | Terminus::N);
 
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("[Fe]-ACDEFGHIKLMNPQRSTVWY-[Fe]", _mockPeptideEveryAminoAcid->ToString());
@@ -650,8 +670,8 @@ namespace Test
 
     void TestPeptides::ClearNTerminusMod()
     {
-        OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Fe"));
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, Terminus::N);
+        auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::N);
 
         _mockPeptideEveryAminoAcid->ClearModifications(Terminus::N);
 
@@ -667,6 +687,7 @@ namespace Test
 
         Assert::IsNull(_mockPeptideEveryAminoAcid->getCTerminusModification());
     }
+#endif
 
     void TestPeptides::ClearAllMods()
     {
@@ -679,6 +700,7 @@ namespace Test
         Assert::AreEqual("ACDEFGHIKLMNPQRSTVWY", _mockPeptideEveryAminoAcid->ToString());
     }
 
+#ifdef LATER
     void TestPeptides::ClearModificationsBySites()
     {
         auto peptide = new Peptide("AC[Fe]DEFGHIKLMNP[Fe]QRSTV[Fe]WY");
@@ -735,23 +757,21 @@ namespace Test
         // Assert::AreNotEqual(pepA, pepC);
         Assert::IsFalse(pepA->Equals(pepC));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
         delete pepA;
         delete pepB;
         delete pepC;
     }
 
-#ifdef LATER
     void TestPeptides::PeptideInEqualityAminoAcidSwitch()
     {
         Peptide *pepA = new Peptide("DEREK");
         Peptide *pepB = new Peptide("DEERK");
-        Assert::AreNotEqual(pepA, pepB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // Assert::AreNotEqual(pepA, pepB);
+        Assert::IsFalse(pepA->Equals(pepB));
+
+        delete pepA;
+        delete pepB;
     }
 
     void TestPeptides::PeptideInEqualityAminoAcidModification()
@@ -760,23 +780,32 @@ namespace Test
         Peptide *pepB = new Peptide("DEREK");
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("H2O"));
         pepB->SetModification(&tempVar, 'R');
-        Assert::AreNotEqual(pepA, pepB);
+
+        // Assert::AreNotEqual(pepA, pepB);
+        Assert::IsFalse(pepA->Equals(pepB));
+
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H2O2"));
         pepA->SetModification(&tempVar2, 'R');
         Assert::AreNotEqual(pepA, pepB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // this causes seg fault
+        // Assert::IsFalse(pepA->Equals(pepB));
+
+        delete pepA;
+        delete pepB;
     }
+
 
     void TestPeptides::PeptideCloneEquality()
     {
         Peptide *pepA = new Peptide("DEREK");
         Peptide *pepB = new Peptide(pepA);
-        Assert::AreEqual(pepA, pepB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // Assert::AreEqual(pepA, pepB);
+        Assert::IsTrue(pepA->Equals(pepB));
+
+        delete pepA;
+        delete pepB;
     }
 
     void TestPeptides::PeptideCloneNotSameReference()
@@ -784,32 +813,35 @@ namespace Test
         Peptide *pepA = new Peptide("DEREK");
         Peptide *pepB = new Peptide(pepA);
 
-        Assert::AreNotSame(pepA, pepB);
+        // Assert::AreNotSame(pepA, pepB);
+        Assert::AreNotEqual(pepA, pepB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        delete pepA;
+        delete pepB;    
     }
 
     void TestPeptides::PeptideCloneWithModifications()
     {
         Peptide *pepA = new Peptide("DER[Fe]EK");
         Peptide *pepB = new Peptide(pepA);
+
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("DER[Fe]EK", pepB->ToString());
 
+        delete pepA;
         delete pepB;
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
     }
 
     void TestPeptides::PeptideCloneWithoutModifications()
     {
         Peptide *pepA = new Peptide("DER[Fe]EK");
         Peptide *pepB = new Peptide(pepA, false);
+
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("DEREK", pepB->ToString());
 
+        delete pepA;
         delete pepB;
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
     }
 
     void TestPeptides::PeptideCloneWithModification()
@@ -821,8 +853,11 @@ namespace Test
 
         Assert::AreEqual(pepB, pepA);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // this causes seg fault
+        // Assert::IsTrue(pepA->Equals(pepB));
+
+        delete pepA;
+        delete pepB;
     }
 
     void TestPeptides::PeptideParitalCloneInternal()
@@ -830,11 +865,24 @@ namespace Test
         Peptide *pepA = new Peptide("DEREK");
         Peptide *pepB = new Peptide(pepA, 1, 3);
         Peptide *pepC = new Peptide("ERE");
-        Assert::AreEqual(pepB, pepC);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        std::string peptideB = pepB->ToString();
+        std::string peptideC = pepC->ToString();
+
+        // std:: cout << "B " << peptideB << "   C " << peptideC << std::endl;
+
+        // this test is False but should be True also compares memory references rather than peptide strings
+        // Assert::AreEqual(pepB, pepC);
+
+        // This test is False but should be True
+        Assert::IsTrue(pepB->Equals(pepC));
+
+        // This test is True, but both strings have the same extra charaters
+        // Assert::AreEqual(peptideB, peptideC);
+
+        delete pepA;
+        delete pepB;
+        delete pepC;
     }
 
     void TestPeptides::PeptideParitalClonelWithInternalModification()
@@ -842,11 +890,15 @@ namespace Test
         Peptide *pepA = new Peptide("DER[Fe]EK");
         Peptide *pepB = new Peptide(pepA, 2, 3);
         Peptide *pepC = new Peptide("R[Fe]EK");
+
         Assert::AreEqual(pepB, pepC);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // this causes seg fault
+        // Assert::IsTrue(pepB->Equals(pepC));
+
+        delete pepA;
+        delete pepB;
+        delete pepC;
     }
 
     void TestPeptides::PeptideHashing()
@@ -858,7 +910,7 @@ namespace Test
         std::unordered_set<Peptide*> uu = {pep1, pep2, pep3, pep4};
         Peptide tempVar("DEREKN");
         uu.insert(&tempVar);
-        Assert::AreEqual(3, uu.size());
+        Assert::AreEqual(3, static_cast<int>(uu.size()));
 
         delete pep4;
         delete pep3;
@@ -866,6 +918,7 @@ namespace Test
         delete pep1;
     }
 
+#ifdef LATER
     void TestPeptides::ClearMods()
     {
         Peptide *pepA = new Peptide("DE[Al]R[Fe]EK");
@@ -892,17 +945,23 @@ namespace Test
 
         delete pepA;
     }
+#endif
+
 
     void TestPeptides::PeptideParitalClonelWithInternalModificationTwoMods()
     {
         Peptide *pepA = new Peptide("DE[Al]R[Fe]EK");
         Peptide *pepB = new Peptide(pepA, 2, 3);
         Peptide *pepC = new Peptide("R[Fe]EK");
+
         Assert::AreEqual(pepB, pepC);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // this causes seg fault
+        // Assert::IsTrue(pepB->Equals(pepC));
+
+        delete pepA;
+        delete pepB;
+        delete pepC;
     }
 
     void TestPeptides::PeptideParitalCloneInternalWithCTerminusModification()
@@ -918,9 +977,12 @@ namespace Test
 
         Assert::AreEqual(pepC, pepB);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepC' statement was not added since pepC was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepB' statement was not added since pepB was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pepA' statement was not added since pepA was passed to a method or constructor. Handle memory management manually.
+        // this causes seg fault
+        // Assert::IsTrue(pepB->Equals(pepC));
+
+        delete pepA;
+        delete pepB;
+        delete pepC;
     }
 
     void TestPeptides::GetLeucineSequence()
@@ -928,6 +990,7 @@ namespace Test
         Peptide *pepA = new Peptide("DERIEK");
         std::string leuSeq = pepA->getBaseLeucineSequence();
 
+        // should there be a modification or should this equal DERIEK?
         Assert::AreEqual("DERLEK", leuSeq);
 
         delete pepA;
@@ -944,6 +1007,7 @@ namespace Test
         delete pepA;
     }
 
+#ifdef LATER
     void TestPeptides::GetSequenceCoverage()
     {
         Peptide *pepA = new Peptide("DERLEK");
@@ -951,6 +1015,8 @@ namespace Test
         Peptide *pepAb = new Peptide("RL");
         Peptide *pepAc = new Peptide("LEK");
         std::vector<Peptide*> myList = {pepAa, pepAb, pepAc};
+
+        // error: ‘class Proteomics::AminoAcidPolymer::Peptide’ has no member named ‘GetSequenceCoverage’
         Assert::IsTrue(pepA->GetSequenceCoverage(myList).SequenceEqual(std::vector<int> {0, 1, 2, 2, 1, 1}));
 
         delete pepAc;
@@ -993,12 +1059,15 @@ namespace Test
         Peptide *pepAa = new Peptide("ER");
         Peptide *pepAb = new Peptide("RL");
         std::vector<Peptide*> myList = {pepAa, pepAb};
+
+        // error: ‘class Proteomics::AminoAcidPolymer::Peptide’ has no member named ‘GetSequenceCoverageFraction’;
         Assert::AreEqual(0.5, pepA->GetSequenceCoverageFraction(myList));
 
         delete pepAb;
         delete pepAa;
         delete pepA;
     }
+#endif
 
     void TestPeptides::TerminusModification()
     {
@@ -1011,6 +1080,7 @@ namespace Test
         delete pepA;
     }
 
+#ifdef LATER
     void TestPeptides::DigestionTest()
     {
         IProtease *protease = new TestProtease();
@@ -1018,6 +1088,7 @@ namespace Test
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete protease' statement was not added since protease was passed to a method or constructor. Handle memory management manually.
     }
+#endif
 
     void TestPeptides::TestChemicalFormula()
     {
@@ -1037,12 +1108,14 @@ namespace Test
 
         Residue::GetResidue('A');
 
-        Assert::AreEqual(ok, A->GetChemicalFormula());
+        // Assert::AreEqual(ok, A->GetChemicalFormula());
+        Assert::IsTrue(ok->Equals(A->GetChemicalFormula()));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete ok' statement was not added since ok was passed to a method or constructor. Handle memory management manually.
         delete A;
+        delete ok;
     }
 
+#ifdef LATER
     void TestPeptides::TestChemicalFormula2()
     {
         Peptide *A = new Peptide("A");
@@ -1055,6 +1128,7 @@ namespace Test
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a method or constructor. Handle memory management manually.
         delete A;
+        delete a;
     }
 
     void TestPeptides::TestMultipleModificationsAtSingleResidue()
@@ -1074,6 +1148,7 @@ namespace Test
 
         delete a;
     }
+#endif
 
     void TestPeptides::TestAApolymerContains()
     {
@@ -1096,6 +1171,7 @@ namespace Test
         delete peptide;
     }
 
+#ifdef LATER
     void TestPeptides::TestClearModifications()
     {
         Peptide *a = new Peptide("ACDEFGHIKLMNPQRSTVWY");
@@ -1121,14 +1197,24 @@ namespace Test
         delete peptide;
         delete a;
     }
+#endif
 
     void TestPeptides::TestGetSubPeptide()
     {
         Peptide *pep = new Peptide("DERLEK");
         Peptide tempVar("LE");
+        // Peptide *tempVar = new Peptide("LE");
+
+        Peptide *subpep = pep->GetSubPeptide(3, 2);
+        std::string subpepstr = subpep->ToString();
+
+
         Assert::AreEqual(&tempVar, pep->GetSubPeptide(3, 2));
+        // std::cout << "subpep " << subpep->ToString() << "  temp " << tempVar->ToString() << std::endl;
+        // Assert::IsTrue(subpep->Equals(tempVar));
 
         delete pep;
+        // delete tempVar;
     }
 
     void TestPeptides::TestRealPeptideWithModifications()
@@ -1139,6 +1225,7 @@ namespace Test
         delete a;
     }
 
+#ifdef LATER
     void TestPeptides::TestGetDigestionPointsWithMethionine()
     {
         auto ok = AminoAcidPolymer::GetDigestionPointsAndLengths("MDERLEKDERLE", std::vector<TestProtease*> {new TestProtease()}, 0, 0, 10000, true, false).ToList();
@@ -1151,6 +1238,7 @@ namespace Test
         Assert::AreEqual(6, ok[3].Index); // Regular digestion 3
         Assert::AreEqual(6, ok[3].Length); // Regular digestion 3
     }
+
 
     void TestPeptides::TestGetDigestionPointsWithMethionineAndSemiDigestion()
     {
@@ -1176,24 +1264,28 @@ namespace Test
             new Peptide("A[");
         }, Throws::TypeOf<MzLibException*>().With::Property("Message").EqualTo("Couldn't find the closing ] for a modification in this sequence: A["));
     }
+#endif
 
     void TestPeptides::TestNonSpecificOverride()
     {
         std::string trypsin = "trypsin";
+        std::string singleN = "singleN";
+        std::string singleC = "singleC";
         DigestionParams *digestionParams = new DigestionParams(trypsin);
         Assert::AreEqual(digestionParams->getProtease()->getName(), trypsin);
 
-        digestionParams = new DigestionParams(trypsin, 2, 7, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::None, FragmentationTerminus::N);
-        Assert::AreEqual(digestionParams->getProtease()->getName(), "singleN");
+        digestionParams = new DigestionParams(trypsin, 2, 7, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::None, FragmentationTerminus::N);
+        Assert::AreEqual(digestionParams->getProtease()->getName(), singleN);
         Assert::AreEqual(digestionParams->getSpecificProtease()->getName(), trypsin);
 
-        digestionParams = new DigestionParams(trypsin, 2, 7, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::None, FragmentationTerminus::C);
-        Assert::AreEqual(digestionParams->getProtease()->getName(), "singleC");
+        digestionParams = new DigestionParams(trypsin, 2, 7, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::None, FragmentationTerminus::C);
+        Assert::AreEqual(digestionParams->getProtease()->getName(), singleC);
         Assert::AreEqual(digestionParams->getSpecificProtease()->getName(), trypsin);
 
         delete digestionParams;
     }
 
+#ifdef LATER
     bool TestPeptides::OkComparer::Equals(DigestionPointAndLength *x, DigestionPointAndLength *y)
     {
         return x->getIndex().Equals(y->getIndex()) && x->getLength().Equals(y->getLength());
