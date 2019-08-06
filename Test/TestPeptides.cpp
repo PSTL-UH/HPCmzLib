@@ -509,7 +509,6 @@ namespace Test
         _mockPeptideEveryAminoAcid->SetModification(tempVar, Asparagine);
         std::string str = "ACDEFGHIKLMN[Fe]PQRSTVWY";
 
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -520,7 +519,6 @@ namespace Test
         _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::N);
         std::string str = "ACDEFGHIKLMN[Fe]PQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -532,8 +530,7 @@ namespace Test
         // need overload of operator |
         _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::N | ModificationSites::F | ModificationSites::V);
         std::string str = "ACDEF[Fe]GHIKLMN[Fe]PQRSTV[Fe]WY";
-
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 #endif
@@ -542,10 +539,10 @@ namespace Test
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::Any);
         std::string str = "ACDEFGHIKLMNPQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -556,7 +553,6 @@ namespace Test
         _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::All);
         std::string str = "[Fe]-A[Fe]C[Fe]D[Fe]E[Fe]F[Fe]G[Fe]H[Fe]I[Fe]K[Fe]L[Fe]M[Fe]N[Fe]P[Fe]Q[Fe]R[Fe]S[Fe]T[Fe]V[Fe]W[Fe]Y[Fe]-[Fe]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -564,10 +560,10 @@ namespace Test
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::None);
         std::string str = "ACDEFGHIKLMNPQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -580,7 +576,6 @@ namespace Test
         _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::NPep | ModificationSites::PepC);
         std::string str = "[Fe]-ACDEFGHIKLMNPQRSTVWY-[Fe]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 #endif
@@ -589,10 +584,10 @@ namespace Test
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(tempVar, 'D');
         std::string str = "ACD[Fe]EFGHIKLMNPQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -600,10 +595,10 @@ namespace Test
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(tempVar, 5);
         std::string str = "ACDEF[Fe]GHIKLMNPQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -632,20 +627,21 @@ namespace Test
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C);
         std::string str = "ACDEFGHIKLMNPQRSTVWY-[Fe]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
     void TestPeptides::SetCTerminusModStringRepresentationofChemicalModification()
     {
         IHasChemicalFormula *formula = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"), "Test");
+
+        _mockPeptideEveryAminoAcid->ClearModifications();
         _mockPeptideEveryAminoAcid->SetModification(formula, Terminus::C);
         std::string str = "ACDEFGHIKLMNPQRSTVWY-[Test]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
 
         delete formula;
@@ -654,6 +650,8 @@ namespace Test
     void TestPeptides::SetNAndCTerminusMod()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
+        _mockPeptideEveryAminoAcid->ClearModifications();
+
         _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C);
 
         auto tempVar2 = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("H2NO"));

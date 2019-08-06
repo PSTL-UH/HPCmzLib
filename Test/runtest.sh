@@ -10,7 +10,6 @@ echo "  TestAminoAcids"
 make TestAminoAcids
 ./TestAminoAcids
 
-
 echo " "
 echo "  TestChemicalFormula"
 make TestChemicalFormula
@@ -35,3 +34,8 @@ echo " "
 echo "  TestFragments  "
 make TestFragments
 ./TestFragments
+
+echo " "
+echo "  TestMetaMorpheus"
+make TestMetaMorpheus
+./TestMetaMorpheus
