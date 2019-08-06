@@ -141,10 +141,10 @@ namespace Proteomics {
 //            aa::Letter;
 //        })->ToArray());
         std::string astring;
-        std::for_each(residues.begin(), residues.end(), [&] (Residue *aa) {
-                char bb = aa->getLetter();
-                astring.append(&bb);
-            });
+        for ( auto aa= 0; aa < (int) residues.size(); aa++ ) {
+            char bb = residues[aa]->getLetter();
+            astring.append(&bb);
+        }
         return astring;
     }
 
@@ -1089,7 +1089,9 @@ namespace Proteomics {
 #endif
     
     bool AminoAcidPolymer::Equals(AminoAcidPolymer *other) {
-        if (other == nullptr || getLength() != other->getLength() || !getNTerminus()->getThisChemicalFormula()->Equals(other->getNTerminus()->getThisChemicalFormula()) || !getCTerminus()->getThisChemicalFormula()->Equals(other->getCTerminus()->getThisChemicalFormula())) {
+        if (other == nullptr || getLength() != other->getLength() ||
+            !getNTerminus()->getThisChemicalFormula()->Equals(other->getNTerminus()->getThisChemicalFormula()) ||
+            !getCTerminus()->getThisChemicalFormula()->Equals(other->getCTerminus()->getThisChemicalFormula())) {
             return false;
         }
 
@@ -1100,9 +1102,12 @@ namespace Proteomics {
         }
 
         for (int i = 0; i <= getLength() + 1; i++) {
-//            if (containsMod && !Equals(_modifications[i], other->_modifications[i])) {
-            if ( containsMod &&
-                 _modifications[i]->getMonoisotopicMass() != other->_modifications[i]->getMonoisotopicMass()) {
+            //if (containsMod && !Equals(_modifications[i], other->_modifications[i])) {
+            if ( containsMod                         &&
+                 ( (_modifications[i] == nullptr  && other->_modifications[i] != nullptr ) ||
+                   (_modifications[i] != nullptr  && other->_modifications[i] != nullptr ) ||
+                   (_modifications[i] != nullptr && other->_modifications[i] != nullptr &&
+                    _modifications[i]->getMonoisotopicMass() != other->_modifications[i]->getMonoisotopicMass()))) {
                 return false;
             }
 
@@ -1139,7 +1144,7 @@ namespace Proteomics {
 
         IHasMass *oldMod = _modifications[index]; // Get the mod at the index, if present
 
-        if ( oldMod != nullptr ) {
+        if ( oldMod != nullptr && mod != nullptr ) {
             if ( oldMod->getMonoisotopicMass() == mod->getMonoisotopicMass() ) {
                 return; // Same modifications, no change is required
             }

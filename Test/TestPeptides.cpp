@@ -137,17 +137,14 @@ int main ( int argc, char **argv )
     // requires overloaded | operator
     std::cout <<++i << ". SetSameNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetSameNAndCTerminusMod();
-
-    // Seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(Terminus::N);
+#endif
+    
     std::cout <<++i << ". ClearNTerminusMod" << std::endl;    
     Test::TestPeptides::ClearNTerminusMod();
 
-    // seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(Terminus::C);
     std::cout <<++i << ". ClearCTerminusMod" << std::endl;    
     Test::TestPeptides::ClearCTerminusMod();
-#endif
 
-    // No seg fault at line _mockPeptideEveryAminoAcid->ClearModifications(); unlike other Clear terminus tests.  Because there is no Terminus argument?
     std::cout <<++i << ". ClearAllMods" << std::endl;    
     Test::TestPeptides::ClearAllMods();
 
@@ -172,9 +169,6 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". PeptideInEqualityAminoAcidSwitch" << std::endl;    
     Test::TestPeptides::PeptideInEqualityAminoAcidSwitch();
 
-    // contains two asserts, both are Assert::AreNotEqual(pepA, pepB);
-    // changing the second one to Assert::IsFalse(pepA->Equals(pepB)); leads to a seg fault
-    // This behavior does not happen when changing the first assert to Assert::IsFalse(pepA->Equals(pepB));
     std::cout <<++i << ". PeptideInEqualityAminoAcidModification" << std::endl;    
     Test::TestPeptides::PeptideInEqualityAminoAcidModification();
 
@@ -680,7 +674,7 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
-
+#endif
     void TestPeptides::ClearNTerminusMod()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
@@ -700,7 +694,6 @@ namespace Test
 
         Assert::IsNull(_mockPeptideEveryAminoAcid->getCTerminusModification());
     }
-#endif
 
     void TestPeptides::ClearAllMods()
     {
@@ -710,7 +703,6 @@ namespace Test
         _mockPeptideEveryAminoAcid->ClearModifications();
         std::string str = "ACDEFGHIKLMNPQRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
@@ -722,7 +714,6 @@ namespace Test
         peptide->ClearModifications(ModificationSites::C | ModificationSites::V);
         std::string str = "ACDEFGHIKLMNP[Fe]QRSTVWY";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, peptide->ToString());
 
         delete peptide;
@@ -757,7 +748,7 @@ namespace Test
 
         // Assert::AreEqual(h2O, formulaB);
         Assert::IsTrue(h2O->Equals(formulaB));
-//C# TO C++ CONVERTER TODO TASK: A 'delete h2O' statement was not added since h2O was passed to a method or constructor. Handle memory management manually.
+
         delete pepA;
         delete h2O;
     }
@@ -805,7 +796,7 @@ namespace Test
         Assert::AreNotEqual(pepA, pepB);
 
         // this causes seg fault
-        // Assert::IsFalse(pepA->Equals(pepB));
+        Assert::IsFalse(pepA->Equals(pepB));
 
         delete pepA;
         delete pepB;
@@ -842,7 +833,6 @@ namespace Test
         Peptide *pepB = new Peptide(pepA);
         std::string str = "DER[Fe]EK";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, pepB->ToString());
 
         delete pepA;
@@ -855,7 +845,6 @@ namespace Test
         Peptide *pepB = new Peptide(pepA, false);
         std::string str = "DEREK";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, pepB->ToString());
 
         delete pepA;
@@ -975,7 +964,7 @@ namespace Test
         Assert::AreEqual(pepB, pepC);
 
         // this causes seg fault
-        // Assert::IsTrue(pepB->Equals(pepC));
+        Assert::IsTrue(pepB->Equals(pepC));
 
         delete pepA;
         delete pepB;
@@ -996,7 +985,7 @@ namespace Test
         Assert::AreEqual(pepC, pepB);
 
         // this causes seg fault
-        // Assert::IsTrue(pepB->Equals(pepC));
+        Assert::IsTrue(pepB->Equals(pepC));
 
         delete pepA;
         delete pepB;
