@@ -480,17 +480,13 @@ namespace Test
     {
         Peptide *peptide = new Peptide();
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("", peptide->ToString());
-
         delete peptide;
     }
 
     void TestPeptides::ParseDoubleModificationToString()
     {
         Peptide *peptide = new Peptide("THGEAK[25.132]K");
-
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual("THGEAK[25.132]K", peptide->ToString());
 
         delete peptide;

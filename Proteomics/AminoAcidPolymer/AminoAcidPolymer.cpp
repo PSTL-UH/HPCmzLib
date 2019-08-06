@@ -12,6 +12,7 @@
 #include "OldSchoolModification.h"
 #include "ModificationCollection.h"
 #include "ChemicalFormulaModification.h"
+#include "../Modifications/Modification.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -363,6 +364,20 @@ namespace Proteomics {
         return true;
     }
 
+    std::string AminoAcidPolymer::_getString ( IHasMass *mod ) {
+        if ( dynamic_cast<OldSchoolModification*>(mod) != nullptr ) {
+            return ((OldSchoolModification*)mod)->ToString();
+        }
+        else if ( dynamic_cast<Modification*>(mod) != nullptr ) {
+            return ((Modification*)mod)->ToString();
+        }
+        else if ( dynamic_cast<ModWithOnlyMass*>(mod) != nullptr ) {
+            return ((ModWithOnlyMass*)mod)->ToString();
+        }
+        std::string s="";
+        return s;
+    }
+
     std::string AminoAcidPolymer::GetSequenceWithModifications() {
         return GetSequenceWithModifications(false);
     }
@@ -379,7 +394,7 @@ namespace Proteomics {
         // Handle N-Terminus Modification
         if ((mod = _modifications[0]) != nullptr && mod->getMonoisotopicMass() > 0) {
             modSeqSb->append('[');
-            modSeqSb->append(mod);
+            modSeqSb->append(_getString(mod));
             modSeqSb->append("]-");
         }
 
@@ -395,7 +410,7 @@ namespace Proteomics {
             // Handle Amino Acid Modification (1-based)
             if ((mod = _modifications[i + 1]) != nullptr && mod->getMonoisotopicMass() > 0) {
                 modSeqSb->append('[');
-                modSeqSb->append(mod);
+                modSeqSb->append(_getString(mod));
                 modSeqSb->append(']');
             }
         }
@@ -403,7 +418,7 @@ namespace Proteomics {
         // Handle C-Terminus Modification
         if ((mod = _modifications[getLength() + 1]) != nullptr && mod->getMonoisotopicMass() > 0) {
             modSeqSb->append("-[");
-            modSeqSb->append(mod);
+            modSeqSb->append(_getString(mod));
             modSeqSb->append(']');
         }
 
@@ -1253,8 +1268,8 @@ namespace Proteomics {
     }
 
     std::string AminoAcidPolymer::ModWithOnlyMass::ToString() {
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-        return std::to_string(mass);
+        std::string s = std::to_string(mass);
+        return s.erase ( s.find_last_not_of('0') + 1, std::string::npos );
     }
   }
 }

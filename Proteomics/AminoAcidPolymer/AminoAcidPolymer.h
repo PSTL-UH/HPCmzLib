@@ -221,6 +221,7 @@ namespace Proteomics
             /// <returns>True if the polymer contains the specified residue, False otherwise</returns>
             bool Contains(Residue *residue);
             
+            std::string _getString ( IHasMass *mod );
             std::string GetSequenceWithModifications();
             
             std::string GetSequenceWithModifications(bool leucineSequence);
