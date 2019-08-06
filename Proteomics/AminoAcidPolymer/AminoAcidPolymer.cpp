@@ -133,7 +133,16 @@ namespace Proteomics {
     }
 
     std::string AminoAcidPolymer::getBaseLeucineSequence() const {
-        return StringHelper::replace(getBaseSequence(), std::to_string('I'), std::to_string('L'));
+        //return StringHelper::replace(getBaseSequence(), std::to_string('I'), std::to_string('L'));
+        std::string str = getBaseSequence();
+        std::string from = "I";
+        std::string to="L";
+        size_t start_pos = 0;
+        while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length(); 
+        }
+        return str;
     }
 
     std::string AminoAcidPolymer::getBaseSequence() const {
@@ -143,7 +152,7 @@ namespace Proteomics {
         std::string astring;
         for ( auto aa= 0; aa < (int) residues.size(); aa++ ) {
             char bb = residues[aa]->getLetter();
-            astring.append(&bb);
+            astring.append(&bb, 1);
         }
         return astring;
     }
