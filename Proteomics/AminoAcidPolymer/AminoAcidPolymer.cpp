@@ -1035,10 +1035,26 @@ namespace Proteomics {
     }
 
     void AminoAcidPolymer::ClearModifications(IHasMass *mod) {
+        OldSchoolModification *oMod = dynamic_cast<OldSchoolModification*>(mod);
+        Modification *nMod =  dynamic_cast<Modification*>(mod);
+
         for (int i = 0; i <= getLength() + 1; i++) {
-//            if (!mod->Equals(_modifications[i])) {
-            if (mod->getMonoisotopicMass() == _modifications[i]->getMonoisotopicMass()) {
-                continue;
+            if ( _modifications[i] != nullptr ) {
+                if ( oMod != nullptr ) {
+                    if ( !oMod->Equals(dynamic_cast<OldSchoolModification*>(_modifications[i]) )) {
+                        continue;
+                    }
+                }
+                else if ( nMod != nullptr ) {
+                    if ( !nMod->Equals(dynamic_cast<Modification*>(_modifications[i]) )) {
+                        continue;
+                    }
+                }
+                else {
+                    if ( mod->getMonoisotopicMass() != _modifications[i]->getMonoisotopicMass() ) {
+                        continue;
+                    }
+                }   
             }
 
             setMonoisotopicMass(getMonoisotopicMass() - mod->getMonoisotopicMass());
@@ -1112,11 +1128,11 @@ namespace Proteomics {
 
         for (int i = 0; i <= getLength() + 1; i++) {
             //if (containsMod && !Equals(_modifications[i], other->_modifications[i])) {
-            if ( containsMod                         &&
+            if ( containsMod                                                               &&
                  ( (_modifications[i] == nullptr  && other->_modifications[i] != nullptr ) ||
-                   (_modifications[i] != nullptr  && other->_modifications[i] != nullptr ) ||
-                   (_modifications[i] != nullptr && other->_modifications[i] != nullptr &&
-                    _modifications[i]->getMonoisotopicMass() != other->_modifications[i]->getMonoisotopicMass()))) {
+                   (_modifications[i] != nullptr  && other->_modifications[i] == nullptr ) ||
+                   (_modifications[i] != nullptr  && other->_modifications[i] != nullptr  &&
+                    (_modifications[i]->getMonoisotopicMass() - other->_modifications[i]->getMonoisotopicMass() > 1e-9) ))) {
                 return false;
             }
 
@@ -1124,7 +1140,7 @@ namespace Proteomics {
                 continue; // uneven arrays, so skip these two conditions
             }
 
-            if (residues[i - 1]->getThisChemicalFormula()->Equals(other->residues[i - 1]->getThisChemicalFormula())) {
+            if (!residues[i - 1]->getThisChemicalFormula()->Equals(other->residues[i - 1]->getThisChemicalFormula())) {
                 return false;
             }
         }

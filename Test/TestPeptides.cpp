@@ -23,7 +23,7 @@ int main ( int argc, char **argv )
     std::cout << i << ". PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
-//    Chemistry::PeriodicTable::Load (elr);
+    // Chemistry::PeriodicTable::Load (elr);
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
     
@@ -190,24 +190,18 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". PeptideParitalCloneInternal" << std::endl;    
     Test::TestPeptides::PeptideParitalCloneInternal();
 
-    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
     std::cout <<++i << ". PeptideParitalClonelWithInternalModification" << std::endl;    
     Test::TestPeptides::PeptideParitalClonelWithInternalModification();
 
     std::cout <<++i << ". PeptideHashing" << std::endl;    
     Test::TestPeptides::PeptideHashing();
 
-#ifdef LATER
-    // issues with CLearModifications() function leads to seg fault
     std::cout <<++i << ". ClearMods" << std::endl;    
     Test::TestPeptides::ClearMods();
-#endif
 
-    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
     std::cout <<++i << ". PeptideParitalClonelWithInternalModificationTwoMods" << std::endl;    
     Test::TestPeptides::PeptideParitalClonelWithInternalModificationTwoMods();
 
-    // changing the asset::AreEqual to Assert::IsTrue(pepB->Equals(pepC)); leads to a seg fault
     std::cout <<++i << ". PeptideParitalCloneInternalWithCTerminusModification" << std::endl;    
     Test::TestPeptides::PeptideParitalCloneInternalWithCTerminusModification();
 
@@ -856,10 +850,7 @@ namespace Test
         pepA->SetModification(&tempVar, 'R');
         Peptide *pepB = new Peptide(pepA);
 
-        Assert::AreEqual(pepB, pepA);
-
-        // this causes seg fault
-        // Assert::IsTrue(pepA->Equals(pepB));
+        Assert::IsTrue(pepA->Equals(pepB));
 
         delete pepA;
         delete pepB;
@@ -874,8 +865,6 @@ namespace Test
         std::string peptideB = pepB->ToString();
         std::string peptideC = pepC->ToString();
 
-        // std:: cout << "B " << peptideB << "   C " << peptideC << std::endl;
-
         // this test is False but should be True also compares memory references rather than peptide strings
         // Assert::AreEqual(pepB, pepC);
 
@@ -883,7 +872,7 @@ namespace Test
         Assert::IsTrue(pepB->Equals(pepC));
 
         // This test is True, but both strings have the same extra charaters
-        // Assert::AreEqual(peptideB, peptideC);
+        Assert::AreEqual(peptideB, peptideC);
 
         delete pepA;
         delete pepB;
@@ -896,10 +885,7 @@ namespace Test
         Peptide *pepB = new Peptide(pepA, 2, 3);
         Peptide *pepC = new Peptide("R[Fe]EK");
 
-        Assert::AreEqual(pepB, pepC);
-
-        // this causes seg fault
-        // Assert::IsTrue(pepB->Equals(pepC));
+        Assert::IsTrue(pepB->Equals(pepC));
 
         delete pepA;
         delete pepB;
@@ -923,34 +909,37 @@ namespace Test
         delete pep1;
     }
 
-#ifdef LATER
+
     void TestPeptides::ClearMods()
     {
         Peptide *pepA = new Peptide("DE[Al]R[Fe]EK");
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("Al"));
         pepA->ClearModifications(&tempVar);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DER[Fe]EK", pepA->ToString());
+
+        std::string s1 = "DER[Fe]EK";
+        Assert::AreEqual(s1, pepA->ToString());
+
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("C"));
         pepA->ClearModifications(&tempVar2);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DER[Fe]EK", pepA->ToString());
+
+        Assert::AreEqual(s1, pepA->ToString());
         pepA->ClearModifications();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DEREK", pepA->ToString());
+
+        std::string s2 = "DEREK";
+        Assert::AreEqual(s2, pepA->ToString());
         pepA->ClearModifications();
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DEREK", pepA->ToString());
+
+        Assert::AreEqual(s2, pepA->ToString());
         pepA->ClearModifications(ModificationSites::Any);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DEREK", pepA->ToString());
+
+        Assert::AreEqual(s2, pepA->ToString());
         pepA->ClearModifications(Terminus::C);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("DEREK", pepA->ToString());
+
+        Assert::AreEqual(s2, pepA->ToString());
 
         delete pepA;
     }
-#endif
+
 
 
     void TestPeptides::PeptideParitalClonelWithInternalModificationTwoMods()
@@ -959,9 +948,6 @@ namespace Test
         Peptide *pepB = new Peptide(pepA, 2, 3);
         Peptide *pepC = new Peptide("R[Fe]EK");
 
-        Assert::AreEqual(pepB, pepC);
-
-        // this causes seg fault
         Assert::IsTrue(pepB->Equals(pepC));
 
         delete pepA;
@@ -980,9 +966,6 @@ namespace Test
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H2O"));
         pepC->SetModification(&tempVar2, Terminus::C);
 
-        Assert::AreEqual(pepC, pepB);
-
-        // this causes seg fault
         Assert::IsTrue(pepB->Equals(pepC));
 
         delete pepA;
