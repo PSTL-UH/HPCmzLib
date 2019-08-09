@@ -48,6 +48,13 @@ namespace Proteomics
             privateDictionary = value;
         }
 
+        // Edgar: new for the C++ version.
+        void ProteaseDictionary::insert ( std::string name, Protease* value)
+        {
+            privateDictionary.emplace(name, value);
+        }
+
+        
         std::unordered_map<std::string, Protease*> ProteaseDictionary::LoadProteaseDictionary(const std::string &path)
         {
 

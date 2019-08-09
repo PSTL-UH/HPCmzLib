@@ -117,8 +117,6 @@ namespace Test {
         std::string s=" (Any)";
         Assert::AreEqual(s , b->getNameAndSites());
 
-        delete b;
-        delete a;
     }
 
     void TestModifications::ModificationEquality() {
@@ -131,10 +129,6 @@ namespace Test {
         Assert::IsFalse(a->Equals(c));
         Assert::IsFalse(a->Equals(d));
 
-        delete d;
-        delete c;
-        delete b;
-        delete a;
     }
 
 #ifdef LATER

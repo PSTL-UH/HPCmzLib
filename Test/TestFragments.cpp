@@ -186,8 +186,8 @@ namespace Test
     void TestFragments::FragmentName()
     {
         Fragment *fragment = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::a, 1)[0];
-
-        Assert::AreEqual("a1", fragment->ToString());
+        std::string s = "a1";
+        Assert::AreEqual(s, fragment->ToString());
     }
 
     void TestFragments::FragmentAllBIons()

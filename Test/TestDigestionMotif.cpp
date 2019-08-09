@@ -118,7 +118,7 @@ namespace Test
         auto empty = std::vector<Modification*>();
         auto digestionmotifs = DigestionMotif::ParseDigestionMotifsFromString("RX{P}|");
         Protease *multiletter = new Protease("multiletter", CleavageSpecificity::Full, "", "", digestionmotifs);
-        ProteaseDictionary::getDictionary().emplace(multiletter->getName(), multiletter);
+        ProteaseDictionary::insert(multiletter->getName(), multiletter);
 
         DigestionParams *myDigestionParams = new DigestionParams("multiletter", 0, 1, std::numeric_limits<int>::max(),
                                                                  1024, InitiatorMethionineBehavior::Variable, 2,

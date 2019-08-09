@@ -6,8 +6,6 @@
 #include "stringhelper.h"
 #include "tangible_filesystem.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
 #include "Protease.h"
 
 //using namespace Proteomics::Fragmentation;
@@ -20,15 +18,19 @@ namespace Proteomics
         class ProteaseDictionary final
         {
         private:
-            static std::unordered_map<std::string, Protease*> privateDictionary;
 
             static void StaticConstructor();
+            static std::unordered_map<std::string, Protease*> privateDictionary;
 
-            public:
-                static std::unordered_map<std::string, Protease*> getDictionary();
-                static void setDictionary(const std::unordered_map<std::string, Protease*> &value);
+        public:
+            static std::unordered_map<std::string, Protease*> getDictionary();
+            static void setDictionary(const std::unordered_map<std::string, Protease*> &value);
+            
+            static std::unordered_map<std::string, Protease*> LoadProteaseDictionary(const std::string &path);
 
-                static std::unordered_map<std::string, Protease*> LoadProteaseDictionary(const std::string &path);
+            // Edgar: new for the C++ version.
+            static void insert ( std::string name, Protease* value);
+
         };
     }
 }
