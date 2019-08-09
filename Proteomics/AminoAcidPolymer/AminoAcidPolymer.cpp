@@ -697,7 +697,7 @@ namespace Proteomics {
     
     int AminoAcidPolymer::ModificationCount() {
         int counter=0;
-        if ( _modifications.empty() > 0 ) {
+        if ( !_modifications.empty() ) {
             for ( auto mod: _modifications ) {
                 if ( mod != nullptr ) {
                     counter++;

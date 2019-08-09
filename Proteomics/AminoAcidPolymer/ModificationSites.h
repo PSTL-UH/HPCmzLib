@@ -58,7 +58,12 @@ namespace Proteomics {
                 TerminusC = PepC | ProtC,
                 Any = 1 << 31 // Acts like none, but is equal to all
           };
-
+        inline ModificationSites operator | (ModificationSites lhs, ModificationSites rhs)
+        {
+            using T = std::underlying_type_t <ModificationSites>;
+            return static_cast<ModificationSites>(static_cast<T>(lhs) | static_cast<T>(rhs));
+        }
+        
         class ModificationSiteExtensions final {
             
         public:

@@ -18,6 +18,7 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Proteomics. If not, see <http://www.gnu.org/licenses/>.
 
+#include <type_traits>
 
 namespace Proteomics {
 
@@ -25,18 +26,22 @@ namespace Proteomics {
         /// <summary>
         /// The terminus of an amino acid polymer N-[Amino Acids]-C
         /// </summary>
-        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-        //ORIGINAL LINE: [Flags] public enum Terminus
         enum class Terminus {
             /// <summary>
             /// The N-terminus (amino-terminus)
             /// </summary>
             N = 1,
                 
-                /// <summary>
-                /// The C-terminus (carboxyl-terminus)
-                /// </summary>
-                C = 2
+            /// <summary>
+            /// The C-terminus (carboxyl-terminus)
+            /// </summary>
+            C = 2
         };
+        inline Terminus operator | (Terminus lhs, Terminus rhs)
+        {
+            using T = std::underlying_type_t <Terminus>;
+            return static_cast<Terminus>(static_cast<T>(lhs) | static_cast<T>(rhs));
+        }
+
     }
 }

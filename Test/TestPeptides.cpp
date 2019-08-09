@@ -87,11 +87,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". SetAminoAcidModificationStronglyTyped" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTyped();
 
-#ifdef LATER
-    // requires overloading of | operator
     std::cout <<++i << ". SetAminoAcidModificationStronglyTypedMultipleLocations" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations();
-#endif
 
     std::cout <<++i << ". SetAminoAcidModificationStronglyTypedAny" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedAny();
@@ -102,11 +99,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". SetAminoAcidModificationStronglyTypedNone" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedNone();
 
-#ifdef LATER
-    // requires overloading of | operator 
     std::cout <<++i << ". SetAminoAcidModificationStronglyTypedTermini" << std::endl;    
     Test::TestPeptides::SetAminoAcidModificationStronglyTypedTermini();
-#endif
 
     std::cout <<++i << ". SetAminoAcidCharacterModification" << std::endl;    
     Test::TestPeptides::SetAminoAcidCharacterModification();
@@ -133,11 +127,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". SetNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetNAndCTerminusMod();
 
-#ifdef LATER
-    // requires overloaded | operator
     std::cout <<++i << ". SetSameNAndCTerminusMod" << std::endl;    
     Test::TestPeptides::SetSameNAndCTerminusMod();
-#endif
     
     std::cout <<++i << ". ClearNTerminusMod" << std::endl;    
     Test::TestPeptides::ClearNTerminusMod();
@@ -148,11 +139,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". ClearAllMods" << std::endl;    
     Test::TestPeptides::ClearAllMods();
 
-#ifdef LATER
-    // need overloaded | operator
     std::cout <<++i << ". ClearModificationsBySites" << std::endl;    
     Test::TestPeptides::ClearModificationsBySites();
-#endif
 
     std::cout <<++i << ". EmptyPeptideLengthIsZero" << std::endl;    
     Test::TestPeptides::EmptyPeptideLengthIsZero();
@@ -193,6 +181,7 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". PeptideParitalClonelWithInternalModification" << std::endl;    
     Test::TestPeptides::PeptideParitalClonelWithInternalModification();
 
+    //Edgar: will not fix this test.
     std::cout <<++i << ". PeptideHashing" << std::endl;    
     Test::TestPeptides::PeptideHashing();
 
@@ -241,7 +230,7 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". TestChemicalFormula2" << std::endl;    
     Test::TestPeptides::TestChemicalFormula2();
 
-    // Requires overloading of | operator
+    // Test doesn't do anything useful.
     std::cout <<++i << ". TestMultipleModificationsAtSingleResidue" << std::endl;    
     Test::TestPeptides::TestMultipleModificationsAtSingleResidue();
 #endif
@@ -252,11 +241,8 @@ int main ( int argc, char **argv )
     std::cout <<++i << ". TestLeucineSequence" << std::endl;    
     Test::TestPeptides::TestLeucineSequence();
 
-#ifdef LATER
-    // Requires overloading of | operator
     std::cout <<++i << ". TestClearModifications" << std::endl;    
     Test::TestPeptides::TestClearModifications();
-#endif
 
     std::cout <<++i << ". TestGetSubPeptide" << std::endl;    
     Test::TestPeptides::TestGetSubPeptide();
@@ -516,7 +502,6 @@ namespace Test
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
-#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTypedMultipleLocations()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
@@ -527,7 +512,6 @@ namespace Test
         
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
-#endif
 
     void TestPeptides::SetAminoAcidModificationStronglyTypedAny()
     {
@@ -561,18 +545,16 @@ namespace Test
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
-#ifdef LATER
     void TestPeptides::SetAminoAcidModificationStronglyTypedTermini()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
 
-        // need overload of operator |
-        _mockPeptideEveryAminoAcid->SetModification(&tempVar, ModificationSites::NPep | ModificationSites::PepC);
+        _mockPeptideEveryAminoAcid->ClearModifications();
+        _mockPeptideEveryAminoAcid->SetModification(tempVar, ModificationSites::NPep | ModificationSites::PepC);
         std::string str = "[Fe]-ACDEFGHIKLMNPQRSTVWY-[Fe]";
 
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
-#endif
 
     void TestPeptides::SetAminoAcidCharacterModification()
     {
@@ -652,21 +634,18 @@ namespace Test
         _mockPeptideEveryAminoAcid->SetModification(tempVar2, Terminus::N);
         std::string str = "[H2NO]-ACDEFGHIKLMNPQRSTVWY-[Fe]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
-#ifdef LATER
     void TestPeptides::SetSameNAndCTerminusMod()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
         _mockPeptideEveryAminoAcid->SetModification(tempVar, Terminus::C | Terminus::N);
         std::string str = "[Fe]-ACDEFGHIKLMNPQRSTVWY-[Fe]";
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
-#endif
+
     void TestPeptides::ClearNTerminusMod()
     {
         auto tempVar = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("Fe"));
@@ -698,7 +677,6 @@ namespace Test
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
     }
 
-#ifdef LATER
     void TestPeptides::ClearModificationsBySites()
     {
         auto peptide = new Peptide("AC[Fe]DEFGHIKLMNP[Fe]QRSTV[Fe]WY");
@@ -710,7 +688,6 @@ namespace Test
 
         delete peptide;
     }
-#endif
 
     void TestPeptides::EmptyPeptideLengthIsZero()
     {
@@ -894,19 +871,16 @@ namespace Test
 
     void TestPeptides::PeptideHashing()
     {
-        Peptide *pep1 = new Peptide("DEREK");
-        Peptide *pep2 = new Peptide("DEREKN");
-        Peptide *pep3 = new Peptide("DEREKM");
-        Peptide *pep4 = new Peptide("DEREKM");
-        std::unordered_set<Peptide*> uu = {pep1, pep2, pep3, pep4};
+        // Edgar; will not fix this test
+        Peptide pep1("DEREK");
+        Peptide pep2("DEREKN");
+        Peptide pep3("DEREKM");
+        Peptide pep4("DEREKM");
+        std::unordered_set<Peptide*> uu = {&pep1, &pep2, &pep3, &pep4};
         Peptide tempVar("DEREKN");
         uu.insert(&tempVar);
         Assert::AreEqual(3, static_cast<int>(uu.size()));
 
-        delete pep4;
-        delete pep3;
-        delete pep2;
-        delete pep1;
     }
 
 
@@ -1117,7 +1091,8 @@ namespace Test
             A->GetChemicalFormula();
         }, "Modification Modification without chemical formula does not have a chemical formula!");
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete a' statement was not added since a was passed to a
+        // method or constructor. Handle memory management manually.
         delete A;
         delete a;
     }
@@ -1164,17 +1139,18 @@ namespace Test
         delete peptide;
     }
 
-#ifdef LATER
     void TestPeptides::TestClearModifications()
     {
         Peptide *a = new Peptide("ACDEFGHIKLMNPQRSTVWY");
         OldSchoolChemicalFormulaModification tempVar(ChemicalFormula::ParseFormula("O"), ModificationSites::D);
         a->AddModification(&tempVar);
+
         OldSchoolChemicalFormulaModification tempVar2(ChemicalFormula::ParseFormula("H"), ModificationSites::E);
         a->AddModification(&tempVar2);
         Assert::AreEqual(2, a->ModificationCount());
         a->ClearModifications();
         Assert::AreEqual(0, a->ModificationCount());
+
         OldSchoolChemicalFormulaModification tempVar3(ChemicalFormula::ParseFormula("O"), ModificationSites::NTerminus);
         a->AddModification(&tempVar3);
         OldSchoolModification tempVar4(1);
@@ -1191,24 +1167,16 @@ namespace Test
         delete peptide;
         delete a;
     }
-#endif
 
     void TestPeptides::TestGetSubPeptide()
     {
         Peptide *pep = new Peptide("DERLEK");
         Peptide tempVar("LE");
-        // Peptide *tempVar = new Peptide("LE");
 
         Peptide *subpep = pep->GetSubPeptide(3, 2);
-        std::string subpepstr = subpep->ToString();
-
-
-        Assert::AreEqual(&tempVar, pep->GetSubPeptide(3, 2));
-        // std::cout << "subpep " << subpep->ToString() << "  temp " << tempVar->ToString() << std::endl;
-        // Assert::IsTrue(subpep->Equals(tempVar));
+        Assert::IsTrue(subpep->Equals(&tempVar));
 
         delete pep;
-        // delete tempVar;
     }
 
     void TestPeptides::TestRealPeptideWithModifications()
