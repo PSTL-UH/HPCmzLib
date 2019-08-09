@@ -7,7 +7,7 @@
 #include "../Fragmentation/TerminusSpecificProductTypes.h"
 #include "../Fragmentation/DissociationTypeCollection.h"
 #include "../Fragmentation/CompactPeptide.h"
-
+#include <algorithm>
 #include "stringhelper.h"
 
 using namespace Chemistry;
@@ -194,13 +194,12 @@ namespace Proteomics
                      DissociationTypeCollection::ProductsFromDissociationType[dissociationType]);
 #endif
 
-             std::vector<ProductType> vInter;
              std::vector<ProductType> v1 = TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus];
              std::vector<ProductType> v2 = DissociationTypeCollection::ProductsFromDissociationType[dissociationType];
+             std::vector<ProductType> vInter(std::min(v1.size(), v2.size()));
              std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), vInter.begin());
              std::unordered_map<FragmentationTerminus, std::vector<ProductType>> productCollection = {{fragmentationTerminus, vInter}};
-             
-            //std::vector<std::tuple<ProductType, int>*> skippers;
+
             std::vector<std::tuple<ProductType, int>> skippers;
 #ifdef ORIG
             for (auto product : productCollection->Where([&] (std::any f)
@@ -323,7 +322,7 @@ namespace Proteomics
                     }
 
                     // diagnostic ions
-                    //List<double> diagIonsForThisModAndDissociationType;
+                    // List<double> diagIonsForThisModAndDissociationType;
                     std::vector<double> diagIonsForThisModAndDissociationType;
                     if ( !std::get<1>(mod)->getDiagnosticIons().empty() &&
                          std::get<1>(mod)->getDiagnosticIons().find(dissociationType)!= std::get<1>(mod)->getDiagnosticIons().end() )
@@ -331,10 +330,13 @@ namespace Proteomics
                         diagIonsForThisModAndDissociationType = std::get<1>(mod)->getDiagnosticIons()[dissociationType];
                         for (double diagnosticIon : diagIonsForThisModAndDissociationType)
                         {
-                            int diagnosticIonLabel = static_cast<int>(std::round(Chemistry::ClassExtensions::ToMz(diagnosticIon, 1) * std::pow(10, 0))) / std::pow(10, 0);
+                            int diagnosticIonLabel = static_cast<int>(std::round(Chemistry::ClassExtensions::ToMz(diagnosticIon, 1) *
+                                                                                 std::pow(10, 0))) / std::pow(10, 0);
 
-                            // the diagnostic ion is assumed to be annotated in the mod info as the *neutral mass* of the diagnostic ion, not the ionized species
-                            Product tempVar3(ProductType::D, new NeutralTerminusFragment(FragmentationTerminus::Both, diagnosticIon, diagnosticIonLabel, 0), 0);
+                            // the diagnostic ion is assumed to be annotated in the mod info as the *neutral mass* of the
+                            // diagnostic ion, not the ionized species
+                            Product tempVar3(ProductType::D, new NeutralTerminusFragment(FragmentationTerminus::Both, diagnosticIon,
+                                                                                         diagnosticIonLabel, 0), 0);
                             diagnosticIons.insert(&tempVar3);
                         }
                     }
