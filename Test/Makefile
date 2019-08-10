@@ -8,14 +8,16 @@
 #
 include ../Makefile.defs
 
-CEXECS = TestChemicalFormula		\
-	TestElementsAndIsotopes		\
-	TestAminoAcids			\
-	TestModifications		\
-	TestFragments			\
-	TestDigestionMotif		\
-	TestMetaMorpheus                \
-	TestSpectra                     \
+CEXECS = TestChemicalFormula	   	     \
+	TestElementsAndIsotopes		     \
+	TestAminoAcids			     \
+	TestModifications		     \
+	TestFragments	 		     \
+	TestDigestionMotif                   \
+	TestMetaMorpheus                     \
+	TestSpectra                          \
+	TestProteinDigestion                 \
+	TestProteinProperties                \
 	TestPeptides			
 
 #	FakeMsDataFile                       \
@@ -30,8 +32,6 @@ CEXECS = TestChemicalFormula		\
 #	TestMzML                             \
 #	TestPeptideWithSetMods               \
 #	TestProductMassesMightHaveDuplicates \
-#	TestProteinDigestion                 \
-#	TestProteinProperties                \
 #	TestPtmListLoader                    \
 #	TestRangeAndTolerances               \
 #	TestRetentionTimePrediction          \
@@ -76,6 +76,14 @@ TestMetaMorpheus: TestMetaMorpheus.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 #
+TestProteinProperties: TestProperties.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+#
+TestProteinDigestion: TestProteinDigestion.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+#
 TestSpectra: TestSpectra.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
@@ -87,3 +95,4 @@ clean:
 
 	rm -f TestChemicalFormula TestElementsAndIsotopes TestDigestionMotif
 	rm -f TestPeptides TestAminoAcids TestModifications TestFragments TestMetaMorpheus
+	rm -f TestProteinDigestion TestProteinProperties TestSpectra

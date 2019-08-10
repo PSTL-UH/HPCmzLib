@@ -7,49 +7,68 @@
 #include "../Chemistry/ChemicalFormula.h"
 #include "../Chemistry/PeriodicTable.h"
 
-using namespace Chemistry;
-using namespace MassSpectrometry;
-using namespace NUnit::Framework;
-using namespace Proteomics;
-using namespace Proteomics::AminoAcidPolymer;
-using namespace Proteomics::Fragmentation;
-using namespace Proteomics::ProteolyticDigestion;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+#include "Assert.h"
+
+#include <limits>
+
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
+
+    std::cout << ++i << ". TestGoodPeptide" << std::endl;        
+    Test::TestProteinDigestion::TestGoodPeptide();
+
+    std::cout << ++i << ". TestNoCleavage" << std::endl;        
+    Test::TestProteinDigestion::TestNoCleavage();
+
+    std::cout << ++i << ". TestBadPeptide" << std::endl;        
+    Test::TestProteinDigestion::TestBadPeptide();
+
+    std::cout << ++i << ". TestPeptideWithSetModifications" << std::endl;        
+    Test::TestProteinDigestion::TestPeptideWithSetModifications();
+
+    std::cout << ++i << ". TestPeptideWithFixedModifications" << std::endl;        
+    Test::TestProteinDigestion::TestPeptideWithFixedModifications();
+
+    std::cout << ++i << ". TestDigestIndices" << std::endl;        
+    Test::TestProteinDigestion::TestDigestIndices();
+
+    std::cout << ++i << ". TestDigestDecoy" << std::endl;        
+    Test::TestProteinDigestion::TestDigestDecoy();
+
+    std::cout << ++i << ". TestGoodPeptideWithLength" << std::endl;        
+    Test::TestProteinDigestion::TestGoodPeptideWithLength();
+
+    std::cout << ++i << ". Test_ProteinDigest" << std::endl;        
+    Test::TestProteinDigestion::Test_ProteinDigest();
+
+    std::cout << ++i << ". TestReadPeptideFromString" << std::endl;        
+    Test::TestProteinDigestion::TestReadPeptideFromString();
+
+    return 0;
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
-
-    Stopwatch *TestProteinDigestion::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestProteinDigestion::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestProteinDigestion::Setup()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestProteinDigestion::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
 
     void TestProteinDigestion::TestGoodPeptide()
     {
         auto prot = new Protein("MNNNKQQQQ", "");
         auto motifList = DigestionMotif::ParseDigestionMotifsFromString("K|");
         auto protease = new Protease("CustomizedProtease", CleavageSpecificity::Full, "", "", motifList);
-        ProteaseDictionary::getDictionary().emplace(protease->getName(), protease);
-        DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        ProteaseDictionary::insert((protease->getName(), protease);
+        DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, std::numeric_limits<int>::max(), 
+							       1024, InitiatorMethionineBehavior::Retain, 2, 
+							       CleavageSpecificity::Full,
+							       FragmentationTerminus::Both);
         std::vector<Modification*> variableModifications;
         auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), variableModifications).ToList();
 
@@ -71,20 +90,24 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
             Assert::IsTrue(huh->NeutralMass > 0);
         }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete protease' statement was not added since protease was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
+	delete protease;
         delete prot;
     }
 
     void TestProteinDigestion::TestNoCleavage()
     {
         std::vector<Modification*> fixedModifications;
-        auto prot = new Protein("MNNNKQQQQ", nullptr, nullptr, nullptr, std::unordered_map<int, std::vector<Modification*>>(), std::vector<ProteolysisProduct*> {new ProteolysisProduct(std::make_optional(5), std::make_optional(6), "lala")});
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        auto prot = new Protein("MNNNKQQQQ", nullptr, nullptr, nullptr, std::unordered_map<int, std::vector<Modification*>>(), 
+				std::vector<ProteolysisProduct*> {new ProteolysisProduct(std::make_optional(5), 
+											 std::make_optional(6), "lala")});
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, std::numeric_limits<int>::max(), 
+							       1024, InitiatorMethionineBehavior::Variable, 2, 
+							       CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto ye = prot->Digest(digestionParams, fixedModifications, std::vector<Modification*>()).ToList();
         Assert::AreEqual(3, ye.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
     }
 
@@ -93,8 +116,10 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         auto prot = new Protein("MNNNKQQXQ", "");
         auto motifList = DigestionMotif::ParseDigestionMotifsFromString("K|");
         auto protease = new Protease("Custom Protease7", CleavageSpecificity::Full, "", "", motifList);
-        ProteaseDictionary::getDictionary().emplace(protease->getName(), protease);
-        DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        ProteaseDictionary::insert(protease->getName(), protease);
+        DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, std::numeric_limits<int>::max(), 
+							       1024, InitiatorMethionineBehavior::Retain, 2, 
+							       CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
 
         Assert::AreEqual(2, ye.size());
@@ -116,15 +141,18 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::IsTrue(std::isnan(cool[5].NeutralMass));
         Assert::IsTrue(cool.size() == 6);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete protease' statement was not added since protease was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
+	delete protease;
         delete prot;
     }
 
     void TestProteinDigestion::TestPeptideWithSetModifications()
     {
         auto prot = new Protein("M", "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 3, CleavageSpecificity::Full, FragmentationTerminus::Both); // if you pass Custom Protease7 this test gets really flakey.
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 
+							       1024, InitiatorMethionineBehavior::Variable, 3, 
+							       CleavageSpecificity::Full, FragmentationTerminus::Both); 
+	// if you pass Custom Protease7 this test gets really flakey.
         std::vector<Modification*> variableModifications;
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("M", motif);
@@ -144,7 +172,8 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::AreEqual(3 * 2 * 3, ye.size());
         Assert::AreEqual("[H]M[H][H]", ye.back().SequenceWithChemicalFormulas);
 
-        double m1 = 5 * PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() + Residue::ResidueMonoisotopicMass['M'] + PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
+        double m1 = 5 * PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() + 
+	  Residue::ResidueMonoisotopicMass['M'] + PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
 
         m1 = Math::Round(static_cast<double>(m1), 9, MidpointRounding::AwayFromZero);
 
@@ -153,14 +182,17 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
 
         Assert::IsTrue(m3 < 1e-9);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
     }
 
     void TestProteinDigestion::TestPeptideWithFixedModifications()
     {
         auto prot = new Protein("M", "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Variable, 3, CleavageSpecificity::Full, FragmentationTerminus::Both); // if you pass Custom Protease7 this test gets really flakey.
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 
+							       1024, InitiatorMethionineBehavior::Variable, 3, 
+							       CleavageSpecificity::Full, FragmentationTerminus::Both);
+	// if you pass Custom Protease7 this test gets really flakey.
         std::vector<Modification*> fixedMods;
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("M", motif);
@@ -183,9 +215,11 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::AreEqual("[:pepNmod on M]M[:resMod on M][:ProtCmod on M]", ok.front().FullSequence);
 
         Assert::AreEqual("[H]M[H][H]", ok.front().SequenceWithChemicalFormulas);
-        Assert::AreEqual(5 * PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() + Residue::ResidueMonoisotopicMass['M'] + PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass(), ok.back().MonoisotopicMass, 1e-9);
+        Assert::AreEqual(5 * PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() +
+			 Residue::ResidueMonoisotopicMass['M'] + PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass(), 
+			 ok.back().MonoisotopicMass, 1e-9);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
     }
 
@@ -208,7 +242,7 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         };
         auto prot = new Protein("MNNNNKRRRRR", "", "", std::vector<std::tuple<std::string, std::string>>(), modDict, std::vector<ProteolysisProduct>(), "", "", true, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
 
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         auto digestedList = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
         auto ok1 = digestedList[1];
@@ -219,7 +253,7 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::AreEqual(1, ok2.NumMods);
         Assert::IsTrue(ok2.AllModsOneIsNterminus->ContainsKey(3));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
         delete modR;
         delete modN;
@@ -244,7 +278,7 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         };
         auto prot = new Protein("MNNNNKRRRRR", "", "", std::vector<std::tuple<std::string, std::string>>(), modDict, std::vector<ProteolysisProduct>(), "", "", true, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
 
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         auto digestedList = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
         auto ok1 = digestedList[1];
@@ -264,7 +298,7 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::AreEqual(2, ok2.NumMods);
         Assert::IsTrue(ok2.AllModsOneIsNterminus::Any());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
         delete modR;
         delete modN;
@@ -274,9 +308,9 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
     {
         auto prot = new Protein("MNNNKQQQQMNNNKQQQQ", "");
 
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
-        digestionParams = new DigestionParams("trypsin", 0, 5, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        digestionParams = new DigestionParams("trypsin", 0, 5, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto ye1 = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
         digestionParams = new DigestionParams("trypsin", 0, 1, 5, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
         auto ye2 = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
@@ -287,13 +321,13 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::AreEqual(2, ye2.size());
         Assert::AreEqual(1, ye3.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+	delete digestionParams;
         delete prot;
     }
 
     void TestProteinDigestion::Test_ProteinDigest()
     {
-        DigestionParams *d = new DigestionParams("trypsin", 0, 5, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *d = new DigestionParams("trypsin", 0, 5, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("D", motif);
         Modification *mod = new Modification("mod1", "", "mt", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
@@ -315,7 +349,7 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
 
         delete prot1;
         delete mod;
-//C# TO C++ CONVERTER TODO TASK: A 'delete d' statement was not added since d was passed to a method or constructor. Handle memory management manually.
+	delete d;
     }
 
     void TestProteinDigestion::TestReadPeptideFromString()
@@ -351,6 +385,6 @@ System::Diagnostics::Stopwatch *TestProteinDigestion::privateStopwatch;
         Assert::That(theoreticalFragments.size() > 0);
 
         delete peptide;
-//C# TO C++ CONVERTER TODO TASK: A 'delete carbamidomethylOnC' statement was not added since carbamidomethylOnC was passed to a method or constructor. Handle memory management manually.
+	delete carbamidomethylOnC;
     }
 }

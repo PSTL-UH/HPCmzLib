@@ -41,6 +41,16 @@ make TestMetaMorpheus
 ./TestMetaMorpheus
 
 echo " "
-echo "  TestSpecatr"
+echo "  TestSpectra"
 make TestSpectra
 ./TestSpectra
+
+#echo " "
+#echo "  TestProteinProperties"
+#make TestProteinProperties
+#./TestProteinProperties
+
+#echo " "
+#echo "  TestProteinDigestion"
+#make TestProteinDigestion
+#./TestProteinDigestion

@@ -7,36 +7,48 @@
 #include "../Proteomics/Protein/DisulfideBond.h"
 #include "../Proteomics/Protein/ProteolysisProduct.h"
 
-using namespace NUnit::Framework;
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+#include "Assert.h"
+
 using namespace Proteomics;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
+
+    std::cout << ++i << ". TestHashAndEqualsProtein" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsProtein();
+
+    std::cout << ++i << ". TestHashAndEqualsSequenceVariation" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsSequenceVariation();
+
+    std::cout << ++i << ". TestHashAndEqualsDbRef" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsDbRef();
+
+    std::cout << ++i << ". TestHashAndEqualsSpliceSite" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsSpliceSite();
+
+    std::cout << ++i << ". TestHashAndEqualsDisulfide" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsDisulfide();
+
+    std::cout << ++i << ". TestHashAndEqualsProteolysis" << std::endl;        
+    Test::TestProteinProperties::TestHashAndEqualsProteolysis();
+
+    std::cout << ++i << ". CompareProteinProperties" << std::endl;        
+    Test::TestProteinProperties::CompareProteinProperties();
+
+    return 0;
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
-
-    Stopwatch *TestProteinProperties::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestProteinProperties::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestProteinProperties::Setup()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestProteinProperties::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
 
     void TestProteinProperties::TestHashAndEqualsProtein()
     {
@@ -44,8 +56,8 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Protein *p11 = new Protein("MSEQ", "accession");
         Assert::AreNotEqual(p1, p11); // default object hash and equals are used
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete p11' statement was not added since p11 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete p1' statement was not added since p1 was passed to a method or constructor. Handle memory management manually.
+	delete p11;
+	delete p1;
     }
 
     void TestProteinProperties::TestHashAndEqualsSequenceVariation()
@@ -80,14 +92,14 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(sv1, sv5);
         Assert::AreNotEqual(sv1, sv6);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv6' statement was not added since sv6 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv5' statement was not added since sv5 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv4' statement was not added since sv4 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv3' statement was not added since sv3 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv222' statement was not added since sv222 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv22' statement was not added since sv22 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv2' statement was not added since sv2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv1' statement was not added since sv1 was passed to a method or constructor. Handle memory management manually.
+        delete sv6;
+        delete sv5;
+        delete sv4;
+        delete sv3;
+        delete sv222;
+        delete sv22;
+        delete sv2;
+        delete sv1;
     }
 
     void TestProteinProperties::TestHashAndEqualsDbRef()
@@ -104,12 +116,12 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(db1, db4);
         Assert::AreNotEqual(db1, db5);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete db5' statement was not added since db5 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete db4' statement was not added since db4 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete db3' statement was not added since db3 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete db2' statement was not added since db2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete db11' statement was not added since db11 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete db1' statement was not added since db1 was passed to a method or constructor. Handle memory management manually.
+	delete db5;
+	delete db4;
+	delete db3;
+	delete db2;
+	delete db11;
+	delete db1;
     }
 
     void TestProteinProperties::TestHashAndEqualsSpliceSite()
@@ -124,11 +136,11 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(ss1, ss3);
         Assert::AreNotEqual(ss1, ss4);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete ss4' statement was not added since ss4 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ss3' statement was not added since ss3 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ss2' statement was not added since ss2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ss11' statement was not added since ss11 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ss1' statement was not added since ss1 was passed to a method or constructor. Handle memory management manually.
+	delete ss4;
+	delete ss3;
+	delete ss2;
+	delete ss11;
+	delete ss1;
     }
 
     void TestProteinProperties::TestHashAndEqualsDisulfide()
@@ -143,11 +155,11 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(bond007, bond9);
         Assert::AreNotEqual(bond007, bond17);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete bond17' statement was not added since bond17 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bond9' statement was not added since bond9 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bond8' statement was not added since bond8 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bond007' statement was not added since bond007 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bond7' statement was not added since bond7 was passed to a method or constructor. Handle memory management manually.
+	delete bond17;
+	delete bond9;
+	delete bond8;
+	delete bond007;
+	delete bond7;
     }
 
     void TestProteinProperties::TestHashAndEqualsProteolysis()
@@ -166,13 +178,13 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(pp1, pp5);
         Assert::AreNotEqual(pp1, pp6);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp6' statement was not added since pp6 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp5' statement was not added since pp5 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp4' statement was not added since pp4 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp3' statement was not added since pp3 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp2' statement was not added since pp2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp11' statement was not added since pp11 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp1' statement was not added since pp1 was passed to a method or constructor. Handle memory management manually.
+	delete pp6;
+	delete pp5;
+	delete pp4;
+	delete pp3;
+	delete pp2;
+	delete pp11;
+	delete pp1;
     }
 
     void TestProteinProperties::CompareProteinProperties()
@@ -229,29 +241,29 @@ System::Diagnostics::Stopwatch *TestProteinProperties::privateStopwatch;
         Assert::AreNotEqual(pp, paa);
         Assert::AreEqual(5, {p, pp, ppp, pa, paa, paaa}->Count);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete paa' statement was not added since paa was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pa' statement was not added since pa was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ppp' statement was not added since ppp was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete p' statement was not added since p was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete paaa' statement was not added since paaa was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete pp' statement was not added since pp was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete baaa' statement was not added since baaa was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete baa' statement was not added since baa was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ba' statement was not added since ba was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bbbb' statement was not added since bbbb was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bbb' statement was not added since bbb was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete bb' statement was not added since bb was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sssss' statement was not added since sssss was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ssss' statement was not added since ssss was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sss' statement was not added since sss was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete sv' statement was not added since sv was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete s' statement was not added since s was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete dh' statement was not added since dh was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete dg' statement was not added since dg was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete df' statement was not added since df was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete de' statement was not added since de was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete dd' statement was not added since dd was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete d' statement was not added since d was passed to a method or constructor. Handle memory management manually.
+	delete paa;
+	delete pa;
+	delete ppp;
+	delete p;
+	delete paaa;
+	delete pp;
+	delete baaa;
+	delete baa;
+	delete ba;
+	delete bbbb;
+	delete bbb;
+	delete bb;
+	delete b;
+	delete sssss;
+	delete ssss;
+	delete sss;
+	delete sv;
+	delete s;
+	delete dh;
+	delete dq;
+	delete df;
+	delete de;
+	delete dd;
+	delete d;
     }
 }

@@ -11,5 +11,8 @@ Test/TestPeptides
 Test/TestDigestionMotif
 Test/TestFragments
 Test/TestMetaMorpheus
+Test/TestSpectra
+Test/TestProteinProperties
+Test/TestProteinDigestion
 Test/elements.dat
 lib/
