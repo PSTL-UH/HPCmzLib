@@ -39,3 +39,8 @@ echo " "
 echo "  TestMetaMorpheus"
 make TestMetaMorpheus
 ./TestMetaMorpheus
+
+echo " "
+echo "  TestSpecatr"
+make TestSpectra
+./TestSpectra

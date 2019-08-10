@@ -12,6 +12,18 @@ public:
 //            std::abort();
         }
     }
+
+    static void AreEqual(double a, std::optional<double> b) {
+        if ( b.has_value() ) {
+            if ( a==b.value() ){
+//            std::cout << "is equal" << std::endl;                
+            }
+        }
+        
+        std::cout << "  Assert.h: " << a << " is NOT equal " << b.value() << std::endl;
+        //   std::abort();        
+    }
+
     template<class T>
     static void AreEqual(T a, T b, double tol ) {
         if ( std::abs(a-b) <tol ) {

@@ -15,6 +15,7 @@ CEXECS = TestChemicalFormula		\
 	TestFragments			\
 	TestDigestionMotif		\
 	TestMetaMorpheus                \
+	TestSpectra                     \
 	TestPeptides			
 
 #	FakeMsDataFile                       \
@@ -35,7 +36,6 @@ CEXECS = TestChemicalFormula		\
 #	TestRangeAndTolerances               \
 #	TestRetentionTimePrediction          \
 #	TestSeqCoverage                      \
-#	TestSpectra                          \
 #	TestVariantProtein
 
 
@@ -73,6 +73,10 @@ TestFragments: TestFragments.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
 TestMetaMorpheus: TestMetaMorpheus.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+#
+TestSpectra: TestSpectra.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 ###################################################################################################

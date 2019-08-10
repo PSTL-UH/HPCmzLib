@@ -5,37 +5,114 @@
 #include "../MzLibUtil/Tolerance.h"
 #include "../MzLibUtil/DoubleRange.h"
 
-using namespace MassSpectrometry;
-using namespace MzLibUtil;
-using namespace NUnit::Framework;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+#include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
+#include "Assert.h"
+
+#include "../Chemistry/Chemistry.h"
+using namespace Chemistry;
+
+MzSpectrum *_mzSpectrumA;
+
+
+int main ( int argc, char **argv )
+{
+
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;    
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+    Chemistry::PeriodicTable::Load (elr);
+
+    Test::TestSpectra::Setup();
+
+    std::cout << ++i << ". SpectrumCount" << std::endl;        
+    Test::TestSpectra::SpectrumCount();
+
+    std::cout << ++i << ". SpectrumFirstMZ" << std::endl;        
+    Test::TestSpectra::SpectrumFirstMZ();
+
+    std::cout << ++i << ". SpectrumLastMZ" << std::endl;        
+    Test::TestSpectra::SpectrumLastMZ();
+
+    std::cout << ++i << ". SpectrumBasePeakIntensity" << std::endl;        
+    Test::TestSpectra::SpectrumBasePeakIntensity();
+
+    std::cout << ++i << ". SpectrumTIC" << std::endl;        
+    Test::TestSpectra::SpectrumTIC();
+
+    std::cout << ++i << ". SpectrumGetIntensityFirst" << std::endl;        
+    Test::TestSpectra::SpectrumGetIntensityFirst();
+
+    std::cout << ++i << ". SpectrumGetIntensityRandom" << std::endl;        
+    Test::TestSpectra::SpectrumGetIntensityRandom();
+
+    std::cout << ++i << ". SpectrumGetMassFirst" << std::endl;        
+    Test::TestSpectra::SpectrumGetMassFirst();
+
+    std::cout << ++i << ". SpectrumGetMassRandom" << std::endl;        
+    Test::TestSpectra::SpectrumGetMassRandom();
+
+    std::cout << ++i << ". SpectrumContainsPeak" << std::endl;        
+    Test::TestSpectra::SpectrumContainsPeak();
+
+    std::cout << ++i << ". SpectrumContainsPeakInRange" << std::endl;        
+    Test::TestSpectra::SpectrumContainsPeakInRange();
+
+    std::cout << ++i << ". SpectrumContainsPeakInRangeEnd" << std::endl;        
+    Test::TestSpectra::SpectrumContainsPeakInRangeEnd();
+
+    std::cout << ++i << ". SpectrumContainsPeakInRangeStart" << std::endl;        
+    Test::TestSpectra::SpectrumContainsPeakInRangeStart();
+
+    std::cout << ++i << ". SpectrumContainsPeakInRangeStartEnd" << std::endl;        
+    Test::TestSpectra::SpectrumContainsPeakInRangeStartEnd();
+
+    std::cout << ++i << ". SpectrumDoesntContainPeakInRange" << std::endl;        
+    Test::TestSpectra::SpectrumDoesntContainPeakInRange();
+
+    std::cout << ++i << ". SpectrumMassRange" << std::endl;        
+    Test::TestSpectra::SpectrumMassRange();
+
+    std::cout << ++i << ". SpectrumFilterCount" << std::endl;        
+    Test::TestSpectra::SpectrumFilterCount();
+
+    std::cout << ++i << ". FilterByNumberOfMostIntenseTest" << std::endl;        
+    Test::TestSpectra::FilterByNumberOfMostIntenseTest();
+
+    std::cout << ++i << ". FilterByNumberOfMostIntenseRobTest" << std::endl;        
+    Test::TestSpectra::FilterByNumberOfMostIntenseRobTest();
+
+    std::cout << ++i << ". GetBasePeak" << std::endl;        
+    Test::TestSpectra::GetBasePeak();
+
+    std::cout << ++i << ". GetClosestPeak" << std::endl;        
+    Test::TestSpectra::GetClosestPeak();
+
+#ifdef LATER
+    std::cout << ++i << ". Extract" << std::endl;        
+    Test::TestSpectra::Extract();
+
+    std::cout << ++i << ". CorrectOrder" << std::endl;        
+    Test::TestSpectra::CorrectOrder();
+
+    std::cout << ++i << ". TestFunctionToX" << std::endl;        
+    Test::TestSpectra::TestFunctionToX();
+
+    std::cout << ++i << ". TestGetClosestPeakXValue" << std::endl;        
+    Test::TestSpectra::TestGetClosestPeakXValue();
+
+    std::cout << ++i << ". TestDotProduct" << std::endl;        
+    Test::TestSpectra::TestDotProduct();
+
+    std::cout << ++i << ". TestNumPeaksWithinRange" << std::endl;        
+    Test::TestSpectra::TestNumPeaksWithinRange();
+#endif
+    return 0;
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
-
-    Stopwatch *TestSpectra::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestSpectra::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestSpectra::Setuppp()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestSpectra::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
 
     void TestSpectra::Setup()
     {
@@ -128,8 +205,8 @@ System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
     {
         MzRange *range = new MzRange(328.73795, 723.35345);
 
-        Assert::AreEqual(0, _mzSpectrumA->getRange()->Minimum - range->Minimum, 1e-9);
-        Assert::AreEqual(0, _mzSpectrumA->getRange()->Maximum - range->Maximum, 1e-9);
+        Assert::IsTrue( ((_mzSpectrumA->getRange()->getMinimum() - range->getMinimum()) <= 1e-9));
+        Assert::IsTrue( ((_mzSpectrumA->getRange()->getMaximum() - range->getMaximum()) <= 1e-9));
 
         delete range;
     }
@@ -138,12 +215,12 @@ System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
     {
         auto filteredMzSpectrum = _mzSpectrumA->FilterByY(28604417, 28604419);
 
-        Assert::AreEqual(1, filteredMzSpectrum.size()());
+        Assert::AreEqual(1, filteredMzSpectrum.size());
     }
 
     void TestSpectra::FilterByNumberOfMostIntenseTest()
     {
-        Assert::AreEqual(5, _mzSpectrumA->FilterByNumberOfMostIntense(5).size()());
+        Assert::AreEqual(5, _mzSpectrumA->FilterByNumberOfMostIntense(5).size());
     }
 
     void TestSpectra::FilterByNumberOfMostIntenseRobTest()
@@ -151,7 +228,7 @@ System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
         std::vector<double> x = {50, 60, 70, 147.0764, 257.1244, 258.127, 275.135};
         std::vector<double> y = {1, 1, 1, 1, 1, 1, 1};
         MzSpectrum *spectrum = new MzSpectrum(x, y, false);
-        Assert::AreEqual(7, spectrum->FilterByNumberOfMostIntense(200).size()());
+        Assert::AreEqual(7, spectrum->FilterByNumberOfMostIntense(200).size());
 
         delete spectrum;
     }
@@ -167,9 +244,10 @@ System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.9));
     }
 
+#ifdef LATER
     void TestSpectra::Extract()
     {
-        Assert::AreEqual(3, _mzSpectrumA->Extract(500, 600).size()());
+        Assert::AreEqual(3, _mzSpectrumA->Extract(500, 600).size());
     }
 
     void TestSpectra::CorrectOrder()
@@ -292,4 +370,5 @@ System::Diagnostics::Stopwatch *TestSpectra::privateStopwatch;
 
         delete thisSpectrum;
     }
+#endif
 }
