@@ -129,12 +129,12 @@ namespace Test
 
     void TestSpectra::SpectrumFirstMZ()
     {
-        Assert::AreEqual(328.73795, _mzSpectrumA->getFirstX());
+        Assert::IsTrue( (std::abs( 328.73795 - _mzSpectrumA->getFirstX().value() )< 1e-09) );
     }
 
     void TestSpectra::SpectrumLastMZ()
     {
-        Assert::AreEqual(723.35345, _mzSpectrumA->getLastX());
+        Assert::IsTrue( std::abs(723.35345 - _mzSpectrumA->getLastX().value()) < 1e-09);
     }
 
     void TestSpectra::SpectrumBasePeakIntensity()

@@ -47,23 +47,13 @@ namespace Chemistry {
         for (auto elementAndCount : formula->getElements()) {
             int count = elementAndCount.second;
             std::vector<Composition*> isotopeComposition;
-#ifdef ORIG
-            for (Isotope *isotope : elementAndCount.Key->Isotopes.OrderBy([&] (std::any iso) {
-                iso::AtomicMass;
-            })) {
-                Composition *c = new Composition();
-                c->Atoms = count;
-                c->MolecularWeight = isotope::AtomicMass;
-                c->Power = isotope::AtomicMass;
-                c->Probability = isotope::RelativeAbundance;
 
-                isotopeComposition.push_back(c);
-            }
-#endif
             // for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),
             // elementAndCount.first->getIsotopes().end(),[ ] (const Isotope* &l, const Isotope* &r) {
             //         return l->getAtomicMass() > r->getAtomicMass(); }  ))  {
-            // std::cout << "EG WARNING: The routine mzLib IsotopicDistributioN::GetDistribution : Isotopes are not sorted according to AtomicMass in the C++ version" << std::endl;            
+            // EG WARNING: Isotopes are sorted in the C++ version based on their order in the input
+            // file, which is most of the time also based on the Atomic Mass, but there is no
+            // guarantee for that.
             for (Isotope *isotope : elementAndCount.first->getIsotopes() )  {
                 Composition *c = new Composition();
                 c->Atoms = count;
@@ -284,10 +274,10 @@ namespace Chemistry {
         if (maxIndex >= fgidPolynomial.size()) {
             j = maxIndex - fgidPolynomial.size();
             for (i = 0; i <= j; i++) {
-                Polynomial *tempVar = new Polynomial();
-                tempVar->Probablity = NAN;
-                tempVar->Power = NAN;
-                fgidPolynomial.push_back(*tempVar);
+                Polynomial tempVar = Polynomial();
+                tempVar.Probablity = NAN;
+                tempVar.Power = NAN;
+                fgidPolynomial.push_back(tempVar);
             }
         }
 
@@ -332,10 +322,10 @@ namespace Chemistry {
                     j++;
                 }
                 else {
-                    Polynomial *tempVar5 = new Polynomial();
-                    tempVar5->Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
-                    tempVar5->Probablity = fgidPolynomial[i].Probablity;
-                    tPolynomial.push_back(*tempVar5);
+                    Polynomial tempVar5 = Polynomial();
+                    tempVar5.Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
+                    tempVar5.Probablity = fgidPolynomial[i].Probablity;
+                    tPolynomial.push_back(tempVar5);
                 }
             }
 
