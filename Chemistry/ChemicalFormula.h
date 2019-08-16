@@ -45,13 +45,10 @@ namespace Chemistry {
     /// A chemical formula class. This does NOT correspond to a physical object. A physical object can have a chemical formula.
     /// Formula can change!!! If isotopes or elements are changed.
     /// </summary>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
-//ORIGINAL LINE: [Serializable] public sealed class ChemicalFormula : IEquatable<ChemicalFormula>
-//    class ChemicalFormula final : public IEquatable<ChemicalFormula*> {
     class ChemicalFormula final {
     private:
-        std::unordered_map<Isotope*, int> privateIsotopes;
-        std::unordered_map<Element*, int> privateElements;
+        std::map<Isotope*, int> privateIsotopes;
+        std::map<Element*, int> privateElements;
 
         // Main data stores, the isotopes and elements
 
@@ -79,7 +76,7 @@ namespace Chemistry {
     public:
         ChemicalFormula();
 
-//        ChemicalFormula(const ChemicalFormula &capFormula);
+        // ChemicalFormula(const ChemicalFormula &capFormula);
         ChemicalFormula(ChemicalFormula *capFormula);
 
         /// <summary>
@@ -120,10 +117,10 @@ namespace Chemistry {
         /// <returns></returns>
         double getHydrogenCarbonRatio();
 
-        std::unordered_map<Isotope*, int> getIsotopes() const;
-        void setIsotopes(const std::unordered_map<Isotope*, int> &value);
-        std::unordered_map<Element*, int> getElements() const;
-        void setElements(const std::unordered_map<Element*, int> &value);
+        std::map<Isotope*, int> getIsotopes() const;
+        void setIsotopes(const std::map<Isotope*, int> &value);
+        std::map<Element*, int> getElements() const;
+        void setElements(const std::map<Element*, int> &value);
 
         static ChemicalFormula *Combine(std::vector<IHasChemicalFormula*> &formulas);
 

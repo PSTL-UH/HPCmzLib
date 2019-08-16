@@ -20,10 +20,15 @@ namespace MassSpectrometry
 {
     static constexpr int numAveraginesToGenerate = 1500;
 
-    std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
-    std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
-    std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
-    std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
+    //std::vector<std::vector<double>> MzSpectrum::allMasses = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    //std::vector<std::vector<double>> MzSpectrum::allIntensities = std::vector<std::vector<double>>(numAveraginesToGenerate);
+    //std::vector<double> MzSpectrum::mostIntenseMasses = std::vector<double>(numAveraginesToGenerate);
+    //std::vector<double> MzSpectrum::diffToMonoisotopic = std::vector<double>(numAveraginesToGenerate);
+
+    std::vector<std::vector<double>> MzSpectrum::allMasses;
+    std::vector<std::vector<double>> MzSpectrum::allIntensities;
+    std::vector<double> MzSpectrum::mostIntenseMasses;
+    std::vector<double> MzSpectrum::diffToMonoisotopic;
 
     std::vector<double> MzSpectrum::getXArray() const
     {
@@ -57,6 +62,20 @@ namespace MassSpectrometry
         constexpr double fineRes = 0.125;
         constexpr double minRes = 1e-8;
         
+
+        if ( allMasses.empty() ) {
+            allMasses.resize(numAveraginesToGenerate);
+        }
+        if ( allIntensities.empty() ) {
+            allIntensities.resize(numAveraginesToGenerate);
+        }
+        if ( mostIntenseMasses.empty() ) {
+            mostIntenseMasses.resize(numAveraginesToGenerate);
+        }
+        if ( diffToMonoisotopic.empty() ) {
+            diffToMonoisotopic.resize(numAveraginesToGenerate);
+        }
+
         for (int i = 0; i < numAveraginesToGenerate; i++)
         {
             double averagineMultiplier = (i + 1) / 2.0;

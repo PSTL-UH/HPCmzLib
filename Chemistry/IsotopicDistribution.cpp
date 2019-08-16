@@ -6,10 +6,13 @@
 
 namespace Chemistry {
 
-std::vector<double> IsotopicDistribution::factorLnArray = std::vector<double>(50003);
-int IsotopicDistribution::_factorLnTop = 1;
+//std::vector<double> IsotopicDistribution::factorLnArray = std::vector<double>(50003);
+//int IsotopicDistribution::_factorLnTop = 1;
 
-    IsotopicDistribution::IsotopicDistribution(int count) : masses(std::vector<double>(count)), intensities(std::vector<double>(count)) {
+    std::vector<double> IsotopicDistribution::factorLnArray;
+    int IsotopicDistribution::_factorLnTop;
+    
+    IsotopicDistribution::IsotopicDistribution(int count) : masses(std::vector<double>(count, 0.0)), intensities(std::vector<double>(count, 0.0)) {
     }
 
     std::vector<double> IsotopicDistribution::getMasses() const {
@@ -55,13 +58,12 @@ int IsotopicDistribution::_factorLnTop = 1;
                 c->Probability = isotope::RelativeAbundance;
 
                 isotopeComposition.push_back(c);
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete c' statement was not added since c was passed to a method or constructor.
-//Handle memory management manually.
             }
 #endif
-//            for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),elementAndCount.first->getIsotopes().end(),[ ] (const Isotope* &l, const Isotope* &r) {return l->getAtomicMass() > r->getAtomicMass(); }  ))  {
-            std::cout << "EG WARNING: The routine mzLib IsotopicDistributioN::GetDistribution : Isotopes are not sorted according to AtomicMass in the C++ version" << std::endl;            
+            // for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),
+            // elementAndCount.first->getIsotopes().end(),[ ] (const Isotope* &l, const Isotope* &r) {
+            //         return l->getAtomicMass() > r->getAtomicMass(); }  ))  {
+            // std::cout << "EG WARNING: The routine mzLib IsotopicDistributioN::GetDistribution : Isotopes are not sorted according to AtomicMass in the C++ version" << std::endl;            
             for (Isotope *isotope : elementAndCount.first->getIsotopes() )  {
                 Composition *c = new Composition();
                 c->Atoms = count;
@@ -108,8 +110,9 @@ int IsotopicDistribution::_factorLnTop = 1;
                                                                                             double _mwResolution,
                                                                                             double _mergeFineResolution) {
         // Sort by mass (i.e. power)
-//C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while the .NET Comparison parameter produces a tri-state result:
-//ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
+        // C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while
+        // the .NET Comparison parameter produces a tri-state result:
+        // ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
         std::sort(tPolynomial.begin(), tPolynomial.end(), [ ] (auto &a, auto &b) {
                 return a.Power > b.Power;
         });
@@ -220,21 +223,21 @@ int IsotopicDistribution::_factorLnTop = 1;
             else {
                 std::vector<int> means(size);
                 std::vector<int> stds(size);
-                std::vector<int> indices(size);
+//                std::vector<int> indices(size);
 
-                double nPolynomialTerms = std::log(std::pow(2, size));
+//                double nPolynomialTerms = std::log(std::pow(2, size));
                 for (int i = 0; i < size; i++) {
                     int n1 = static_cast<int>(elementalComposition[k][0]->Atoms * elementalComposition[k][i]->Probability);
                     int s1 = static_cast<int>(std::ceil(ncAdd + nc * std::sqrt(elementalComposition[k][i]->Atoms * elementalComposition[k][i]->Probability * (1.0 - elementalComposition[k][i]->Probability))));
-                    nPolynomialTerms += std::log(n1 + s1);
+//                    nPolynomialTerms += std::log(n1 + s1);
 
                     means[i] = n1;
                     stds[i] = s1;
-                    indices[i] = n1 + s1;
+//                    indices[i] = n1 + s1;
                 }
                 std::vector<int> mins(means.size() - 1);
                 std::vector<int> maxs(means.size() - 1);
-                indices = std::vector<int>(means.size() - 1);
+                std::vector<int> indices = std::vector<int>(means.size() - 1);
                 for (long unsigned int i = 0; i < means.size() - 1; i++) {
                     auto max = std::max(0, means[i] - stds[i]);
                     indices[i] = max;
@@ -355,10 +358,6 @@ int IsotopicDistribution::_factorLnTop = 1;
                                                                      std::vector<Polynomial> &fPolynomial,
                                                                      std::vector<Composition*> &elementalComposition,
                                                                      int atoms, double minProb, int maxValue) {
-        int sum=0;
-        for ( auto ii: indices ) {
-            sum += ii;
-        }
         for (indices[index] = mins[index]; indices[index] <= maxs[index]; indices[index]++) {
             if ((long unsigned int) index < mins.size() - 1) {
                 MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, index + 1,
@@ -366,7 +365,11 @@ int IsotopicDistribution::_factorLnTop = 1;
                                                       minProb, maxValue);
             }
             else {
-//                int l = atoms - indices.Sum();
+                // int l = atoms - indices.Sum();
+                int sum=0;
+                for ( auto ii: indices ) {
+                    sum += ii;
+                }
                 int l = atoms - sum;
                 if (l < 0 || l > maxValue) {
                     continue;
@@ -397,6 +400,10 @@ int IsotopicDistribution::_factorLnTop = 1;
         if (n <= 1) {
             return 0;
         }
+        if (factorLnArray.empty()) {
+            factorLnArray.resize(50003, 0.0);
+            _factorLnTop = 1;
+        }
         while (_factorLnTop <= n) {
             int j = _factorLnTop++;
             factorLnArray[j + 1] = factorLnArray[j] + std::log(_factorLnTop);
@@ -424,7 +431,6 @@ int IsotopicDistribution::_factorLnTop = 1;
             i++;
         }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete dist' statement was not added since dist was used in a 'return' or 'throw' statement.
         return dist;
     }
 }

@@ -314,7 +314,6 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". ChemicalForulaMyTest" << std::endl;    
     Test::ChemicalFormulaTestFixture::ChemicalForulaMyTest();
 
-#ifdef LATER // Uses IsotopicsDistribution::GetDistribution() which is not correct in C++ version
     std::cout << ++i << ". TestIsotopicDistribution" << std::endl;    
     Test::ChemicalFormulaTestFixture::TestIsotopicDistribution();
 
@@ -333,6 +332,7 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". I0j1" << std::endl;    
     Test::ChemicalFormulaTestFixture::I0j1();
 
+#ifdef LATER 
     std::cout << ++i << ". ThresholdProbability" << std::endl;    
     Test::ChemicalFormulaTestFixture::ThresholdProbability();
 #endif
@@ -1073,28 +1073,29 @@ namespace Test {
         delete formula;
     }
 
-#ifdef LATER
     void ChemicalFormulaTestFixture::TestIsotopicDistribution() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
 
         auto a = IsotopicDistribution::GetDistribution(formulaA);
 
+#ifdef ORIG
         Assert::IsTrue(std::abs(formulaA->getMonoisotopicMass() - a->getMasses().ToArray()[Array::IndexOf(a->getIntensities().ToArray(), a->getIntensities().Max())]) < 1e-9);
+#endif
+        auto b = a->getIntensities();
+        int index = std::distance(b.begin(), std::max_element(b.begin(), b.end()));
+        Assert::IsTrue(std::abs(formulaA->getMonoisotopicMass() - a->getMasses()[index]) < 1e-9);
     }
 
     void ChemicalFormulaTestFixture::TestIsotopicDistribution2() {
         IsotopicDistribution::GetDistribution(ChemicalFormula::ParseFormula("AlO{16}"));
     }
 
-    void ChemicalFormulaTestFixture::TestIsotopicDistribution3() {
+   void ChemicalFormulaTestFixture::TestIsotopicDistribution3() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CO");
 
         // Distinguish between O and C isotope masses
         auto a = IsotopicDistribution::GetDistribution(formulaA, 0.0001);
-        // Assert::AreEqual(6, a->getMasses().size()());
-
-        std::vector<double> a_values = a->getMasses();
-        int a_count = a_values.size();
+        int a_count = (int)a->getMasses().size();
 
         Assert::AreEqual(6, a_count);
 
@@ -1103,9 +1104,8 @@ namespace Test {
 
         // Do not distinguish between O and C isotope masses
         auto b = IsotopicDistribution::GetDistribution(formulaA);
-
         std::vector<double> b_values = b->getMasses();
-        int b_count = b_values.size();
+        int b_count = (int) b->getMasses().size();
 
         // Assert::AreEqual(4, b->getMasses().size()());
         Assert::AreEqual(4, b_count);
@@ -1137,6 +1137,7 @@ namespace Test {
         IsotopicDistribution::GetDistribution(formula, 0.01, 0.75);
     }
 
+#ifdef LATER
     void ChemicalFormulaTestFixture::ThresholdProbability() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CO");
 

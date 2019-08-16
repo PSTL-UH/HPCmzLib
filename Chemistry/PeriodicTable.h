@@ -41,13 +41,11 @@ namespace Chemistry {
         /// The internal dictionary housing elements, keyed by their unique atomic symbol
         /// </summary>
     private:
-//        static const std::unordered_map<std::wstring, Element*> _elements;
         static std::unordered_map<std::string, Element*> _elements;
 
         /// <summary>
         /// The internal dictionary housing elements, keyed by their unique atomic number
         /// </summary>
-//        static std::vector<Element*> const _elementsArray;
         static std::vector<Element*> _elementsArray;
 
 
