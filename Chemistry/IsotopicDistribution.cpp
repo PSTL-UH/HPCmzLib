@@ -284,10 +284,10 @@ namespace Chemistry {
         if (maxIndex >= fgidPolynomial.size()) {
             j = maxIndex - fgidPolynomial.size();
             for (i = 0; i <= j; i++) {
-                Polynomial tempVar = Polynomial();
-                tempVar.Probablity = NAN;
-                tempVar.Power = NAN;
-                fgidPolynomial.push_back(tempVar);
+                Polynomial *tempVar = new Polynomial();
+                tempVar->Probablity = NAN;
+                tempVar->Power = NAN;
+                fgidPolynomial.push_back(*tempVar);
             }
         }
 
@@ -332,10 +332,10 @@ namespace Chemistry {
                     j++;
                 }
                 else {
-                    Polynomial tempVar5 = Polynomial();
-                    tempVar5.Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
-                    tempVar5.Probablity = fgidPolynomial[i].Probablity;
-                    tPolynomial.push_back(tempVar5);
+                    Polynomial *tempVar5 = new Polynomial();
+                    tempVar5->Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
+                    tempVar5->Probablity = fgidPolynomial[i].Probablity;
+                    tPolynomial.push_back(*tempVar5);
                 }
             }
 
@@ -346,8 +346,9 @@ namespace Chemistry {
         }
 
         if (j < index) {
-//          tPolynomial.RemoveRange(j, tPolynomial.size() - j);
-            tPolynomial.erase(tPolynomial.begin()+j, tPolynomial.end()-j);
+            // tPolynomial.RemoveRange(j, tPolynomial.size() - j);
+            // Edgar: the -j does not make sense and leads to a segfault in the C++ version
+            tPolynomial.erase(tPolynomial.begin()+j, tPolynomial.end());
         }
     }
 

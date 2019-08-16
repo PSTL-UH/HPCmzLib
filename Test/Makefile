@@ -74,15 +74,12 @@ TestFragments: TestFragments.o
 #
 TestMetaMorpheus: TestMetaMorpheus.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
-
 #
 TestProteinProperties: TestProperties.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
-
 #
 TestProteinDigestion: TestProteinDigestion.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
-
 #
 TestSpectra: TestSpectra.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)

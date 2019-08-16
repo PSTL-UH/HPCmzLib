@@ -19,13 +19,13 @@ namespace Chemistry {
 //regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
 
     ChemicalFormula::ChemicalFormula() {
-        setIsotopes(std::map<Isotope*, int>());
-        setElements(std::map<Element*, int>());
+        setIsotopes(std::unordered_map<Isotope*, int>());
+        setElements(std::unordered_map<Element*, int>());
     }
 
     ChemicalFormula::ChemicalFormula(ChemicalFormula *capFormula) {
-        setIsotopes(std::map<Isotope*, int>(capFormula->getIsotopes()));
-        setElements(std::map<Element*, int>(capFormula->getElements()));
+        setIsotopes(std::unordered_map<Isotope*, int>(capFormula->getIsotopes()));
+        setElements(std::unordered_map<Element*, int>(capFormula->getElements()));
     }
 
     double ChemicalFormula::getAverageMass() const {
@@ -130,19 +130,19 @@ namespace Chemistry {
         return hydrogenCount / static_cast<double>(carbonCount);
     }
 
-    std::map<Isotope*, int> ChemicalFormula::getIsotopes() const {
+    std::unordered_map<Isotope*, int> ChemicalFormula::getIsotopes() const {
         return privateIsotopes;
     }
 
-    void ChemicalFormula::setIsotopes(const std::map<Isotope*, int> &value) {
+    void ChemicalFormula::setIsotopes(const std::unordered_map<Isotope*, int> &value) {
         privateIsotopes = value;
     }
 
-    std::map<Element*, int> ChemicalFormula::getElements() const {
+    std::unordered_map<Element*, int> ChemicalFormula::getElements() const {
         return privateElements;
     }
 
-    void ChemicalFormula::setElements(const std::map<Element*, int> &value) {
+    void ChemicalFormula::setElements(const std::unordered_map<Element*, int> &value) {
         privateElements = value;
     }
 
@@ -368,8 +368,8 @@ namespace Chemistry {
     }
 
     void ChemicalFormula::Clear() {
-        setIsotopes(std::map<Isotope*, int>());
-        setElements(std::map<Element*, int>());
+        setIsotopes(std::unordered_map<Isotope*, int>());
+        setElements(std::unordered_map<Element*, int>());
         formulaString = "";
     }
 
@@ -407,7 +407,7 @@ namespace Chemistry {
 
     int ChemicalFormula::CountSpecificIsotopes(Isotope *isotope) {
         int isotopeCount=0;
-        std::map<Isotope*, int>::const_iterator Is_iter = getIsotopes().find(isotope);
+        std::unordered_map<Isotope*, int>::const_iterator Is_iter = getIsotopes().find(isotope);
         if (Is_iter != getIsotopes().end() ) {
             //isotopeCount = Is_iter->second;
             isotopeCount = getIsotopes()[isotope];
@@ -427,7 +427,7 @@ namespace Chemistry {
         }
         
         int ElementCount=0;
-        std::map<Element*, int>::const_iterator El_iter = getElements().find(element);
+        std::unordered_map<Element*, int>::const_iterator El_iter = getElements().find(element);
         if (El_iter != getElements().end() ) {
             //ElementCount = El_iter->second;
             ElementCount = getElements()[element];

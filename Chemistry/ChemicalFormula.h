@@ -47,8 +47,8 @@ namespace Chemistry {
     /// </summary>
     class ChemicalFormula final {
     private:
-        std::map<Isotope*, int> privateIsotopes;
-        std::map<Element*, int> privateElements;
+        std::unordered_map<Isotope*, int> privateIsotopes;
+        std::unordered_map<Element*, int> privateElements;
 
         // Main data stores, the isotopes and elements
 
@@ -117,10 +117,10 @@ namespace Chemistry {
         /// <returns></returns>
         double getHydrogenCarbonRatio();
 
-        std::map<Isotope*, int> getIsotopes() const;
-        void setIsotopes(const std::map<Isotope*, int> &value);
-        std::map<Element*, int> getElements() const;
-        void setElements(const std::map<Element*, int> &value);
+        std::unordered_map<Isotope*, int> getIsotopes() const;
+        void setIsotopes(const std::unordered_map<Isotope*, int> &value);
+        std::unordered_map<Element*, int> getElements() const;
+        void setElements(const std::unordered_map<Element*, int> &value);
 
         static ChemicalFormula *Combine(std::vector<IHasChemicalFormula*> &formulas);
 
