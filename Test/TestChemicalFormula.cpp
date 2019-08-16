@@ -230,8 +230,7 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". RemoveFormulaFromFromula" << std::endl;    
     Test::ChemicalFormulaTestFixture::RemoveFormulaFromFromula();
 
-#ifdef LATER
-    //uses CountWithIsotopes function that is not correctly implemented in C++ version
+//#ifdef LATER
     std::cout << ++i << ". ContainsSpecificIsotope" << std::endl;    
     Test::ChemicalFormulaTestFixture::ContainsSpecificIsotope();
 
@@ -240,7 +239,7 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". HydrogenCarbonRatio" << std::endl;    
     Test::ChemicalFormulaTestFixture::HydrogenCarbonRatio();
-#endif
+//#endif
 
     std::cout << ++i << ". RemoveIsotopeCompletelyFromFromula" << std::endl;    
     Test::ChemicalFormulaTestFixture::RemoveIsotopeCompletelyFromFromula();
@@ -294,10 +293,8 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". ContainsIsotopesOfYe" << std::endl;    
     Test::ChemicalFormulaTestFixture::ContainsIsotopesOfYe();
 
-#ifdef LATER // Uses IsotopicsDistribution::GetDistribution() which is not correct in C++ version
     std::cout << ++i << ". TestReplaceIsotopes" << std::endl;    
     Test::ChemicalFormulaTestFixture::TestReplaceIsotopes();
-#endif
 
     std::cout << ++i << ". ChemicalForulaIsSubSet" << std::endl;    
     Test::ChemicalFormulaTestFixture::ChemicalForulaIsSubSet();
@@ -887,7 +884,7 @@ namespace Test {
     }
 
 //Need CountWithIsotopes to be working correctly
-#ifdef LATER
+//#ifdef LATER
     void ChemicalFormulaTestFixture::ContainsSpecificIsotope() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H5NOO{16}");
 
@@ -906,7 +903,7 @@ namespace Test {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C8H4");
         Assert::AreEqual(0.5, formulaA->getHydrogenCarbonRatio());
     }
-#endif
+//#endif
 
     void ChemicalFormulaTestFixture::RemoveIsotopeCompletelyFromFromula() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");
@@ -1028,14 +1025,15 @@ namespace Test {
         Assert::IsTrue(formulaA->ContainsIsotopesOf(PeriodicTable::GetElement("C")));
     }
 
-#ifdef LATER
     void ChemicalFormulaTestFixture::TestReplaceIsotopes() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CC{13}2H3NO");
-
-        formulaA->Replace(PeriodicTable::GetElement("C")[13], PeriodicTable::GetElement("C")[12]);
-        Assert::AreEqual("CC{12}2H3NO", formulaA->getFormula());
+        
+        Isotope *a = PeriodicTable::GetElement("C")->getIsotopes()[13];
+        Isotope *b = PeriodicTable::GetElement("C")->getIsotopes()[12];
+        formulaA->Replace( a, b);
+        std::string s = "CC{12}2H3NO";
+        Assert::AreEqual(s, formulaA->getFormula());
     }
-#endif
 
     void ChemicalFormulaTestFixture::ChemicalForulaIsSubSet() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("C2H3NO");

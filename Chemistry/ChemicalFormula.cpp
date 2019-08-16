@@ -440,9 +440,8 @@ namespace Chemistry {
         Isotope *isotope = PeriodicTable::GetElement(massNumber);
         return CountSpecificIsotopes(isotope);
 #endif
-        // Not sure how to convert from an Element* to an Isotope*
-        std::cout << "EG WARNING: The routine mzLib ChemicalFormula::CountWithIsotopes(Element*, massnumber) is not implemented CORRECTLY in the C++ version" << std::endl;
-        return 0;
+        Isotope *isotope = element->getIsotopeByMassNumber(massNumber);
+        return CountSpecificIsotopes(isotope);
     }
 
     int ChemicalFormula::GetHashCode() {
