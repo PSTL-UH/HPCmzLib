@@ -277,6 +277,7 @@ namespace Test
     void TestPeptides::PeptideTestReal()
     {
         Peptide *pep = new Peptide("LDNLQQEIDFLTALYQAELSQMQTQISETNVILSMDNNR");
+        delete pep;
     }
 
     void TestPeptides::PeptideMassGlycine()
@@ -620,7 +621,7 @@ namespace Test
 
         Assert::AreEqual(str, _mockPeptideEveryAminoAcid->ToString());
 
-        delete formula;
+        //delete formula;
     }
 
     void TestPeptides::SetNAndCTerminusMod()

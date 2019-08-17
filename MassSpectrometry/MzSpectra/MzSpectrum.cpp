@@ -191,10 +191,10 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         if (!indexOfpeakWithHighestY.has_value())
         {
             //indexOfpeakWithHighestY = std::make_optional(Array::IndexOf(getYArray(), getYArray().Max()));
-            auto maxval = std::max_element(getYArray().begin(), getYArray().end() );
-            indexOfpeakWithHighestY = std::make_optional(std::distance(getYArray().begin(), maxval ));
+            auto maxval = std::max_element(privateYArray.begin(), privateYArray.end() );
+            indexOfpeakWithHighestY = std::make_optional(std::distance(privateYArray.begin(), maxval ));
         }
-        return std::make_optional(indexOfpeakWithHighestY.value());
+        return indexOfpeakWithHighestY;
     }
 
     std::optional<double> MzSpectrum::getYofPeakWithHighestY() 

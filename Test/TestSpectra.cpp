@@ -163,7 +163,7 @@ namespace Test
 
     void TestSpectra::SpectrumGetMassFirst()
     {
-        Assert::AreEqual(328.73795, _mzSpectrumA->getFirstX());
+        Assert::IsTrue(std::abs(328.73795 - _mzSpectrumA->getFirstX().value()) < 1e-09 );
     }
 
     void TestSpectra::SpectrumGetMassRandom()
@@ -208,7 +208,7 @@ namespace Test
         Assert::IsTrue( ((_mzSpectrumA->getRange()->getMinimum() - range->getMinimum()) <= 1e-9));
         Assert::IsTrue( ((_mzSpectrumA->getRange()->getMaximum() - range->getMaximum()) <= 1e-9));
 
-        delete range;
+        //delete range;
     }
 
     void TestSpectra::SpectrumFilterCount()
@@ -230,12 +230,13 @@ namespace Test
         MzSpectrum *spectrum = new MzSpectrum(x, y, false);
         Assert::AreEqual(7, spectrum->FilterByNumberOfMostIntense(200).size());
 
-        delete spectrum;
+        //delete spectrum;
     }
 
     void TestSpectra::GetBasePeak()
     {
-        Assert::AreEqual(122781408.0, _mzSpectrumA->getYofPeakWithHighestY());
+        //Assert::AreEqual(122781408.0, _mzSpectrumA->getYofPeakWithHighestY());
+        Assert::IsTrue( std::abs(122781408.0 - _mzSpectrumA->getYofPeakWithHighestY().value() ) < 1e-09 );
     }
 
     void TestSpectra::GetClosestPeak()

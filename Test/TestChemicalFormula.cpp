@@ -1028,8 +1028,10 @@ namespace Test {
     void ChemicalFormulaTestFixture::TestReplaceIsotopes() {
         ChemicalFormula *formulaA = ChemicalFormula::ParseFormula("CC{13}2H3NO");
         
-        Isotope *a = PeriodicTable::GetElement("C")->getIsotopes()[13];
-        Isotope *b = PeriodicTable::GetElement("C")->getIsotopes()[12];
+        //Isotope *a = PeriodicTable::GetElement("C")->getIsotopes()[13];
+        Isotope *a = PeriodicTable::GetElement("C")->getIsotopeByMassNumber(13);
+        //Isotope *b = PeriodicTable::GetElement("C")->getIsotopes()[12];
+        Isotope *b = PeriodicTable::GetElement("C")->getIsotopeByMassNumber(12);
         formulaA->Replace( a, b);
         std::string s = "CC{12}2H3NO";
         Assert::AreEqual(s, formulaA->getFormula());

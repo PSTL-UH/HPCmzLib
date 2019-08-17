@@ -10,14 +10,8 @@
 #include "stringhelper.h"
 #include "floating_point_to_integer.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { class MzPeak; }
 #include "MzPeak.h"
-//namespace MassSpectrometry { class IsotopicEnvelope; }
 #include "IsotopicEnvelope.h"
-//namespace MzLibUtil { class MzRange; }
-//namespace MzLibUtil { class DoubleRange; }
-//namespace MzLibUtil { class Tolerance; }
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
 
