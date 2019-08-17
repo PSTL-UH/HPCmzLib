@@ -89,16 +89,17 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". GetClosestPeak" << std::endl;        
     Test::TestSpectra::GetClosestPeak();
 
-#ifdef LATER
     std::cout << ++i << ". Extract" << std::endl;        
     Test::TestSpectra::Extract();
 
     std::cout << ++i << ". CorrectOrder" << std::endl;        
     Test::TestSpectra::CorrectOrder();
 
+#ifdef LATER
     std::cout << ++i << ". TestFunctionToX" << std::endl;        
     Test::TestSpectra::TestFunctionToX();
-
+#endif
+    
     std::cout << ++i << ". TestGetClosestPeakXValue" << std::endl;        
     Test::TestSpectra::TestGetClosestPeakXValue();
 
@@ -107,7 +108,7 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestNumPeaksWithinRange" << std::endl;        
     Test::TestSpectra::TestNumPeaksWithinRange();
-#endif
+
     return 0;
 }
 
@@ -215,7 +216,7 @@ namespace Test
     {
         auto filteredMzSpectrum = _mzSpectrumA->FilterByY(28604417, 28604419);
 
-        Assert::AreEqual(1, filteredMzSpectrum.size());
+        Assert::AreEqual(1, (int)filteredMzSpectrum.size());
     }
 
     void TestSpectra::FilterByNumberOfMostIntenseTest()
@@ -228,7 +229,7 @@ namespace Test
         std::vector<double> x = {50, 60, 70, 147.0764, 257.1244, 258.127, 275.135};
         std::vector<double> y = {1, 1, 1, 1, 1, 1, 1};
         MzSpectrum *spectrum = new MzSpectrum(x, y, false);
-        Assert::AreEqual(7, spectrum->FilterByNumberOfMostIntense(200).size());
+        Assert::AreEqual(7, (int)spectrum->FilterByNumberOfMostIntense(200).size());
 
         //delete spectrum;
     }
@@ -245,7 +246,7 @@ namespace Test
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.9));
     }
 
-#ifdef LATER
+
     void TestSpectra::Extract()
     {
         Assert::AreEqual(3, _mzSpectrumA->Extract(500, 600).size());
@@ -253,25 +254,35 @@ namespace Test
 
     void TestSpectra::CorrectOrder()
     {
-        _mzSpectrumA = new MzSpectrum({5, 6, 7}, {1, 2, 3}, false);
-        Assert::IsTrue(_mzSpectrumA->FilterByNumberOfMostIntense(2).front().Mz < _mzSpectrumA->FilterByNumberOfMostIntense(2).ToList()[1].Mz);
+        std::vector<double> dv1 = {5, 6, 7};
+        std::vector<double> dv2 = {1, 2, 3};
+        _mzSpectrumA = new MzSpectrum(dv1, dv2, false);
+        Assert::IsTrue(_mzSpectrumA->FilterByNumberOfMostIntense(2).front()->getMz() < _mzSpectrumA->FilterByNumberOfMostIntense(2)[1]->getMz());
     }
 
+#ifdef LATER
     void TestSpectra::TestFunctionToX()
     {
+#ifdef ORIG
         _mzSpectrumA->ReplaceXbyApplyingFunction([&] (std::any b)
         {
             -1;
         });
+#endif
+        // Edgar: need to find out how to pass a function as an argument here.
         Assert::AreEqual(-1, _mzSpectrumA->getXArray()[0]);
     }
-
+#endif
+    
     void TestSpectra::TestGetClosestPeakXValue()
     {
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.73849));
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447));
-        MzSpectrum tempVar(new double[0], new double[0], false);
-        Assert::IsNull((&tempVar)->GetClosestPeakXvalue(1));
+
+        std::vector<double> dv1(0);
+        std::vector<double> dv2(0);
+        MzSpectrum tempVar(dv1, dv2, false);
+        Assert::IsFalse((&tempVar)->GetClosestPeakXvalue(1).has_value());
     }
 
     void TestSpectra::TestDotProduct()
@@ -287,15 +298,16 @@ namespace Test
         Tolerance *tolerance = new PpmTolerance(10);
 
         Assert::AreEqual(spec1->CalculateDotProductSimilarity(spec3, tolerance), spec3->CalculateDotProductSimilarity(spec1, tolerance)); //comparison side shouldn't matter
-        Assert::AreEqual(spec1->CalculateDotProductSimilarity(spec2, tolerance), 0); //orthogonal spectra give a score of zero
-        Assert::AreEqual(spec2->CalculateDotProductSimilarity(spec2, tolerance), 1); //identical spectra give a score of 1
+        Assert::AreEqual((int)spec1->CalculateDotProductSimilarity(spec2, tolerance), 0); //orthogonal spectra give a score of zero
+        Assert::AreEqual((int)spec2->CalculateDotProductSimilarity(spec2, tolerance), 1); //identical spectra give a score of 1
         Assert::IsTrue(tolerance->Within(spec3->CalculateDotProductSimilarity(spec2, tolerance), std::cos(M_PI / 4)));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete tolerance' statement was not added since tolerance was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete spec3' statement was not added since spec3 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete spec2' statement was not added since spec2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete spec1' statement was not added since spec1 was passed to a method or constructor. Handle memory management manually.
+        // delete tolerance;
+        // delete spec3;
+        // delete spec2;
+        // delete spec1;
     }
+
 
     void TestSpectra::TestNumPeaksWithinRange()
     {
@@ -328,38 +340,14 @@ namespace Test
 
         Assert::AreEqual(0, thisSpectrum->NumPeaksWithinRange(-2, -1));
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("[1 to 7] m/z (Peaks 7)", thisSpectrum->ToString());
-
-        //Assert.AreEqual(7, thisSpectrum.FilterByNumberOfMostIntense(7).Size);
-        //Assert.AreEqual(1, thisSpectrum.FilterByNumberOfMostIntense(1).Size);
-        //Assert.AreEqual(4, thisSpectrum.FilterByNumberOfMostIntense(1).FirstX);
-
-        //Assert.AreEqual(2, thisSpectrum.FilterByNumberOfMostIntense(3).FirstX);
-
-        //Assert.AreEqual(0, thisSpectrum.FilterByNumberOfMostIntense(0).Size);
-
-        //Assert.AreEqual(2, thisSpectrum.WithRangeRemoved(2, 6).Size);
-        //Assert.AreEqual(0, thisSpectrum.WithRangeRemoved(0, 100).Size);
-
-        //Assert.AreEqual(6, thisSpectrum.WithRangeRemoved(7, 100).Size);
-
-        //Assert.AreEqual(1, thisSpectrum.WithRangeRemoved(new DoubleRange(double.MinValue, 6)).Size);
+        std::string s = "[1 to 7] m/z (Peaks 7)";
+        Assert::AreEqual(s, thisSpectrum->ToString());
 
         std::vector<DoubleRange*> xRanges =
         {
             new DoubleRange(2, 5),
             new DoubleRange(3, 6)
         };
-        //Assert.AreEqual(2, thisSpectrum.WithRangesRemoved(xRanges).Size);
-
-        //Assert.AreEqual(3, thisSpectrum.Extract(new DoubleRange(4.5, 10)).Size);
-
-        //Assert.AreEqual(2, thisSpectrum.FilterByY(new DoubleRange(1.5, 2.5)).Size);
-
-        //Assert.AreEqual(3, thisSpectrum.FilterByY(1.5, double.MaxValue).Size);
-
-        //Assert.AreEqual(2, thisSpectrum.ApplyFunctionToX(b => b * 2).FirstX);
 
         Assert::AreEqual(1, thisSpectrum->GetClosestPeakXvalue(-100));
 
@@ -369,7 +357,7 @@ namespace Test
 
         Assert::AreEqual(7, thisSpectrum->GetClosestPeakXvalue(8));
 
-        delete thisSpectrum;
+        //delete thisSpectrum;
     }
-#endif
+
 }
