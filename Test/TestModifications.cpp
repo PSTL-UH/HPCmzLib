@@ -31,14 +31,11 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". ModificationEquality " << std::endl;    
     Test::TestModifications::ModificationEquality();
 
-#ifdef LATER
-    // Requires operator overloading of operator |
     std::cout << ++i << ". ModificationSitesTest " << std::endl;    
     Test::TestModifications::ModificationSitesTest();
 
     std::cout << ++i << ". Sites " << std::endl;    
     Test::TestModifications::Sites();
-#endif    
 
     std::cout << ++i << ". ModificationCollectionTest " << std::endl;    
     Test::TestModifications::ModificationCollectionTest();
@@ -131,25 +128,24 @@ namespace Test {
 
     }
 
-#ifdef LATER
     void TestModifications::ModificationSitesTest() {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         auto a = ModificationSites::A | ModificationSites::E;
-        Assert::AreEqual(ModificationSites::A | ModificationSites::E, a);
+        auto b = ModificationSites::A | ModificationSites::E;
+        Assert::IsTrue( a == b);
     }
 
     void TestModifications::Sites() {
         // Empty modification, has no name and by default has Sites = ModificationSites.Any
         auto a = ModificationSites::A | ModificationSites::C | ModificationSites::E;
-        Assert::IsTrue(a::ContainsSites(ModificationSites::E));
+        Assert::IsTrue( ModificationSiteExtensions::ContainsSites(a, ModificationSites::E));
 
-        Assert::IsTrue(a::ContainsSites(ModificationSites::A | ModificationSites::C));
-        Assert::IsFalse(a::ContainsSites(ModificationSites::N));
-        Assert::IsFalse(a::ContainsSites(ModificationSites::N | ModificationSites::C));
-        auto b = a::EnumerateActiveSites();
-        Assert::IsTrue(b->Count() == 3);
+        Assert::IsTrue(ModificationSiteExtensions::ContainsSites(a, ModificationSites::A | ModificationSites::C));
+        Assert::IsFalse(ModificationSiteExtensions::ContainsSites(a, ModificationSites::N));
+        Assert::IsFalse(ModificationSiteExtensions::ContainsSites(a, ModificationSites::N | ModificationSites::C));
+        auto b = ModificationSiteExtensions::EnumerateActiveSites(a);
+        Assert::AreEqual(3, (int)b.size());
     }
-#endif
     
     void TestModifications::ModificationCollectionTest() {
         OldSchoolModification tempVar(1, "Mod1");
