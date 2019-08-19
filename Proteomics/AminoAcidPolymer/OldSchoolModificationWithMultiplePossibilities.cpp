@@ -6,20 +6,21 @@ using namespace MzLibUtil;
 
 namespace Proteomics {
     namespace AminoAcidPolymer {
-        ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites) : OldSchoolModification(0, name, sites), _modifications(new std::map<double, OldSchoolModification*>()) {
+//        ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites) : OldSchoolModification(0, name, sites), _modifications(new std::map<double, OldSchoolModification*>()) {
+        ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites) : OldSchoolModification(0, name, sites)  {
         }
 
         //Edgar: Added for C++ version
-        std::map<double, OldSchoolModification*>* ModificationWithMultiplePossibilitiesCollection::getModifications() const{
+        std::map<double, OldSchoolModification*> ModificationWithMultiplePossibilitiesCollection::getModifications() const{
             return _modifications;
         }
         
         int ModificationWithMultiplePossibilitiesCollection::getCount() const {
-            return _modifications->size();
+            return _modifications.size();
         }
         
         OldSchoolModification *ModificationWithMultiplePossibilitiesCollection::operator [](int index) {
-            return _modifications->at(index);
+            return _modifications.at(index);
         }
         
         void ModificationWithMultiplePossibilitiesCollection::AddModification(OldSchoolModification *modification) {
@@ -28,13 +29,19 @@ namespace Proteomics {
                 throw MzLibException("Unable to add a modification with sites other than " + getSites());
             }
 #endif
+            if ( !ModificationSiteExtensions::ContainsSites(getSites(), modification->getSites()) ){
+                std::string s = "Unable to add a modification with sites other than ";
+                s += std::to_string(static_cast<int>(getSites()));
+                //throw MzLibException(s);
+                return;
+            }
             double key=modification->getMonoisotopicMass();
-            _modifications->insert(std::pair<double, OldSchoolModification*>(key, modification));
+            _modifications.insert(std::pair<double, OldSchoolModification*>(key, modification));
         }
         
         bool ModificationWithMultiplePossibilitiesCollection::Contains(OldSchoolModification *modification) {
             std::map<double, OldSchoolModification*>::const_iterator it;
-            for (  it = _modifications->begin(); it != _modifications->end(); it++ ){
+            for (  it = _modifications.begin(); it != _modifications.end(); it++ ){
                 if ( modification->Equals((it->second)) ){
                     return true;
                 }

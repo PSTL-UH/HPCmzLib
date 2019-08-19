@@ -229,8 +229,11 @@ namespace Test {
         m->AddModification(&tempVar2);
         
         Assert::AreEqual(2, (int)m->getCount());
-        std::string s1="My Mod2b";
-        //Assert::AreEqual(s1, m[1].getName());
+        // std::string s1="My Mod2b";
+        // Edgar: according to my understanding, the name has to by Mod1a, not Mod2b.
+        std::string s1="My Mod1a";
+        auto m1 = m->getModifications();
+        Assert::AreEqual(s1, m1[1]->getName());
 #ifdef ORIG
         Assert::Throws<MzLibException*>([&] () {
                 OldSchoolModification tempVar3(1, "gg", ModificationSites::R);
@@ -247,7 +250,7 @@ namespace Test {
         //Assert::IsTrue(std::find(m->begin(), m->end(), &tempVar4) != m->end());
         Assert::IsTrue ( m->Contains(&tempVar4));
         double kk = 0;
-        for (auto b = m->getModifications()->begin(); b!=m->getModifications()->end(); b++ ) {
+        for (auto b = m->getModifications().begin(); b!=m->getModifications().end(); b++ ) {
             kk += (dynamic_cast<OldSchoolModification*>(b->second))->getMonoisotopicMass();
         }
         Assert::AreEqual((double)3, kk);

@@ -37,17 +37,17 @@ namespace Proteomics {
 
         private:
             // SortedList<double, OldSchoolModification*> *const _modifications;
-            std::map<double, OldSchoolModification*> *const _modifications;
+            std::map<double, OldSchoolModification*> _modifications;
             
         public:
             virtual ~ModificationWithMultiplePossibilitiesCollection() {
-                delete _modifications;
+                //delete _modifications;
             }
 
             ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites);
 
             //Edgar: Added for C++ version
-            std::map<double, OldSchoolModification*>* getModifications() const;
+            std::map<double, OldSchoolModification*> getModifications() const;
             
             int getCount() const;
             

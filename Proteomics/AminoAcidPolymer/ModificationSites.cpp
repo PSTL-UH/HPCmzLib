@@ -4,7 +4,7 @@
 
 namespace Proteomics {
     namespace AminoAcidPolymer    {
-        static  const std::vector<ModificationSites> ModificationSitesValues = {   ModificationSites::None,
+         const std::vector<ModificationSites> ModificationSiteExtensions::ModificationSitesValues = {   ModificationSites::None,
                                                                                    ModificationSites::A,
                                                                                    ModificationSites::R,
                                                                                    ModificationSites::N,
@@ -69,7 +69,7 @@ namespace Proteomics {
             return (~bsites & botherSites) == bNone;
         }
         
-        std::vector<ModificationSites> GetValues() {
+        std::vector<ModificationSites> ModificationSiteExtensions::GetValues() {
             return ModificationSiteExtensions::ModificationSitesValues;
         }
         
