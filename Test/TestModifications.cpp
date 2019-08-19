@@ -46,10 +46,12 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". ModificationWithMultiplePossibilitiesTest " << std::endl;    
     Test::TestModifications::ModificationWithMultiplePossibilitiesTest();
 
-#ifdef LATER    
     std::cout << ++i << ". ModificationSitesTest55 " << std::endl;    
     Test::TestModifications::ModificationSitesTest55();
 
+    std::cout << ++i << ". ModificationSitesTestTest " << std::endl;    
+    Test::TestModifications::ModificationCollectionTestTest();
+        
     std::cout << ++i << ". ChemicalFormulaModificaiton " << std::endl;    
     Test::TestModifications::ChemicalFormulaModificaiton();
 
@@ -59,13 +61,50 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Test_modification_hash_set " << std::endl;    
     Test::TestModifications::Test_modification_hash_set();
 
+#ifdef LATER    
     std::cout << ++i << ". Test_modification2_hash_set " << std::endl;    
     Test::TestModifications::Test_modification2_hash_set();
 
     std::cout << ++i << ". Test_modification3_hash_set " << std::endl;    
     Test::TestModifications::Test_modification3_hash_set();
 
-#endif    
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestInvalidModificationHash();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestFragmentationNoMod();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestFragmentationModNoNeutralLoss();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::Test_FragmentationModNeutralLoss();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::Test_FragmentationTwoModNeutralLoss();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::Test_FragmentationTwoModNeutralLossTwoFragTypes();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestCompactPeptideSerialization();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestSerializationPeptideFromString();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestSerializationPeptideFromProtein();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestSerializationPeptideFromProteinWithMod();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestFragmentNterminalModifiedPeptide();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestModifications::TestFragmentCTerminalModifiedPeptide();
+    
+ #endif    
     return 0;
 }
 
@@ -75,8 +114,10 @@ namespace Test {
     void TestModifications::Test_modificationsHashCode() {
         ModificationMotif *motif;
         ModificationMotif::TryGetMotif("M", &motif);
-//        auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1, nullptr, nullptr, nullptr);
-//        auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10, nullptr, nullptr, nullptr);
+        // auto mod1 = new ModificationWithMass("mod", "type", motif, TerminusLocalization::Any, 1,
+        //        nullptr, nullptr, nullptr);
+        // auto mod2 = new ModificationWithMass("mod2", "type", motif, TerminusLocalization::Any, 10,
+        //        nullptr, nullptr, nullptr);
         auto mod1 = new Modification("mod", "", "type", "", motif, "Anywhere.", nullptr, std::make_optional(1), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         auto mod2 = new Modification("mod2", "", "type", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
 
@@ -94,7 +135,10 @@ namespace Test {
     void TestModifications::Test_ModificationWithNoMassWritten() {
         ModificationMotif *motif;
         ModificationMotif::TryGetMotif("M", &motif);
-//        auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any, ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), nullptr, nullptr, nullptr);
+        // auto mod1 = new ModificationWithMassAndCf("mod", "type", motif, TerminusLocalization::Any,
+        //        ChemicalFormula::ParseFormula("H"),
+        //        std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()),
+        //        nullptr, nullptr, nullptr);
         auto mod1 = new Modification("mod of M", "", "type", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H"), std::make_optional(ChemicalFormula::ParseFormula("H")->getMonoisotopicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
 
         auto mod1string = mod1->ToString();
@@ -254,17 +298,16 @@ namespace Test {
         delete m;
     }
 
-#ifdef LATER
     void TestModifications::ModificationSitesTest55() {
-        Assert::IsTrue(ModificationSites::E::ContainsSites(ModificationSites::Any));
-        Assert::IsFalse(ModificationSites::E::ContainsSites(ModificationSites::None));
-        Assert::IsTrue(ModificationSites::None::ContainsSites(ModificationSites::None));
+        Assert::IsTrue(ModificationSiteExtensions::ContainsSites(ModificationSites::E, ModificationSites::Any));
+        Assert::IsFalse(ModificationSiteExtensions::ContainsSites(ModificationSites::E, ModificationSites::None));
+        Assert::IsTrue(ModificationSiteExtensions::ContainsSites(ModificationSites::None, ModificationSites::None));
     }
 
     void TestModifications::ChemicalFormulaModificaiton() {
         OldSchoolChemicalFormulaModification *a = new OldSchoolChemicalFormulaModification(ChemicalFormula::ParseFormula("OH"));
         OldSchoolChemicalFormulaModification *b = new OldSchoolChemicalFormulaModification(a);
-        Assert::AreEqual(a, b);
+        Assert::IsTrue(a->Equals( b));
 
         delete b;
         delete a;
@@ -281,15 +324,11 @@ namespace Test {
         Assert::IsFalse(c->Equals(b));
 
         delete c;
-        //C# TO C++ CONVERTER TODO TASK: A 'delete b' statement was not added since b was passed to a
-        // method or constructor. Handle memory management manually.
+        delete b;
         delete a;
-        //C# TO C++ CONVERTER TODO TASK: A 'delete mod3' statement was not added since mod3 was passed to
-        // a method or constructor. Handle memory management manually.
-        //C# TO C++ CONVERTER TODO TASK: A 'delete mod2' statement was not added since mod2 was passed to
-        // a method or constructor. Handle memory management manually.
-        //C# TO C++ CONVERTER TODO TASK: A 'delete mod1' statement was not added since mod1 was passed to
-        //a method or constructor. Handle memory management manually.
+        delete mod3;
+        delete mod2;
+        delete mod1;
     }
 
     void TestModifications::ModificationCollectionScrambledEquals() {
@@ -313,6 +352,7 @@ namespace Test {
         delete m1;
     }
 
+#ifdef LATER
     void TestModifications::Test_modification2_hash_set() {
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("K", motif);
@@ -343,7 +383,7 @@ namespace Test {
         delete m1;
     }
 
-void TestModifications::TestInvalidModificationHash()
+    void TestModifications::TestInvalidModificationHash()
     {
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("K", motif);
@@ -373,10 +413,11 @@ void TestModifications::TestInvalidModificationHash()
         Assert::False(m1->Equals(m2));
         Assert::AreEqual(2, mods.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete m2' statement was not added since m2 was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete m1' statement was not added since m1 was passed to a method or constructor. Handle memory management manually.
+        delete m2;
+        delete m1;
     }
- void TestModifications::TestFragmentationNoMod()
+
+    void TestModifications::TestFragmentationNoMod()
     {
         // First we're checking to see if the fragment masses of an unmodified peptide a calculated correctly
         auto prot = new Protein("PEPTIDE", "");
@@ -387,8 +428,8 @@ void TestModifications::TestInvalidModificationHash()
         // check unmodified
         auto unmodPeptide = ye.Where([&] (std::any p)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-        delete prot;
+            delete digestionParams;
+            delete prot;
             return p::AllModsOneIsNterminus->Count == 0;
         }).First();
         auto fragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
@@ -400,10 +441,11 @@ void TestModifications::TestInvalidModificationHash()
 
         Assert::That(expectedMzs.SetEquals(myUnmodFragmentMasses));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete prot;
     }
-void TestModifications::TestFragmentationModNoNeutralLoss()
+
+    void TestModifications::TestFragmentationModNoNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with no neutral losses
         ModificationMotif motif;
@@ -422,7 +464,7 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         auto unmodPeptide = ye.Where([&] (std::any p)
         {
         delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete mod;
             return p::AllModsOneIsNterminus->Count == 0;
         }).First();
@@ -446,11 +488,11 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::AreEqual(0, firstNotSecond.size());
         Assert::AreEqual(0, secondNotFirst.size());
 
-// with oxidation, no neutral loss
+        // with oxidation, no neutral loss
         auto modPeptide = ye.Where([&] (std::any p)
         {
-        delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+            delete prot;
+            delete digestionParams;
         delete mod;
             return p::AllModsOneIsNterminus->Count == 1;
         }).First();
@@ -476,10 +518,11 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::AreEqual(0, secondNotFirst.size());
 
         delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete mod;
     }
- void TestModifications::Test_FragmentationModNeutralLoss()
+
+    void TestModifications::Test_FragmentationModNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with no neutral losses
         ModificationMotif motif;
@@ -502,9 +545,9 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
 
         auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
         {
-        delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-        delete mod;
+            delete prot;
+            delete digestionParams;
+            delete mod;
             return v::AllModsOneIsNterminus->Count > 0;
         }).First();
 
@@ -518,11 +561,11 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::That(neutralMasses.SetEquals(expectedMasses));
 
         delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete mod;
     }
 
- void TestModifications::Test_FragmentationTwoModNeutralLoss()
+    void TestModifications::Test_FragmentationTwoModNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with 2 neutral loss mods
         ModificationMotif motifone;
@@ -559,10 +602,10 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
 
         auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
         {
-        delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-        delete modtwo;
-        delete modone;
+            delete prot;
+            delete digestionParams;
+            delete modtwo;
+            delete modone;
             return v::AllModsOneIsNterminus->Count == 2;
 }).First();
 
@@ -576,7 +619,7 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::That(neutralMasses.SetEquals(expectedMasses));
 
         delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete modtwo;
         delete modone;
     }
@@ -593,7 +636,7 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
                 DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
             },
             {
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+                //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
                 DissociationType::ETD, std::vector<double>() { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() }
             }
         };
@@ -610,9 +653,9 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
 
         auto peptideWithNeutralMassMod = ye.Where([&] (std::any v)
         {
-        delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-        delete mod;
+            delete prot;
+            delete digestionParams;
+            delete mod;
             return v::AllModsOneIsNterminus->Count == 1;
         }).First();
 
@@ -638,7 +681,7 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::That(expectedMassesHCD.SetEquals(neutralMassesHCD));
 
         delete prot;
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
         delete mod;
     }
 
@@ -655,19 +698,19 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         FileSystem::createDirectory(dir);
         std::string path = FileSystem::combine(dir, "myCompactPeptideIndex.ind");
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
         auto messageTypes = typeof(CompactPeptide);
         auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
         {
             auto file = System::IO::File::Create(path);
             ser->Serialize(file, cp);
         }
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
         {
             auto file = System::IO::File::OpenRead(path);
             deserializedCp = static_cast<CompactPeptide*>(ser->Deserialize(file));
@@ -676,10 +719,11 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::That(cp->Equals(deserializedCp));
 
         delete ser;
-//C# TO C++ CONVERTER TODO TASK: A 'delete cp' statement was not added since cp was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete p' statement was not added since p was passed to a method or constructor. Handle memory management manually.
+        delete cp;
+        delete p;
     }
- void TestModifications::TestSerializationPeptideFromString()
+
+    void TestModifications::TestSerializationPeptideFromString()
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is unmodified and generated from reading in a string
@@ -691,19 +735,19 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         FileSystem::createDirectory(dir);
         std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
         auto messageTypes = typeof(PeptideWithSetModifications);
         auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
         {
             auto file = System::IO::File::Create(path);
             ser->Serialize(file, peptide);
         }
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
         {
             auto file = System::IO::File::OpenRead(path);
             deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
@@ -728,10 +772,10 @@ void TestModifications::TestFragmentationModNoNeutralLoss()
         Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
 
         delete ser;
-//C# TO C++ CONVERTER TODO TASK: A 'delete peptide' statement was not added since peptide was passed to a method or constructor. Handle memory management manually.
+        delete peptide;
     }
 
-void TestModifications::TestSerializationPeptideFromProtein()
+    void TestModifications::TestSerializationPeptideFromProtein()
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is unmodified and generated from digesting a protein
@@ -745,19 +789,19 @@ void TestModifications::TestSerializationPeptideFromProtein()
         FileSystem::createDirectory(dir);
         std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
 
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
         auto messageTypes = typeof(PeptideWithSetModifications);
         auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
         {
             auto file = System::IO::File::Create(path);
             ser->Serialize(file, peptide);
         }
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
         {
             auto file = System::IO::File::OpenRead(path);
             deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
@@ -786,10 +830,10 @@ void TestModifications::TestSerializationPeptideFromProtein()
         Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
 
         delete ser;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+        delete protein;
     }
 
-void TestModifications::TestSerializationPeptideFromProteinWithMod()
+    void TestModifications::TestSerializationPeptideFromProteinWithMod()
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is modified with a phosphorylation
@@ -803,7 +847,7 @@ void TestModifications::TestSerializationPeptideFromProteinWithMod()
                 DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
             },
             {
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+                //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
                 DissociationType::ETD, std::vector<double>() { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() }
             }
         };
@@ -831,20 +875,20 @@ void TestModifications::TestSerializationPeptideFromProteinWithMod()
         std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromProteinWithMod");
         FileSystem::createDirectory(dir);
         std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
-
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+ 
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
         auto messageTypes = typeof(PeptideWithSetModifications);
         auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.Create(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
         {
             auto file = System::IO::File::Create(path);
             ser->Serialize(file, peptide);
         }
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
+        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
         {
             auto file = System::IO::File::OpenRead(path);
             deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
@@ -877,7 +921,7 @@ void TestModifications::TestSerializationPeptideFromProteinWithMod()
         Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
 
         delete ser;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+        delete protein;
         delete mod;
     }
 

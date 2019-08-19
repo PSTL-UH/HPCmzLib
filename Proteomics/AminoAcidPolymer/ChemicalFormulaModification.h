@@ -45,7 +45,7 @@ namespace Proteomics {
             
             OldSchoolChemicalFormulaModification(ChemicalFormula *chemicalFormula, const std::string &name, ModificationSites sites);
             
-            OldSchoolChemicalFormulaModification(const OldSchoolChemicalFormulaModification &other);
+            OldSchoolChemicalFormulaModification(OldSchoolChemicalFormulaModification *other);
             
             /// <summary>
             /// The Chemical Formula of this modifications
