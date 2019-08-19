@@ -8,6 +8,11 @@ namespace Proteomics {
     namespace AminoAcidPolymer {
         ModificationWithMultiplePossibilitiesCollection::ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites) : OldSchoolModification(0, name, sites), _modifications(new std::map<double, OldSchoolModification*>()) {
         }
+
+        //Edgar: Added for C++ version
+        std::map<double, OldSchoolModification*>* ModificationWithMultiplePossibilitiesCollection::getModifications() const{
+            return _modifications;
+        }
         
         int ModificationWithMultiplePossibilitiesCollection::getCount() const {
             return _modifications->size();
@@ -30,7 +35,7 @@ namespace Proteomics {
         bool ModificationWithMultiplePossibilitiesCollection::Contains(OldSchoolModification *modification) {
             std::map<double, OldSchoolModification*>::const_iterator it;
             for (  it = _modifications->begin(); it != _modifications->end(); it++ ){
-                if ( it->second == modification){
+                if ( modification->Equals((it->second)) ){
                     return true;
                 }
             }

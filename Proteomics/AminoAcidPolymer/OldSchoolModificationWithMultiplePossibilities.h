@@ -45,6 +45,9 @@ namespace Proteomics {
             }
 
             ModificationWithMultiplePossibilitiesCollection(const std::string &name, ModificationSites sites);
+
+            //Edgar: Added for C++ version
+            std::map<double, OldSchoolModification*>* getModifications() const;
             
             int getCount() const;
             

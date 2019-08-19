@@ -6,10 +6,6 @@
 #include <algorithm>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Chemistry { class IHasMass; }
-//namespace Chemistry { class ChemicalFormula; }
-
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
 //
@@ -43,44 +39,36 @@ namespace Proteomics {
         private:
             double privateMonoisotopicMass = 0;
             
-            //  const std::vector<IHasMass*> _modifications;
             std::vector<IHasMass*> _modifications;
             
         public:
-            ModificationCollection(std::vector<IHasMass*> &mods);
+            ModificationCollection(std::vector<IHasMass*> mods);
+
+            // Edgar: Added for C++ version
+            std::vector<IHasMass*> getModifications() const;
             
             double getMonoisotopicMass() const override;
-            // double getMonoisotopicMass() const;
 
-            // void setMonoisotopicMass(double value) override;
             void setMonoisotopicMass(double value);
             
-            // int getCount() const override;
             int getCount() const;
             
-            // bool getIsReadOnly() const override;
             bool getIsReadOnly() const;
             
             ChemicalFormula *getThisChemicalFormula() const override;
             
             std::string ToString();
 
-            // void Add(IHasMass *item) override;
             void Add(IHasMass *item);
             
-            // void Clear() override;
             void Clear();
             
-            // bool Contains(IHasMass *item) override;
             bool Contains(IHasMass *item);
             
-            // void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex) override;
             void CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex);
             
-            // bool Remove(IHasMass *item) override;
             bool Remove(IHasMass *item);
             
-            // bool Equals(ModificationCollection *other) override;
             bool Equals(ModificationCollection *other);
             
             // IEnumerator<IHasMass*> *GetEnumerator() override;

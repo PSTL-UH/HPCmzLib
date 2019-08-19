@@ -4,6 +4,10 @@
 #include "../Chemistry/Chemistry.h"
 #include "../MzLibUtil/ClassExtensions.h"
 
+#include "AminoAcidPolymer.h"
+#include "OldSchoolModification.h"
+#include "../Modifications/Modification.h"
+
 using namespace Chemistry;
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
@@ -18,14 +22,20 @@ namespace Proteomics {
                     }));
         }
 #endif
-        ModificationCollection::ModificationCollection(std::vector<IHasMass *> &mods) {
+        ModificationCollection::ModificationCollection(std::vector<IHasMass *> mods) {
+            
             double msum=0.0;
             for ( auto m: mods ) {
                 msum += m->getMonoisotopicMass();
+                _modifications.push_back(m);
             }
             setMonoisotopicMass(msum);
         }
 
+        std::vector<IHasMass*> ModificationCollection::getModifications() const {
+            return _modifications;
+        }
+        
         double ModificationCollection::getMonoisotopicMass() const {
             return privateMonoisotopicMass;
         }
@@ -56,15 +66,24 @@ namespace Proteomics {
         std::string ModificationCollection::ToString() {
             StringBuilder *sb = new StringBuilder();
             for (auto mod : _modifications) {
-                sb->append(mod);
+                if ( dynamic_cast<OldSchoolModification*>(mod) != nullptr ) {
+                    sb->append(((OldSchoolModification*)mod)->ToString());
+                }
+                else if ( dynamic_cast<Modification*>(mod) != nullptr ) {
+                    sb->append(((Modification*)mod)->ToString());
+                }
+//                else if ( dynamic_cast<ModWithOnlyMass*>(mod) != nullptr ) {
+//                    sb->append(((ModWithOnlyMass*)mod)->ToString());
+//                }
                 sb->append(" | ");
             }
             if (sb->length() > 0) {
                 sb->remove(sb->length() - 3, 3);
-        }
-            
+            }
+                        
+            std::string s= sb->toString();
             delete sb;
-            return sb->toString();
+            return s;
         }
         
         void ModificationCollection::Add(IHasMass *item) {
@@ -78,7 +97,43 @@ namespace Proteomics {
         }
         
         bool ModificationCollection::Contains(IHasMass *item) {
-            return std::find(_modifications.begin(), _modifications.end(), item) != _modifications.end();
+            // doesn't work this way, we cannot compare pointers, we have to look at the content.
+            //return std::find(_modifications.begin(), _modifications.end(), item) != _modifications.end();
+            bool IsOldSchoolMod = false;
+            bool IsModification = false;
+            // bool IsmodWithOnlyMass = false;
+            if ( dynamic_cast<OldSchoolModification*>(item) != nullptr ) {
+               IsOldSchoolMod = true;
+            }
+            else if ( dynamic_cast<Modification*>(item) != nullptr ) {
+                IsModification = true;
+            }
+            // else if ( dynamic_cast<ModWithOnlyMass*>(mod) != nullptr ) {
+            //   IsModWithOnlyMass = true;   
+            //  }
+
+            bool found = false;
+            for ( auto mod =_modifications.begin(); mod != _modifications.end(); mod ++ ) {
+                if ( IsOldSchoolMod ) {
+                    if ( ((OldSchoolModification *) *mod)->Equals((OldSchoolModification *)(item) )) {
+                            found = true;
+                            break;
+                    }
+                }
+                else if ( IsModification ) {
+                    if ( ((Modification *) *mod)->Equals((Modification *)(item) )) {
+                        found = true;
+                        break;
+                    }                    
+                }
+                //else if ( IsModWithOnlyMass ) {
+                //    if ( (ModWithOnlyMass *)(mod)->Equals((ModWithOnlyMass *)(item) )) {
+                //          found = true;
+                //          break;
+                //    }                    
+                //}
+           }
+            return found;
         }
         
         void ModificationCollection::CopyTo(std::vector<IHasMass*> &array_Renamed, int arrayIndex) {
@@ -91,11 +146,49 @@ namespace Proteomics {
         }
         
         bool ModificationCollection::Remove(IHasMass *item) {
-            auto i = std::find (_modifications.begin(), _modifications.end(), item );
-            if ( i != _modifications.end() ){ 
+            // auto i = std::find (_modifications.begin(), _modifications.end(), item );
+            // if ( i != _modifications.end() ){ 
+            //    return false;
+            // }
+            bool IsOldSchoolMod = false;
+            bool IsModification = false;
+            // bool IsmodWithOnlyMass = false;
+            if ( dynamic_cast<OldSchoolModification*>(item) != nullptr ) {
+               IsOldSchoolMod = true;
+            }
+            else if ( dynamic_cast<Modification*>(item) != nullptr ) {
+                IsModification = true;
+            }
+            // else if ( dynamic_cast<ModWithOnlyMass*>(mod) != nullptr ) {
+            //   IsModWithOnlyMass = true;   
+            //  }
+
+            bool found = false;
+            for ( auto mod =_modifications.begin(); mod != _modifications.end(); mod ++ ) {
+                if ( IsOldSchoolMod ) {
+                    if ( ((OldSchoolModification *) *mod)->Equals((OldSchoolModification *)(item) )) {
+                        _modifications.erase(std::remove(_modifications.begin(), _modifications.end(), *mod), _modifications.end());
+                        found = true;
+                        break;
+                    }
+                }
+                else if ( IsModification ) {
+                    if ( ((Modification *) *mod)->Equals((Modification *)(item) )) {
+                        _modifications.erase(std::remove(_modifications.begin(), _modifications.end(), *mod), _modifications.end());
+                        found = true;
+                        break;
+                    }                    
+                }
+                //else if ( IsModWithOnlyMass ) {
+                //    if ( (ModWithOnlyMass *)(mod)->Equals((ModWithOnlyMass *)(item) )) {
+                //         _modifications.erase(std::remove(_modifications.begin(), _modifications.end(), *mod), _modifications.end());
+                //         break;
+                //    }                    
+                //}
+            }
+            if ( found == false) {
                 return false;
             }
-            _modifications.erase(i);
             setMonoisotopicMass(getMonoisotopicMass() - item->getMonoisotopicMass());
             return true;
         }
