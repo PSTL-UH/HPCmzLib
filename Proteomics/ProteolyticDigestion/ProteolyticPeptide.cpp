@@ -134,20 +134,20 @@ namespace Proteomics
                 
                 for (int r = 0; r < peptideLength; r++)
                 {
-                    if (ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(), r + 1, peptideLength, getOneBasedStartResidueInProtein() + r) && variableModification->getLocationRestriction() == "Anywhere.")
+                    if (ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(), r + 1, peptideLength,
+                                                          getOneBasedStartResidueInProtein() + r)                                      &&
+                        variableModification->getLocationRestriction() == "Anywhere.")
                     {
                         std::vector<Modification*> residueVariableMods;
                         std::unordered_map<int, std::vector<Modification*>>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
                         if (twoBasedPossibleVariableAndLocalizeableModifications_iterator == twoBasedPossibleVariableAndLocalizeableModifications.end())
                         {
-                            residueVariableMods = twoBasedPossibleVariableAndLocalizeableModifications_iterator->second;
                             residueVariableMods = {variableModification};
                             twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, residueVariableMods);
                         }
                         else
                         {
                             residueVariableMods = twoBasedPossibleVariableAndLocalizeableModifications_iterator->second;
-                            //residueVariableMods->Add(variableModification);
                             residueVariableMods.push_back(variableModification);
                         }
                     }
@@ -182,20 +182,21 @@ namespace Proteomics
                         }
                         
                         int r = locInPeptide - 1;
-                        if (r >= 0 && r < peptideLength && (getProtein()->getIsDecoy() || (ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(), r + 1, peptideLength, getOneBasedStartResidueInProtein() + r) && variableModification->getLocationRestriction() == "Anywhere.")))
+                        if (r >= 0 && r < peptideLength && (getProtein()->getIsDecoy() ||
+                                                            (ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(),
+                                                                                               r + 1, peptideLength, getOneBasedStartResidueInProtein() + r) &&
+                                                             variableModification->getLocationRestriction() == "Anywhere.")))
                         {
                             std::vector<Modification*> residueVariableMods;
                             std::unordered_map<int, std::vector<Modification*>>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
                             if (twoBasedPossibleVariableAndLocalizeableModifications_iterator == twoBasedPossibleVariableAndLocalizeableModifications.end())
                             {
-                                residueVariableMods = twoBasedPossibleVariableAndLocalizeableModifications_iterator->second;
                                 residueVariableMods = {variableModification};
                                 twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, residueVariableMods);
                             }
                             else
                             {
                                 residueVariableMods = twoBasedPossibleVariableAndLocalizeableModifications_iterator->second;
-                                //residueVariableMods->Add(variableModification);
                                 residueVariableMods.push_back(variableModification);
                             }
                         }

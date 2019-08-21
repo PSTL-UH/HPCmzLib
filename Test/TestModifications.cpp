@@ -5,7 +5,9 @@
 #include "../MzLibUtil/MzLibException.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
-
+#include <limits>
+#include <algorithm>
+#include <iterator>
 #include "Assert.h"
 
 int main ( int argc, char **argv )
@@ -61,47 +63,47 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Test_modification_hash_set " << std::endl;    
     Test::TestModifications::Test_modification_hash_set();
 
-#ifdef LATER    
     std::cout << ++i << ". Test_modification2_hash_set " << std::endl;    
     Test::TestModifications::Test_modification2_hash_set();
 
     std::cout << ++i << ". Test_modification3_hash_set " << std::endl;    
     Test::TestModifications::Test_modification3_hash_set();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestInvalidModificationHash" << std::endl;    
     Test::TestModifications::TestInvalidModificationHash();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestFragmentationNoMod" << std::endl;    
     Test::TestModifications::TestFragmentationNoMod();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestFragmentationModNoNeutralLoss" << std::endl;    
     Test::TestModifications::TestFragmentationModNoNeutralLoss();
 
-    std::cout << ++i << ". " << std::endl;    
+#ifdef LATER    
+    std::cout << ++i << ". Test_FragmentationModNeutralLoss" << std::endl;    
     Test::TestModifications::Test_FragmentationModNeutralLoss();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_FragmentationTwoModNeutralLoss" << std::endl;    
     Test::TestModifications::Test_FragmentationTwoModNeutralLoss();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_FragmentationTwoModNeutralLossTwoFragTypes" << std::endl;    
     Test::TestModifications::Test_FragmentationTwoModNeutralLossTwoFragTypes();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestCompactPeptideSerialization" << std::endl;    
     Test::TestModifications::TestCompactPeptideSerialization();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestSerializationPeptideFromString" << std::endl;    
     Test::TestModifications::TestSerializationPeptideFromString();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestSerializationPeptideFromProtein" << std::endl;    
     Test::TestModifications::TestSerializationPeptideFromProtein();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestSerializationPeptideFromProteinWithMod" << std::endl;    
     Test::TestModifications::TestSerializationPeptideFromProteinWithMod();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestFragmentNterminalModifiedPeptide" << std::endl;    
     Test::TestModifications::TestFragmentNterminalModifiedPeptide();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestFragmentCTerminalModifiedPeptide" << std::endl;    
     Test::TestModifications::TestFragmentCTerminalModifiedPeptide();
     
  #endif    
@@ -343,40 +345,99 @@ namespace Test {
     }
 
     void TestModifications::Test_modification_hash_set() {
-        Modification *m1 = new Modification("23", "unknown");
-        Modification *m2 = new Modification("23", "unknown");
-        std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
-        Assert::AreEqual((long unsigned int)1, mods.size());
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("K", &motif);
+
+        Modification *m1 = new Modification("23", "", "unknown", "", motif, "", nullptr, std::make_optional(42.01), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        Modification *m2 = new Modification("23", "", "unknown", "", motif, "", nullptr, std::make_optional(42.01), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        
+        std::unordered_set<Modification*> mods = {m1, m2};
+        // This test does not make sense in the C++ version. An unordered_set
+        // based on pointers will identify m1 and m2 as two separate entities,
+        // in contrary to what the C# version did. The goal originally was
+        // for the library to recognize that m1 and m2 would be the same,
+        // and size should be only one. With pointers, that does not work.
+        //
+        // Assert::AreEqual(1, (int)mods.size());
 
         delete m2;
         delete m1;
     }
 
-#ifdef LATER
+
     void TestModifications::Test_modification2_hash_set() {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("K", motif);
-        ModificationWithLocation *m1 = new ModificationWithLocation("id1", "modificationType", motif, TerminusLocalization::Any, std::unordered_map<std::string, std::vector<std::string>>());
-        ModificationWithLocation *m2 = new ModificationWithLocation("id1", "modificationType", motif, TerminusLocalization::Any);
-        m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
-        m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
-        std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("K", &motif);
+        std::unordered_map<std::string, std::vector<std::string>> um();
+
+        Modification *m1 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::make_optional(42.01), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        Modification *m2 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::make_optional(42.01), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        
+        m1->getDatabaseReference().emplace("key", std::vector<std::string> {"value"});
+        m2->getDatabaseReference().emplace("key", std::vector<std::string> {"value"});
+        std::unordered_set<Modification*> mods = {m1, m2};
         Assert::IsTrue(m1->Equals(m2));
-        Assert::AreEqual((long unsigned int)1, mods.size());
+        // This test does not make sense in the C++ version. An unordered_set
+        // based on pointers will identify m1 and m2 as two separate entities,
+        // in contrary to what the C# version did. The goal originally was
+        // for the library to recognize that m1 and m2 would be the same,
+        // and size should be only one. With pointers, that does not work.
+        //
+        //Assert::AreEqual(1, (int)mods.size());
 
         delete m2;
         delete m1;
     }
 
     void TestModifications::Test_modification3_hash_set() {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("K", motif);
-        ModificationWithMass *m1 = new ModificationWithMass("id1", "modificationType", motif, TerminusLocalization::Any, 1.11111, std::unordered_map<std::string, std::vector<std::string>>(), neutralLosses: {2.222222}, diagnosticIons: std::vector<double> {1.2233});
-        ModificationWithMass *m2 = new ModificationWithMass("id1", "modificationType", motif, TerminusLocalization::Any, 1.11111 - 1e-10, std::unordered_map<std::string, std::vector<std::string>>(), neutralLosses: {2.222222 + 1e-10}, diagnosticIons: std::vector<double> {1.2233});
-        m1->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
-        m2->linksToOtherDbs.emplace("key", std::vector<std::string> {"value"});
-        std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
-        Assert::AreEqual( (long unsigned int)1, mods.size());
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("K", &motif);
+
+        Modification *m1 = new Modification("id1", "", "modificationType", "", motif,
+                                 "Anywhere.", nullptr,
+                                 std::make_optional(1.11111),
+                                 std::unordered_map<std::string, std::vector<std::string>>(),
+                                 std::unordered_map<std::string, std::vector<std::string>>(),
+                                 std::vector<std::string>(),
+                                 std::unordered_map<DissociationType, std::vector<double>>  {
+                                     {
+                                         DissociationType::AnyActivationType, {2.222222}
+                                     }
+                                 },
+                                 std::unordered_map<DissociationType, std::vector<double>>  {
+                                     {
+                                         DissociationType::AnyActivationType, {1.2233}
+                                     }
+                                 },
+                                            "");
+        Modification *m2 = new Modification("id1", "", "modificationType", "", motif,
+                                "Anywhere.", nullptr, std::make_optional(1.11111 - 1e-10),
+                                std::unordered_map<std::string, std::vector<std::string>>(),
+                                std::unordered_map<std::string, std::vector<std::string>>(),
+                                std::vector<std::string>(),
+                                std::unordered_map<DissociationType, std::vector<double>>{
+                                    {
+                                        DissociationType::AnyActivationType, {2.222222 + 1e-10}
+                                    }
+                                },
+                               std::unordered_map<DissociationType, std::vector<double>> {
+                                   {
+                                       DissociationType::AnyActivationType, {1.2233}
+                                   }
+                               },
+                                            "");
+        m1->getDatabaseReference().emplace("key", std::vector<std::string> {"value"});
+        m2->getDatabaseReference().emplace("key", std::vector<std::string> {"value"});
+
+
+        std::unordered_set<Modification*> mods = {m1, m2};
+        // This test does not make sense in the C++ version. An unordered_set
+        // based on pointers will identify m1 and m2 as two separate entities,
+        // in contrary to what the C# version did. The goal originally was
+        // for the library to recognize that m1 and m2 would be the same,
+        // and size should be only one. With pointers, that does not work.
+        //
+        //Assert::AreEqual( 1, (int) mods.size());
         Assert::IsTrue(m1->Equals(m2));
 
         delete m2;
@@ -385,33 +446,45 @@ namespace Test {
 
     void TestModifications::TestInvalidModificationHash()
     {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("K", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("K", &motif);
         Modification *m1 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         Modification *m2 = new Modification("id1", "", "modificationType", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        std::unordered_set<Modification*> mods = std::vector<Modification*> {m1, m2};
+
+        std::unordered_set<Modification*> mods = {m1, m2};
         Assert::IsFalse(m1->getValidModification());
         Assert::IsFalse(m2->getValidModification());
-        Assert::True(m1->Equals(m2));
-        Assert::AreEqual(1, mods.size());
-
+        Assert::IsTrue(m1->Equals(m2));
+        // This test does not make sense in the C++ version. An unordered_set
+        // based on pointers will identify m1 and m2 as two separate entities,
+        // in contrary to what the C# version did. The goal originally was
+        // for the library to recognize that m1 and m2 would be the same,
+        // and size should be only one. With pointers, that does not work.
+        //
+        //Assert::AreEqual(1, mods.size());
+        delete m1;
+        delete m2;
+        
         // test comparing invalid mods with null vs not-null MMs
         m1 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::make_optional(1), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         m2 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        mods = std::vector<Modification*> {m1, m2};
+        mods = {m1, m2};
         Assert::IsFalse(m1->getValidModification());
         Assert::IsFalse(m2->getValidModification());
-        Assert::False(m1->Equals(m2));
-        Assert::AreEqual(2, mods.size());
+        Assert::IsFalse(m1->Equals(m2));
+        Assert::AreEqual(2, (int)mods.size());
 
+        delete m1;
+        delete m2;
+        
         // test comparing invalid mods with null vs not-null IDs
         m1 = new Modification("id1", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         m2 = new Modification("", "", "", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        mods = std::vector<Modification*> {m1, m2};
+        mods = {m1, m2};
         Assert::IsFalse(m1->getValidModification());
         Assert::IsFalse(m2->getValidModification());
-        Assert::False(m1->Equals(m2));
-        Assert::AreEqual(2, mods.size());
+        Assert::IsFalse(m1->Equals(m2));
+        Assert::AreEqual(2, (int)mods.size());
 
         delete m2;
         delete m1;
@@ -421,25 +494,46 @@ namespace Test {
     {
         // First we're checking to see if the fragment masses of an unmodified peptide a calculated correctly
         auto prot = new Protein("PEPTIDE", "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(),
+                                                               1024, InitiatorMethionineBehavior::Retain,
+                                                               2, CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
         std::vector<Modification*> variableModifications;
-        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), variableModifications).ToList();
+        std::vector<Modification*> v1;
+        std::vector<PeptideWithSetModifications* > ye = prot->Digest(digestionParams, v1, variableModifications);
 
         // check unmodified
+#ifdef ORIG
         auto unmodPeptide = ye.Where([&] (std::any p)
         {
             delete digestionParams;
             delete prot;
             return p::AllModsOneIsNterminus->Count == 0;
         }).First();
-        auto fragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+#endif
+        std::vector<PeptideWithSetModifications*> un;
+        for ( auto v: ye ) {
+            if ( v->getAllModsOneIsNterminus().size() == 0) {
+                un.push_back(v);
+            }
+        }
+        PeptideWithSetModifications *unmodPeptide = un.front();
+        std::vector<Product *> fragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+#ifdef ORIG
         auto myUnmodFragmentMasses = fragments->Select([&] (std::any v)
         {
             static_cast<int>(std::round(v::NeutralMass::ToMz(1) * std::pow(10, 1))) / std::pow(10, 1);
         }).ToList();
+#endif
+        std::unordered_set<int>myUnmodFragmentMasses;
+        for ( auto v:  fragments ) {
+            myUnmodFragmentMasses.insert(static_cast<int>(std::round(Chemistry::ClassExtensions::ToMz(v->NeutralMass,1) *
+                                                                     std::pow(10, 1))) / std::pow(10, 1));
+        }
+
         std::unordered_set<int> expectedMzs = {98, 227, 324, 425, 538, 653, 703, 574, 477, 376, 263, 148};
 
-        Assert::That(expectedMzs.SetEquals(myUnmodFragmentMasses));
+        Assert::IsTrue(expectedMzs == myUnmodFragmentMasses);
 
         delete digestionParams;
         delete prot;
@@ -448,85 +542,146 @@ namespace Test {
     void TestModifications::TestFragmentationModNoNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with no neutral losses
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("T", motif);
-        Modification *mod = new Modification("oxidation", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("O1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-        std::vector<Modification*> modlist = {mod};
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("T", &motif);
+        Modification *mod = new Modification("oxidation", "", "testModType", "", motif, "Anywhere.",
+                                             ChemicalFormula::ParseFormula("O1"), std::nullopt,
+                                             std::unordered_map<std::string, std::vector<std::string>>(),
+                                             std::unordered_map<std::string, std::vector<std::string>>(),
+                                             std::vector<std::string>(),
+                                             std::unordered_map<DissociationType, std::vector<double>>(),
+                                             std::unordered_map<DissociationType, std::vector<double>>(), "");
 
-        auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
-        {
-            {4, modlist}
-        });
-        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+        std::vector<Modification*> modlist = {mod};
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024,
+                                                               InitiatorMethionineBehavior::Retain, 2,
+                                                               CleavageSpecificity::Full,
+                                                               FragmentationTerminus::Both);
+
+        std::unordered_map<int, std::vector<Modification*>> mymap =  {{4, modlist}};
+        std::string s1="", s2="";
+        std::vector<std::tuple<std::string, std::string>> vtp={std::make_tuple(s1, s2)};
+                                                             
+        auto prot = new Protein("PEPTIDE", "", "", vtp, mymap);
+        std::vector<Modification*> v1, v2;
+        std::vector<PeptideWithSetModifications* > ye = prot->Digest(digestionParams, v1, v2);
 
         // check unmodified
+#ifdef ORIG
         auto unmodPeptide = ye.Where([&] (std::any p)
         {
-        delete prot;
-        delete digestionParams;
-        delete mod;
+            delete prot;
+            delete digestionParams;
+            delete mod;
             return p::AllModsOneIsNterminus->Count == 0;
         }).First();
-        auto myUnmodFragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+#endif
+        std::vector<PeptideWithSetModifications*> un;
+        for ( auto v: ye ) {
+            if ( v->getAllModsOneIsNterminus().size() == 0) {
+                un.push_back(v);
+            }
+        }
+        PeptideWithSetModifications *unmodPeptide = un.front();
+
+        auto myUnmodFragments = unmodPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
         auto neutralMasses = std::vector<double>();
+
+#ifdef ORIG
         neutralMasses.AddRange(myUnmodFragments.Select([&] (std::any m)
         {
             m::NeutralMass;
         }).ToList());
+#endif
+        for ( auto v: myUnmodFragments ) {
+            neutralMasses.push_back(v->NeutralMass);
+        }
+            
         auto expectedMasses = std::vector<double> {97, 226, 323, 424, 537, 652, 147, 262, 375, 476, 573, 702};
-        for (int i = 0; i < neutralMasses.size(); i++)
+        for (int i = 0; i < (int)neutralMasses.size(); i++)
         {
-            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(std::make_optional(neutralMasses[i]), 0).value();
+            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(neutralMasses[i], 0);
         }
 
-        auto firstNotSecond = neutralMasses.Except(expectedMasses).ToList();
-        auto secondNotFirst = expectedMasses.Except(neutralMasses).ToList();
+#ifdef ORIG
+        auto firstNotSecond = neutralMasses.Except(expectedMasses);
+        auto secondNotFirst = expectedMasses.Except(neutralMasses);
+#endif
+        std::vector<double> firstNotSecond, secondNotFirst;
+        std::set_difference( neutralMasses.begin(),  neutralMasses.end(), expectedMasses.begin(), expectedMasses.end(),
+                             std::inserter(firstNotSecond, firstNotSecond.begin()));
+        std::set_difference( expectedMasses.begin(), expectedMasses.end(), neutralMasses.begin(),  neutralMasses.end(),
+                             std::inserter(secondNotFirst, secondNotFirst.begin()));
 
         //this is the set without oxidation
-        Assert::AreEqual(12, myUnmodFragments.size());
-        Assert::AreEqual(0, firstNotSecond.size());
-        Assert::AreEqual(0, secondNotFirst.size());
+        Assert::AreEqual(12, (int)myUnmodFragments.size());
+        Assert::AreEqual(0, (int)firstNotSecond.size());
+        Assert::AreEqual(0, (int)secondNotFirst.size());
 
         // with oxidation, no neutral loss
+#ifdef ORIG
         auto modPeptide = ye.Where([&] (std::any p)
         {
             delete prot;
             delete digestionParams;
-        delete mod;
+            delete mod;
             return p::AllModsOneIsNterminus->Count == 1;
         }).First();
+#endif
+        std::vector<PeptideWithSetModifications*> mP;
+        for ( auto v: ye ) {
+            if ( v->getAllModsOneIsNterminus().size() == 1) {
+                mP.push_back(v);
+            }
+        }
+        PeptideWithSetModifications *modPeptide = mP.front();
 
+        
         auto myModFragments = modPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
         neutralMasses = std::vector<double>();
+#ifdef ORIG
         neutralMasses.AddRange(myModFragments->Select([&] (std::any m)
         {
             m::NeutralMass;
         }).ToList());
+#endif
+        for ( auto v: myModFragments ) {
+            neutralMasses.push_back(v->NeutralMass);
+        }
+        
         expectedMasses = {97, 226, 323, 440, 553, 668, 147, 262, 375, 492, 589, 718};
-        for (int i = 0; i < neutralMasses.size(); i++)
+        for (int i = 0; i < (int)neutralMasses.size(); i++)
         {
-            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(std::make_optional(neutralMasses[i]), 0).value();
+            neutralMasses[i] = Chemistry::ClassExtensions::RoundedDouble(neutralMasses[i], 0);
         }
 
-        firstNotSecond = neutralMasses.Except(expectedMasses).ToList();
-        secondNotFirst = expectedMasses.Except(neutralMasses).ToList();
+#ifdef ORIG
+        firstNotSecond = neutralMasses.Except(expectedMasses); //ToList();
+        secondNotFirst = expectedMasses.Except(neutralMasses);
+#endif
+        firstNotSecond.clear();
+        secondNotFirst.clear();
+        std::set_difference( neutralMasses.begin(),  neutralMasses.end(), expectedMasses.begin(), expectedMasses.end(),
+                             std::inserter(firstNotSecond, firstNotSecond.begin()));
+        std::set_difference( expectedMasses.begin(), expectedMasses.end(), neutralMasses.begin(),  neutralMasses.end(),
+                             std::inserter(secondNotFirst, secondNotFirst.begin()));
 
         //this is the set with oxidation
-        Assert::AreEqual(12, myUnmodFragments.size());
-        Assert::AreEqual(0, firstNotSecond.size());
-        Assert::AreEqual(0, secondNotFirst.size());
+        Assert::AreEqual(12, (int)myUnmodFragments.size());
+        Assert::AreEqual(0, (int)firstNotSecond.size());
+        Assert::AreEqual(0, (int)secondNotFirst.size());
 
         delete prot;
         delete digestionParams;
         delete mod;
     }
 
+#ifdef LATER
     void TestModifications::Test_FragmentationModNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with no neutral losses
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("T", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("T", &motif);
         Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
         {
             {
@@ -535,7 +690,7 @@ namespace Test {
         },
         std::unordered_map<DissociationType, std::vector<double>>(), "");
         std::vector<Modification*> modlist = {mod};
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
         {
@@ -568,8 +723,8 @@ namespace Test {
     void TestModifications::Test_FragmentationTwoModNeutralLoss()
     {
         // Now we'll check the mass of modified peptide with 2 neutral loss mods
-        ModificationMotif motifone;
-        ModificationMotif::TryGetMotif("Q", motifone);
+        ModificationMotif *motifone;
+        ModificationMotif::TryGetMotif("Q", &motifone);
         Modification *modone = new Modification("ammonia", "", "testModType", "", motifone, "Anywhere.", nullptr, std::make_optional(0), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
         {
             {
@@ -591,7 +746,7 @@ namespace Test {
         std::vector<Modification*> modlistone = {modone};
         std::vector<Modification*> modlisttwo = {modtwo};
 
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         auto prot = new Protein("PEQTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
         {
@@ -627,8 +782,8 @@ namespace Test {
    void TestModifications::Test_FragmentationTwoModNeutralLossTwoFragTypes()
     {
         // Now we'll check the mass of modified peptide with no neutral losses
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("T", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("T", &motif);
 
         std::unordered_map<DissociationType, std::vector<double>> myNeutralLosses =
         {
@@ -643,7 +798,7 @@ namespace Test {
 
         Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), myNeutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
         std::vector<Modification*> modlist = {mod};
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, int::MaxValue, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 0, 1, std::numeric_limits<int>::max(), 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
         auto prot = new Protein("PEPTIDE", nullptr, oneBasedModifications: std::unordered_map<int, std::vector<Modification*>>
         {

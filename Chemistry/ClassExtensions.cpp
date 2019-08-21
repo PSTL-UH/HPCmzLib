@@ -28,7 +28,12 @@ namespace Chemistry {
             myNumber = std::make_optional(Math::Round(static_cast<double>(myNumber), places,
                                                        MidpointRounding::AwayFromZero));
 #endif
-            myNumber = std::make_optional((floor((static_cast<double>(myNumber.value())*pow(10,places))+.5))/pow(10,places));
+            if ( places == 0 ) {
+                myNumber = std::make_optional(floor(static_cast<double>(myNumber.value())));
+            }
+            else {
+                myNumber = std::make_optional((floor((static_cast<double>(myNumber.value())*pow(10,places))+.5))/pow(10,places));
+            }
         }
         return myNumber;
     }
@@ -36,7 +41,12 @@ namespace Chemistry {
     double ClassExtensions::RoundedDouble(double myNumber, int places)
     {
         
-        myNumber = (floor(myNumber*pow(10,places))+.5)/pow(10,places);
+        if ( places == 0 ) {
+            myNumber = floor(myNumber);
+        }
+        else {
+            myNumber = (floor(myNumber*pow(10,places))+.5)/pow(10,places);
+        }
         return myNumber;
     }
 
