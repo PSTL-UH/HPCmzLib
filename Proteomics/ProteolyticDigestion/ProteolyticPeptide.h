@@ -106,9 +106,9 @@ namespace Proteomics
 
             static std::vector<std::unordered_map<int, Modification*>> GetVariableModificationPatterns(std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications, int maxModsForPeptide, int peptideLength);
 
-            static std::vector<std::vector<int>> GetVariableModificationPatterns(std::vector<std::unordered_map<int, std::vector<Modification*>>> possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index);
+            static std::vector<std::vector<int>> GetVariableModificationPatterns(std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index);
 
-            static std::unordered_map<int, Modification*> GetNewVariableModificationPattern(std::vector<int> variableModificationArray, std::vector<std::unordered_map<int, std::vector<Modification*>>> possibleVariableModifications);
+            static std::unordered_map<int, Modification*> GetNewVariableModificationPattern(std::vector<int> variableModificationArray, std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications);
 
             std::unordered_map<int, Modification*> GetFixedModsOneIsNterminus(int peptideLength, std::vector<Modification*> &allKnownFixedModifications);
         };

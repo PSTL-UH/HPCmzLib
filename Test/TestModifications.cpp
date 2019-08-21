@@ -27,6 +27,7 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Test_ModificationWithNoMassWritten " << std::endl;    
     Test::TestModifications::Test_ModificationWithNoMassWritten();    
 #endif
+
     std::cout << ++i << ". NameAndSites " << std::endl;    
     Test::TestModifications::NameAndSites();
 
@@ -74,7 +75,7 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestFragmentationNoMod" << std::endl;    
     Test::TestModifications::TestFragmentationNoMod();
-
+    
     std::cout << ++i << ". TestFragmentationModNoNeutralLoss" << std::endl;    
     Test::TestModifications::TestFragmentationModNoNeutralLoss();
 

@@ -5,6 +5,7 @@
 #include "../Modifications/ModificationLocalization.h"
 #include "../Protein/Protein.h"
 
+#include <tuple>
 
 namespace Proteomics
 {
@@ -278,12 +279,6 @@ namespace Proteomics
                 std::unordered_map<int, std::vector<Modification*>> possible_variable_modifications = std::unordered_map<int, std::vector<Modification*>>(possibleVariableModifications);
 
                 std::vector<int> base_variable_modification_pattern(peptideLength + 4);
-#ifdef ORIG
-                auto totalAvailableMods = possible_variable_modifications.Sum([&] (std::any b)
-                {
-                    return b->Value == nullptr ? 0 : b->Value->Count;
-                });
-#endif
                 int totalAvailableMods=0;
                 for ( auto b : possible_variable_modifications ) {
                     if ( !b.second.empty() ) {
@@ -292,13 +287,10 @@ namespace Proteomics
                 }
                 for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide); variable_modifications++)
                 {
-#ifdef ORIG
-                    for (auto variable_modification_pattern : GetVariableModificationPatterns(std::vector<std::unordered_map<int, std::vector<Modification*>>>(possible_variable_modifications),
-                                                                                              possible_variable_modifications.size() - variable_modifications,
-                                                                                              base_variable_modification_pattern, 0)){}
-#endif
-                    std::vector<std::unordered_map<int, std::vector<Modification*>>> possible_variable_modifications_vec;
-                    possible_variable_modifications_vec.push_back(possible_variable_modifications);
+                    std::vector<std::tuple<int, std::vector<Modification*>>> possible_variable_modifications_vec;
+                    for( auto it : possible_variable_modifications ) {
+                        possible_variable_modifications_vec.push_back({it.first, it.second});
+                    }
                     for (auto variable_modification_pattern : GetVariableModificationPatterns(possible_variable_modifications_vec,
                                                                    possible_variable_modifications.size() - variable_modifications,
                                                                    base_variable_modification_pattern, 0))
@@ -315,7 +307,7 @@ namespace Proteomics
         }
 
         std::vector<std::vector<int>> ProteolyticPeptide::GetVariableModificationPatterns(
-            std::vector<std::unordered_map<int, std::vector<Modification*>>> possibleVariableModifications,
+            std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications,
             int unmodifiedResiduesDesired,
             std::vector<int> &variableModificationPattern,
             int index)
@@ -324,11 +316,9 @@ namespace Proteomics
             
             if (index < (int)possibleVariableModifications.size() - 1)
             {
-                std::unordered_map<int, std::vector<Modification*>>::iterator posVarMod = possibleVariableModifications[index].begin();
-
                 if (unmodifiedResiduesDesired > 0)
                 {
-                    variableModificationPattern[posVarMod->first ] = 0;
+                    variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = 0;
                     for (auto new_variable_modification_pattern : GetVariableModificationPatterns(possibleVariableModifications,
                                                                                                   unmodifiedResiduesDesired - 1,
                                                                                                   variableModificationPattern,
@@ -341,10 +331,9 @@ namespace Proteomics
                 }
                 if (unmodifiedResiduesDesired < (int)possibleVariableModifications.size() - index)
                 {
-                    std::unordered_map<int, std::vector<Modification*>>::iterator posVarMod = possibleVariableModifications[index].begin();
-                    for (int i = 1; i <= (int)posVarMod->second.size(); i++)
+                    for (int i = 1; i <= (int)(std::get<1>(possibleVariableModifications[index]).size()); i++)
                     {
-                        variableModificationPattern[posVarMod->first] = i;
+                        variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = i;
                         for (auto new_variable_modification_pattern : GetVariableModificationPatterns(possibleVariableModifications,
                                                                                                       unmodifiedResiduesDesired,
                                                                                                       variableModificationPattern,
@@ -358,19 +347,18 @@ namespace Proteomics
             }
             else
             {
-                std::unordered_map<int, std::vector<Modification*>>::iterator posVarMod = possibleVariableModifications[index].begin();
                 if (unmodifiedResiduesDesired > 0)
                 {
-                    variableModificationPattern[posVarMod->first] = 0;
+                    variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = 0;
                     //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                     //yield return variableModificationPattern;
                     v.push_back(variableModificationPattern);
                 }
                 else
                 {
-                    for (int i = 1; i <= (int)posVarMod->second.size(); i++)
+                    for (int i = 1; i <= (int)(std::get<1>(possibleVariableModifications[index]).size()); i++)
                     {
-                        variableModificationPattern[posVarMod->first] = i;
+                        variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = i;
                         //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         //yield return variableModificationPattern;
                         v.push_back(variableModificationPattern);
@@ -381,16 +369,15 @@ namespace Proteomics
         }
 
         std::unordered_map<int, Modification*> ProteolyticPeptide::GetNewVariableModificationPattern(std::vector<int> variableModificationArray,
-                                                 std::vector<std::unordered_map<int, std::vector<Modification*>>> possibleVariableModifications)
+                                                 std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications)
         {
             auto modification_pattern = std::unordered_map<int, Modification*>();
-
-            for (auto kvp = possibleVariableModifications.begin();  kvp != possibleVariableModifications.end(); kvp++ )
+            
+            for (auto kvp: possibleVariableModifications )
             {
-                std::unordered_map<int, std::vector<Modification*>>::iterator kvpmap = kvp->begin();
-                if (variableModificationArray[kvpmap->first] > 0)
+                if (variableModificationArray[std::get<0>(kvp)] > 0)
                 {
-                    modification_pattern.emplace(kvpmap->first, kvpmap->second[variableModificationArray[kvpmap->first] - 1]);
+                    modification_pattern.emplace(std::get<0>(kvp), std::get<1>(kvp)[variableModificationArray[std::get<0>(kvp)] - 1]);
                 }
             }
 
