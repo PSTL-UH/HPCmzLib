@@ -18,7 +18,7 @@ int main ( int argc, char **argv )
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     Chemistry::PeriodicTable::Load (elr);
-    
+
     std::cout <<++i << ". TestParseProtease" << std::endl;    
     Test::TestDigestionMotif::TestParseProtease();
 

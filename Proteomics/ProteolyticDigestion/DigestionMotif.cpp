@@ -104,7 +104,7 @@ std::vector<char> DigestionMotif::Z = {'E', 'Q'};
                 {
                     throw MzLibException("Unrecognized protease syntax. Please have equal number of wildcards for multi-letter wildcard exclusions.");
                 }
-                std::regex reg2 (R"(\[[a-zA-Z]+\])");
+                std::regex reg2 (R"(\{[a-zA-Z]+\})");
                 motifString = std::regex_replace(motifString, reg2, "");
             }
 
