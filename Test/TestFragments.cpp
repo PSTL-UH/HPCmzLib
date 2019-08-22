@@ -266,7 +266,7 @@ namespace Test
         bool found = false;
         for ( auto b : a ) {
             std::string s = b->getSequence();
-            std::size_t f = s.find("ABCDEFG");
+            std::size_t f = s.find("ACDEFG");
             if (f != std::string::npos ) {
                 found = true;
             }
@@ -291,11 +291,8 @@ namespace Test
         }
         Assert::IsTrue(found);
             
-
-
         auto c = _mockPeptideEveryAminoAcid->Fragment(FragmentTypes::b, true);
-
-        Assert::AreEqual(a.front(), c.front());
+        Assert::IsTrue(a.front()->Equals( c.front()));
     }
 
     void TestFragments::TestGetSiteDeterminingFragments()
