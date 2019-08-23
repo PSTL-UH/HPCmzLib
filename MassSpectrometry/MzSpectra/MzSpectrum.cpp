@@ -8,6 +8,8 @@
 #include "../../MzLibUtil/DoubleRange.h"
 #include "../../MzLibUtil/Tolerance.h"
 
+#include "../../include/BinarySearch.h"
+
 #include "Sort.h"
 #include "Math.h"
 #include "RectangularVectors.h"
@@ -289,8 +291,10 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 auto testMostIntenseMass = Chemistry::ClassExtensions::ToMass(candidateForMostIntensePeakMz, chargeState);
 
                 //auto massIndex = Array::BinarySearch(mostIntenseMasses, testMostIntenseMass);
-                int massIndex = std::binary_search(mostIntenseMasses.begin(), mostIntenseMasses.end(),
-                                                   testMostIntenseMass);
+                // int massIndex = std::binary_search(mostIntenseMasses.begin(), mostIntenseMasses.end(),
+                //                                    testMostIntenseMass);
+                int massIndex = binarySearch(mostIntenseMasses, testMostIntenseMass);
+
                 if (massIndex < 0) {
                     massIndex = ~massIndex;
                 }
@@ -438,7 +442,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 # ifdef ORIG
         int ind = Array::BinarySearch(getXArray(), minX);
 #endif
-        int ind = std::binary_search (getXArray().begin(), getXArray().end(), minX);
+        // int ind = std::binary_search (getXArray().begin(), getXArray().end(), minX);
+        // auto XArray = getXArray();
+        int ind = binarySearch(privateXArray, minX);
         if (ind < 0)
         {
             ind = ~ind;
@@ -462,7 +468,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 #ifdef ORIG
         int index = Array::BinarySearch(getXArray(), x);
 #endif
-        int index = std::binary_search(getXArray().begin(), getXArray().end(), x);
+        // int index = std::binary_search(getXArray().begin(), getXArray().end(), x);
+        // auto XArray = getXArray();
+        int index = binarySearch(privateXArray, x);
         if (index >= 0)
         {
             return std::make_optional(index);
@@ -522,7 +530,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
     int MzSpectrum::NumPeaksWithinRange(double minX, double maxX)
     {
         //int startingIndex = Array::BinarySearch(getXArray(), minX);
-        int startingIndex = std::binary_search(getXArray().begin(), getXArray().end(), minX);
+        // int startingIndex = std::binary_search(getXArray().begin(), getXArray().end(), minX);
+        // auto StartArray = getXArray();
+        int startingIndex = binarySearch(privateXArray, minX);
         if (startingIndex < 0)
         {
             startingIndex = ~startingIndex;
@@ -532,7 +542,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             return 0;
         }
         //int endIndex = Array::BinarySearch(getXArray(), maxX);
-        int endIndex = std::binary_search(getXArray().begin(), getXArray().end(), maxX);
+        // int endIndex = std::binary_search(getXArray().begin(), getXArray().end(), maxX);
+        // auto EndArray = getXArray();
+        int endIndex = binarySearch(privateXArray, maxX);
         if (endIndex < 0)
         {
             endIndex = ~endIndex;
@@ -575,7 +587,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
     {
         std::vector<MzPeak*> v;
         //int ind = Array::BinarySearch(getXArray(), minX);
-        int ind = std::binary_search(getXArray().begin(), getXArray().end(), minX);
+        // int ind = std::binary_search(getXArray().begin(), getXArray().end(), minX);
+        // auto XArray = getXArray();
+        int ind = binarySearch(privateXArray, minX);
 
         if (ind < 0)
         {

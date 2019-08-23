@@ -242,14 +242,16 @@ namespace Test
 
     void TestSpectra::GetClosestPeak()
     {
-        Assert::AreEqual(448.23987, _mzSpectrumA->GetClosestPeakXvalue(448));
-        Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.9));
+        // Assert::AreEqual(448.23987, _mzSpectrumA->GetClosestPeakXvalue(448));
+        // Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.9));
+        Assert::IsTrue( std::abs(448.23987 - _mzSpectrumA->GetClosestPeakXvalue(448).value() ) < 1e-09 );
+        Assert::IsTrue( std::abs(447.73849 - _mzSpectrumA->GetClosestPeakXvalue(447.9).value() ) < 1e-09 );
     }
 
 
     void TestSpectra::Extract()
     {
-        Assert::AreEqual(3, _mzSpectrumA->Extract(500, 600).size());
+        Assert::AreEqual(3, static_cast<int>(_mzSpectrumA->Extract(500, 600).size()));
     }
 
     void TestSpectra::CorrectOrder()
@@ -278,6 +280,8 @@ namespace Test
     {
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.73849));
         Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447));
+        // Assert::IsTrue( std::abs(447.73849 - _mzSpectrumA->GetClosestPeakXvalue(447.73849).value() ) < 1e-09 );
+        // Assert::IsTrue( std::abs(447.73849 - _mzSpectrumA->GetClosestPeakXvalue(447).value() ) < 1e-09 );
 
         std::vector<double> dv1(0);
         std::vector<double> dv2(0);
@@ -325,6 +329,7 @@ namespace Test
         Assert::AreEqual(1, thisSpectrum->NumPeaksWithinRange(1, 2));
 
         Assert::AreEqual(2, thisSpectrum->NumPeaksWithinRange(0.001, 2.999));
+        
 
         Assert::AreEqual(1, thisSpectrum->NumPeaksWithinRange(0, 1.5));
 
@@ -349,13 +354,13 @@ namespace Test
             new DoubleRange(3, 6)
         };
 
-        Assert::AreEqual(1, thisSpectrum->GetClosestPeakXvalue(-100));
+        Assert::AreEqual(1, static_cast<int>(thisSpectrum->GetClosestPeakXvalue(-100).value()));
 
-        Assert::AreEqual(7, thisSpectrum->GetClosestPeakXvalue(6.6));
+        Assert::AreEqual(7, static_cast<int>(thisSpectrum->GetClosestPeakXvalue(6.6).value()));
 
-        Assert::AreEqual(7, thisSpectrum->GetClosestPeakXvalue(7));
+        Assert::AreEqual(7, static_cast<int>(thisSpectrum->GetClosestPeakXvalue(7).value()));
 
-        Assert::AreEqual(7, thisSpectrum->GetClosestPeakXvalue(8));
+        Assert::AreEqual(7, static_cast<int>(thisSpectrum->GetClosestPeakXvalue(8).value()));
 
         //delete thisSpectrum;
     }
