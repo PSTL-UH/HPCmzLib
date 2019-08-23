@@ -25,14 +25,15 @@ namespace UsefulProteomicsDatabases {
         class obo {
 
         private:
-            std::vector<std::any> itemsField;
+            //std::vector<std::any> itemsField;
+            std::vector<void *> itemsField;
 
             /// <remarks/>
         public:
 //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("def", typeof(def))][System.Xml.Serialization.XmlElementAttribute("header", typeof(oboHeader), Form = System.Xml.Schema.XmlSchemaForm.Unqualified)][System.Xml.Serialization.XmlElementAttribute("source", typeof(oboSource), Form = System.Xml.Schema.XmlSchemaForm.Unqualified)][System.Xml.Serialization.XmlElementAttribute("term", typeof(oboTerm), Form = System.Xml.Schema.XmlSchemaForm.Unqualified)][System.Xml.Serialization.XmlElementAttribute("typedef", typeof(oboTypedef), Form = System.Xml.Schema.XmlSchemaForm.Unqualified)] public object[] Items
-            std::vector<std::any> getItems() const;
-            void setItems(const std::vector<std::any> &value);
+            std::vector<void*> getItems() const;
+            void setItems(const std::vector<void*> &value);
         };
     }
 }
