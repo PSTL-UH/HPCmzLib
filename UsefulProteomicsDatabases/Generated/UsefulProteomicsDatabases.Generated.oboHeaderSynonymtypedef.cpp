@@ -1,29 +1,37 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.oboHeaderSynonymtypedef.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        std::wstring oboHeaderSynonymtypedef::getname() const {
+        std::string oboHeaderSynonymtypedef::getname() const
+        {
             return this->nameField;
         }
 
-        void oboHeaderSynonymtypedef::setname(const std::wstring &value) {
+        void oboHeaderSynonymtypedef::setname(const std::string &value)
+        {
             this->nameField = value;
         }
 
-        std::wstring oboHeaderSynonymtypedef::getdescription() const {
+        std::string oboHeaderSynonymtypedef::getdescription() const
+        {
             return this->descriptionField;
         }
 
-        void oboHeaderSynonymtypedef::setdescription(const std::wstring &value) {
+        void oboHeaderSynonymtypedef::setdescription(const std::string &value)
+        {
             this->descriptionField = value;
         }
 
-        std::wstring oboHeaderSynonymtypedef::getdefaultscope() const {
+        std::string oboHeaderSynonymtypedef::getdefaultscope() const
+        {
             return this->defaultscopeField;
         }
 
-        void oboHeaderSynonymtypedef::setdefaultscope(const std::wstring &value) {
+        void oboHeaderSynonymtypedef::setdefaultscope(const std::string &value)
+        {
             this->defaultscopeField = value;
         }
     }

@@ -1,13 +1,17 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.oboTermIs_a.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        std::wstring oboTermIs_a::getValue() const {
+        std::string oboTermIs_a::getValue() const
+        {
             return this->valueField;
         }
 
-        void oboTermIs_a::setValue(const std::wstring &value) {
+        void oboTermIs_a::setValue(const std::string &value)
+        {
             this->valueField = value;
         }
     }

@@ -1,21 +1,27 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.oboTermRelationship.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        std::wstring oboTermRelationship::gettype() const {
+        std::string oboTermRelationship::gettype() const
+        {
             return this->typeField;
         }
 
-        void oboTermRelationship::settype(const std::wstring &value) {
+        void oboTermRelationship::settype(const std::string &value)
+        {
             this->typeField = value;
         }
 
-        std::wstring oboTermRelationship::getto() const {
+        std::string oboTermRelationship::getto() const
+        {
             return this->toField;
         }
 
-        void oboTermRelationship::setto(const std::wstring &value) {
+        void oboTermRelationship::setto(const std::string &value)
+        {
             this->toField = value;
         }
     }

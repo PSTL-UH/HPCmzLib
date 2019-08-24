@@ -1,21 +1,27 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.oboHeaderSubsetdef.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        std::wstring oboHeaderSubsetdef::getid() const {
+        std::string oboHeaderSubsetdef::getid() const
+        {
             return this->idField;
         }
 
-        void oboHeaderSubsetdef::setid(const std::wstring &value) {
+        void oboHeaderSubsetdef::setid(const std::string &value)
+        {
             this->idField = value;
         }
 
-        std::wstring oboHeaderSubsetdef::getname() const {
+        std::string oboHeaderSubsetdef::getname() const
+        {
             return this->nameField;
         }
 
-        void oboHeaderSubsetdef::setname(const std::wstring &value) {
+        void oboHeaderSubsetdef::setname(const std::string &value)
+        {
             this->nameField = value;
         }
     }

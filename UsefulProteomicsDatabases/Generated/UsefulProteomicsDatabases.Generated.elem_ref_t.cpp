@@ -1,25 +1,32 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.elem_ref_t.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        elem_ref_t::elem_ref_t() {
-            this->numberField = L"1";
+        elem_ref_t::elem_ref_t()
+        {
+            this->numberField = "1";
         }
 
-        std::wstring elem_ref_t::getsymbol() const {
+        std::string elem_ref_t::getsymbol() const
+        {
             return this->symbolField;
         }
 
-        void elem_ref_t::setsymbol(const std::wstring &value) {
+        void elem_ref_t::setsymbol(const std::string &value)
+        {
             this->symbolField = value;
         }
 
-        std::wstring elem_ref_t::getnumber() const {
+        std::string elem_ref_t::getnumber() const
+        {
             return this->numberField;
         }
 
-        void elem_ref_t::setnumber(const std::wstring &value) {
+        void elem_ref_t::setnumber(const std::string &value)
+        {
             this->numberField = value;
         }
     }

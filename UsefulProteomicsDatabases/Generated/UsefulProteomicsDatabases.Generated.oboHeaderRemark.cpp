@@ -1,13 +1,17 @@
 ﻿#include "UsefulProteomicsDatabases.Generated.oboHeaderRemark.h"
 
-namespace UsefulProteomicsDatabases {
-    namespace Generated {
+namespace UsefulProteomicsDatabases
+{
+    namespace Generated
+    {
 
-        std::wstring oboHeaderRemark::getValue() const {
+        std::string oboHeaderRemark::getValue() const
+        {
             return this->valueField;
         }
 
-        void oboHeaderRemark::setValue(const std::wstring &value) {
+        void oboHeaderRemark::setValue(const std::string &value)
+        {
             this->valueField = value;
         }
     }
