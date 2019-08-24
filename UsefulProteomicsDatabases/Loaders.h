@@ -1,14 +1,11 @@
 ﻿#pragma once
 
+#include "PeriodicTableLoader.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
 #include "tangible_filesystem.h"
-
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class ModificationWithLocation; }
-namespace UsefulProteomicsDatabases { namespace Generated { class obo; } }
 
 // Copyright 2016 Stefan Solntsev
 //
@@ -27,22 +24,36 @@ namespace UsefulProteomicsDatabases { namespace Generated { class obo; } }
 // You should have received a copy of the GNU Lesser General Public
 // License along with UsefulProteomicsDatabases. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../Proteomics/Proteomics.h"
 using namespace Proteomics;
+
+#include "Generated/UsefulProteomicsDatabases.Generated.obo.h"
 using namespace UsefulProteomicsDatabases::Generated;
 
-namespace UsefulProteomicsDatabases {
-    class Loaders final {
+namespace UsefulProteomicsDatabases
+{
+    class Loaders final
+    {
+    private:
+        // Edgar: removing in the C++ version for now.
+        //class StaticConstructor
+        // {
+        //public:
+        //    StaticConstructor();
+        //};
 
     private:
-        class StaticConstructor {
-        public:
-            StaticConstructor();
-        };
+        //static Loaders::StaticConstructor staticConstructor;
 
-    private:
-        static Loaders::StaticConstructor staticConstructor;
+        static bool FilesAreEqual_Hash(const std::string &first, const std::string &second);
 
-
+#ifdef ORIG
+        static void DownloadPsiMod(std::string psimodLocation);
+        static void DownloadUnimod(std::string unimodLocation);
+        static void DownloadElements(std::string elementLocation);
+        static void DownloadUniprot(std::string uniprotLocation);
+#endif
+        
     public:
         static void UpdateUniprot(const std::string &uniprotLocation);
 
@@ -54,22 +65,34 @@ namespace UsefulProteomicsDatabases {
 
         static std::unordered_map<std::string, int> GetFormalChargesDictionary(obo *psiModDeserialized);
 
-        static std::vector<ModificationWithLocation*> LoadUnimod(const std::string &unimodLocation);
+        static std::vector<Modification*> LoadUnimod(const std::string &unimodLocation);
 
-        static Generated::obo *LoadPsiMod(const std::string &psimodLocation);
-
-        static std::vector<ModificationWithLocation*> LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> &formalChargesDictionary);
-
-    private:
-        static bool FilesAreEqual_Hash(const std::string &first, const std::string &second);
-
-        static void DownloadPsiMod(const std::string &psimodLocation);
-
-        static void DownloadUnimod(const std::string &unimodLocation);
-
-        static void DownloadElements(const std::string &elementLocation);
-
-        static void DownloadUniprot(const std::string &uniprotLocation);
-
+        static Generated::obo* LoadPsiMod(const std::string &psimodLocation);
+        
+        static std::vector<Modification*> LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> formalChargesDictionary);
     };
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //public static IEnumerable<Modification> LoadUnimod(string unimodLocation);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //public static Generated.obo LoadPsiMod(string psimodLocation);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //public static IEnumerable<Modification> LoadUniprot(string uniprotLocation, Dictionary<string, int> formalChargesDictionary);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //private static bool FilesAreEqual_Hash(string first, string second);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //private static void DownloadPsiMod(string psimodLocation);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //private static void DownloadUnimod(string unimodLocation);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //private static void DownloadElements(string elementLocation);
+
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    //private static void DownloadUniprot(string uniprotLocation);
 }

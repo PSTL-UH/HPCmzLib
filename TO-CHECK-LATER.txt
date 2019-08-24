@@ -12,3 +12,8 @@ Proteomics/ProteolyticDigestion/ProteolyticPeptide.cpp:
 
 Parallel Processing found in the following files:
  - MassSpectrometry/MsDataFile.h: uses Parallel::ForEach. converted to sequential std::for_each for now.
+
+
+configure script:
+  - will need to add xerces-c-devel if we manage to generate the unimod reader using xsd to the libraries that
+    we need to check for.

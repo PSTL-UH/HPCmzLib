@@ -1,93 +1,176 @@
 ﻿#include "UnimodLoader.h"
-#include "../Proteomics/ModificationWithLocation.h"
+#include "../Proteomics/Modifications/Modification.h"
 #include "../Chemistry/ChemicalFormula.h"
-#include "../Proteomics/ModificationMotif.h"
-#include "../Proteomics/ModificationWithMassAndCf.h"
+#include "../Proteomics/Modifications/ModificationMotif.h"
+#include "../MassSpectrometry/Enums/DissociationType.h"
 
 using namespace Chemistry;
 using namespace Proteomics;
 using namespace UsefulProteomicsDatabases::Generated;
 
-namespace UsefulProteomicsDatabases {
+namespace UsefulProteomicsDatabases
+{
 
-const std::unordered_map<std::string, std::string> UnimodLoader::DictOfElements = std::unordered_map<std::string, std::string> {
-    {"2H", "H{2}"}, {
-    {"18O", "O{18}"}, {
+    std::unordered_map<std::string, std::string> UnimodLoader::DictOfElements =
+    {
+        {"2H", "H{2}"},
+        {"13C", "C{13}"},
+        {"18O", "O{18}"},
+        {"15N", "N{15}"}
     };
-const std::unordered_map<position_t, TerminusLocalization> UnimodLoader::positionDict = std::unordered_map<position_t, TerminusLocalization> {
-    {position_t::AnyCterm, TerminusLocalization::PepC}, {
-    {position_t::Anywhere, TerminusLocalization::Any}, {
-    {position_t::ProteinNterm, TerminusLocalization::NProt}
+    
+    std::unordered_map<position_t, ModLocationOnPeptideOrProtein> UnimodLoader::positionDict =
+    {
+        {position_t::AnyCterm, ModLocationOnPeptideOrProtein::PepC},
+        {position_t::ProteinCterm, ModLocationOnPeptideOrProtein::ProtC},
+        {position_t::Anywhere, ModLocationOnPeptideOrProtein::Any},
+        {position_t::AnyNterm, ModLocationOnPeptideOrProtein::NPep},
+        {position_t::ProteinNterm, ModLocationOnPeptideOrProtein::NProt}
     };
-
-    std::vector<ModificationWithLocation*> UnimodLoader::ReadMods(const std::string &unimodLocation) {
-        auto unimodSerializer = new XmlSerializer(unimod_t::typeid);
+    
+    std::vector<Modification*> UnimodLoader::ReadMods(const std::string &unimodLocation)
+    {
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        auto unimodSerializer = new XmlSerializer(typeof(unimod_t));
         FileStream tempVar(unimodLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
         auto deserialized = dynamic_cast<unimod_t*>(unimodSerializer->Deserialize(&tempVar));
 
-        for (auto cool : deserialized->getmodifications()) {
-            auto id = cool->gettitle();
-            auto ac = cool->getrecord_id();
+        std::unordered_map<std::string, std::string> positionConversion =
+        {
+            {"Anywhere", "Anywhere."},
+            {"AnyNterm", "Peptide N-terminal."},
+            {"AnyCterm", "Peptide C-terminal."},
+            {"ProteinNterm", "N-terminal."},
+            {"ProteinCterm", "C-terminal."}
+        };
+
+        for (auto mod : deserialized->getmodifications())
+        {
+            auto id = mod->gettitle();
+            auto ac = mod->getrecord_id();
             ChemicalFormula *cf = new ChemicalFormula();
-            for (auto el : cool->getdelta()->getelement()) {
-                try {
+            for (auto el : mod->getdelta()->getelement())
+            {
+                try
+                {
                     cf->Add(el->getsymbol(), std::stoi(el->getnumber()));
                 }
-                catch (...) {
+                catch (...)
+                {
                     auto tempCF = ChemicalFormula::ParseFormula(DictOfElements[el->getsymbol()]);
                     tempCF->Multiply(std::stoi(el->getnumber()));
                     cf->Add(tempCF);
                 }
             }
 
-            for (auto nice : cool->getspecificity()) {
-                auto tg = nice->getsite();
-                if (tg.length() > 1) {
-                    tg = "X";
+            //TODO Add "on motif" to the ID field
+            for (auto target : mod->getspecificity())
+            {
+                auto tg = target->getsite();
+                if (tg.length() > 1)
+                {
+                    tg = "X"; //I think that we should allow motifs here using the trygetmotif
                 }
                 ModificationMotif motif;
                 ModificationMotif::TryGetMotif(tg, motif);
-                auto pos = nice->getposition();
-                std::unordered_map<std::string, std::vector<std::string>> dblinks = {
+
+                string pos;
+                std::unordered_map<std::string, std::string>::const_iterator positionConversion_iterator = positionConversion.find(target.position.ToString());
+                if (positionConversion_iterator != positionConversion.end())
                 {
-                        "Unimod", {std::to_string(ac)}
+                    pos = positionConversion_iterator->second;
+                    //do nothing, the new string value should be there
                 }
+                else
+                {
+                    pos = positionConversion_iterator->second;
+                    pos = nullptr;
+                }
+
+                std::unordered_map<std::string, std::vector<std::string>> dblinks =
+                {
+                    {
+                        "Unimod", {std::to_string(ac)}
+                    }
                 };
 
-                if (nice->getNeutralLoss().empty()) {
+                if (target->getNeutralLoss().empty())
+                {
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new ModificationWithMassAndCf(id + " on " + motif + " at " + positionDict[pos], "Unimod", motif, positionDict[pos], cf, , dblinks);
+                    yield return new Modification(id, "", "Unimod", "", motif, pos, cf, std::nullopt, dblinks, std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
                 }
-                else {
-                    std::vector<double> neutralLosses;
-                    for (auto nl : nice->getNeutralLoss()) {
+                else
+                {
+                    std::unordered_map<MassSpectrometry::DissociationType, std::vector<double>> neutralLosses;
+                    for (auto nl : target->getNeutralLoss())
+                    {
                         ChemicalFormula *cfnl = new ChemicalFormula();
-                        if (nl->getmono_mass() == 0) {
-                            neutralLosses.push_back(0);
+                        if (nl->getmono_mass() == 0)
+                        {
+                            if (neutralLosses.empty())
+                            {
+                                neutralLosses = std::unordered_map<MassSpectrometry::DissociationType, std::vector<double>>
+                                {
+                                    {
+                                        MassSpectrometry::DissociationType::AnyActivationType, {0}
+                                    }
+                                };
+                            }
+                            else
+                            {
+                                if (neutralLosses.find(MassSpectrometry::DissociationType::AnyActivationType) != neutralLosses.end())
+                                {
+                                    if (!std::find(neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].begin(), neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].end(), 0) != neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].end())
+                                    {
+                                        neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].push_back(0);
+                                    }
+                                } //we don't need an else cuz it's already there
+                            }
                         }
-                        else {
-                            for (auto el : nl->getelement()) {
-                                try {
+                        else
+                        {
+                            for (auto el : nl->getelement())
+                            {
+                                try
+                                {
                                     cfnl->Add(el->getsymbol(), std::stoi(el->getnumber()));
                                 }
-                                catch (...) {
+                                catch (...)
+                                {
                                     auto tempCF = ChemicalFormula::ParseFormula(DictOfElements[el->getsymbol()]);
                                     tempCF->Multiply(std::stoi(el->getnumber()));
                                     cfnl->Add(tempCF);
                                 }
                             }
+                            if (neutralLosses.empty())
+                            {
+                                neutralLosses = std::unordered_map<MassSpectrometry::DissociationType, std::vector<double>>
+                                {
+                                    {
+                                        MassSpectrometry::DissociationType::AnyActivationType, {cfnl->getMonoisotopicMass()}
+                                    }
+                                };
+                            }
+                            else
+                            {
+                                if (neutralLosses.find(MassSpectrometry::DissociationType::AnyActivationType) != neutralLosses.end())
+                                {
+                                    if (!std::find(neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].begin(), neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].end(), cfnl->getMonoisotopicMass()) != neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].end())
+                                    {
+                                        neutralLosses[MassSpectrometry::DissociationType::AnyActivationType].push_back(cfnl->getMonoisotopicMass());
+                                    }
+                                } //we don't need an else cuz it's already there
+                            }
                         }
-                        neutralLosses.push_back(cfnl->getMonoisotopicMass());
 
                         delete cfnl;
                     }
-
 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    yield return new ModificationWithMassAndCf(id + " on " + motif + " at " + positionDict[pos], "Unimod", motif, positionDict[pos], cf, , dblinks, , neutralLosses);
+                    yield return new Modification(id, "", "Unimod", "", motif, "Anywhere.", cf, std::nullopt, dblinks, std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), neutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
                 }
             }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete cf' statement was not added since cf was passed to a method or constructor. Handle memory management manually.
+            delete cf;
         }
 
         delete unimodSerializer;
