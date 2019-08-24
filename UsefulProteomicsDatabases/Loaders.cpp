@@ -164,7 +164,7 @@ namespace UsefulProteomicsDatabases
             bool found = false;
             if ( !b->getxref_analog().empty() ) {
                 for ( auto c: b->getxref_analog() ) {
-                    if ( c->getdbname() == L"FormalCharge" ) {
+                    if ( c->getdbname() == "FormalCharge" ) {
                         found = true;
                         break;
                     }

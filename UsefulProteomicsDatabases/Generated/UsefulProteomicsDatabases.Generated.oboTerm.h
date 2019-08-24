@@ -7,7 +7,7 @@
 namespace UsefulProteomicsDatabases { namespace Generated { class def; } }
 namespace UsefulProteomicsDatabases { namespace Generated { class oboTermSynonym; } }
 //namespace UsefulProteomicsDatabases { namespace Generated { class oboTermXref_analog; } }
-include "UsefulProteomicsDatabases.Generated.oboTermXref_analog.h"
+#include "UsefulProteomicsDatabases.Generated.oboTermXref_analog.h"
 
 namespace UsefulProteomicsDatabases { namespace Generated { class oboTermIs_a; } }
 namespace UsefulProteomicsDatabases { namespace Generated { class oboTermRelationship; } }
