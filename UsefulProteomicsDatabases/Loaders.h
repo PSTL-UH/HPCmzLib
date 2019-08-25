@@ -65,6 +65,8 @@ namespace UsefulProteomicsDatabases
 
         static std::unordered_map<std::string, int> GetFormalChargesDictionary(obo *psiModDeserialized);
 
+        static void LoadElements(std::string elementLocation);
+
         static std::vector<Modification*> LoadUnimod(const std::string &unimodLocation);
 
         static Generated::obo* LoadPsiMod(const std::string &psimodLocation);

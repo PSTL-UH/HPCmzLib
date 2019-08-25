@@ -188,7 +188,15 @@ namespace UsefulProteomicsDatabases
 #endif
         return r;
     }
-            
+
+    void Loaders::LoadElements(std::string elementLocation){
+        if (!FileSystem::fileExists(elementLocation)) {
+            Loaders::UpdateElements(elementLocation);
+        }
+        return;
+    }
+
+    
     std::vector<Modification*> Loaders::LoadUnimod(const std::string &unimodLocation)
     {
         if (!FileSystem::fileExists(unimodLocation))
