@@ -106,7 +106,8 @@ namespace MassSpectrometry
             {
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
-                int index = std::binary_search(d.begin(), d.end(), mintime);
+                int index = binarySearch(d, mintime);
+                // int index = std::binary_search(d.begin(), d.end(), mintime);
                 if (index < 0)
                 {
                     index = ~index;
@@ -143,7 +144,8 @@ namespace MassSpectrometry
             {
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
-                int index = std::binary_search(d.begin(), d.end(), mintime);
+                // int index = std::binary_search(d.begin(), d.end(), mintime);
+                int index = binarySearch(d, mintime);
                 if (index < 0)
                 {
                     index = ~index;
@@ -172,7 +174,8 @@ namespace MassSpectrometry
             {
                 //int index = Array::BinarySearch(getXArray(), rt);
                 std::vector<double> d = this->getXArray();
-                int index = std::binary_search(d.begin(), d.end(), rt);
+                // int index = std::binary_search(d.begin(), d.end(), rt);
+                int index = binarySearch(d, rt);
                 if (index < 0)
                 {
                     index = ~index;
