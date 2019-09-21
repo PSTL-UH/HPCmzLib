@@ -103,14 +103,6 @@
     std::copy (xy.begin(), xy.begin()+count, privateXArray.begin()); 
     std::copy (xy.begin()+count, xy.end(), privateYArray.begin()); 
 
-12. Replace Array::BinarySearch with std::binary_search, e.g. 
-
-   int index = Array::BinarySearch(getXArray(), x);
-
-  with
-  
-   int index = std::binary_search(privateXArray.begin(), privateXArray.end(), x);
-
 
 13. Contains() method for IDictionary becomes a find() operation on
     std::unordered_map

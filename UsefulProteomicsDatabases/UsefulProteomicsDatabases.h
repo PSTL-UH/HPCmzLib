@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "DecoyType.h"
+#include "DecoyType.h"
 #include "Loaders.h"
 #include "PeriodicTableLoader.h"
 //#include "ProteinDbLoader.h"
