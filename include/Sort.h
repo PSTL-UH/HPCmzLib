@@ -4,17 +4,19 @@
 
 class Sort{
 public:
-
-    static void SortPairs(std::vector<double> &keys,
-                          std::vector<double> &values, int size) {
+    template <class TKEY, class TVAL>
+    static void SortPairs(std::vector<TKEY> &keys,
+                          std::vector<TVAL> &values, int size) {
         // return BubbleSortPairs ( keys, values, size );
         return HeapSortPairs ( keys, values, size );
     }
-
-    static void BubbleSortPairs(std::vector<double> &keys,
-                                std::vector<double> &values, int size) {
+    
+    template <class TKEY, class TVAL>
+    static void BubbleSortPairs(std::vector<TKEY> &keys,
+                                std::vector<TVAL> &values, int size) {
         // Sort an array of values based on the keys provided.
-        double tempkey, tempvalue;
+        TKEY tempkey;
+        TVAL tempvalue;
         
         for ( int i=0; i< (size-1); i++ ) {
             for (int j=0; j <(size-1); j++ ) {
@@ -30,7 +32,8 @@ public:
         }
     }
 
-    static void CreateHeap(std::vector<double> &keys, std::vector<double> &values, int size, int i) { 
+    template <class TKEY, class TVAL>
+    static void CreateHeap(std::vector<TKEY> &keys, std::vector<TVAL> &values, int size, int i) { 
         int largest = i;
         int left = 2*i + 1; 
         int right = 2*i + 2; 
@@ -51,7 +54,8 @@ public:
         } 
     } 
 
-    static void HeapSortPairs(std::vector<double> &keys, std::vector<double> &values, int size) {
+    template <class TKEY, class TVAL>
+    static void HeapSortPairs(std::vector<TKEY> &keys, std::vector<TVAL> &values, int size) {
         // Sort an array of values based on the keys provided using the Heap Sort algotithm.
         for (int i = size / 2 - 1; i >= 0; i--) 
             CreateHeap(keys, values, size, i); 
