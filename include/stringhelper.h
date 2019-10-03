@@ -213,6 +213,23 @@ public:
             return output;
 	}
 
+        static std::string join(const std::vector<std::string> &source, std::string &delimiter)
+        {
+            std::string output;
+            
+            for ( auto s = source.begin(); s == source.end(); s++ ) {
+                auto r = s + 1;
+                if ( r == source.end() ) {
+                    output += (*s);
+                }
+                else {
+                    output += (*s) + delimiter;
+                }
+            }
+            return output;
+	}
+
+        
 	template<typename T>
 	static std::string toString(const T &subject)
 	{
