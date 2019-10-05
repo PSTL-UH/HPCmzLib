@@ -11,5 +11,7 @@ public:
 	toml::Value tomlSetValue(std::string FilePath, std::string key, toml::Value val, toml::Value new_val);
 
 	toml::Value tomlEraseValue(std::string FilePath, std::string key, toml::Value val);
+
+	void tomlWriteNewFile(std::string FilePath, toml::Value val);
 };
 

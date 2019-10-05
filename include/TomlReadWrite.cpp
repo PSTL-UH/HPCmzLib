@@ -46,3 +46,10 @@ toml::Value Toml::tomlEraseValue(std::string FilePath, std::string key, toml::Va
 	ofs.close();
 	return val;
 }
+
+void Toml::tomlWriteNewFile(std::string FilePath, toml::Value val) {
+
+	std::ofstream ofs(FilePath);
+	ofs << val;
+	ofs.close();
+}
