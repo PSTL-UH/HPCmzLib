@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "../Proteomics/ProteolyticDigestion/ProteinDigestion.h"
 using namespace Proteomics::ProteolyticDigestion;
 
 namespace UsefulProteomicsDatabases
