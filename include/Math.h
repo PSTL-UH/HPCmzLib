@@ -3,6 +3,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <numeric>
 #include <limits>
 
 class Math {
@@ -81,4 +82,32 @@ public:
         std::cout << " Math::GammaLowerRegularized: function is not correctly implemented. Please revisit if nevessary" << std::endl;
         return ret;
     }
+
+    static double Mean ( std::vector<double> samples )
+    {
+        if (samples.empty())
+            return std::numeric_limits<double>::quiet_NaN();
+
+        return std::accumulate(samples.begin(), samples.end(), 0.0) / samples.size();
+    }
+
+    static double Median ( std::vector<double> samples )
+    {
+        if (samples.empty())
+            return std::numeric_limits<double>::quiet_NaN();
+
+        std::sort(samples.begin(), samples.end());
+        return  samples[samples.size()/2];
+    }
+
+    static double InterquartileRange ( std::vector<double> samples )
+    {
+        if (samples.empty())
+            return std::numeric_limits<double>::quiet_NaN();
+
+        std::cout << " Math::InterquartileRange: function is not correctly implemented. Please revisit if nevessary" << std::endl;
+        return  (double)0.0;
+    }
+
+    
 };
