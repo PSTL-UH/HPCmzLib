@@ -6,7 +6,7 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
-#include "../include/BinarySearch.h"
+#include "Search.h"
 
 // Copyright 2016 Stefan Solnts// Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -212,7 +212,7 @@ namespace Spectra {
                 return std::nullopt;
             }
             // int index = std::binary_search(this->XArray.begin(), this->XArray.end(), x);
-            int index = binarySearch(this->XArray, x);
+            int index = BinarySearch(this->XArray, x);
             if (index >= 0) {
                 return std::make_optional(index);
             }
@@ -242,7 +242,7 @@ namespace Spectra {
         int NumPeaksWithinRange(double minX, double maxX) override {
             // int startingIndex = Array::BinarySearch(getXArray(), minX);
             // int startingIndex = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
-            int startingIndex = binarySearch(this->XArray, minX);
+            int startingIndex = BinarySearch(this->XArray, minX);
             if (startingIndex < 0) {
                 startingIndex = ~startingIndex;
             }
@@ -251,7 +251,7 @@ namespace Spectra {
             }
             // int endIndex = Array::BinarySearch(getXArray(), maxX);
             // int endIndex = std::binary_search(this->XArray.begin(), this->XArray.end(), maxX);
-            int endIndex = binarySearch(this->XArray, maxX);
+            int endIndex = BinarySearch(this->XArray, maxX);
             if (endIndex < 0) {
                 endIndex = ~endIndex;
             }
@@ -286,7 +286,7 @@ namespace Spectra {
         std::vector<TPeak> Extract(double minX, double maxX) override {
             // int ind = Array::BinarySearch(getXArray(), minX);
             // int ind = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
-            int ind = binarySearch(this->XArray, minX);
+            int ind = BinarySearch(this->XArray, minX);
             if (ind < 0) {
                 ind = ~ind;
             }
@@ -302,7 +302,7 @@ namespace Spectra {
         std::vector<int> ExtractIndices(double minX, double maxX) {
             // int ind = Array::BinarySearch(getXArray(), minX);
             // int ind = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
-            int ind = binarySearch(this->XArray, minX);
+            int ind = BinarySearch(this->XArray, minX);
             if (ind < 0) {
                 ind = ~ind;
             }

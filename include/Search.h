@@ -1,10 +1,11 @@
+#pragma once
 #include <vector>
 #include <iostream>
 
 #define ACCURACY 1e-9
 
 template <typename T>
-int binarySearch(std::vector<T>& array, T element)
+int BinarySearch(std::vector<T>& array, T element)
 {
     int left = 0, right = array.size() - 1;
 

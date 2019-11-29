@@ -5,6 +5,7 @@
 #include "../../Spectra/Spectrum.h"
 #include "../../MzLibUtil/DoubleRange.h"
 #include "ChromatographicElutionProfile.h"
+#include "Search.h"
 #include <string>
 #include <vector>
 #include <type_traits>
@@ -106,7 +107,7 @@ namespace MassSpectrometry
             {
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
-                int index = binarySearch(d, mintime);
+                int index = BinarySearch(d, mintime);
                 // int index = std::binary_search(d.begin(), d.end(), mintime);
                 if (index < 0)
                 {
@@ -145,7 +146,7 @@ namespace MassSpectrometry
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
                 // int index = std::binary_search(d.begin(), d.end(), mintime);
-                int index = binarySearch(d, mintime);
+                int index = BinarySearch(d, mintime);
                 if (index < 0)
                 {
                     index = ~index;
@@ -175,7 +176,7 @@ namespace MassSpectrometry
                 //int index = Array::BinarySearch(getXArray(), rt);
                 std::vector<double> d = this->getXArray();
                 // int index = std::binary_search(d.begin(), d.end(), rt);
-                int index = binarySearch(d, rt);
+                int index = BinarySearch(d, rt);
                 if (index < 0)
                 {
                     index = ~index;
