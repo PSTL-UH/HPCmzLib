@@ -48,8 +48,12 @@ namespace IO
     namespace MzML
     {
 
+#ifdef ORIG
 XmlSerializer *const MzmlMethods::indexedSerializer = new XmlSerializer(typeof(Generated::indexedmzML));
 XmlSerializer *const MzmlMethods::mzmlSerializer = new XmlSerializer(typeof(Generated::mzMLType));
+#endif
+
+
 std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeAccessions =
 {
     {DissociationType::CID, "MS:1000133"},
@@ -1038,126 +1042,144 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             {
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (TextWriter writer = new StreamWriter(outputFile))
-                {
-                    TextWriter writer = StreamWriter(outputFile);
-                    mzmlSerializer->Serialize(writer, mzML);
-                }
-            }
-            else if (writeIndexed)
-            {
-                Generated::indexedmzML *indexedMzml = new Generated::indexedmzML();
-
-                auto inMemoryTextWriter = new MemoryStream();
-
-                //compute total offset
-                indexedMzml->setmzML(mzML);
-
-                indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
-                std::string allmzMLData = StringHelper::replace(Encoding::UTF8->GetString(inMemoryTextWriter->ToArray()), "\r\n", "\n");
-
-                std::optional<long long> indexListOffset = std::make_optional(allmzMLData.length());
-
-                //new stream with correct formatting
-
-                Generated::IndexListType tempVar101();
-                indexedMzml->setindexList(&tempVar101);
-                indexedMzml->getindexList()->setcount("2");
-                indexedMzml->getindexList()->setindex(std::vector<Generated::IndexType*>(2));
-
-                //starts as spectrum be defualt
-                auto indexname = new Generated::IndexTypeName();
-
-                //spectra naming
-                Generated::IndexType *tempVar102 = new Generated::IndexType();
-                tempVar102->setname(indexname);
-                indexedMzml->getindexList()->getindex()[0] = tempVar102;
-
-                //switch to chromatogram name
-                indexname = Generated::IndexTypeName::chromatogram;
-
-                //chroma naming
-                Generated::IndexType *tempVar103 = new Generated::IndexType();
-                tempVar103->setname(indexname);
-                indexedMzml->getindexList()->getindex()[1] = tempVar103;
-
-                int numScans = myMsDataFile->getNumSpectra();
-                int numChromas = std::stoi(mzML->getrun()->getchromatogramList()->getcount());
-
-                //now calculate offsets of each scan and chroma
-
-                //add spectra offsets
-                indexedMzml->getindexList()->getindex()[0]->offset = std::vector<Generated::OffsetType*>(numScans);
-                //add chroma offsets
-                indexedMzml->getindexList()->getindex()[1]->offset = std::vector<Generated::OffsetType*>(numChromas);
-
-                int i = 0;
-                int a = 1;
-                int index;
-                //indexOf search returns location fom beginning of line (3 characters short)
-                int offsetFromBeforeScanTag = 3;
-                //spectra offset loop
-                while (i < numScans)
-                {
-                    index = (int)allmzMLData.find(mzML->getrun()->getspectrumList()->getspectrum()[i]->id, (a - 1));
-                    if (index != -1)
-                    {
-                        a = index;
-                        Generated::OffsetType *tempVar104 = new Generated::OffsetType();
-                        tempVar104->setidRef(mzML->getrun()->getspectrumList()->getspectrum()[i]->id);
-                        tempVar104->setValue(a + offsetFromBeforeScanTag);
-                        indexedMzml->getindexList()->getindex()[0]->offset[i] = tempVar104;
-                        i++;
-
-                        delete tempVar104;
-                    }
-                }
-                int offsetFromBeforeChromaTag = 3;
-                index = (int)allmzMLData.find("id=\"" + mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id + "\"", (a - 1));
-                if (index != -1)
-                {
-                    a = index;
-                    Generated::OffsetType *tempVar105 = new Generated::OffsetType();
-                    tempVar105->setidRef(mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id);
-                    tempVar105->setValue(a + offsetFromBeforeChromaTag);
-                    indexedMzml->getindexList()->getindex()[1]->offset[0] = tempVar105;
-
-                    delete tempVar105;
-                }
-                //offset
-                int offsetFromNullIndexList = 32;
-                indexedMzml->setindexListOffset(indexListOffset - offsetFromNullIndexList);
-
-                //compute checksum
-                std::string chksum = "Dummy";
-
-                indexedMzml->setfileChecksum(chksum);
-                indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
-
-                std::string indexedMzmlwithBlankChecksumStream = Encoding::UTF8->GetString(inMemoryTextWriter->ToArray());
-
-                std::string indexedMzmlwithBlankChecksumString = indexedMzmlwithBlankChecksumStream.substr(0, (int)indexedMzmlwithBlankChecksumStream.find("<fileChecksum>", (a - 1)));
-
-                inMemoryTextWriter->Close();
-                inMemoryTextWriter = new MemoryStream(Encoding::UTF8->GetBytes(indexedMzmlwithBlankChecksumString));
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                chksum = BitConverter::ToString(System::Security::Cryptography::SHA1::Create()->ComputeHash(inMemoryTextWriter));
-                inMemoryTextWriter->Close();
-
-                chksum = StringHelper::replace(chksum, "-", "");
-                chksum = StringHelper::toLower(chksum);
-                indexedMzml->setfileChecksum(chksum);
-
-                //finally write the indexedmzml
+#ifdef ORIG
                 TextWriter writer = StreamWriter(outputFile);
-                writer.NewLine = "\n";
-                indexedSerializer->Serialize(writer, indexedMzml);
-                writer.Close();
+                mzmlSerializer->Serialize(writer, mzML);
+#endif
+                xml_schema::namespace_infomap map;
+                // map["xsn"].name = "http://www.w3.org/2001/XMLSchema-instance";
+                map[""].name = "";
+                map[""].schema = "mzML1.1.0.xsd";
 
-                delete tempVar103;
-                delete tempVar102;
-//C# TO C++ CONVERTER TODO TASK: A 'delete inMemoryTextWriter' statement was not added since inMemoryTextWriter was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete indexedMzml' statement was not added since indexedMzml was passed to a method or constructor. Handle memory management manually.
+                // mzML (std::cout, mzML, map);
+
+                // Serialize to a file.
+                try{
+                    std::ofstream ofs (outputFile);
+                    mzML (ofs, mzML, map);
+                }
+
+                catch (const xml_schema::exception& e)
+                {
+                    std::cerr << e << std::endl;
+                }         
+
             }
+//             else if (writeIndexed)
+//             {
+//                 Generated::indexedmzML *indexedMzml = new Generated::indexedmzML();
+
+//                 auto inMemoryTextWriter = new MemoryStream();
+
+//                 //compute total offset
+//                 indexedMzml->setmzML(mzML);
+
+//                 indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
+//                 std::string allmzMLData = StringHelper::replace(Encoding::UTF8->GetString(inMemoryTextWriter->ToArray()), "\r\n", "\n");
+
+//                 std::optional<long long> indexListOffset = std::make_optional(allmzMLData.length());
+
+//                 //new stream with correct formatting
+
+//                 Generated::IndexListType tempVar101();
+//                 indexedMzml->setindexList(&tempVar101);
+//                 indexedMzml->getindexList()->setcount("2");
+//                 indexedMzml->getindexList()->setindex(std::vector<Generated::IndexType*>(2));
+
+//                 //starts as spectrum be defualt
+//                 auto indexname = new Generated::IndexTypeName();
+
+//                 //spectra naming
+//                 Generated::IndexType *tempVar102 = new Generated::IndexType();
+//                 tempVar102->setname(indexname);
+//                 indexedMzml->getindexList()->getindex()[0] = tempVar102;
+
+//                 //switch to chromatogram name
+//                 indexname = Generated::IndexTypeName::chromatogram;
+
+//                 //chroma naming
+//                 Generated::IndexType *tempVar103 = new Generated::IndexType();
+//                 tempVar103->setname(indexname);
+//                 indexedMzml->getindexList()->getindex()[1] = tempVar103;
+
+//                 int numScans = myMsDataFile->getNumSpectra();
+//                 int numChromas = std::stoi(mzML->getrun()->getchromatogramList()->getcount());
+
+//                 //now calculate offsets of each scan and chroma
+
+//                 //add spectra offsets
+//                 indexedMzml->getindexList()->getindex()[0]->offset = std::vector<Generated::OffsetType*>(numScans);
+//                 //add chroma offsets
+//                 indexedMzml->getindexList()->getindex()[1]->offset = std::vector<Generated::OffsetType*>(numChromas);
+
+//                 int i = 0;
+//                 int a = 1;
+//                 int index;
+//                 //indexOf search returns location fom beginning of line (3 characters short)
+//                 int offsetFromBeforeScanTag = 3;
+//                 //spectra offset loop
+//                 while (i < numScans)
+//                 {
+//                     index = (int)allmzMLData.find(mzML->getrun()->getspectrumList()->getspectrum()[i]->id, (a - 1));
+//                     if (index != -1)
+//                     {
+//                         a = index;
+//                         Generated::OffsetType *tempVar104 = new Generated::OffsetType();
+//                         tempVar104->setidRef(mzML->getrun()->getspectrumList()->getspectrum()[i]->id);
+//                         tempVar104->setValue(a + offsetFromBeforeScanTag);
+//                         indexedMzml->getindexList()->getindex()[0]->offset[i] = tempVar104;
+//                         i++;
+
+//                         delete tempVar104;
+//                     }
+//                 }
+//                 int offsetFromBeforeChromaTag = 3;
+//                 index = (int)allmzMLData.find("id=\"" + mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id + "\"", (a - 1));
+//                 if (index != -1)
+//                 {
+//                     a = index;
+//                     Generated::OffsetType *tempVar105 = new Generated::OffsetType();
+//                     tempVar105->setidRef(mzML->getrun()->getchromatogramList()->getchromatogram()[0]->id);
+//                     tempVar105->setValue(a + offsetFromBeforeChromaTag);
+//                     indexedMzml->getindexList()->getindex()[1]->offset[0] = tempVar105;
+
+//                     delete tempVar105;
+//                 }
+//                 //offset
+//                 int offsetFromNullIndexList = 32;
+//                 indexedMzml->setindexListOffset(indexListOffset - offsetFromNullIndexList);
+
+//                 //compute checksum
+//                 std::string chksum = "Dummy";
+
+//                 indexedMzml->setfileChecksum(chksum);
+//                 indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
+
+//                 std::string indexedMzmlwithBlankChecksumStream = Encoding::UTF8->GetString(inMemoryTextWriter->ToArray());
+
+//                 std::string indexedMzmlwithBlankChecksumString = indexedMzmlwithBlankChecksumStream.substr(0, (int)indexedMzmlwithBlankChecksumStream.find("<fileChecksum>", (a - 1)));
+
+//                 inMemoryTextWriter->Close();
+//                 inMemoryTextWriter = new MemoryStream(Encoding::UTF8->GetBytes(indexedMzmlwithBlankChecksumString));
+// //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+//                 chksum = BitConverter::ToString(System::Security::Cryptography::SHA1::Create()->ComputeHash(inMemoryTextWriter));
+//                 inMemoryTextWriter->Close();
+
+//                 chksum = StringHelper::replace(chksum, "-", "");
+//                 chksum = StringHelper::toLower(chksum);
+//                 indexedMzml->setfileChecksum(chksum);
+
+//                 //finally write the indexedmzml
+//                 TextWriter writer = StreamWriter(outputFile);
+//                 writer.NewLine = "\n";
+//                 indexedSerializer->Serialize(writer, indexedMzml);
+//                 writer.Close();
+
+//                 delete tempVar103;
+//                 delete tempVar102;
+// //C# TO C++ CONVERTER TODO TASK: A 'delete inMemoryTextWriter' statement was not added since inMemoryTextWriter was passed to a method or constructor. Handle memory management manually.
+// //C# TO C++ CONVERTER TODO TASK: A 'delete indexedMzml' statement was not added since indexedMzml was passed to a method or constructor. Handle memory management manually.
+//             }
 
             delete tempVar45;
             delete tempVar44;

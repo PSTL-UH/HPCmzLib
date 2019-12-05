@@ -14,11 +14,16 @@
 #include "tangible_filesystem.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MsDataScan; }
-namespace MassSpectrometry { class SourceFile; }
-namespace MassSpectrometry { class FilteringParams; }
-namespace MassSpectrometry { class IFilteringParams; }
-namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
+#include "../MassSpectrometry/MsDataScan.h"
+// namespace MassSpectrometry { class MsDataScan; }
+#include "../MassSpectrometry/SourceFile.h"
+// namespace MassSpectrometry { class SourceFile; }
+#include "../MassSpectrometry/FilteringParams.h"
+// namespace MassSpectrometry { class FilteringParams; }
+#include "../MassSpectrometry/IFilteringParams.h"
+// namespace MassSpectrometry { class IFilteringParams; }
+#include "XSD/IO.MzML.Generated.mzMLType.h"
+// namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016, 2017 Stefan Solntsev
@@ -69,18 +74,12 @@ namespace IO
             static const std::string _ionInjectionTime;
             static const std::string _mzArray;
             static const std::string _intensityArray;
-            static Regex *const MZAnalyzerTypeRegex;
+            // static Regex *const MZAnalyzerTypeRegex;
 
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, Polarity> polarityDictionary = new Dictionary<string, Polarity> { {"MS:1000129",Polarity.Negative}, {"MS:1000130",Polarity.Positive} };
             static std::unordered_map<std::string, Polarity> polarityDictionary;
 
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, MZAnalyzerType> analyzerDictionary = new Dictionary<string, MZAnalyzerType> { { "MS:1000443", MZAnalyzerType.Unknown}, { "MS:1000081",MZAnalyzerType.Quadrupole}, { "MS:1000291",MZAnalyzerType.IonTrap2D}, { "MS:1000082",MZAnalyzerType.IonTrap3D}, { "MS:1000484",MZAnalyzerType.Orbitrap}, { "MS:1000084",MZAnalyzerType.TOF}, { "MS:1000079",MZAnalyzerType.FTICR}, { "MS:1000080",MZAnalyzerType.Sector} };
             static std::unordered_map<std::string, MZAnalyzerType> analyzerDictionary;
 
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, DissociationType> dissociationDictionary = new Dictionary<string, DissociationType> { { "MS:1000133",DissociationType.CID}, { "MS:1001880",DissociationType.ISCID}, { "MS:1000422",DissociationType.HCD}, { "MS:1000598",DissociationType.ETD}, { "MS:1000435",DissociationType.IRMPD}, { "MS:1000599",DissociationType.PQD}, { "MS:1000044",DissociationType.Unknown} };
             static std::unordered_map<std::string, DissociationType> dissociationDictionary;
 
             Mzml(std::vector<MsDataScan*> &scans, MassSpectrometry::SourceFile *sourceFile);

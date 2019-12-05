@@ -13,6 +13,11 @@
 #include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
 
+#include <iostream>
+#include <fstream>
+#include "../include/stringhelper.h"
+#include "../include/Sort.h"
+
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 namespace IO
@@ -41,7 +46,7 @@ const std::string Mzml::_retentionTime = "MS:1000016";
 const std::string Mzml::_ionInjectionTime = "MS:1000927";
 const std::string Mzml::_mzArray = "MS:1000514";
 const std::string Mzml::_intensityArray = "MS:1000515";
-Regex *const Mzml::MZAnalyzerTypeRegex = new Regex(R"(^[a-zA-Z]*)", RegexOptions::Compiled);
+// Regex *const Mzml::MZAnalyzerTypeRegex = new Regex(R"(^[a-zA-Z]*)", RegexOptions::Compiled);
 std::unordered_map<std::string, Polarity> Mzml::polarityDictionary =
 {
     {"MS:1000129",Polarity::Negative},
@@ -75,9 +80,11 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
         Mzml *Mzml::LoadAllStaticData(const std::string &filePath, FilteringParams *filterParams, int maxThreads)
         {
-            if (!FileSystem::fileExists(filePath))
+            // if (!FileSystem::fileExists(filePath))
+            if (!std::experimental::filesystem::exists(filePath))
             {
-                throw FileNotFoundException();
+                // throw FileNotFoundException();
+                std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
             Generated::mzMLType *_mzMLConnection;
@@ -87,9 +94,15 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
+#ifdef ORIG
                     FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
-                    auto _indexedmzMLConnection = static_cast<Generated::indexedmzML*>(MzmlMethods::indexedSerializer->Deserialize(fs));
-                    _mzMLConnection = _indexedmzMLConnection->getmzML();
+#endif
+                    std::ifstream fs = std::ifstream(filePath);
+
+                    // auto _indexedmzMLConnection = static_cast<Generated::indexedmzML*>(MzmlMethods::indexedSerializer->Deserialize(fs));
+                    // _mzMLConnection = _indexedmzMLConnection->getmzML();
+
+                    fs.close();
                 }
             }
             catch (...)
@@ -97,8 +110,14 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
+#ifdef ORIG
                     FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
-                    _mzMLConnection = static_cast<Generated::mzMLType*>(MzmlMethods::mzmlSerializer->Deserialize(fs));
+#endif
+                    std::ifstream fs = std::ifstream(filePath);
+
+                    // _mzMLConnection = static_cast<Generated::mzMLType*>(MzmlMethods::mzmlSerializer->Deserialize(fs));
+
+                    fs.close();
                 }
             }
 
@@ -155,22 +174,40 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (FileStream stream = File.OpenRead(filePath))
                 {
+#ifdef ORIG
                     FileStream stream = File::OpenRead(filePath);
+#endif
+                    std::ifstream stream = std::ifstream(filePath);
+
+
+
 //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
 //ORIGINAL LINE: using (SHA1Managed sha = new SHA1Managed())
                     {
+#ifdef ORIG
                         SHA1Managed sha = SHA1Managed();
+
                         std::vector<unsigned char> checksum = sha.ComputeHash(stream);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+
                         sendCheckSum = BitConverter::ToString(checksum)->Replace("-", "");
+#endif
+
+                        sendCheckSum = "1111100000";
+
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                        
+
                     }
                 }
-                sourceFile = new SourceFile(R"(no nativeID format)", R"(mzML format)", sendCheckSum, R"(SHA-1)", FileSystem::getFullPath(filePath), Path::GetFileNameWithoutExtension(filePath));
+
+                std::experimental::filesystem::path fp = filePath;
+                sourceFile = new SourceFile(R"(no nativeID format)", R"(mzML format)", sendCheckSum, R"(No checksum type)", std::experimental::filesystem::absolute(fp), fp.stem());
             }
 
             auto numSpecta = _mzMLConnection->getrun()->getspectrumList()->getspectrum().size();
             std::vector<MsDataScan*> scans(numSpecta);
 
+#ifdef ORIG
             ParallelOptions *tempVar2 = new ParallelOptions();
             tempVar2->MaxDegreeOfParallelism = maxThreads;
             Parallel::ForEach(Partitioner::Create(0, numSpecta), tempVar2, [&] (std::any fff)
@@ -180,6 +217,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
                 }
             });
+#endif
+            for ( int i = 0; i < numSpecta; i++)  {
+                scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
+            }
 
             //Mzml sometimes have scan numbers specified, but usually not.
             //In the event that they do, the iterator above unintentionally assigned them to an incorrect index.
@@ -189,6 +230,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             int previousScanNumber = -1;
             for (auto scan : scans)
             {
+                
+#ifdef ORIG
                 //check if no duplicates
                 if (!checkForDuplicateScans.insert(scan->getOneBasedScanNumber())) //returns false if the scan already exists
                 {
@@ -196,6 +239,16 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     delete sourceFile;
                     throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
                 }
+#endif
+                //check if no duplicates
+                std::unordered_set<int>::const_iterator dup_iterator = checkForDuplicateScans.find(scan->getOneBasedScanNumber());
+                if (dup_iterator == checkForDuplicateScans.end()) {
+
+                    // not sure why the delete sourceFile was added here
+                    delete sourceFile;
+                    throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
+                }
+
                 //check if scans are in order
                 if (previousScanNumber > scan->getOneBasedScanNumber())
                 {
@@ -206,7 +259,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             if (!ordered) //reassign indexes if not ordered
             {
+#ifdef ORIG
                 std::vector<MsDataScan*> indexedScans(checkForDuplicateScans.Max());
+#endif
+                std::vector<MsDataScan*> indexedScans(checkForDuplicateScans.size());
                 for (auto scan : scans)
                 {
                     indexedScans[scan->getOneBasedScanNumber() - 1] = scan;
@@ -219,7 +275,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             // loop back to find precursor scan
             // (assumed to be the first scan before this scan with an MS order of this scan's MS order - 1)
             // e.g., if this is an MS2 scan, find the first MS1 scan before this and assume that's the precursor scan
-            for (int i = 0; i < scans.size(); i++)
+            for (long unsigned int i = 0; i < scans.size(); i++)
             {
                 if (scans[i]->getMsnOrder() > 1 && !scans[i]->getOneBasedPrecursorScanNumber())
                 {
@@ -316,7 +372,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 {
                     tic = std::stod(cv->getvalue());
                 }
+#ifdef ORIG
                 if (polarity.Equals(Polarity::Unknown))
+#endif
+                if (polarity == Polarity::Unknown)
                 {
                     std::unordered_map<std::string, Polarity>::const_iterator polarityDictionary_iterator = polarityDictionary.find(cv->getaccession());
                     polarity = polarityDictionary_iterator->second;
@@ -346,7 +405,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     intensityArray |= cv->getaccession() == _intensityArray;
                 }
 
-                std::vector<double> data = ConvertBase64ToDoubles(binaryData->getbinary(), compressed, is32bit);
+                std::vector<unsigned char> bin_data = binaryData->getbinary();
+                std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
                 if (mzArray)
                 {
                     masses = data;
@@ -378,20 +438,34 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
 
+            //Original C# line
+            //if (filterParams != null && intensities.Length > 0 && ((filterParams.ApplyTrimmingToMs1 && msOrder.Value == 1) || (filterParams.ApplyTrimmingToMsMs && msOrder.Value > 1)))
             if (filterParams != nullptr && intensities.size() > 0 && (filterParams->getMinimumAllowedIntensityRatioToBasePeakM() || filterParams->getNumberOfPeaksToKeepPerWindow()) && ((filterParams->getApplyTrimmingToMs1() && msOrder.value() == 1) || (filterParams->getApplyTrimmingToMsMs() && msOrder.value() > 1)))
             {
+
+                //I dont see this in the C# mzlib.  Only the next Else statement is present
                 if (!filterParams->getNumberOfWindows())
                 {
                     int numPeaks = TopNpeakHelper(intensities, masses, filterParams);
+#ifdef ORIG
                     Array::Resize(intensities, numPeaks);
                     Array::Resize(masses, numPeaks);
+#endif
+                    intensities.resize(numPeaks);
+                    masses.resize(numPeaks);
                 }
                 else
                 {
                     WindowModeHelper(intensities, masses, filterParams, low, high);
                 }
             }
+
+            //Sort items in array based on keys in first array
+#ifdef ORIG
             Array::Sort(masses, intensities);
+#endif
+            Sort::SortPairs(masses, intensities, masses.size());
+
             auto mzmlMzSpectrum = new MzSpectrum(masses, intensities, false);
 
             double rtInMinutes = NAN;
@@ -509,32 +583,32 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             return new MsDataScan(mzmlMzSpectrum, oneBasedIndex, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar2, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId, std::make_optional(selectedIonMz), selectedIonCharge, selectedIonIntensity, isolationMz, std::make_optional(lowIsolation + highIsolation), std::make_optional(dissociationType), precursorScanNumber, monoisotopicMz);
         }
 
+        //bytes[] array in C# rather than std::vector<unsigned char> &bytes
         std::vector<double> Mzml::ConvertBase64ToDoubles(std::vector<unsigned char> &bytes, bool zlibCompressed, bool is32bit)
         {
-            // Add capability of compressed data
+            // TODO:  Add capability of compressed data
+//             if (zlibCompressed)
+//             {
+//                 auto output = new MemoryStream();
+// //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+// //ORIGINAL LINE: using (var compressStream = new MemoryStream(bytes))
+//                 {
+//                     auto compressStream = MemoryStream(bytes);
+//                     compressStream.ReadByte();
+//                     compressStream.ReadByte();
+// //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+// //ORIGINAL LINE: using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
+//                     {
+//                         auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
+//                         decompressor.CopyTo(output);
+//                         decompressor.Close();
+//                         output->Position = 0;
+//                         bytes = output->ToArray();
+//                     }
+//                 }
 
-            if (zlibCompressed)
-            {
-                auto output = new MemoryStream();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var compressStream = new MemoryStream(bytes))
-                {
-                    auto compressStream = MemoryStream(bytes);
-                    compressStream.ReadByte();
-                    compressStream.ReadByte();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
-                    {
-                        auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
-                        decompressor.CopyTo(output);
-                        decompressor.Close();
-                        output->Position = 0;
-                        bytes = output->ToArray();
-                    }
-                }
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete output' statement was not added since output was passed to a method or constructor. Handle memory management manually.
-            }
+// //C# TO C++ CONVERTER TODO TASK: A 'delete output' statement was not added since output was passed to a method or constructor. Handle memory management manually.
+//             }
 
             int size = is32bit ? sizeof(float) : sizeof(double);
 

@@ -12,8 +12,9 @@
 #include <optional>
 #include "stringhelper.h"
 
+#include "../MassSpectrometry/MsDataFile.h"
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MsDataFile; }
+// namespace MassSpectrometry { class MsDataFile; }
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -25,10 +26,13 @@ namespace IO
         class MzmlMethods final
         {
         public:
+#ifdef ORIG
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
             static XmlSerializer *const indexedSerializer;
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+// //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
             static XmlSerializer *const mzmlSerializer;
+#endif
+
 
         private:
 //C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
