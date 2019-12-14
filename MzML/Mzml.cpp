@@ -17,6 +17,7 @@
 #include <fstream>
 #include "../include/stringhelper.h"
 #include "../include/Sort.h"
+#include "../include/BitConverter.h"
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -583,32 +584,34 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             return new MsDataScan(mzmlMzSpectrum, oneBasedIndex, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar2, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId, std::make_optional(selectedIonMz), selectedIonCharge, selectedIonIntensity, isolationMz, std::make_optional(lowIsolation + highIsolation), std::make_optional(dissociationType), precursorScanNumber, monoisotopicMz);
         }
 
-        //bytes[] array in C# rather than std::vector<unsigned char> &bytes
         std::vector<double> Mzml::ConvertBase64ToDoubles(std::vector<unsigned char> &bytes, bool zlibCompressed, bool is32bit)
         {
-            // TODO:  Add capability of compressed data
-//             if (zlibCompressed)
-//             {
-//                 auto output = new MemoryStream();
-// //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-// //ORIGINAL LINE: using (var compressStream = new MemoryStream(bytes))
-//                 {
-//                     auto compressStream = MemoryStream(bytes);
-//                     compressStream.ReadByte();
-//                     compressStream.ReadByte();
-// //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-// //ORIGINAL LINE: using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
-//                     {
-//                         auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
-//                         decompressor.CopyTo(output);
-//                         decompressor.Close();
-//                         output->Position = 0;
-//                         bytes = output->ToArray();
-//                     }
-//                 }
 
-// //C# TO C++ CONVERTER TODO TASK: A 'delete output' statement was not added since output was passed to a method or constructor. Handle memory management manually.
-//             }
+// TODO:  Add capability of compressed data
+#ifdef ORIG
+            if (zlibCompressed)
+            {
+                auto output = new MemoryStream();
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var compressStream = new MemoryStream(bytes))
+                {
+                    auto compressStream = MemoryStream(bytes);
+                    compressStream.ReadByte();
+                    compressStream.ReadByte();
+//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+//ORIGINAL LINE: using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
+                    {
+                        auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
+                        decompressor.CopyTo(output);
+                        decompressor.Close();
+                        output->Position = 0;
+                        bytes = output->ToArray();
+                    }
+                }
+
+//C# TO C++ CONVERTER TODO TASK: A 'delete output' statement was not added since output was passed to a method or constructor. Handle memory management manually.
+            }
+#endif
 
             int size = is32bit ? sizeof(float) : sizeof(double);
 
@@ -619,11 +622,22 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             {
                 if (is32bit)
                 {
+#ifdef ORIG
+                    //public static float ToSingle (byte[] value, int startIndex)
                     convertedArray[i] = BitConverter::ToSingle(bytes, i * size);
+#endif
+                    BitConverter bc;
+                    convertedArray[i] = bc.toSingle(bytes, i*size);
                 }
                 else
                 {
+#ifdef ORIG
+                    //public static double ToDouble (byte[] value, int startIndex);
                     convertedArray[i] = BitConverter::ToDouble(bytes, i * size);
+#endif
+
+                    BitConverter bc;
+                    convertedArray[i] = bc.toDouble(bytes, i*size);
                 }
             }
             return convertedArray;
