@@ -1,19 +1,21 @@
 ﻿#include "SpectraFileInfo.h"
+#include "stringhelper.h"
+#include <string>
 
 namespace FlashLFQ
 {
 
-    SpectraFileInfo::SpectraFileInfo(const std::string &fullFilePathWithExtension, const std::string &condition, int biorep, int techrep, int fraction) : FullFilePathWithExtension(fullFilePathWithExtension), FilenameWithoutExtension(System::IO::Path::GetFileNameWithoutExtension(this->FullFilePathWithExtension)), Condition(condition), BiologicalReplicate(biorep), Fraction(fraction), TechnicalReplicate(techrep)
+    SpectraFileInfo::SpectraFileInfo(const std::string &fullFilePathWithExtension, const std::string &condition, int biorep, int techrep, int fraction) : FullFilePathWithExtension(fullFilePathWithExtension), FilenameWithoutExtension(const_cast<std::string&>(fullFilePathWithExtension).erase (fullFilePathWithExtension.find_last_of("."), std::string::npos)), Condition(condition), BiologicalReplicate(biorep), Fraction(fraction), TechnicalReplicate(techrep)
     {
     }
 
-    bool SpectraFileInfo::Equals(std::any obj)
+    bool SpectraFileInfo::Equals(SpectraFileInfo* obj)
     {
-        return __super::Equals(obj) && (std::any_cast<SpectraFileInfo*>(obj))->FullFilePathWithExtension == this->FullFilePathWithExtension;
+        return obj->FullFilePathWithExtension == this->FullFilePathWithExtension;
     }
 
     int SpectraFileInfo::GetHashCode()
     {
-        return FullFilePathWithExtension.GetHashCode();
+        return StringHelper::GetHashCode(FullFilePathWithExtension);
     }
 }

@@ -14,13 +14,19 @@
 namespace FlashLFQ { class IndexedMassSpectralPeak; }
 namespace FlashLFQ { class Ms1ScanInfo; }
 namespace FlashLFQ { class SpectraFileInfo; }
-namespace MzLibUtil { class Tolerance; }
 
+//namespace MzLibUtil { class Tolerance; }
+
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
-using namespace IO::MzML;
+
+//using namespace IO::MzML;
+#include "../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
+
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
-using namespace NetSerializer;
+//using namespace NetSerializer;
 
 namespace FlashLFQ
 {
@@ -34,7 +40,7 @@ namespace FlashLFQ
     public:
         virtual ~PeakIndexingEngine()
         {
-            delete _serializer;
+            //delete _serializer;
         }
 
         PeakIndexingEngine();

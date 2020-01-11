@@ -17,17 +17,18 @@ namespace FlashLFQ
     class FlashLfqResults
     {
     public:
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: public readonly List<SpectraFileInfo> SpectraFiles;
+        //C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection
+        // which allows modification of internal state:
+        //ORIGINAL LINE: public readonly List<SpectraFileInfo> SpectraFiles;
         std::vector<SpectraFileInfo*> SpectraFiles;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: public readonly Dictionary<string, Peptide> PeptideModifiedSequences;
+
+        //ORIGINAL LINE: public readonly Dictionary<string, Peptide> PeptideModifiedSequences;
         std::unordered_map<std::string, Peptide*> PeptideModifiedSequences;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: public readonly Dictionary<string, ProteinGroup> ProteinGroups;
+
+        //ORIGINAL LINE: public readonly Dictionary<string, ProteinGroup> ProteinGroups;
         std::unordered_map<std::string, ProteinGroup*> ProteinGroups;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: public readonly Dictionary<SpectraFileInfo, List<ChromatographicPeak>> Peaks;
+        
+        //ORIGINAL LINE: public readonly Dictionary<SpectraFileInfo, List<ChromatographicPeak>> Peaks;
         std::unordered_map<SpectraFileInfo*, std::vector<ChromatographicPeak*>> Peaks;
 
         FlashLfqResults(std::vector<SpectraFileInfo*> &spectraFiles);

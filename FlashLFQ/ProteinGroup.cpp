@@ -1,5 +1,6 @@
 ﻿#include "ProteinGroup.h"
 #include "SpectraFileInfo.h"
+#include "stringhelper.h"
 
 
 namespace FlashLFQ
@@ -68,7 +69,7 @@ namespace FlashLFQ
             if (intensities_iterator != intensities.end())
             {
                 intensity = intensities_iterator->second;
-                str->append(intensity + "\t");
+                str->append(std::to_string(intensity) + "\t");
             }
             else
             {
@@ -88,6 +89,6 @@ namespace FlashLFQ
 
     int ProteinGroup::GetHashCode()
     {
-        return ProteinGroupName.GetHashCode();
+        return StringHelper::GetHashCode(ProteinGroupName);
     }
 }

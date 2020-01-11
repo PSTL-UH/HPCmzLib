@@ -8,11 +8,11 @@
 #include "stringhelper.h"
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class IsotopicEnvelope; }
-namespace FlashLFQ { class Identification; }
-namespace FlashLFQ { class SpectraFileInfo; }
+#include "IsotopicEnvelope.h"
+#include "Identification.h"
+#include "SpectraFileInfo.h"
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 
 namespace FlashLFQ
@@ -29,14 +29,14 @@ namespace FlashLFQ
 
     public:
         double Intensity = 0;
-        SpectraFileInfo *const SpectraFileInfo;
+        SpectraFileInfo *const spectraFileInfo;
         std::vector<IsotopicEnvelope*> IsotopicEnvelopes;
         double SplitRT = 0;
         const bool IsMbrPeak;
 
         virtual ~ChromatographicPeak()
         {
-            delete SpectraFileInfo;
+            // delete SpectraFileInfo;
         }
 
         ChromatographicPeak(Identification *id, bool isMbrPeak, SpectraFileInfo *fileInfo);
@@ -61,7 +61,6 @@ namespace FlashLFQ
         void MergeFeatureWith(ChromatographicPeak *otherFeature, bool integrate);
 
         void ResolveIdentifications();
-
-        std::string ToString() override;
+        std::string ToString();
     };
 }

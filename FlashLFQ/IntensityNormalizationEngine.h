@@ -15,7 +15,7 @@ namespace FlashLFQ { class Peptide; }
 namespace FlashLFQ { class SpectraFileInfo; }
 
 using namespace FlashLFQ::BoundedNelderMeadOptimizer;
-using namespace MathNet::Numerics::Statistics;
+//using namespace MathNet::Numerics::Statistics;
 using namespace SharpLearning::Optimization;
 
 namespace FlashLFQ
@@ -33,7 +33,7 @@ namespace FlashLFQ
     public:
         virtual ~IntensityNormalizationEngine()
         {
-            delete results;
+            //delete results;
         }
 
         IntensityNormalizationEngine(FlashLfqResults *results, bool integrate, bool silent, int maxThreads);

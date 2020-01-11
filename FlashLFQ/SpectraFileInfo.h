@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <string>
-#include <any>
 
 namespace FlashLFQ
 {
@@ -18,8 +17,8 @@ namespace FlashLFQ
         SpectraFileInfo(const std::string &fullFilePathWithExtension, const std::string &condition, int biorep, int techrep, int fraction);
 
         // files are considered the same if the absolute file path is the same
-        bool Equals(std::any obj) override;
+        bool Equals(SpectraFileInfo* obj);
 
-        int GetHashCode() override;
+        int GetHashCode();
     };
 }

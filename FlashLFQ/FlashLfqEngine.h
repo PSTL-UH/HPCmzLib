@@ -17,12 +17,17 @@ namespace FlashLFQ { class Identification; }
 namespace FlashLFQ { class FlashLfqResults; }
 namespace FlashLFQ { class Ms1ScanInfo; }
 namespace FlashLFQ { class PeakIndexingEngine; }
-namespace MzLibUtil { class Tolerance; }
 namespace FlashLFQ { class ChromatographicPeak; }
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
-using namespace MathNet::Numerics::Statistics;
+//using namespace MathNet::Numerics::Statistics;
+
+//namespace MzLibUtil { class Tolerance; }
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
+
+#include "../UsefulProteomicsDatabase/UsefulProteomicsDatabases.h"
 using namespace UsefulProteomicsDatabases;
 
 namespace FlashLFQ
@@ -64,9 +69,9 @@ namespace FlashLFQ
     public:
         virtual ~FlashLfqEngine()
         {
-            delete _globalStopwatch;
-            delete _results;
-            delete _peakIndexingEngine;
+            //delete _globalStopwatch;
+            //delete _results;
+            //delete _peakIndexingEngine;
         }
 
         FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize = false, bool advancedProteinQuant = false, bool matchBetweenRuns = false, double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0, double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false, int numIsotopesRequired = 2, bool idSpecificChargeState = false, bool requireMonoisotopicMass = true, bool silent = false, const std::string &optionalPeriodicTablePath = "", double maxMbrWindow = 2.5, int maxThreads = -1);
@@ -92,19 +97,19 @@ namespace FlashLFQ
             RunErrorChecking(idAcceptorFile);
     };
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private RetentionTimeCalibDataPoint[] GetRtCalSpline(SpectraFileInfo donor, SpectraFileInfo acceptor)
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    private RetentionTimeCalibDataPoint[] GetRtCalSpline(SpectraFileInfo donor, SpectraFileInfo acceptor);
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private void RunErrorChecking(SpectraFileInfo spectraFile)
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    private void RunErrorChecking(SpectraFileInfo spectraFile);
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private List<IsotopicEnvelope> GetIsotopicEnvelopes(List<IndexedMassSpectralPeak> peaks, Identification identification, int chargeState, bool matchBetweenRuns)
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    private List<IsotopicEnvelope> GetIsotopicEnvelopes(List<IndexedMassSpectralPeak> peaks, Identification identification, int chargeState, bool matchBetweenRuns);
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private List<IndexedMassSpectralPeak> Peakfind(double idRetentionTime, double mass, int charge, SpectraFileInfo spectraFileInfo, Tolerance tolerance)
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    private List<IndexedMassSpectralPeak> Peakfind(double idRetentionTime, double mass, int charge, SpectraFileInfo spectraFileInfo, Tolerance tolerance);
 
-//C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-        private void CutPeak(ChromatographicPeak peak, double identificationTime)
+    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+    private void CutPeak(ChromatographicPeak peak, double identificationTime);
 }
 }

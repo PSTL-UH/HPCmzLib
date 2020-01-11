@@ -26,7 +26,9 @@ namespace FlashLFQ
 
     std::string IsotopicEnvelope::ToString()
     {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        return "+" + std::to_string(ChargeState) + "|" + getIntensity().ToString("F0") + "|" + IndexedPeak->RetentionTime.ToString("F3") + "|" + std::to_string(IndexedPeak->ZeroBasedMs1ScanIndex);
+        return "+" + std::to_string(ChargeState) + "|" +
+            std::to_string(getIntensity()) + "|" +
+            std::to_string(IndexedPeak->RetentionTime) + "|" +
+            std::to_string(IndexedPeak->ZeroBasedMs1ScanIndex);
     }
 }

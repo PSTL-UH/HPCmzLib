@@ -18,7 +18,7 @@ namespace FlashLFQ
 
         virtual ~IsotopicEnvelope()
         {
-            delete IndexedPeak;
+            //delete IndexedPeak;
         }
 
         IsotopicEnvelope(IndexedMassSpectralPeak *monoisotopicPeak, int chargeState, double intensity);
@@ -28,6 +28,6 @@ namespace FlashLFQ
 
         void Normalize(double normalizationFactor);
 
-        std::string ToString() override;
+        std::string ToString();
     };
 }

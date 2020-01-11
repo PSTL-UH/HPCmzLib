@@ -32,8 +32,8 @@ namespace FlashLFQ
 
         std::string ToString(std::vector<SpectraFileInfo*> &rawFiles);
 
-        bool Equals(std::any obj) override;
+        bool Equals(std::any obj);
 
-        int GetHashCode() override;
+        int GetHashCode();
     };
 }

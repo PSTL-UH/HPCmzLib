@@ -18,10 +18,10 @@ namespace FlashLFQ
 
         IndexedMassSpectralPeak(double mz, double intensity, int zeroBasedMs1ScanIndex, double retentionTime);
 
-        bool Equals(std::any obj) override;
+        bool Equals(std::any obj);
 
-        int GetHashCode() override;
+        int GetHashCode();
 
-        std::string ToString() override;
+        std::string ToString();
     };
 }
