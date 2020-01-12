@@ -34,7 +34,7 @@ namespace FlashLFQ
     {
     private:
         std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks;
-        Serializer *const _serializer;
+        //Serializer *const _serializer;
         static constexpr int BinsPerDalton = 100;
 
     public:

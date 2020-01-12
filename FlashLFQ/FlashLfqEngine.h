@@ -9,25 +9,32 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
+#include <ctime>
 #include "tangible_filesystem.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class SpectraFileInfo; }
-namespace FlashLFQ { class Identification; }
-namespace FlashLFQ { class FlashLfqResults; }
-namespace FlashLFQ { class Ms1ScanInfo; }
-namespace FlashLFQ { class PeakIndexingEngine; }
-namespace FlashLFQ { class ChromatographicPeak; }
+#include "SpectraFileInfo.h"
+#include "Identification.h"
+#include "FlashLFQResults.h"
+#include "Ms1ScanInfo.h"
+#include "PeakIndexingEngine.h"
+#include "ChromatographicPeak.h"
+#include "RetentionTimeCalibDataPoint.h"
+//namespace FlashLFQ { class SpectraFileInfo; }
+//namespace FlashLFQ { class Identification; }
+//namespace FlashLFQ { class FlashLfqResults; }
+//namespace FlashLFQ { class Ms1ScanInfo; }
+//namespace FlashLFQ { class PeakIndexingEngine; }
+//namespace FlashLFQ { class ChromatographicPeak; }
 
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 //using namespace MathNet::Numerics::Statistics;
 
-//namespace MzLibUtil { class Tolerance; }
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
 
-#include "../UsefulProteomicsDatabase/UsefulProteomicsDatabases.h"
+#include "../UsefulProteomicsDatabases/UsefulProteomicsDatabases.h"
 using namespace UsefulProteomicsDatabases;
 
 namespace FlashLFQ
@@ -58,9 +65,11 @@ namespace FlashLFQ
         // structures used in the FlashLFQ engine
     private:
         std::vector<SpectraFileInfo*> _spectraFileInfo;
-        Stopwatch *_globalStopwatch;
+        //Stopwatch *_globalStopwatch;
+        time_t start, stop;
         std::vector<Identification*> _allIdentifications;
-        std::unordered_map<std::string, std::vector<KeyValuePair<double, double>*>> _baseSequenceToIsotopicDistribution;
+        //std::unordered_map<std::string, std::vector<KeyValuePair<double, double>*>> _baseSequenceToIsotopicDistribution;
+        std::unordered_map<std::string, std::vector<std::unordered_map<double, double>*>> _baseSequenceToIsotopicDistribution;
         std::vector<int> _chargeStates;
         FlashLfqResults *_results;
         std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>> _ms1Scans;
@@ -85,31 +94,34 @@ namespace FlashLFQ
 
         void QuantifyMatchBetweenRunsPeaks(SpectraFileInfo *idAcceptorFile);
 
-            Tolerance *mbrTol = new PpmTolerance(MbrPpmTolerance);
+        //Tolerance *mbrTol = new PpmTolerance(MbrPpmTolerance);
+        Tolerance *mbrTol;
 
-            std::unordered_map<std::string, ChromatographicPeak*> bestMbrHits = std::unordered_map<std::string, ChromatographicPeak*>();
+        //std::unordered_map<std::string, ChromatographicPeak*> bestMbrHits = std::unordered_map<std::string, ChromatographicPeak*>();
+        std::unordered_map<std::string, ChromatographicPeak*> bestMbrHits;
 
-            private *foreach(SpectraFileInfo idDonorFile in *_spectraFileInfo);
+        //*foreach(SpectraFileInfo idDonorFile in *_spectraFileInfo);
 
-            // save MBR results
-            private *foreach(var peak in *bestMbrHits);
-
-            RunErrorChecking(idAcceptorFile);
-    };
-
-    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-    private RetentionTimeCalibDataPoint[] GetRtCalSpline(SpectraFileInfo donor, SpectraFileInfo acceptor);
-
-    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-    private void RunErrorChecking(SpectraFileInfo spectraFile);
+        // save MBR results
+        //*foreach(var peak in *bestMbrHits);
 
         //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-    private List<IsotopicEnvelope> GetIsotopicEnvelopes(List<IndexedMassSpectralPeak> peaks, Identification identification, int chargeState, bool matchBetweenRuns);
-
-    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-    private List<IndexedMassSpectralPeak> Peakfind(double idRetentionTime, double mass, int charge, SpectraFileInfo spectraFileInfo, Tolerance tolerance);
-
-    //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-    private void CutPeak(ChromatographicPeak peak, double identificationTime);
-}
+        //RetentionTimeCalibDataPoint[] GetRtCalSpline(SpectraFileInfo donor, SpectraFileInfo acceptor);
+        std::vector<RetentionTimeCalibDataPoint> GetRtCalSpline(SpectraFileInfo donor, SpectraFileInfo acceptor);
+        
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        void RunErrorChecking(SpectraFileInfo spectraFile);
+        
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        std::vector<IsotopicEnvelope*> GetIsotopicEnvelopes(std::vector<IndexedMassSpectralPeak*> peaks,
+                                                            Identification identification, int chargeState,
+                                                            bool matchBetweenRuns);
+        
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        std::vector<IndexedMassSpectralPeak *> Peakfind(double idRetentionTime, double mass, int charge,
+                                                        SpectraFileInfo spectraFileInfo, Tolerance tolerance);
+        
+        //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
+        void CutPeak(ChromatographicPeak peak, double identificationTime);
+    };
 }

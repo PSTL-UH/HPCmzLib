@@ -39,6 +39,7 @@ namespace FlashLFQ
 
         void CalculateProteinResultsTop3();
 
-        void WriteResults(const std::string &peaksOutputPath, const std::string &modPeptideOutputPath, const std::string &proteinOutputPath);
+        void WriteResults(const std::string &peaksOutputPath, const std::string &modPeptideOutputPath,
+                          const std::string &proteinOutputPath);
     };
 }

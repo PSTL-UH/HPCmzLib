@@ -13,6 +13,6 @@ namespace FlashLFQ
 
         Ms1ScanInfo(int oneBasedScanNumber, int zeroBasedMs1ScanIndex, double retentionTime);
 
-        std::string ToString() override;
+        std::string ToString();
     };
 }

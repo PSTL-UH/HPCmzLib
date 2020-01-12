@@ -38,7 +38,12 @@ namespace FlashLFQ
             //delete OptionalChemicalFormula;
         }
 
-        Identification(SpectraFileInfo *fileInfo, const std::string &BaseSequence, const std::string &ModifiedSequence, double monoisotopicMass, double ms2RetentionTimeInMinutes, int chargeState, std::vector<ProteinGroup*> &proteinGroups, ChemicalFormula *optionalChemicalFormula = nullptr, bool useForProteinQuant = true);
+        Identification(SpectraFileInfo *fileInfo, const std::string &BaseSequence,
+                       const std::string &ModifiedSequence,
+                       double monoisotopicMass, double ms2RetentionTimeInMinutes,
+                       int chargeState, std::vector<ProteinGroup*> &proteinGroups,
+                       ChemicalFormula *optionalChemicalFormula = nullptr,
+                       bool useForProteinQuant = true);
 
         std::string ToString();
     };

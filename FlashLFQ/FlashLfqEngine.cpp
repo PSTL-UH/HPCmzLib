@@ -20,7 +20,7 @@
 #include "../Chemistry/Constants.h"
 
 using namespace Chemistry;
-using namespace MathNet::Numerics::Statistics;
+//using namespace MathNet::Numerics::Statistics;
 using namespace MzLibUtil;
 using namespace UsefulProteomicsDatabases;
 

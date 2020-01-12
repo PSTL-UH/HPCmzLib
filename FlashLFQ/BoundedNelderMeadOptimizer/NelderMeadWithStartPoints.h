@@ -5,9 +5,11 @@
 #include <stdexcept>
 #include <functional>
 
-using namespace SharpLearning::Containers::Arithmetic;
-using namespace SharpLearning::Optimization;
-using namespace SharpLearning::Optimization::ParameterSamplers;
+//using namespace SharpLearning::Containers::Arithmetic;
+//using namespace SharpLearning::Optimization;
+//using namespace SharpLearning::Optimization::ParameterSamplers;
+
+#include "OptimizerResult.h"
 
 namespace FlashLFQ
 {
@@ -25,7 +27,8 @@ namespace FlashLFQ
         /// 
         /// Modified for FlashLFQ by Robert J. Millikin
         /// </summary>
-        class NelderMeadWithStartPoints final : public IOptimizer
+        //class NelderMeadWithStartPoints final : public IOptimizer
+        class NelderMeadWithStartPoints final 
         {
         private:
             const int m_maxIterationsPrRestart;

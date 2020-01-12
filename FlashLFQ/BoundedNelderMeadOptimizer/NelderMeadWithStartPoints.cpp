@@ -8,7 +8,21 @@ namespace FlashLFQ
     namespace BoundedNelderMeadOptimizer
     {
 
-        NelderMeadWithStartPoints::NelderMeadWithStartPoints(std::vector<ParameterBounds*> &parameters, int maxRestarts, double noImprovementThreshold, int maxIterationsWithoutImprovement, int maxIterationsPrRestart, int maxFunctionEvaluations, double alpha, double gamma, double rho, double sigma, double startingValue) : m_maxIterationsPrRestart(maxIterationsPrRestart), m_maxIterationsWithoutImprovement(maxIterationsWithoutImprovement), m_maxRestarts(maxRestarts), m_alpha(alpha), m_gamma(gamma), m_rho(rho), m_sigma(sigma), m_noImprovementThreshold(noImprovementThreshold), m_parameters(parameters), m_random(new Random(startingValue.GetHashCode())), m_sampler(new RandomUniform(startingValue.GetHashCode())), m_maxFunctionEvaluations(maxFunctionEvaluations), startingValue(startingValue)
+        NelderMeadWithStartPoints::NelderMeadWithStartPoints(std::vector<ParameterBounds*> &parameters, int maxRestarts,
+                                                             double noImprovementThreshold,
+                                                             int maxIterationsWithoutImprovement,
+                                                             int maxIterationsPrRestart,
+                                                             int maxFunctionEvaluations,
+                                                             double alpha, double gamma, double rho, double sigma,
+                                                             double startingValue) :
+            m_maxIterationsPrRestart(maxIterationsPrRestart),
+            m_maxIterationsWithoutImprovement(maxIterationsWithoutImprovement),
+            m_maxRestarts(maxRestarts), m_alpha(alpha), m_gamma(gamma), m_rho(rho), m_sigma(sigma),
+            m_noImprovementThreshold(noImprovementThreshold), m_parameters(parameters),
+            m_random(new Random(startingValue.GetHashCode())),
+            m_sampler(new RandomUniform(startingValue.GetHashCode())),
+            m_maxFunctionEvaluations(maxFunctionEvaluations),
+            startingValue(startingValue)
         {
             if (parameters.empty())
             {
@@ -28,7 +42,7 @@ namespace FlashLFQ
 
         OptimizerResult *NelderMeadWithStartPoints::OptimizeBest(std::function<OptimizerResult*(std::vector<double>)> functionToMinimize)
         {
-            return Optimize(functionToMinimize).First();
+            return Optimize(functionToMinimize).Front();
         }
 
         std::vector<OptimizerResult*> NelderMeadWithStartPoints::Optimize(std::function<OptimizerResult*(std::vector<double>)> functionToMinimize)
@@ -53,7 +67,8 @@ namespace FlashLFQ
 
                 for (int i = 0; i < dim; i++)
                 {
-                    auto a = (0.02 + 0.08 * m_random->NextDouble()) * (m_parameters[i]->Max - m_parameters[i]->Min); // % simplex size between 2%-8% of min(xrange)
+                    // % simplex size between 2%-8% of min(xrange)
+                    auto a = (0.02 + 0.08 * m_random->NextDouble()) * (m_parameters[i]->Max - m_parameters[i]->Min); 
 
                     auto p = a * (std::sqrt(dim + 1) + dim - 1) / (dim * std::sqrt(2));
                     auto q = a * (std::sqrt(dim + 1) - 1) / (dim * std::sqrt(2));
