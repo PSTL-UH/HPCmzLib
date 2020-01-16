@@ -1,16 +1,21 @@
 ﻿#include "RetentionTimeCalibDataPoint.h"
 #include "ChromatographicPeak.h"
+#include "IndexedMassSpectralPeak.h"
 
 namespace FlashLFQ
 {
 
-    RetentionTimeCalibDataPoint::RetentionTimeCalibDataPoint(ChromatographicPeak *donorFilePeak, ChromatographicPeak *acceptorFilePeak) : DonorFilePeak(donorFilePeak), AcceptorFilePeak(acceptorFilePeak), RtDiff(acceptorFilePeak->getApex()->IndexedPeak->RetentionTime - donorFilePeak->getApex()->IndexedPeak->RetentionTime)
+    RetentionTimeCalibDataPoint::RetentionTimeCalibDataPoint(ChromatographicPeak *donorFilePeak,
+                                                             ChromatographicPeak *acceptorFilePeak) :
+        DonorFilePeak(donorFilePeak), AcceptorFilePeak(acceptorFilePeak),
+        RtDiff(acceptorFilePeak->getApex()->IndexedPeak->RetentionTime - donorFilePeak->getApex()->IndexedPeak->RetentionTime)
     {
     }
 
     std::string RetentionTimeCalibDataPoint::ToString()
     {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        return "DonorRT: " + DonorFilePeak->getApex()->IndexedPeak->RetentionTime.ToString("F3") + " AcceptorRT: " + AcceptorFilePeak->getApex()->IndexedPeak->RetentionTime.ToString("F3") + " Diff: " + RtDiff.ToString("F3");
+        return "DonorRT: " + std::to_string(DonorFilePeak->getApex()->IndexedPeak->RetentionTime) +
+            " AcceptorRT: " + std::to_string(AcceptorFilePeak->getApex()->IndexedPeak->RetentionTime) +
+            " Diff: " + std::to_string(RtDiff);
     }
 }

@@ -4,12 +4,8 @@
 #include <unordered_set>
 #include <vector>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class SpectraFileInfo; }
-namespace FlashLFQ { class ProteinGroup; }
-
-
-//namespace Chemistry { class ChemicalFormula; }
+#include "SpectraFileInfo.h"
+#include "ProteinGroup.h"
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 

@@ -1,9 +1,7 @@
 ﻿#pragma once
 
 #include <string>
-
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class ChromatographicPeak; }
+#include "ChromatographicPeak.h"
 
 namespace FlashLFQ
 {
@@ -16,13 +14,13 @@ namespace FlashLFQ
 
         virtual ~RetentionTimeCalibDataPoint()
         {
-            delete DonorFilePeak;
-            delete AcceptorFilePeak;
+            // delete DonorFilePeak;
+            // delete AcceptorFilePeak;
         }
 
         RetentionTimeCalibDataPoint(ChromatographicPeak *donorFilePeak, ChromatographicPeak *acceptorFilePeak);
 
         // for debugging
-        std::string ToString() override;
+        std::string ToString();
     };
 }

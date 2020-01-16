@@ -2,6 +2,7 @@
 #include "SpectraFileInfo.h"
 #include "ProteinGroup.h"
 
+#include "stringhelper.h"
 
 namespace FlashLFQ
 {
@@ -93,6 +94,7 @@ namespace FlashLFQ
     {
         StringBuilder *str = new StringBuilder();
         str->append(Sequence + "\t");
+#ifdef ORIG
         str->append(std::string::Join(";", proteinGroups.Select([&] (std::any p)
         {
             p::ProteinGroupName;
@@ -105,18 +107,55 @@ namespace FlashLFQ
         {
             p::Organism;
         }).Distinct()) + "\t");
+#endif
+        std::vector<std::string> pgroupvec, genevec, orgvec;
+        for ( auto p : proteinGroups ) {
+            auto found = false;
+            for ( auto v: pgroupvec ) {
+                if ( v == p->ProteinGroupName ) {
+                    found = true;
+                }
+            }
+            if ( !found ) {
+                pgroupvec.push_back (p->ProteinGroupName +"\t");
+            }
 
+            found = false;
+            for ( auto v: genevec ) {
+                if ( v == p->GeneName ) {
+                    found = true;
+                }
+            }
+            if ( !found ) {
+                genevec.push_back (p->GeneName + "\t" );
+            }
+
+            found = false;
+            for ( auto v: orgvec ) {
+                if ( v == p->Organism ) {
+                    found = true;
+                }
+            }
+            if ( !found ) {
+                orgvec.push_back (p->Organism +"\t");
+            }
+        }
+        str->append(StringHelper::join (pgroupvec, ';' ) );
+        str->append(StringHelper::join (genevec, ';' ) );
+        str->append(StringHelper::join (orgvec, ';' ) );
+        
         for (auto file : rawFiles)
         {
             str->append(std::to_string(GetIntensity(file)) + "\t");
         }
         for (auto file : rawFiles)
         {
-            str->append(GetDetectionType(file) + "\t");
+            str->append(std::to_string(*(reinterpret_cast<int *>(GetDetectionType(file)))) + "\t");
         }
 
+        std::string s = str->toString();
         delete str;
-        return str->toString();
+        return s;
     }
 
     bool Peptide::Equals(std::any obj)
@@ -126,6 +165,6 @@ namespace FlashLFQ
 
     int Peptide::GetHashCode()
     {
-        return Sequence.GetHashCode();
+        return StringHelper::GetHashCode(Sequence);
     }
 }

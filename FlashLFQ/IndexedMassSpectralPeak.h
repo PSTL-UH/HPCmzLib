@@ -6,8 +6,8 @@
 
 namespace FlashLFQ
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Serializable] public class IndexedMassSpectralPeak
+    //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
+    //ORIGINAL LINE: [Serializable] public class IndexedMassSpectralPeak
     class IndexedMassSpectralPeak
     {
     public:
@@ -18,7 +18,7 @@ namespace FlashLFQ
 
         IndexedMassSpectralPeak(double mz, double intensity, int zeroBasedMs1ScanIndex, double retentionTime);
 
-        bool Equals(std::any obj);
+        bool Equals(IndexedMassSpectralPeak* obj);
 
         int GetHashCode();
 
