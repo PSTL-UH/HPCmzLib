@@ -6,8 +6,7 @@
 #include <any>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class SpectraFileInfo; }
+#include "SpectraFileInfo.h"
 
 
 namespace FlashLFQ

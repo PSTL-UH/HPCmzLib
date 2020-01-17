@@ -12,13 +12,18 @@
 namespace FlashLFQ
 {
 
-    FlashLfqResults::FlashLfqResults(std::vector<SpectraFileInfo*> &spectraFiles) : SpectraFiles(spectraFiles), PeptideModifiedSequences(std::unordered_map<std::string, Peptide*>()), ProteinGroups(std::unordered_map<std::string, ProteinGroup*>()), Peaks(std::unordered_map<SpectraFileInfo*, std::vector<ChromatographicPeak*>>())
+    FlashLfqResults::FlashLfqResults(std::vector<SpectraFileInfo*> &spectraFiles) :
+        SpectraFiles(spectraFiles),
+        PeptideModifiedSequences(std::unordered_map<std::string, Peptide*>()),
+        ProteinGroups(std::unordered_map<std::string, ProteinGroup*>()),
+        Peaks(std::unordered_map<SpectraFileInfo*, std::vector<ChromatographicPeak*>>())
     {
     }
 
     void FlashLfqResults::MergeResultsWith(FlashLfqResults *mergeFrom)
     {
-        this->SpectraFiles.insert(this->SpectraFiles.end(), mergeFrom->SpectraFiles.begin(), mergeFrom->SpectraFiles.end());
+        this->SpectraFiles.insert(this->SpectraFiles.end(),
+                                  mergeFrom->SpectraFiles.begin(), mergeFrom->SpectraFiles.end());
 
         for (auto pep : mergeFrom->PeptideModifiedSequences)
         {
@@ -326,32 +331,45 @@ namespace FlashLFQ
             if (proteinGroupToPeaks_iterator != proteinGroupToPeaks.end())
             {
                 auto proteinGroupPeaks = proteinGroupToPeaks_iterator->second;
+#ifdef ORIG
                 auto peaksGroupedByFile = proteinGroupPeaks::GroupBy([&] (std::any p)
                 {
                     p::SpectraFileInfo;
                 }).ToList();
+#endif
 
-#ifdef NEW_BUT_NOT_READY
-                std::vector<std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>> peaksGroupedByFile;
-                std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>> proteinGroupToPeaks;
+                std::vector< std::vector<ChromatographicPeak*>> peaksGroupedByFile;
                 std::sort(proteinGroupPeaks.begin(), proteinGroupPeaks.end(), [&]
                           ( ChromatographicPeak* l, ChromatographicPeak* r ) {
-                              return l->spectralFileInfo < r->spectralFileInfo;
+                              return l->spectraFileInfo < r->spectraFileInfo;
                           });
                 for ( auto p : proteinGroupPeaks ) {
                     if ( peaksGroupedByFile.empty() ) {
-                        std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>> *v = new std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>;
-                        v->insert(p);
+                        std::vector<ChromatographicPeak*> *v = new std::vector<ChromatographicPeak*>;
+                        v->push_back(p);
                         peaksGroupedByFile.push_back(*v);
                         continue;
                     }
+                    bool found = false;
+                    for (  auto v: peaksGroupedByFile ) {
+                        if ( v[0]->spectraFileInfo == p->spectraFileInfo ) {
+                            found = true;
+                            v.push_back(p);
+                        }
+                    }
+                    if ( !found ) {
+                        std::vector<ChromatographicPeak*> *v = new std::vector<ChromatographicPeak*>;
+                        v->push_back(p);
+                        peaksGroupedByFile.push_back(*v);
+                    }
                 }
-#endif
+
                 
                 for (auto peaksForThisPgAndFile : peaksGroupedByFile)
                 {
-                    SpectraFileInfo *file = peaksForThisPgAndFile.begin()->spectraFileInfo;
+                    SpectraFileInfo *file = peaksForThisPgAndFile.front()->spectraFileInfo;
 
+#ifdef ORIG
                     // top N peaks, prioritizing protein-uniqueness and then intensity
                     double proteinIntensity = peaksForThisPgAndFile.OrderBy([&] (std::any p)
                     {
@@ -366,8 +384,40 @@ namespace FlashLFQ
                     {
                         p::Intensity;
                     });
-
-                    pg->Value->SetIntensity(file, proteinIntensity);
+#endif
+                    // Step 1: Order by the number of entries having the same v->proteinGroups
+                    // and then by p->Intenisity descending order
+                    std::vector<std::tuple<ChromatographicPeak*, int, double>> peaksVec;
+                    for ( auto p : peaksForThisPgAndFile ) {
+                        std::vector<Identification*> idVec;
+                        for ( auto v: p->getIdentifications() ) {
+                            bool found = false;
+                            for ( auto w: idVec ) {
+                                if ( w->proteinGroups == v->proteinGroups ) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if ( !found ) {
+                                idVec.push_back(v);
+                            }
+                        }
+                        peaksVec.push_back( std::make_tuple(p, (int)idVec.size(), p->Intensity) );
+                    }
+                    std::sort(peaksVec.begin(), peaksVec.end(), [&]
+                              ( std::tuple<ChromatographicPeak*, int, double> l,
+                                std::tuple<ChromatographicPeak*, int, double> r ) {
+                                  if ( std::get<1>(l) < std::get<1>(r) ) return true;
+                                  if ( std::get<1>(l) > std::get<1>(r) ) return false;
+                                  return std::get<2>(l) > std::get<2>(r);
+                              }
+                        );
+                    // Step 2: take topNPeaks and determine sum;
+                    double proteinIntensity =0.0;
+                    for ( int i=0; i<topNPeaks; i++  ) {
+                        proteinIntensity += std::get<2>(peaksVec[i]);
+                    }
+                    std::get<1>(pg)->SetIntensity(file, proteinIntensity);
                 }
             }
             //else

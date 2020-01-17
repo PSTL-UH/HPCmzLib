@@ -1,9 +1,7 @@
 ﻿#pragma once
 
 #include <string>
-
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class IndexedMassSpectralPeak; }
+#include "IndexedMassSpectralPeak.h"
 
 namespace FlashLFQ
 {
