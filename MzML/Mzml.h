@@ -23,7 +23,8 @@
 #include "../MassSpectrometry/IFilteringParams.h"
 // namespace MassSpectrometry { class IFilteringParams; }
 // #include "XSD/IO.MzML.Generated.mzMLType.h"
-#include "XSD/mzML1.1.0-new.h"
+#include "XSD/mzML1.1.0.h"
+#include "XSD/mzML1.1.1_idx.h"
 // namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
