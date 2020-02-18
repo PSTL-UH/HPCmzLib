@@ -8,23 +8,6 @@
 #
 include ../Makefile.defs
 
-# HEADER = IMzmlScan.h              \
-# 	 Mzml.h                   \
-# 	 MzmlMethods.h            \
-# 	 MzmlPeak.h               \
-# 	 MzmlScan.h               \
-# 	 MzmlScanWithPrecursor.h  \
-# 	 MzmlSpectrum.h 
-
-# OBJ = 	 IMzmlScan.o              \
-# 	 Mzml.o                   \
-# 	 MzmlMethods.o            \
-# 	 MzmlPeak.o               \
-# 	 MzmlScan.o               \
-# 	 MzmlScanWithPrecursor.o  \
-# 	 MzmlSpectrum.o 
-
-
 HEADER = Mzml.h                   \
 	 	 MzmlMethods.h            
 
