@@ -28,6 +28,7 @@ all:
 	cd MassSpectrometry ; make ; cd ..
 	cd UsefulProteomicsDatabases ; make ;  cd ..
 	cd Proteomics ; make ; cd ..
+	cd MzML ; make ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
@@ -43,5 +44,6 @@ clean:
 	cd MassSpectrometry ; make clean ; cd ..
 	cd UsefulProteomicsDatabases ; make clean ;  cd ..
 	cd Proteomics ; make clean ; cd ..
+	cd MzML ; make clean ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(MZLIB_LIB) ; cd ..
 	rm -rf *.o *~

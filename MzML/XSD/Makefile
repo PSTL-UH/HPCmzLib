@@ -6,19 +6,18 @@
 #
 # $HEADER$
 #
-include ../Makefile.defs
+include ../../Makefile.defs
 
-HEADER = Mzml.h                   \
-	 	 MzmlMethods.h            
+HEADER = mzML1.1.0.h                   \
+	 	 mzML1.1.1_idx.h            
 
-OBJ = 	Mzml.o                   \
-	 	 MzmlMethods.o            
+OBJ = 	mzML1.1.0.o                   \
+	 	mzML1.1.1_idx.o            
 
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB)
-	cd XSD; make ; cd ..
+	make $(MZLIB_LIB) 
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
@@ -29,5 +28,4 @@ $(OBJ):	$(HEADER)
 	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c $<
 
 clean:  
-	cd XSD; make clean ; cd ..
 	rm -rf *.o *~
