@@ -1,8 +1,11 @@
 ﻿#pragma once
 
-#include "../MassSpectrometry/IMsStaticDataFile.h"
 #include "../MassSpectrometry/MsDataFile.h"
 #include <vector>
+#include "exceptionhelper.h"
+
+//C# TO C++ CONVERTER NOTE: Forward class declarations:
+namespace MassSpectrometry { class MsDataScan; }
 
 // Copyright 2016 Stefan Solntsev
 //
@@ -21,24 +24,19 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry. If not, see <http://www.gnu.org/licenses/>.
 
-using namespace IO::MzML;
 using namespace MassSpectrometry;
 
-namespace Test {
-    class FakeMsDataFile : public MsDataFile<IMzmlScan*>, public IMsStaticDataFile<IMzmlScan*> {
-//        #region Public Constructors
-
+namespace Test
+{
+    class FakeMsDataFile : public MsDataFile
+    {
     public:
-        FakeMsDataFile(std::vector<IMzmlScan*> &FakeScans);
-
-//        #endregion Public Constructors
-
-//        #region Public Methods
+        FakeMsDataFile(std::vector<MsDataScan*> &FakeScans);
 
         int GetClosestOneBasedSpectrumNumber(double retentionTime) override;
 
-        IMzmlScan *GetOneBasedScan(int scanNumber) override;
+        std::vector<MsDataScan*> GetMS1Scans() override;
 
-//        #endregion Public Methods
+        MsDataScan *GetOneBasedScan(int scanNumber) override;
     };
 }

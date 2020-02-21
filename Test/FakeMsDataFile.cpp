@@ -1,25 +1,36 @@
 ﻿#include "FakeMsDataFile.h"
+#include "../MassSpectrometry/MsDataScan.h"
 
-using namespace IO::MzML;
 using namespace MassSpectrometry;
 
-namespace Test {
+namespace Test
+{
 
-    FakeMsDataFile::FakeMsDataFile(std::vector<IMzmlScan*> &FakeScans) : MsDataFile<IMzmlScan>(LR"(no nativeID format)", L"mzML format", L"", L"SHA-1", LR"(C:\fake.mzML)", L"") {
+    FakeMsDataFile::FakeMsDataFile(std::vector<MsDataScan*> &FakeScans) : MsDataFile(FakeScans, &tempVar)
+    {
         this->Scans = FakeScans;
     }
 
-    int FakeMsDataFile::GetClosestOneBasedSpectrumNumber(double retentionTime) {
-        int ok = Array::BinarySearch(Scans.Select([&] (std::any b) {
+    int FakeMsDataFile::GetClosestOneBasedSpectrumNumber(double retentionTime)
+    {
+        int ok = Array::BinarySearch(Scans.Select([&] (std::any b)
+        {
             b::RetentionTime;
         })->ToArray(), retentionTime);
-        if (ok < 0) {
+        if (ok < 0)
+        {
             ok = ~ok;
         }
         return ok + 1;
     }
 
-    IMzmlScan *FakeMsDataFile::GetOneBasedScan(int scanNumber) {
+    std::vector<MsDataScan*> FakeMsDataFile::GetMS1Scans()
+    {
+        throw NotImplementedException();
+    }
+
+    MsDataScan *FakeMsDataFile::GetOneBasedScan(int scanNumber)
+    {
         return Scans[scanNumber - 1];
     }
 }
