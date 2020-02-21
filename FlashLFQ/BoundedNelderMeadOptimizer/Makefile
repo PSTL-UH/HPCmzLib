@@ -8,9 +8,17 @@
 #
 include ../../Makefile.defs
 
-HEADER = NelderMeadWithStartPoints.h
+HEADER = NelderMeadWithStartPoints.h \
+	 IParameterSampler.h	     \
+	 OptimizerResult.h	     \
+	 ParameterType.h	     \
+	 ParameterSampler.h	     
 
-OBJ = 	NelderMeadWithStartPoints.o
+
+OBJ = 	 NelderMeadWithStartPoints.o  \
+	 IParameterSampler.o	     \
+	 OptimizerResult.o	     \
+	 ParameterSampler.o	     
 
 .SUFFIXES: .o.cpp
 

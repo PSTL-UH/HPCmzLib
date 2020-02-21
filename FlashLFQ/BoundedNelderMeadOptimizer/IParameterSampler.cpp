@@ -1,4 +1,8 @@
 ﻿#include "IParameterSampler.h"
 
-namespace SharpLearning::Optimization::ParameterSamplers {
+
+namespace FlashLFQ
+{
+    namespace BoundedNelderMeadOptimizer {
+    }
 }

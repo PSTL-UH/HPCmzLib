@@ -1,56 +1,57 @@
-#include "ParameterSampler"
-
+#include <stdlib.h>
+#include "ParameterSampler.h"
+#include "MzLibUtil.h"
 
 namespace FlashLFQ
 {
     namespace BoundedNelderMeadOptimizer
     {
-        class P
-        readonly Random m_random;
-
-        /// <summary>
-        /// Sample values random uniformly between min and max.
-        /// </summary>
-        /// <param name="seed"></param>
-                                public RandomUniform(int seed = 343)
-                                {
-                                    m_random = new Random(seed);
-                                }
-
+        ParameterSampler::ParameterSampler ( int seed) {
+            srand(seed);
+        }
+        
         /// <summary>
         /// Sample values random uniformly between min and max.
         /// </summary>
         /// <param name="min"></param>
         /// <param name="max"></param>
-        /// <param name="parameterType">Selects the type of parameter. Should the parameter be sampled as discrete values, or as continous values.</param>
+        /// <param name="parameterType">Selects the type of parameter.
+        /// Should the parameter be sampled as discrete values, or
+        ///     as continous values.</param>
         /// <returns></returns>
-                public double Sample(double min, double max, ParameterType parameterType)
-                {
-                    if (min >= max)
-                    {
-                        throw new ArgumentException($"min: {min} is larger than or equal to max: {max}");
-                    }
-
-                    switch (parameterType)
-                    {
-                        case ParameterType.Discrete:
-                            return SampleInteger((int)min, (int)max);
-                        case ParameterType.Continuous:
-                            return SampleContinous(min, max);
-                        default:
-                            throw new ArgumentException("Unknown parameter type: " + parameterType);
-                    }
-                }
-
-        double SampleContinous(double min, double max)
+        double ParameterSampler::Sample(double min, double max, ParameterType parameterType)
         {
-            return m_random.NextDouble() * (max - min) + min;
+            if (min >= max)  {
+                throw MzLibUtil::MzLibException("ParameterSampler: min is larger than or equal to max");
+            }
+            
+            switch (parameterType)
+            {
+                case ParameterType::Discrete:
+                    return SampleInteger((int)min, (int)max);
+                case ParameterType::Continuous:
+                    return SampleContinous(min, max);
+                default:
+                    throw MzLibUtil::MzLibException("ParameterSampler:Unknown parameter type: ");
+            }
+        }
+        
+        double ParameterSampler::NextDouble()
+        {
+            double min=0.0, max=1.0;
+            return SampleContinous ( min, max );
         }
 
-        int SampleInteger(int min, int max)
+        double ParameterSampler::SampleContinous(double min, double max)
         {
-            var maxInclusive = max + 1; // Add one to get inclusive.
-            return m_random.Next(min, maxInclusive);
+            return ((((double)rand()) / (RAND_MAX)) +1) * (max - min) + min;
         }
-    }
 
+        
+        int ParameterSampler::SampleInteger(int min, int max)
+        {
+            int maxInclusive = max + 1; // Add one to get inclusive.
+            return rand() % maxInclusive + min;
+        }
+    };
+}

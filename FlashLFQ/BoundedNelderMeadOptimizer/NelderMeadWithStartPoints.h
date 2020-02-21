@@ -5,11 +5,9 @@
 #include <stdexcept>
 #include <functional>
 
-//using namespace SharpLearning::Containers::Arithmetic;
-//using namespace SharpLearning::Optimization;
-//using namespace SharpLearning::Optimization::ParameterSamplers;
-
 #include "OptimizerResult.h"
+#include "ParameterSampler.h"
+#include "ParameterBounds.h"
 
 namespace FlashLFQ
 {
@@ -40,8 +38,9 @@ namespace FlashLFQ
             const double m_sigma;
             const double m_noImprovementThreshold;
             const std::vector<ParameterBounds*> m_parameters;
-            Random *const m_random;
-            IParameterSampler *const m_sampler;
+            //Random *const m_random;
+            ParameterSampler *const m_random;
+            ParameterSampler *const m_sampler;
             const int m_maxFunctionEvaluations;
             const double startingValue;
             int m_totalFunctionEvaluations = 0;
@@ -67,13 +66,16 @@ namespace FlashLFQ
             /// <param name="rho">Coefficient for contraction part of the algorithm (default is -0.5)</param>
             /// <param name="sigma">Coefficient for shrink part of the algorithm (default is 0.5)</param>
         public:
-            virtual ~NelderMeadWithStartPoints()
-            {
-                delete m_random;
-                delete m_sampler;
-            }
 
-            NelderMeadWithStartPoints(std::vector<ParameterBounds*> &parameters, int maxRestarts = 8, double noImprovementThreshold = 0.001, int maxIterationsWithoutImprovement = 5, int maxIterationsPrRestart = 0, int maxFunctionEvaluations = 0, double alpha = 1, double gamma = 2, double rho = -0.5, double sigma = 0.5, double startingValue = 1.0);
+            NelderMeadWithStartPoints(std::vector<ParameterBounds*> &parameters,
+                                      int maxRestarts = 8,
+                                      double noImprovementThreshold = 0.001,
+                                      int maxIterationsWithoutImprovement = 5,
+                                      int maxIterationsPrRestart = 0,
+                                      int maxFunctionEvaluations = 0,
+                                      double alpha = 1, double gamma = 2,
+                                      double rho = -0.5, double sigma = 0.5,
+                                      double startingValue = 1.0);
             /// <summary>
             /// Optimization using Globalized bounded Nelder-Mead method.
             /// Returns the result which best minimises the provided function.
