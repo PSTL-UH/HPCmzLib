@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+// This is just a temporary placeholder until its clear what else we need from this class.
+// It is based of the SharpLearning.Optimization.ParameterSpecs::MinMaxParameterSpec class.
+
 namespace FlashLFQ
 {
     namespace BoundedNelderMeadOptimizer {
@@ -8,7 +11,20 @@ namespace FlashLFQ
         /// </summary>
         class ParameterBounds {
         public:
-            int Max, Min;
+            double Min=0, Max=0;
+
+            ParameterBounds (double min, double max) {
+                if ( min > max ) {
+                    //uff
+                }
+                Min = min;
+                Max = max;
+            }
+            
+            //Transform transform=Transform::Linear; 
+            //ParameterType parameterType = ParameterType::Continuous;
+
+            //double SampleValue(ParameterSampler *sampler) override;
         };
     }
 }
