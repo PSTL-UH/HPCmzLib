@@ -9,14 +9,13 @@
 #include <functional>
 #include <mutex>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class FlashLfqResults; }
-namespace FlashLFQ { class Peptide; }
-namespace FlashLFQ { class SpectraFileInfo; }
+#include "FlashLFQResults.h"
+#include "Peptide.h"
+#include "SpectraFileInfo.h"
 
+
+#include "BoundedNelderMeadOptimizer/BoundedNelderMeadOptimizer.h"
 using namespace FlashLFQ::BoundedNelderMeadOptimizer;
-//using namespace MathNet::Numerics::Statistics;
-using namespace SharpLearning::Optimization;
 
 namespace FlashLFQ
 {

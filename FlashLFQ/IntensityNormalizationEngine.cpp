@@ -2,10 +2,10 @@
 #include "FlashLFQResults.h"
 #include "Peptide.h"
 #include "SpectraFileInfo.h"
+#include "RectangularVectors.h"
 
-using namespace FlashLFQ::BoundedNelderMeadOptimizer;
-using namespace MathNet::Numerics::Statistics;
-using namespace SharpLearning::Optimization;
+#include "Group.h"
+#include "Math.h"
 
 namespace FlashLFQ
 {
@@ -43,41 +43,65 @@ namespace FlashLFQ
 
     void IntensityNormalizationEngine::NormalizeTechreps()
     {
+#ifdef ORIG
         auto peptides = results->PeptideModifiedSequences.Select([&] (std::any v)
         {
             v->Value;
         }).ToList();
+#endif
+        std::vector<Peptide*> peptides;
+        for ( auto v: results->PeptideModifiedSequences ) {
+            peptides.push_back(std::get<1>(v));
+        }
+
+#ifdef ORIG
         auto conditions = results->SpectraFiles.GroupBy([&] (std::any v)
         {
             v::Condition;
         });
+#endif
 
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition > r->Condition; } ;
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition != r->Condition; } ;
+        std::vector<std::vector<SpectraFileInfo*>> conditions = Group::GroupBy ( results->SpectraFiles, f1, f2); 
+        
         for (auto condition : conditions)
         {
+#ifdef ORIG
             auto bioreps = condition->GroupBy([&] (std::any v)
             {
                 v::BiologicalReplicate;
             });
+#endif
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate > r->BiologicalReplicate; } ;
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate != r->BiologicalReplicate; } ;
+            std::vector<std::vector<SpectraFileInfo*>> bioreps = Group::GroupBy ( condition, f1, f2); 
 
             for (auto biorep : bioreps)
             {
+#ifdef ORIG
                 auto fractions = biorep->GroupBy([&] (std::any v)
                 {
                     v::Fraction;
                 });
+#endif
+                std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Fraction> r->Fraction; } ;
+                std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Fraction != r->Fraction; } ;
+                std::vector<std::vector<SpectraFileInfo*>> fractions = Group::GroupBy ( biorep, f1, f2); 
 
                 for (auto fraction : fractions)
                 {
-                    auto techreps = fraction->ToList();
+                    std::vector<SpectraFileInfo*> techreps;
+                    techreps.insert(techreps.end(), fraction.begin(), fraction.end());
 
-                    for (int t = 1; t < techreps.size(); t++)
+                    for (int t = 1; t < (int)techreps.size(); t++)
                     {
                         std::vector<double> foldChanges;
 
-                        for (int p = 0; p < peptides.size(); p++)
+                        for (int p = 0; p < (int)peptides.size(); p++)
                         {
-                            double techrep1Intensity = peptides[p].GetIntensity(techreps[0]);
-                            double techrepTIntensity = peptides[p].GetIntensity(techreps[t]);
+                            double techrep1Intensity = peptides[p]->GetIntensity(techreps[0]);
+                            double techrepTIntensity = peptides[p]->GetIntensity(techreps[t]);
 
                             if (techrep1Intensity > 0 && techrepTIntensity > 0)
                             {
@@ -85,13 +109,14 @@ namespace FlashLFQ
                             }
                         }
 
-                        if (!foldChanges.Any())
+                        if (!foldChanges.empty())
                         {
                             // TODO: throw an exception?
                             return;
                         }
 
-                        double medianFoldChange = foldChanges.Median();
+                        //double medianFoldChange = foldChanges.Median();
+                        double medianFoldChange = Math::Median(foldChanges);
                         double normalizationFactor = 1.0 / medianFoldChange;
 
                         // normalize to median fold-change
@@ -113,18 +138,34 @@ namespace FlashLFQ
 
     void IntensityNormalizationEngine::NormalizeFractions()
     {
+#ifdef ORIG
         if (results->SpectraFiles.Max([&] (std::any p)
         {
             p::Fraction;
-        }) == 0)
+        }) == 0);
+#endif
+        bool all_are_zero = true;
+        for ( auto p: results->SpectraFiles ) {
+            if ( p->Fraction != 0 ) {
+                all_are_zero = false;
+            }
+        }
+        if ( all_are_zero )
         {
             return;
         }
 
+#ifdef ORIG
         auto peptides = results->PeptideModifiedSequences.Select([&] (std::any v)
         {
             v->Value;
         }).ToList();
+#endif
+        std::vector<Peptide*> peptides;
+        for ( auto v: results->PeptideModifiedSequences ) {
+            peptides.push_back(std::get<1>(v));
+        }
+        
         auto conditions = results->SpectraFiles.Select([&] (std::any p)
         {
             p::Condition;
@@ -132,6 +173,7 @@ namespace FlashLFQ
         {
             return p;
         }).ToList();
+
         auto filesForCond1Biorep1 = results->SpectraFiles.Where([&] (std::any p)
         {
             return p->Condition == conditions[0] && p->BiologicalReplicate == 0 && p->TechnicalReplicate == 0;
@@ -231,10 +273,21 @@ namespace FlashLFQ
 
                 // solve for normalization factors
                 auto normFactors = GetNormalizationFactors(myIntensityArray, numP, 2, numF, maxThreads);
+
+#ifdef ORIG
                 if (normFactors.All([&] (std::any p)
                 {
                     return p == 1.0;
-                }) && !silent)
+                }) && !silent);
+#endif
+                bool all_are_one = true;
+                for ( auto p: normFactors ) {
+                    if (p != 1.0) {
+                        all_are_one = false;
+                        break;
+                    }
+                }
+                if ( all_are_one && !silent) 
                 {
                     std::cout << "Warning: Could not solve for optimal normalization factors for condition \"" << condition << "\" biorep " << (b + 1) << std::endl;
                 }
@@ -259,17 +312,31 @@ namespace FlashLFQ
 
     void IntensityNormalizationEngine::NormalizeBioreps()
     {
+#ifdef ORIG
         auto peptides = results->PeptideModifiedSequences.Select([&] (std::any v)
         {
             v->Value;
         }).ToList();
+#endif
+        std::vector<Peptide*> peptides;
+        for ( auto v: results->PeptideModifiedSequences ) {
+            peptides.push_back(std::get<1>(v));
+        }
+
+#ifdef ORIG
         auto conditions = results->SpectraFiles.GroupBy([&] (std::any v)
         {
             v::Condition;
         }).ToList();
+#endif
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition > r->Condition; } ;
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition != r->Condition; } ;
+        std::vector<std::vector<SpectraFileInfo*>> conditions = Group::GroupBy ( results->SpectraFiles, f1, f2); 
 
-//C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper class reproduces the rectangular array initialization that is automatic in C#:
-//ORIGINAL LINE: double[,] biorepIntensityPair = new double[peptides.Count, 2];
+        
+        //C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper class reproduces the rectangular
+        // array initialization that is automatic in C#:
+        // ORIGINAL LINE: double[,] biorepIntensityPair = new double[peptides.Count, 2];
         std::vector<std::vector<double>> biorepIntensityPair = RectangularVectors::RectangularDoubleVector(peptides.size(), 2);
 
         auto firstConditionFirstBiorep = conditions.front().Where([&] (std::any v)
@@ -279,30 +346,41 @@ namespace FlashLFQ
 
         for (auto file : firstConditionFirstBiorep)
         {
-            for (int p = 0; p < peptides.size(); p++)
+            for (int p = 0; p < (int) peptides.size(); p++)
             {
-                biorepIntensityPair[p][0] += peptides[p].GetIntensity(file);
+                biorepIntensityPair[p][0] += peptides[p]->GetIntensity(file);
             }
         }
 
         for (auto condition : conditions)
         {
+#ifdef ORIG
             auto bioreps = condition.GroupBy([&] (std::any v)
             {
                 v::BiologicalReplicate;
             });
+#endif
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate > r->BiologicalReplicate; } ;
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate != r->BiologicalReplicate; } ;
+            std::vector<std::vector<SpectraFileInfo*>> bioreps = Group::GroupBy ( condition, f1, f2); 
+
 
             for (auto biorep : bioreps)
             {
-                for (int p = 0; p < peptides.size(); p++)
+                for (int p = 0; p < (int) peptides.size(); p++)
                 {
                     biorepIntensityPair[p][1] = 0;
                 }
 
+#ifdef ORIG
                 auto fractions = biorep->GroupBy([&] (std::any v)
                 {
                     v::Fraction;
                 });
+#endif
+                std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Fraction> r->Fraction; } ;
+                std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Fraction != r->Fraction; } ;
+                std::vector<std::vector<SpectraFileInfo*>> fractions = Group::GroupBy ( biorep, f1, f2); 
 
                 for (auto fraction : fractions)
                 {
@@ -311,15 +389,15 @@ namespace FlashLFQ
                         return v->TechnicalReplicate == 0;
                     }).First();
 
-                    for (int p = 0; p < peptides.size(); p++)
+                    for (int p = 0; p < (int) peptides.size(); p++)
                     {
-                        biorepIntensityPair[p][1] += peptides[p].GetIntensity(firstTechrep);
+                        biorepIntensityPair[p][1] += peptides[p]->GetIntensity(firstTechrep);
                     }
                 }
 
                 std::vector<double> foldChanges;
 
-                for (int p = 0; p < peptides.size(); p++)
+                for (int p = 0; p < (int)peptides.size(); p++)
                 {
                     if (biorepIntensityPair[p][0] > 0 && biorepIntensityPair[p][1] > 0)
                     {
@@ -327,13 +405,14 @@ namespace FlashLFQ
                     }
                 }
 
-                if (!foldChanges.Any())
+                if (!foldChanges.empty())
                 {
                     // TODO: throw an exception?
                     return;
                 }
 
-                double medianFoldChange = foldChanges.Median();
+                //double medianFoldChange = foldChanges.Median();
+                double medianFoldChange = Math::Median(foldChanges);
                 double normalizationFactor = 1.0 / medianFoldChange;
 
                 // normalize to median fold-change
@@ -357,25 +436,37 @@ namespace FlashLFQ
     std::vector<Peptide*> IntensityNormalizationEngine::SubsetData(std::vector<Peptide*> &initialList, std::vector<SpectraFileInfo*> &spectraFiles)
     {
         std::vector<std::vector<SpectraFileInfo*>> bothBioreps(2);
+#ifdef ORIG
         auto temp1 = spectraFiles.GroupBy([&] (std::any p)
         {
             p::Condition;
         }).ToList();
+#endif
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition> r->Condition; } ;
+        std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->Condition != r->Condition; } ;
+        std::vector<std::vector<SpectraFileInfo*>> temp1 = Group::GroupBy ( spectraFiles, f1, f2); 
+        
         if (temp1.size()() == 1)
         {
             // normalizing bioreps within a condition
+#ifdef ORIG
             auto temp2 = spectraFiles.GroupBy([&] (std::any p)
             {
                 p::BiologicalReplicate;
             }).ToList();
-            bothBioreps[0] = temp2[0].ToList();
-            bothBioreps[1] = temp2[1].ToList();
+#endif
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f1 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate> r->BiologicalReplicate; } ;
+            std::function<bool(SpectraFileInfo*,SpectraFileInfo*)> f2 = [&](SpectraFileInfo *l, SpectraFileInfo *r) {return l->BiologicalReplicate != r->BiologicalReplicate; } ;
+            std::vector<std::vector<SpectraFileInfo*>> temp2 = Group::GroupBy (spectraFiles, f1, f2); 
+
+            bothBioreps[0] = temp2[0]; //.ToList();
+            bothBioreps[1] = temp2[1]; //.ToList();
         }
         else
         {
             // normalizing bioreps between conditions
-            bothBioreps[0] = temp1[0].ToList();
-            bothBioreps[1] = temp1[1].ToList();
+            bothBioreps[0] = temp1[0];//.ToList();
+            bothBioreps[1] = temp1[1];//.ToList();
         }
 
         std::unordered_set<Peptide*> subsetList;
@@ -485,7 +576,8 @@ namespace FlashLFQ
 
                     // calculate initial error (error if all norm factors are 1)
                     // error metric is sum square error of coefficient of variation of each peptide
-                    double coefficientOfVariation = Statistics::StandardDeviation(temp) / temp.Average();
+                    //double coefficientOfVariation = Statistics::StandardDeviation(temp) / temp.Average();
+                    double coefficientOfVariation = Math::StandardDeviation(temp) / Math::Mean(temp);
                     bestError += std::pow(coefficientOfVariation, 2);
                 }
             }
@@ -537,7 +629,8 @@ namespace FlashLFQ
                             temp[1] = biorepIntensities[p][b2];
 
                             // error metric is sum square error of coefficient of variation of each peptide
-                            double coefficientOfVariation = Statistics::StandardDeviation(temp) / temp.Average();
+                            //double coefficientOfVariation = Statistics::StandardDeviation(temp) / temp.Average();
+                            double coefficientOfVariation = Math::StandardDeviation(temp) / Math::Mean(temp);
                             candidateError += std::pow(coefficientOfVariation, 2);
                         }
                     }
@@ -550,8 +643,8 @@ namespace FlashLFQ
             NelderMeadWithStartPoints tempVar2(parameterArray, 8, 0.001, 10, 0, 0, 1, 2, -0.5, 0.5, startPosition);
             OptimizerResult *result = (&tempVar2)->OptimizeBest(minimize);
     
-            double error = result->Error;
-            std::vector<double> normFactors = result->ParameterSet;
+            double error = result->getError();
+            std::vector<double> normFactors = result->getParameterSet();
     
             if (error < bestError)
             {
