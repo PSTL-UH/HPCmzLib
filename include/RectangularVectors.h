@@ -43,4 +43,25 @@ public:
 
         return newVector;
     }
+
+    static bool Clear(std::vector<std::vector<double>> vec, int startindex, int length)
+    {
+        int size1 = vec.size();
+        int size2 = vec[0].size();
+
+        int pos = 0;
+        int len = 0;
+        for ( int i=0; i<size1; i++ ) {
+            for ( int j=0; j<size2; j++, pos++ ) {
+                if ( pos < startindex )
+                    continue;
+                if ( len < length ) {
+                    vec[i][j] = 0.0;
+                    len++;
+                }                    
+            }
+        }
+        return true;
+    }
+
 };
