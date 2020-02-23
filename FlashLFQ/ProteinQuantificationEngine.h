@@ -8,12 +8,14 @@
 #include <mutex>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class FlashLfqResults; }
-namespace FlashLFQ { class Peptide; }
+#include "FlashLfqResults.h"
+//namespace FlashLFQ { class FlashLfqResults; }
+#include "Peptide.h"
+//namespace FlashLFQ { class Peptide; }
 
-using namespace Accord::Math;
-using namespace Accord::Math::Decompositions;
-using namespace MathNet::Numerics::Statistics;
+//using namespace Accord::Math;
+//using namespace Accord::Math::Decompositions;
+//using namespace MathNet::Numerics::Statistics;
 
 namespace FlashLFQ
 {
@@ -47,10 +49,6 @@ namespace FlashLFQ
         /// Constructs the protein quantification engine
         /// </summary>
     public:
-        virtual ~ProteinQuantificationEngine()
-        {
-            delete results;
-        }
 
         ProteinQuantificationEngine(FlashLfqResults *results, int maxThreads);
 
