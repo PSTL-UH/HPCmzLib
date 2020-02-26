@@ -53,6 +53,12 @@ namespace Proteomics {
             Internal = 1 << 12,
             All = (1 << 12) - 1, // Handy way of setting all below the 12th bit
         };
+
+        inline FragmentTypes operator | (FragmentTypes lhs, FragmentTypes rhs)
+        {
+            using T = std::underlying_type_t <FragmentTypes>;
+            return static_cast<FragmentTypes>(static_cast<T>(lhs) | static_cast<T>(rhs));
+        }
     
 
         class FragmentTypesExtension final {

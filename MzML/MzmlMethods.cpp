@@ -208,8 +208,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             // mzML->getcvList()->getcv()[1] = tempVar4;
 
             //add cvtypes to cvlist
-            tempVar->cv()[0] = *tempVar3;
-            tempVar->cv()[1] = *tempVar4;
+            tempVar->cv().push_back(*tempVar3);
+            tempVar->cv().push_back(*tempVar4)
+	      ;
 
             // ms::mzml::FileDescriptionType tempVar5();
             // mzML->setfileDescription(&tempVar5);

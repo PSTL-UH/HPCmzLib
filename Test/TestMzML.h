@@ -11,14 +11,27 @@
 namespace MassSpectrometry { class MzSpectrum; }
 namespace Chemistry { class ChemicalFormula; }
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+#include "../MzML/Mzml.h"
+#include "../MzML/MzmlMethods.h"
 using namespace IO::MzML;
+#include "../Chemistry/Chemistry.h"
 using namespace MassSpectrometry;
+#include "../MassSpectrometry/MassSpectrometry.h"
+
+#ifdef ORIG
 using namespace MzIdentML;
+#endif
+
+#include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
-using namespace NUnit::Framework;
+
+// using namespace NUnit::Framework;
+#include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
 using namespace Proteomics::AminoAcidPolymer;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+// namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 namespace Test
 {
@@ -26,92 +39,70 @@ namespace Test
 //ORIGINAL LINE: [TestFixture] public sealed class TestMzML
     class TestMzML final
     {
+#ifdef ORIG
     private:
         static Stopwatch *privateStopwatch;
 
         static Stopwatch *getStopwatch();
         static void setStopwatch(Stopwatch *value);
+#endif
 
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public static void Setuppp()
+
+#ifdef ORIG
         static void Setuppp();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TearDown] public static void TearDown()
         static void TearDown();
+#endif
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void AnotherMzMLtest()
         static void AnotherMzMLtest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void LoadBadMzml()
-        void LoadBadMzml();
+#ifdef THROWS_EXCEPTION
+        static void LoadBadMzml();
+#endif
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakTrimmingWithOneWindow()
         static void TestPeakTrimmingWithOneWindow();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakTrimmingWithTooManyWindows()
         static void TestPeakTrimmingWithTooManyWindows();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void WriteEmptyScan()
         static void WriteEmptyScan();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void DifferentAnalyzersTest()
         static void DifferentAnalyzersTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void Mzid111Test()
+#ifdef LATER
         static void Mzid111Test();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void Mzid120Test()
         static void Mzid120Test();
+#endif
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [OneTimeSetUp] public void Setup()
+#ifdef ORIG
         void Setup();
+#endif
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void LoadMzmlTest()
-        void LoadMzmlTest();
+        static void LoadMzmlTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void LoadMzmlFromConvertedMGFTest()
-        void LoadMzmlFromConvertedMGFTest();
+        static void LoadMzmlFromConvertedMGFTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void WriteMzmlTest()
-        void WriteMzmlTest();
+        static void WriteMzmlTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void MzidTest()
-        void MzidTest();
+#ifdef LATER
+        static void MzidTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Mzid110Test()
-        void Mzid110Test();
+        static void Mzid110Test();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Mzid111Test_()
-        void Mzid111Test_();
+        static void Mzid111Test_();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Mzid120Test_()
-        void Mzid120Test_();
+        static void Mzid120Test_();
+#endif
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void MzmlFindPrecursorReferenceScan()
-        void MzmlFindPrecursorReferenceScan();
+        static void MzmlFindPrecursorReferenceScan();
 
     private:
-        MzSpectrum *CreateMS2spectrum(std::vector<Fragment*> &fragments, int v1, int v2);
+        //issues with not instantiating object
+        // MzSpectrum *CreateMS2spectrum(std::vector<Fragment*> &fragments, int v1, int v2);
+        static MzSpectrum *CreateMS2spectrum(std::vector<Fragment*> &fragments, int v1, int v2);
 
-        MzSpectrum *CreateSpectrum(ChemicalFormula *f, double lowerBound, double upperBound, int minCharge);
+        //MzSpectrum *CreateSpectrum(ChemicalFormula *f, double lowerBound, double upperBound, int minCharge);
+        static MzSpectrum *CreateSpectrum(ChemicalFormula *f, double lowerBound, double upperBound, int minCharge);
     };
 }
