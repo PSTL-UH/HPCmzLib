@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "RectangularVectors.h"
+#include "Matrix.h"
 
 // Accord Math Library
 // The Accord.NET Framework
@@ -67,28 +68,7 @@ namespace FlashLFQ
         /// </remarks>
         /// 
 
-        class Constants {
-        public:
-            static constexpr double DoubleEpsilon = 1.11022302462515654042e-16;
-            static constexpr  double DoubleSmall = 1.493221789605150e-300;
-        };
 
-        class HelperFunctions {
-        public:
-            template <typename T>
-                static int Rows (std::vector<T> matrix ) {
-                return matrix.size();
-            }
-            template <typename T>
-                static int Rows (std::vector<std::vector<T>> matrix ) {
-                return matrix.size();
-            }
-            template <typename T>
-                static int Columns (std::vector<std::vector<T>> matrix ) {
-                return matrix[0].size();
-            }
-        };
-        
         //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
         //ORIGINAL LINE: [Serializable] public sealed class SingularValueDecomposition : ICloneable, ISolverMatrixDecomposition<Double>
         class SingularValueDecomposition final  {

@@ -1008,9 +1008,11 @@ namespace FlashLFQ
         
         std::vector<std::vector<double>> SingularValueDecomposition::Reverse() {
             //return getLeftSingularVectors().Dot(getDiagonalMatrix()).DotWithTransposed(getRightSingularVectors());
-            return Matrix::Dot(getLeftSingularVectors(),
-                               Matrix::DotWithTransposed(getDiagonalMatrix(),
-                                                         getRightSingularVectors()));
+            auto mat = getDiagonalMatrix();
+            auto mat2 = getRightSingularVectors();
+            auto mat3 = Matrix::DotWithTransposed(mat, mat2);
+            auto mat4 = getLeftSingularVectors();
+            return Matrix::Dot(mat4, mat3 );
         }
         
         std::vector<std::vector<double>> SingularValueDecomposition::GetInformationMatrix() {

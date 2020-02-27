@@ -16,7 +16,6 @@ HEADER = SingularValueDecomposition.h \
 
 OBJ = 	 SingularValueDecomposition.o \
 	 Tools.o                      \
-	 Matrix.o                     \
 	 Elementwise.o	     
 
 
