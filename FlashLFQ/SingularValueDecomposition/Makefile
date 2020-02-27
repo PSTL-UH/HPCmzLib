@@ -10,11 +10,13 @@ include ../../Makefile.defs
 
 HEADER = SingularValueDecomposition.h \
 	 Tools.h                      \
+	 Matrix.h                     \
 	 Elementwise.h	     
 
 
 OBJ = 	 SingularValueDecomposition.o \
 	 Tools.o                      \
+	 Matrix.o                     \
 	 Elementwise.o	     
 
 

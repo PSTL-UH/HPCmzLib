@@ -1,8 +1,10 @@
-﻿#include "SingularValueDecomposition.h"
+﻿#include <iostream>
+#include "SingularValueDecomposition.h"
+#include "Tools.h"
+#include "Matrix.h"
 
 namespace FlashLFQ
 {
-
     namespace Decompositions {
         
         double SingularValueDecomposition::getCondition() const {
@@ -10,14 +12,14 @@ namespace FlashLFQ
         }
         
         double SingularValueDecomposition::getThreshold() const {
-            return Constants->DoubleEpsilon * std::max(m, n) * s[0];
+            return Constants::DoubleEpsilon * std::max(m, n) * s[0];
         }
         
         double SingularValueDecomposition::getTwoNorm() const {
             return s[0];
         }
         
-        int SingularValueDecomposition::getRank() const {
+        int SingularValueDecomposition::getRank() {
             if (this->rank) {
                 return this->rank.value();
             }
@@ -25,7 +27,7 @@ namespace FlashLFQ
             double tol = std::max(m, n) * s[0] * eps;
             
             int r = 0;
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (s[i] > tol) {
                     r++;
                 }
@@ -33,10 +35,12 @@ namespace FlashLFQ
             
             //C# TO C++ CONVERTER TODO TASK: Comparisons involving nullable type instances will need
             // to be rewritten since comparison rules are different between C++ optional and System.Nullable:
-            return static_cast<int>(this->rank = std::make_optional(r));
+            //return static_cast<int>(this->rank = std::make_optional(r));
+            this->rank = std::make_optional(r);
+            return rank.value();
         }
 
-        bool SingularValueDecomposition::getIsSingular() const {
+        bool SingularValueDecomposition::getIsSingular() {
             return getRank() < std::max(m, n);
         }
         
@@ -44,12 +48,14 @@ namespace FlashLFQ
             return this->s;
         }
         
-        std::vector<std::vector<double>> SingularValueDecomposition::getDiagonalMatrix() const {
+        std::vector<std::vector<double>> SingularValueDecomposition::getDiagonalMatrix() {
             if (!this->diagonalMatrix.empty()) {
                 return this->diagonalMatrix;
             }
             
-            return diagonalMatrix = Matrix::Diagonal(u.Columns(), v.Columns(), s);
+            //return diagonalMatrix = Matrix::Diagonal(u.Columns(), v.Columns(), s);
+            return diagonalMatrix = Matrix::Diagonal(HelperFunctions::Columns(u),
+                                                     HelperFunctions::Columns(v), s);
         }
         
         std::vector<std::vector<double>> SingularValueDecomposition::getRightSingularVectors() const {
@@ -64,10 +70,10 @@ namespace FlashLFQ
             return si;
         }
         
-        double SingularValueDecomposition::getAbsoluteDeterminant() const {
+        double SingularValueDecomposition::getAbsoluteDeterminant()  {
             if (!determinant) {
                 double det = 1;
-                for (int i = 0; i < s.Rows(); i++) {
+                for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                     det *= s[i];
                 }
                 determinant = std::make_optional(det);
@@ -76,10 +82,10 @@ namespace FlashLFQ
             return determinant.value();
         }
         
-        double SingularValueDecomposition::getLogDeterminant() const {
+        double SingularValueDecomposition::getLogDeterminant()  {
             if (!lndeterminant) {
                 double det = 0;
-                for (int i = 0; i < s.Rows(); i++) {
+                for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                     det += std::log(static_cast<double>(s[i]));
                 }
                 lndeterminant = std::make_optional(static_cast<double>(det));
@@ -88,10 +94,10 @@ namespace FlashLFQ
             return lndeterminant.value();
         }
         
-        double SingularValueDecomposition::getPseudoDeterminant() const {
+        double SingularValueDecomposition::getPseudoDeterminant() {
             if (!pseudoDeterminant) {
                 double det = 1;
-                for (int i = 0; i < s.Rows(); i++) {
+                for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                     if (s[i] != 0) {
                         det *= s[i];
                     }
@@ -102,10 +108,10 @@ namespace FlashLFQ
             return pseudoDeterminant.value();
         }
         
-        double SingularValueDecomposition::getLogPseudoDeterminant() const {
+        double SingularValueDecomposition::getLogPseudoDeterminant() {
             if (!lnpseudoDeterminant) {
                 double det = 0;
-                for (int i = 0; i < s.Rows(); i++) {
+                for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                     if (s[i] != 0) {
                         det += std::log(static_cast<double>(s[i]));
                     }
@@ -141,15 +147,14 @@ namespace FlashLFQ
                 throw std::invalid_argument("value");
             }
             
-            std::vector<std::vector<double>> a;
-            m = value.Rows(); // rows
-            
+            std::vector<std::vector<double>> *a;
+
+            m = HelperFunctions::Rows(value); // rows
             if (m == 0) {
                 throw std::invalid_argument("Matrix does not have any rows.");
             }
             
-            n = value.Columns(); // cols
-            
+            n = HelperFunctions::Columns(value); // cols
             if (n == 0) {
                 throw std::invalid_argument("Matrix does not have any columns.");
             }
@@ -165,16 +170,25 @@ namespace FlashLFQ
                     
                     // throw new ArgumentException("Matrix should have more rows than columns.");
                     
-                    Trace::WriteLine("WARNING: Computing SVD on a matrix with more columns than rows.");
+                    //Trace::WriteLine("WARNING: Computing SVD on a matrix with more columns than rows.");
+                    std::cout << "WARNING: Computing SVD on a matrix with more columns than rows.\n";
                     
                     // Proceed anyway
-                    a = inPlace ? value : value.Copy();
+                    //a = inPlace ? value : value.Copy();
+                    if (inPlace) {
+                        a = &value;
+                    }
+                    else {
+                        a = new std::vector<std::vector<double>>(value);
+                    } 
                 }
                 else {
                     // Transposing and swapping
-                    a = value.Transpose(inPlace && m == n);
-                    n = value.Rows(); // rows
-                    m = value.Columns(); // cols
+                    //a = value.Transpose(inPlace && m == n);
+                    a = new std::vector<std::vector<double>>;
+                    *a = Matrix::Transpose (value, inPlace && m == n );
+                    n = HelperFunctions::Rows(value); // rows
+                    m = HelperFunctions::Columns(value); // cols
                     swapped = true;
                     
                     bool aux = computeLeftSingularVectors;
@@ -184,7 +198,13 @@ namespace FlashLFQ
             }
             else {
                 // Input matrix is ok
-                a = inPlace ? value : value.Copy();
+                //a = inPlace ? value : value.Copy();
+                if (inPlace) {
+                    a = &value;
+                }
+                else {
+                    a = new std::vector<std::vector<double>>(value);
+                } 
             }
             
             
@@ -216,20 +236,20 @@ namespace FlashLFQ
                     // Compute the transformation for the k-th column and place the k-th diagonal in s[k].
                     // Compute 2-norm of k-th column without under/overflow.
                     s[k] = 0;
-                    for (int i = k; i < a.Rows(); i++) {
-                        s[k] = Accord::Math::Tools::Hypotenuse(s[k], a[i][k]);
+                    for (int i = k; i < HelperFunctions::Rows(*a); i++) {
+                        s[k] = Tools::Hypotenuse(s[k], (*a)[i][k]);
                     }
                     
                     if (s[k] != 0) {
-                        if (a[k][k] < 0) {
+                        if ((*a)[k][k] < 0) {
                             s[k] = -s[k];
                         }
                         
-                        for (int i = k; i < a.Rows(); i++) {
-                            a[i][k] /= s[k];
+                        for (int i = k; i < HelperFunctions::Rows(*a); i++) {
+                            (*a)[i][k] /= s[k];
                         }
                         
-                        a[k][k] += 1;
+                        (*a)[k][k] += 1;
                     }
                     
                     s[k] = -s[k];
@@ -239,29 +259,29 @@ namespace FlashLFQ
                     if ((k < nct) & (s[k] != 0)) {
                         // Apply the transformation.
                         double t = 0;
-                        for (int i = k; i < a.Rows(); i++) {
-                            t += a[i][k] * a[i][j];
+                        for (int i = k; i < HelperFunctions::Rows(*a); i++) {
+                            t += (*a)[i][k] * (*a)[i][j];
                         }
                         
-                        t = -t / a[k][k];
+                        t = -t / (*a)[k][k];
                         
-                        for (int i = k; i < a.Rows(); i++) {
-                            a[i][j] += t * a[i][k];
+                        for (int i = k; i < HelperFunctions::Rows(*a); i++) {
+                            (*a)[i][j] += t * (*a)[i][k];
                         }
                     }
                     
                     // Place the k-th row of A into e for the
                     // subsequent calculation of the row transformation.
                     
-                    e[j] = a[k][j];
+                    e[j] = (*a)[k][j];
                 }
                 
                 if (wantu & (k < nct)) {
                     // Place the transformation in U for subsequent back
                     // multiplication.
                     
-                    for (int i = k; i < a.Rows(); i++) {
-                        u[i][k] = a[i][k];
+                    for (int i = k; i < HelperFunctions::Rows(*a); i++) {
+                        u[i][k] = (*a)[i][k];
                     }
                 }
                 
@@ -270,7 +290,7 @@ namespace FlashLFQ
                     // k-th super-diagonal in e[k].
                     // Compute 2-norm without under/overflow.
                     e[k] = 0;
-                    for (int i = k + 1; i < e.Rows(); i++) {
+                    for (int i = k + 1; i < HelperFunctions::Rows(e); i++) {
                         e[k] = Tools::Hypotenuse(e[k], e[i]);
                     }
                     
@@ -279,7 +299,7 @@ namespace FlashLFQ
                             e[k] = -e[k];
                         }
                         
-                        for (int i = k + 1; i < e.Rows(); i++) {
+                        for (int i = k + 1; i < HelperFunctions::Rows(e); i++) {
                             e[i] /= e[k];
                         }
                         
@@ -289,20 +309,20 @@ namespace FlashLFQ
                     e[k] = -e[k];
                     if ((k + 1 < m) & (e[k] != 0)) {
                         // Apply the transformation.
-                        for (int i = k + 1; i < work.Rows(); i++) {
+                        for (int i = k + 1; i < HelperFunctions::Rows(work); i++) {
                             work[i] = 0;
                         }
                         
-                        for (int i = k + 1; i < a.Rows(); i++) {
-                            for (int j = k + 1; j < a.Columns(); j++) {
-                                work[i] += e[j] * a[i][j];
+                        for (int i = k + 1; i < HelperFunctions::Rows(*a); i++) {
+                            for (int j = k + 1; j < HelperFunctions::Columns(*a); j++) {
+                                work[i] += e[j] * (*a)[i][j];
                             }
                         }
                         
                         for (int j = k + 1; j < n; j++) {
                             double t = -e[j] / e[k + 1];
-                            for (int i = k + 1; i < work.Rows(); i++) {
-                                a[i][j] += t * work[i];
+                            for (int i = k + 1; i < HelperFunctions::Rows(work); i++) {
+                                (*a)[i][j] += t * work[i];
                             }
                         }
                     }
@@ -311,7 +331,7 @@ namespace FlashLFQ
                         // Place the transformation in V for subsequent
                         // back multiplication.
                         
-                        for (int i = k + 1; i < v.Rows(); i++) {
+                        for (int i = k + 1; i < HelperFunctions::Rows(v); i++) {
                             v[i][k] = e[i];
                         }
                     }
@@ -321,20 +341,20 @@ namespace FlashLFQ
             // Set up the final bidiagonal matrix or order p.
             int p = std::min(n, m + 1);
             if (nct < n) {
-                s[nct] = a[nct][nct];
+                s[nct] = (*a)[nct][nct];
             }
             if (m < p) {
                 s[p - 1] = 0;
             }
             if (nrt + 1 < p) {
-                e[nrt] = a[nrt][p - 1];
+                e[nrt] = (*a)[nrt][p - 1];
             }
             e[p - 1] = 0;
             
             // If required, generate U.
             if (wantu) {
                 for (int j = nct; j < nu; j++) {
-                    for (int i = 0; i < u.Rows(); i++) {
+                    for (int i = 0; i < HelperFunctions::Rows(u); i++) {
                         u[i][j] = 0;
                     }
                     
@@ -345,18 +365,18 @@ namespace FlashLFQ
                     if (s[k] != 0) {
                         for (int j = k + 1; j < nu; j++) {
                             double t = 0;
-                            for (int i = k; i < u.Rows(); i++) {
+                            for (int i = k; i < HelperFunctions::Rows(u); i++) {
                                 t += u[i][k] * u[i][j];
                             }
                             
                             t = -t / u[k][k];
                             
-                            for (int i = k; i < u.Rows(); i++) {
+                            for (int i = k; i < HelperFunctions::Rows(u); i++) {
                                 u[i][j] += t * u[i][k];
                             }
                         }
                         
-                        for (int i = k; i < u.Rows(); i++) {
+                        for (int i = k; i < HelperFunctions::Rows(u); i++) {
                             u[i][k] = -u[i][k];
                         }
                         
@@ -366,7 +386,7 @@ namespace FlashLFQ
                         }
                     }
                     else {
-                        for (int i = 0; i < u.Rows(); i++) {
+                        for (int i = 0; i < HelperFunctions::Rows(u); i++) {
                             u[i][k] = 0;
                         }
                         u[k][k] = 1;
@@ -392,18 +412,18 @@ namespace FlashLFQ
                         
                         for (int j = k + 1; j < n; j++) { // pseudo-correction
                             double t = 0;
-                            for (int i = k + 1; i < v.Rows(); i++) {
+                            for (int i = k + 1; i < HelperFunctions::Rows(v); i++) {
                                 t += v[i][k] * v[i][j];
                             }
                             
                             t = -t / v[k + 1][k];
-                            for (int i = k + 1; i < v.Rows(); i++) {
+                            for (int i = k + 1; i < HelperFunctions::Rows(v); i++) {
                                 v[i][j] += t * v[i][k];
                             }
                         }
                     }
                     
-                    for (int i = 0; i < v.Rows(); i++) {
+                    for (int i = 0; i < HelperFunctions::Rows(v); i++) {
                         v[i][k] = 0;
                     }
                     v[k][k] = 1;
@@ -414,7 +434,7 @@ namespace FlashLFQ
             
             int pp = p - 1;
             int iter = 0;
-            double eps = Constants->DoubleEpsilon;
+            double eps = Constants::DoubleEpsilon;
             while (p > 0) {
                 int k, kase;
                 
@@ -494,7 +514,7 @@ namespace FlashLFQ
                                 e[j - 1] = cs * e[j - 1];
                             }
                             if (wantv) {
-                                for (int i = 0; i < v.Rows(); i++) {
+                                for (int i = 0; i < HelperFunctions::Rows(v); i++) {
                                     t = cs * v[i][j] + sn * v[i][p - 1];
                                     v[i][p - 1] = -sn * v[i][j] + cs * v[i][p - 1];
                                     v[i][j] = t;
@@ -517,7 +537,7 @@ namespace FlashLFQ
                             f = -sn * e[j];
                             e[j] = cs * e[j];
                             if (wantu) {
-                                for (int i = 0; i < u.Rows(); i++) {
+                                for (int i = 0; i < HelperFunctions::Rows(u); i++) {
                                     t = cs * u[i][j] + sn * u[i][k - 1];
                                     u[i][k - 1] = -sn * u[i][j] + cs * u[i][k - 1];
                                     u[i][j] = t;
@@ -569,7 +589,7 @@ namespace FlashLFQ
                             s[j + 1] = cs * s[j + 1];
                             
                             if (wantv) {
-                                for (int i = 0; i < v.Rows(); i++) {
+                                for (int i = 0; i < HelperFunctions::Rows(v); i++) {
                                     t = cs * v[i][j] + sn * v[i][j + 1];
                                     v[i][j + 1] = -sn * v[i][j] + cs * v[i][j + 1];
                                     v[i][j] = t;
@@ -586,7 +606,7 @@ namespace FlashLFQ
                             e[j + 1] = cs * e[j + 1];
                             
                             if (wantu && (j < m - 1)) {
-                                for (int i = 0; i < u.Rows(); i++) {
+                                for (int i = 0; i < HelperFunctions::Rows(u); i++) {
                                     t = cs * u[i][j] + sn * u[i][j + 1];
                                     u[i][j + 1] = -sn * u[i][j] + cs * u[i][j + 1];
                                     u[i][j] = t;
@@ -630,7 +650,7 @@ namespace FlashLFQ
                             }
                             
                             if (wantu && (k < m - 1)) {
-                                for (int i = 0; i < u.Rows(); i++) {
+                                for (int i = 0; i < HelperFunctions::Rows(u); i++) {
                                     t = u[i][k + 1];
                                     u[i][k + 1] = u[i][k];
                                     u[i][k] = t;
@@ -682,10 +702,10 @@ namespace FlashLFQ
             double e = this->getThreshold();
             
             
-            int scols = s.Rows();
+            int scols = HelperFunctions::Rows(s);
 
             auto Ls = RectangularVectors::RectangularDoubleVector(scols, scols);
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (std::abs(s[i]) <= e) {
                     Ls[i][i] = 0;
                 }
@@ -695,12 +715,12 @@ namespace FlashLFQ
             }
             
             //(V x L*) x Ut x Y
-            auto VL = Matrix::Dot(v, Ls);
+            std::vector<std::vector<double>> VL = Matrix::Dot(v, Ls);
             
             //(V x L* x Ut) x Y
-            int vrows = v.Rows();
-            int urows = u.Rows();
-            int ucols = u.Columns();
+            int vrows = HelperFunctions::Rows(v);
+            int urows = HelperFunctions::Rows(u);
+            int ucols = HelperFunctions::Columns(u);
 
             auto VLU = RectangularVectors::RectangularDoubleVector(vrows, urows);
             for (int i = 0; i < vrows; i++) {
@@ -742,10 +762,10 @@ namespace FlashLFQ
             double e = this->getThreshold();
             
             
-            int scols = s.Rows();
+            int scols = HelperFunctions::Rows(s);
 
             auto Ls = RectangularVectors::RectangularDoubleVector(scols, scols);
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (std::abs(s[i]) <= e) {
                     Ls[i][i] = 0;
                 }
@@ -758,8 +778,8 @@ namespace FlashLFQ
             auto VL = Matrix::Dot(v, Ls);
             
             //(V x L* x Ut) x Y
-            int vrows = v.Rows();
-            int urows = u.Rows();
+            int vrows = HelperFunctions::Rows(v);
+            int urows = HelperFunctions::Rows(u);
 
             auto VLU = RectangularVectors::RectangularDoubleVector(vrows, scols);
             for (int i = 0; i < vrows; i++) {
@@ -800,10 +820,10 @@ namespace FlashLFQ
             double e = this->getThreshold();
             
             
-            int scols = s.Rows();
+            int scols = HelperFunctions::Rows(s);
 
             auto Ls = RectangularVectors::RectangularDoubleVector(scols, scols);
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (std::abs(s[i]) <= e) {
                     Ls[i][i] = 0;
                 }
@@ -816,8 +836,8 @@ namespace FlashLFQ
             std::vector<std::vector<double>> VL = Matrix::Dot(v, Ls);
             
             //(V x L* x Ut) x Y
-            int vrows = v.Rows();
-            int urows = u.Rows();
+            int vrows = HelperFunctions::Rows(v);
+            int urows = HelperFunctions::Rows(u);
 
             auto VLU = RectangularVectors::RectangularDoubleVector(vrows, scols);
             for (int i = 0; i < vrows; i++) {
@@ -831,7 +851,7 @@ namespace FlashLFQ
             }
             
             //(V x L* x Ut x Y)
-            return VLU.DotWithDiagonal(Y);
+            return Matrix::DotWithDiagonal(VLU, Y);
         }
         
         std::vector<double> SingularValueDecomposition::SolveTranspose(std::vector<double> &value) {
@@ -859,10 +879,10 @@ namespace FlashLFQ
             double e = this->getThreshold();
             
             
-            int scols = s.Rows();
+            int scols = HelperFunctions::Rows(s);
 
             auto Ls = RectangularVectors::RectangularDoubleVector(scols, scols);
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (std::abs(s[i]) <= e) {
                     Ls[i][i] = 0;
                 }
@@ -875,8 +895,8 @@ namespace FlashLFQ
             std::vector<std::vector<double>> VL = Matrix::Dot(v, Ls);
             
             //(V x L* x Ut) x Y
-            int vrows = v.Rows();
-            int urows = u.Rows();
+            int vrows = HelperFunctions::Rows(v);
+            int urows = HelperFunctions::Rows(u);
 
             auto VLU = RectangularVectors::RectangularDoubleVector(vrows, scols);
             for (int i = 0; i < vrows; i++) {
@@ -889,7 +909,8 @@ namespace FlashLFQ
                 }
             }
             
-            return Y.Dot(VLU);
+            //return Y.Dot(VLU);
+            return Matrix::Dot(Y, VLU);
         }
         
         std::vector<double> SingularValueDecomposition::Solve(std::vector<double> &value) {
@@ -917,10 +938,10 @@ namespace FlashLFQ
             // systems even if the matrices are singular or close to singular.
             
             
-            int scols = s.Rows();
+            int scols = HelperFunctions::Rows(s);
             
             auto Ls = RectangularVectors::RectangularDoubleVector(scols, scols);
-            for (int i = 0; i < s.Rows(); i++) {
+            for (int i = 0; i < HelperFunctions::Rows(s); i++) {
                 if (std::abs(s[i]) <= e) {
                     Ls[i][i] = 0;
                 }
@@ -933,8 +954,8 @@ namespace FlashLFQ
             auto VL = Matrix::Dot(v, Ls);
             
             //(V x L* x Ut) x Y
-            int urows = u.Rows();
-            int vrows = v.Rows();
+            int urows = HelperFunctions::Rows(u);
+            int vrows = HelperFunctions::Rows(v);
 
             auto VLU = RectangularVectors::RectangularDoubleVector(vrows, urows);
             for (int i = 0; i < vrows; i++) {
@@ -955,10 +976,10 @@ namespace FlashLFQ
             double e = this->getThreshold();
             
             // X = V*S^-1
-            int vrows = v.Rows();
-            int vcols = v.Columns();
+            int vrows = HelperFunctions::Rows(v);
+            int vcols = HelperFunctions::Columns(v);
 
-            auto X = RectangularVectors::RectangularDoubleVector(vrows, s.Rows());
+            auto X = RectangularVectors::RectangularDoubleVector(vrows, HelperFunctions::Rows(s));
             for (int i = 0; i < vrows; i++) {
                 for (int j = 0; j < vcols; j++) {
                     if (std::abs(s[j]) > e) {
@@ -968,8 +989,8 @@ namespace FlashLFQ
             }
             
             // Y = X*U'
-            int urows = u.Rows();
-            int ucols = u.Columns();
+            int urows = HelperFunctions::Rows(u);
+            int ucols = HelperFunctions::Columns(u);
 
             auto Y = RectangularVectors::RectangularDoubleVector(vrows, urows);
             for (int i = 0; i < vrows; i++) {
@@ -986,17 +1007,20 @@ namespace FlashLFQ
         }
         
         std::vector<std::vector<double>> SingularValueDecomposition::Reverse() {
-            return getLeftSingularVectors().Dot(getDiagonalMatrix()).DotWithTransposed(getRightSingularVectors());
+            //return getLeftSingularVectors().Dot(getDiagonalMatrix()).DotWithTransposed(getRightSingularVectors());
+            return Matrix::Dot(getLeftSingularVectors(),
+                               Matrix::DotWithTransposed(getDiagonalMatrix(),
+                                                         getRightSingularVectors()));
         }
         
         std::vector<std::vector<double>> SingularValueDecomposition::GetInformationMatrix() {
             double e = this->getThreshold();
             
             // X = V*S^-1
-            int vrows = v.Rows();
-            int vcols = v.Columns();
+            int vrows = HelperFunctions::Rows(v);
+            int vcols = HelperFunctions::Columns(v);
 
-            auto X = RectangularVectors::RectangularDoubleVector(vrows, s.Rows());
+            auto X = RectangularVectors::RectangularDoubleVector(vrows, HelperFunctions::Rows(s));
             for (int i = 0; i < vrows; i++) {
                 for (int j = 0; j < vcols; j++) {
                     if (std::abs(s[j]) > e) {
@@ -1028,19 +1052,23 @@ namespace FlashLFQ
             auto svd = new SingularValueDecomposition();
             svd->m = m;
             svd->n = n;
-            svd->s = static_cast<std::vector<double>>(s.Clone());
-            svd->si = static_cast<std::vector<int>>(si.Clone());
+            //svd->s = static_cast<std::vector<double>>(s.Clone());
+            svd->s = s;
+            //svd->si = static_cast<std::vector<int>>(si.Clone());
+            svd->si = si;
+            
             svd->swapped = swapped;
             if (!u.empty()) {
-                svd->u = static_cast<std::vector<std::vector<double>>>(u.MemberwiseClone());
+                //svd->u = static_cast<std::vector<std::vector<double>>>(u.MemberwiseClone());
+                svd->u = u;
             }
             if (!v.empty()) {
-                svd->v = static_cast<std::vector<std::vector<double>>>(v.MemberwiseClone());
+                //svd->v = static_cast<std::vector<std::vector<double>>>(v.MemberwiseClone());
+                svd->v = v;
             }
             
-            //C# TO C++ CONVERTER TODO TASK: A 'delete svd' statement was not added since svd
-            // was used in a 'return' or 'throw' statement.
             return svd;
         }
     }
     
+}

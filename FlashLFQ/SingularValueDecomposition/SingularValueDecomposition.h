@@ -1,11 +1,12 @@
 ﻿#pragma once
 
-#include "Base/ISolverMatrixDecomposition.h"
 #include <vector>
 #include <cmath>
 #include <stdexcept>
 #include <any>
 #include <optional>
+
+#include "RectangularVectors.h"
 
 // Accord Math Library
 // The Accord.NET Framework
@@ -65,6 +66,28 @@ namespace FlashLFQ
         ///   This routine computes the economy decomposition of A.</para> 
         /// </remarks>
         /// 
+
+        class Constants {
+        public:
+            static constexpr double DoubleEpsilon = 1.11022302462515654042e-16;
+            static constexpr  double DoubleSmall = 1.493221789605150e-300;
+        };
+
+        class HelperFunctions {
+        public:
+            template <typename T>
+                static int Rows (std::vector<T> matrix ) {
+                return matrix.size();
+            }
+            template <typename T>
+                static int Rows (std::vector<std::vector<T>> matrix ) {
+                return matrix.size();
+            }
+            template <typename T>
+                static int Columns (std::vector<std::vector<T>> matrix ) {
+                return matrix[0].size();
+            }
+        };
         
         //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
         //ORIGINAL LINE: [Serializable] public sealed class SingularValueDecomposition : ICloneable, ISolverMatrixDecomposition<Double>
@@ -79,8 +102,8 @@ namespace FlashLFQ
             
             std::vector<int> si; // sorting order
             
-            static constexpr double eps = 2 * Constants->DoubleEpsilon;
-            static constexpr double tiny = Constants->DoubleSmall;
+            static constexpr double eps = 2 * Constants::DoubleEpsilon;
+            static constexpr double tiny = Constants::DoubleSmall;
             
             std::optional<int> rank;
             std::optional<double> determinant;
@@ -115,13 +138,13 @@ namespace FlashLFQ
             ///
             /// <value>Number of non-negligible singular values.</value>
             ///
-            int getRank() const;
+            int getRank();
             
             /// <summary>
             ///   Gets whether the decomposed matrix is singular.
             /// </summary>
             ///
-            bool getIsSingular() const;
+            bool getIsSingular();
             
             /// <summary>
             ///   Gets the one-dimensional array of singular values.
@@ -133,7 +156,7 @@ namespace FlashLFQ
             ///  Returns the block diagonal matrix of singular values.
             /// </summary>        
             ///
-            std::vector<std::vector<double>> getDiagonalMatrix() const;
+            std::vector<std::vector<double>> getDiagonalMatrix();
             
             /// <summary>
             ///   Returns the V matrix of Singular Vectors.
@@ -157,26 +180,26 @@ namespace FlashLFQ
             ///   Returns the absolute value of the matrix determinant.
             /// </summary>
             ///
-            double getAbsoluteDeterminant() const;
+            double getAbsoluteDeterminant();
             
             /// <summary>
             ///   Returns the log of the absolute value for the matrix determinant.
             /// </summary>
             ///
-            double getLogDeterminant() const;
+            double getLogDeterminant();
             
             
             /// <summary>
             ///   Returns the pseudo-determinant for the matrix.
             /// </summary>
             ///
-            double getPseudoDeterminant() const;
+            double getPseudoDeterminant();
             
             /// <summary>
             ///   Returns the log of the pseudo-determinant for the matrix.
             /// </summary>
             ///
-            double getLogPseudoDeterminant() const;
+            double getLogPseudoDeterminant();
             
             
             /// <summary>
