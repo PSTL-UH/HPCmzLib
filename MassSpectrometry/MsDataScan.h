@@ -127,7 +127,7 @@ namespace MassSpectrometry
         void setSelectedIonMonoisotopicGuessMz(const std::optional<double> &value);
 
     private:
-        MzRange *isolationRange;
+        MzRange *isolationRange = nullptr;
 
     public:
         MzRange *getIsolationRange();
