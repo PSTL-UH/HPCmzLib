@@ -8,10 +8,14 @@
 //using namespace Accord::Math::Decompositions;
 //using namespace MathNet::Numerics::Statistics;
 
+#include "SingularValueDecomposition/Matrix.h"
+#include "SingularValueDecomposition/Elementwise.h"
+
 namespace FlashLFQ
 {
 
-    ProteinQuantificationEngine::ProteinQuantificationEngine(FlashLfqResults *results, int maxThreads) : results(results), maxThreads(maxThreads)
+    ProteinQuantificationEngine::ProteinQuantificationEngine(FlashLfqResults *results, int maxThreads) :
+        results(results), maxThreads(maxThreads)
     {
     }
 
@@ -19,13 +23,21 @@ namespace FlashLFQ
     {
         // link proteins to peptides
         std::unordered_map<ProteinGroup*, std::vector<Peptide*>> proteinsToPeptides;
+#ifdef ORIG
         for (auto peptide : results->PeptideModifiedSequences.Where([&] (std::any p)
         {
             p->Value->UseForProteinQuant;
-        }))
-
+        }));
+#endif
+        std::unordered_map<std::string, Peptide*> temppeptides;
+        for ( autp p : results->PeptideModifiedSequences ) {
+            if (std::get<1>(p)->UseForProteinQuant ) {
+                temppeptides.push_back (p)
+            }
+        }
+        for ( auto peptide : temppeptides ) 
         {
-            for (auto protein : peptide->Value->proteinGroups)
+            for (auto protein : std::get<1>(peptide)->proteinGroups)
             {
                 TValue peptides;
                 std::unordered_map<ProteinGroup*, std::vector<Peptide*>>::const_iterator proteinsToPeptides_iterator = proteinsToPeptides.find(protein);
@@ -227,7 +239,7 @@ namespace FlashLFQ
         std::vector<std::vector<double>> u = svd->LeftSingularVectors;
         std::vector<double> s = svd->Diagonal;
         std::vector<std::vector<double>> v = svd->RightSingularVectors;
-        v = Matrix::Transpose(v);
+        v = Matrix::Transpose(v, false);
 
         // min noise
         for (int i = 0; i < (int)s.size(); i++)
@@ -239,7 +251,8 @@ namespace FlashLFQ
         }
 
         auto sDiag = Matrix::Diagonal(s);
-        C = Matrix::Dot(Matrix::Dot(u, sDiag), v);
+        auto tempmat = Matrix::Dot(u, sDiag);
+        C = Matrix::Dot(tempmat, v);
 
         // initiation
         std::vector<double> lambda = Matrix::Diagonal(C)->Select([&] (std::any i)
@@ -389,7 +402,7 @@ namespace FlashLFQ
         else
         {
             // fractionated data; need to sum by biorep before entering it into the array
-#ifder ORIG
+#ifdef ORIG
             auto cond = spectraFiles.Select([&] (std::any v)
             {
                 v::Condition;

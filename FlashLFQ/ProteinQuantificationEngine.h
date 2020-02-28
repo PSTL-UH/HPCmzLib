@@ -8,7 +8,7 @@
 #include <mutex>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-#include "FlashLfqResults.h"
+#include "FlashLFQResults.h"
 //namespace FlashLFQ { class FlashLfqResults; }
 #include "Peptide.h"
 //namespace FlashLFQ { class Peptide; }
@@ -16,6 +16,9 @@
 //using namespace Accord::Math;
 //using namespace Accord::Math::Decompositions;
 //using namespace MathNet::Numerics::Statistics;
+
+#include "SingularValueDecomposition/SingularValueDecomposition.h"
+
 
 namespace FlashLFQ
 {

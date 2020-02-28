@@ -34,12 +34,29 @@ namespace FlashLFQ
             int size = rows < cols ? rows : cols;
 
             auto result = RectangularVectors::RectangularDoubleVector(size, size);
+            for ( int i = 0; i < size; i++ ) {
+                for ( int j = 0; j<size; j++ ) {
+                    result[i][j] = 0.0;
+                }
+            }
             for (int i = 0; i < size; i++)
                 result[i][i] = values[i];
             
             return result;
         }
+        static std::vector<std::vector<double>> Diagonal( std::vector<double> &values)
+        {
+            return Diagonal(values.size(), values.size(), values);
+        }
 
+        static std::vector<double> Diagonal( std::vector<std::vector<double>> &values)
+        {
+            std::vector<double>result(values.size());
+            for ( int i = 0; i < (int)values.size(); i++ ) {
+                result[i] = values[i][i];
+            }
+            return result;
+        }
         static std::vector<std::vector<double>> Transpose (std::vector<std::vector<double>> &matrix,
                                                            bool inplace)
         {
@@ -180,6 +197,11 @@ namespace FlashLFQ
                 result[j] = s;
             }
             return result;                
+        }
+
+        static double Dot ( std::vector<double> a, std::vector<double> b) {
+            double result;
+            return result;
         }
         
         static std::vector<std::vector<double>> DotWithDiagonal ( std::vector<std::vector<double>> &a,

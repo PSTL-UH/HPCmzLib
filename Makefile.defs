@@ -9,7 +9,7 @@
 
 # Generated automatically from Makefile.in by configure.
 
-MZLIB_DIR      = /home/nrbiddle/mzlib-c
+MZLIB_DIR      = /home/gabriel/XLMS/mzlib-master/
 MZLIB_INC_DIR  = $(MZLIB_DIR)/include 
 MZLIB_LIB_DIR  = $(MZLIB_DIR)/lib
 MZLIB_LIB      = libmzlib.a
