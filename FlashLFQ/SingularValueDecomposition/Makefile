@@ -15,8 +15,7 @@ HEADER = SingularValueDecomposition.h \
 
 
 OBJ = 	 SingularValueDecomposition.o \
-	 Tools.o                      \
-	 Elementwise.o	     
+	 Tools.o                      
 
 
 .SUFFIXES: .o.cpp
