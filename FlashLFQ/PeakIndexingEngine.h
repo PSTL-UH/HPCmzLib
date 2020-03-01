@@ -10,13 +10,9 @@
 #include "exceptionhelper.h"
 #include "tangible_filesystem.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace FlashLFQ { class IndexedMassSpectralPeak; }
-namespace FlashLFQ { class Ms1ScanInfo; }
-namespace FlashLFQ { class SpectraFileInfo; }
-
-//namespace MzLibUtil { class Tolerance; }
-
+#include "IndexedMassSpectralPeak.h"
+#include "Ms1ScanInfo.h"
+#include "SpectraFileInfo.h"
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 
@@ -45,7 +41,8 @@ namespace FlashLFQ
 
         PeakIndexingEngine();
 
-        bool IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent, std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>> &_ms1Scans);
+        bool IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent, std::unordered_map<SpectraFileInfo*,
+                                    std::vector<Ms1ScanInfo*>> &_ms1Scans);
 
         void ClearIndex();
 

@@ -20,13 +20,6 @@
 #include "PeakIndexingEngine.h"
 #include "ChromatographicPeak.h"
 #include "RetentionTimeCalibDataPoint.h"
-//namespace FlashLFQ { class SpectraFileInfo; }
-//namespace FlashLFQ { class Identification; }
-//namespace FlashLFQ { class FlashLfqResults; }
-//namespace FlashLFQ { class Ms1ScanInfo; }
-//namespace FlashLFQ { class PeakIndexingEngine; }
-//namespace FlashLFQ { class ChromatographicPeak; }
-
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
 //using namespace MathNet::Numerics::Statistics;
@@ -65,7 +58,6 @@ namespace FlashLFQ
         // structures used in the FlashLFQ engine
     private:
         std::vector<SpectraFileInfo*> _spectraFileInfo;
-        //Stopwatch *_globalStopwatch;
         time_t start, stop;
         std::vector<Identification*> _allIdentifications;
         //std::unordered_map<std::string, std::vector<KeyValuePair<double, double>*>> _baseSequenceToIsotopicDistribution;

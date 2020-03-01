@@ -26,19 +26,19 @@ HEADER = ChromatographicPeak.h         \
 
 OBJ = ChromatographicPeak.o         \
 	DetectionType.o                \
-	FlashLfqEngine.o               \
 	FlashLFQResults.o              \
 	Identification.o               \
 	IndexedMassSpectralPeak.o      \
 	IntensityNormalizationEngine.o \
 	IsotopicEnvelope.o             \
 	Ms1ScanInfo.o                  \
-	PeakIndexingEngine.o           \
 	Peptide.o                      \
 	ProteinGroup.o                 \
 	ProteinQuantificationEngine.o  \
 	RetentionTimeCalibDataPoint.o  \
-	SpectraFileInfo.o
+	SpectraFileInfo.o              \
+	FlashLfqEngine.o               \
+	PeakIndexingEngine.o           
 
 
 .SUFFIXES: .o.cpp
