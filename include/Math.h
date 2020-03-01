@@ -20,6 +20,12 @@ public:
         return sqrt(Variance(samples));
     }
 
+    static double PopulationStandardDeviation(std::vector<double> samples)
+    {
+        std::cout << "PopulationStandardDeviation: Normalization not yet implemented correctly. Using StandardDeviation\n";
+        return sqrt(Variance(samples));
+    }
+    
     static double Variance(std::vector<double> samples)
     {
         int size = samples.size();
@@ -109,5 +115,10 @@ public:
         return  (double)0.0;
     }
 
+    static double PopulationCovariance ( std::vector<double> &a, std::vector<double> &b)
+    {
+        std::cout << " Math::PopulationCovariance: function is not correctly implemented. Please revisit if nevessary" << std::endl;
+        return  (double)0.0;
+    }
     
 };

@@ -4,12 +4,12 @@
 #include "ProteinGroup.h"
 #include "SpectraFileInfo.h"
 
-//using namespace Accord::Math;
-//using namespace Accord::Math::Decompositions;
-//using namespace MathNet::Numerics::Statistics;
+#include <cmath>
+#include "Math.h"
 
 #include "SingularValueDecomposition/Matrix.h"
 #include "SingularValueDecomposition/Elementwise.h"
+#include "SingularValueDecomposition/SingularValueDecomposition.h"
 
 namespace FlashLFQ
 {
@@ -30,165 +30,191 @@ namespace FlashLFQ
         }));
 #endif
         std::unordered_map<std::string, Peptide*> temppeptides;
-        for ( autp p : results->PeptideModifiedSequences ) {
+        for ( auto p : results->PeptideModifiedSequences ) {
             if (std::get<1>(p)->UseForProteinQuant ) {
-                temppeptides.push_back (p)
+                temppeptides.insert (p);
             }
         }
         for ( auto peptide : temppeptides ) 
         {
             for (auto protein : std::get<1>(peptide)->proteinGroups)
             {
-                TValue peptides;
+                std::vector<Peptide*> peptides;
                 std::unordered_map<ProteinGroup*, std::vector<Peptide*>>::const_iterator proteinsToPeptides_iterator = proteinsToPeptides.find(protein);
                 if (proteinsToPeptides_iterator != proteinsToPeptides.end())
                 {
-                    peptides = proteinsToPeptides_iterator->second;
-                    peptides->Add(peptide->Value);
+                    for ( auto v: proteinsToPeptides_iterator->second ) {
+                        peptides.push_back(v);
+                    }
                 }
                 else
                 {
-                    peptides = proteinsToPeptides_iterator->second;
-                    proteinsToPeptides.emplace(protein, std::vector<Peptide*> {peptide->Value});
+                    proteinsToPeptides.emplace(protein, peptides);
                 }
             }
         }
 
-        auto proteinList = proteinsToPeptides.ToList();
+        std::vector<std::tuple<ProteinGroup*, std::vector<Peptide*>>> proteinList(proteinsToPeptides.begin(), proteinsToPeptides.end());
 
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        Parallel::ForEach(Partitioner::Create(0, proteinList.size()), tempVar, [&] (std::any partitionRange)
+#ifdef ORIG
+        //ParallelOptions *tempVar = new ParallelOptions();
+        //tempVar->MaxDegreeOfParallelism = maxThreads;
+        //Parallel::ForEach(Partitioner::Create(0, proteinList.size()), tempVar, [&] (std::any partitionRange)
+        //{
+#endif
+        //for (int i = partitionRange::Item1; i < partitionRange::Item2; i++)
+        for (int i = 0; i < (int)proteinList.size(); i++)
         {
-            for (int i = partitionRange::Item1; i < partitionRange::Item2; i++)
+            // peptides must have at least one non-zero intensity measurement to be used for this protein quant analysis
+            std::vector<Peptide*> peptides;
+            
+            for (int p = 0; p < (int)std::get<1>(proteinList[i]).size(); p++)
             {
-                // peptides must have at least one non-zero intensity measurement to be used for this protein quant analysis
-                std::vector<Peptide*> peptides;
-    
-                for (int p = 0; p < proteinList[i].Value->Count; p++)
-                {
-                    for (auto file : results->SpectraFiles.Where([&] (std::any f)
-                    {
-                        //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since tempVar was
-                        //passed to a method or constructor. Handle memory management manually.
-                        return f->TechnicalReplicate == 0;
-                    }))
-                    {
-                        if (proteinList[i].Value[p].GetIntensity(file) > 0)
+#ifdef ORIG
+                for (auto file : results->SpectraFiles.Where([&] (std::any f)  {
+                            return f->TechnicalReplicate == 0;
+                        }));
+#endif
+                for ( auto file : results->SpectraFiles ) {
+                    if ( file->TechnicalReplicate == 0 ) {
+                        if (std::get<1>(proteinList[i])[p]->GetIntensity(file) > 0)
                         {
-                            peptides.push_back(proteinList[i].Value[p]);
+                            peptides.push_back(std::get<1>(proteinList[i])[p]);
                             break;
                         }
                     }
                 }
-    
-                // if this protein has no valid peptides (i.e., all missing values) its intensity is 0
-                if (peptides.empty())
-                {
-                    for (int s = 0; s < (int)results->SpectraFiles.size(); s++)
-                    {
-                        proteinList[i].Key->SetIntensity(results->SpectraFiles[s], 0);
-                    }
-    
-                    {
-                        std::lock_guard<std::mutex> lock(results->ProteinGroups);
-                        results->ProteinGroups.emplace(proteinList[i].Key->ProteinGroupName, proteinList[i].Key);
-                    }
-    
-                    continue;
-                }
-    
-                // put intensities from the samples into a 2d (peptides x samples) array
-                std::vector<std::vector<double>> intensityArray = GetIntensityArray(peptides);
-    
-                // subtract reference sample and log-transform
-                for (int p = 0; p < (int)intensityArray.size(); p++)
-                {
-                    double avg = Math::Log(intensityArray[p].Average(), 2);
-    
-                    intensityArray[p] = intensityArray[p].Select([&] (std::any v)
-                    {
-                        //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since tempVar
-                        // was passed to a method or constructor. Handle memory management manually.
-                        return Math::Log(v, 2) - avg;
-                    })->ToArray();
-                }
-    
-                // remove NaN/infinity
-                for (int p = 0; p < peptides.size(); p++)
-                {
-                    for (int s = 0; s < (int)intensityArray[p].size(); s++)
-                    {
-                        if (std::isnan(intensityArray[p][s]) || std::isinf(intensityArray[p][s]))
-                        {
-                            intensityArray[p][s] = 0;
-                        }
-                    }
-                }
-    
-                std::vector<double> weights;
-    
-                if (peptides.size() > 1)
-                {
-                    // calculate peptide weights with FARMS
-                    auto weightsAndNoise = FastFarms(intensityArray, MU, ALPHA, MAX_ITER, false, MIN_NOISE, 0.0);
-                    weights = std::get<0>(weightsAndNoise);
-                }
-                else
-                {
-                    weights = {1.0};
-                }
-    
-                std::vector<double> proteinIntensitiesPerFile(results->SpectraFiles.size());
-    
-                // calculate weighted-sum peptide intensity
-                for (int p = 0; p < (int)peptides.size(); p++)
-                {
-                    if (weights[p] >= MIN_WEIGHT && !std::isnan(weights[p]))
-                    {
-                        for (int s = 0; s < (int)proteinIntensitiesPerFile.size(); s++)
-                        {
-                            proteinIntensitiesPerFile[s] += (weights[p] * peptides[p]->GetIntensity(results->SpectraFiles[s]));
-                        }
-                    }
-                }
-    
-                // store results
+            }
+            
+            // if this protein has no valid peptides (i.e., all missing values) its intensity is 0
+            if (peptides.empty())
+            {
                 for (int s = 0; s < (int)results->SpectraFiles.size(); s++)
                 {
-                    proteinList[i].Key->SetIntensity(results->SpectraFiles[s], proteinIntensitiesPerFile[s]);
+                    std::get<0>(proteinList[i])->SetIntensity(results->SpectraFiles[s], 0);
                 }
-    
+                
+                //{
+                //   std::lock_guard<std::mutex> lock(results->ProteinGroups);
+                results->ProteinGroups.emplace(std::get<0>(proteinList[i])->ProteinGroupName, std::get<0>(proteinList[i]));
+                //}
+                
+                continue;
+            }
+            
+            // put intensities from the samples into a 2d (peptides x samples) array
+            std::vector<std::vector<double>> intensityArray = GetIntensityArray(peptides);
+            
+            // subtract reference sample and log-transform
+            for (int p = 0; p < (int)intensityArray.size(); p++)
+            {
+                //double avg = Math::Log(intensityArray[p].Average(), 2);
+                double avg = std::log2(Math::Mean(intensityArray[p]));
+
+#ifdef ORIG
+                intensityArray[p] = intensityArray[p].Select([&] (std::any v)  {
+                        return Math::Log(v, 2) - avg;
+                    })->ToArray();
+#endif
+                std::vector<double> temp;
+                for ( auto v: intensityArray[p] ) {
+                    temp.push_back(std::log2(v) - avg);
+                }
+                intensityArray[p].clear(); // Not sure about this line.
+                intensityArray[p].insert(intensityArray[p].end(), temp.begin(), temp.end());
+            }
+            
+            // remove NaN/infinity
+            for (int p = 0; p < (int)peptides.size(); p++)
+            {
+                for (int s = 0; s < (int)intensityArray[p].size(); s++)
                 {
-                    std::lock_guard<std::mutex> lock(results->ProteinGroups);
-                    results->ProteinGroups.emplace(proteinList[i].Key->ProteinGroupName, proteinList[i].Key);
+                    if (std::isnan(intensityArray[p][s]) || std::isinf(intensityArray[p][s]))
+                    {
+                        intensityArray[p][s] = 0;
+                    }
                 }
             }
-        });
-
+            
+            std::vector<double> weights;
+            
+            if (peptides.size() > 1)
+            {
+                // calculate peptide weights with FARMS
+                auto weightsAndNoise = FastFarms(intensityArray, MU, ALPHA, MAX_ITER, false, MIN_NOISE, 0.0);
+                weights = std::get<0>(weightsAndNoise);
+            }
+            else
+            {
+                weights = {1.0};
+            }
+            
+            std::vector<double> proteinIntensitiesPerFile(results->SpectraFiles.size());
+            
+            // calculate weighted-sum peptide intensity
+            for (int p = 0; p < (int)peptides.size(); p++)
+            {
+                if (weights[p] >= MIN_WEIGHT && !std::isnan(weights[p]))
+                {
+                    for (int s = 0; s < (int)proteinIntensitiesPerFile.size(); s++)
+                    {
+                        proteinIntensitiesPerFile[s] += (weights[p] * peptides[p]->GetIntensity(results->SpectraFiles[s]));
+                    }
+                }
+            }
+            
+            // store results
+            for (int s = 0; s < (int)results->SpectraFiles.size(); s++)
+            {
+                std::get<0>(proteinList[i])->SetIntensity(results->SpectraFiles[s], proteinIntensitiesPerFile[s]);
+            }
+            
+            //{
+            //  std::lock_guard<std::mutex> lock(results->ProteinGroups);
+            results->ProteinGroups.emplace(std::get<0>(proteinList[i])->ProteinGroupName, std::get<0>(proteinList[i]));
+            //}
+        }
+        
+        
         //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since tempVar was
         //passed to a method or constructor. Handle memory management manually.
     }
-
+    
     std::tuple<std::vector<double>, double> ProteinQuantificationEngine::FastFarms(std::vector<std::vector<double>> &readouts,
                                                                                    double mu, double weight, int max_iter,
                                                                                    bool force_iter, double min_noise, double fill_nan)
     {
         // subtract average intensity
-        for (int p = 0; p < readouts.size(); p++)
+        for (int p = 0; p < (int)readouts.size(); p++)
         {
+
+#ifdef ORIG
             double iAvg = readouts[p].Average();
             readouts[p] = readouts[p].Select([&] (std::any i)
             {
                 return i - iAvg;
             })->ToArray();
+#endif
+            double iAvg = Math::Mean(readouts[p]);
+            std::vector<double> temp;
+            for ( auto i : readouts[p] ) {
+                temp.push_back(i - iAvg);                
+            }
+            readouts[p].clear(); //Not sure about this.
+            readouts[p].insert(readouts[p].end(), temp.begin(), temp.end() );
         }
 
         // calculate std dev
+#ifdef ORIG
         std::vector<double> xsd = readouts.Select([&] (std::any p)
         {
             Statistics::PopulationStandardDeviation(p);
         })->ToArray();
+#endif
+        std::vector<double> xsd;
+        for ( auto p: readouts ) {
+            xsd.push_back(Math::PopulationStandardDeviation(p));
+        }
 
         for (int p = 0; p < (int)xsd.size(); p++)
         {
@@ -201,10 +227,18 @@ namespace FlashLFQ
         // divide by std dev
         for (int p = 0; p < (int)readouts.size(); p++)
         {
+#ifdef ORIG
             readouts[p] = readouts[p].Select([&] (std::any i)
             {
                 return i / xsd[p];
             })->ToArray();
+#endif
+            std::vector<double> temp;
+            for ( auto i: readouts[p] ) {
+                temp.push_back(i/xsd[p]);                
+            }
+            readouts[p].clear();
+            readouts[p].insert(readouts[p].end(), temp.begin(), temp.end());
         }
 
         // handle infinity/NaN
@@ -235,10 +269,10 @@ namespace FlashLFQ
         }
 
         // singular value decomposition
-        auto svd = new SingularValueDecomposition(C);
-        std::vector<std::vector<double>> u = svd->LeftSingularVectors;
-        std::vector<double> s = svd->Diagonal;
-        std::vector<std::vector<double>> v = svd->RightSingularVectors;
+        auto svd = new Decompositions::SingularValueDecomposition(C);
+        std::vector<std::vector<double>> u = svd->getLeftSingularVectors();
+        std::vector<double> s = svd->getDiagonal();
+        std::vector<std::vector<double>> v = svd->getRightSingularVectors();
         v = Matrix::Transpose(v, false);
 
         // min noise
@@ -255,10 +289,17 @@ namespace FlashLFQ
         C = Matrix::Dot(tempmat, v);
 
         // initiation
+#ifdef ORIG
         std::vector<double> lambda = Matrix::Diagonal(C)->Select([&] (std::any i)
         {
             std::sqrt(i * 0.75);
         })->ToArray();
+#endif
+        std::vector<double> lambda;
+        auto tempmat2 = Matrix::Diagonal(C);
+        for ( auto i: tempmat2 ) {
+            lambda.push_back(std::sqrt(i * 0.75));
+        }
         std::vector<double> new_psi(lambda.size());
 
         for (int i = 0; i < (int)lambda.size(); i++)
@@ -267,7 +308,8 @@ namespace FlashLFQ
         }
 
         std::vector<double> old_psi(new_psi.size());
-        new_psi.CopyTo(old_psi);
+        //new_psi.CopyTo(old_psi);
+        old_psi = new_psi;
 
         double alpha = weight * readouts.size();
         double E = 1.0;
@@ -277,25 +319,35 @@ namespace FlashLFQ
             // E step
             std::vector<double> phi = Elementwise::Divide(lambda, new_psi);
             double a = 1 + Matrix::Dot(lambda, phi);
-            std::vector<double> nu = phi.Select([&] (std::any j)
-            {
-                //delete svd;
-                return j / a;
-            })->ToArray();
+#ifdef ORIG
+            std::vector<double> nu = phi.Select([&] (std::any j) {
+                    return j / a;
+                })->ToArray();
+#endif
+            std::vector<double> nu;
+            for ( auto j : phi ) {
+                nu.push_back(j/a);
+            }
             std::vector<double> xi = Matrix::Dot(C, nu);
             E = 1 - Matrix::Dot(nu, lambda) + Matrix::Dot(nu, xi);
-
+            
             // M step
-            lambda = Elementwise::Divide(xi, Elementwise->Add(Elementwise::Multiply(new_psi, alpha), E));
-
+            //lambda = Elementwise::Divide(xi, Elementwise::Add(Elementwise::Multiply(new_psi, alpha), E));
+            auto tmp1 = Elementwise::Multiply(new_psi, alpha);
+            auto tmp2 = Elementwise::Add(tmp1, E);
+            lambda = Elementwise::Divide(xi, tmp2);
+            
             auto temp1 = Elementwise::Multiply(xi, lambda);
             auto temp2 = Elementwise::Multiply(new_psi, alpha);
             auto temp3 = Elementwise::Multiply(temp2, lambda);
             auto temp4 = Elementwise::Subtract(mu, lambda);
             auto temp5 = Elementwise::Multiply(temp3, temp4);
-
-            new_psi = Elementwise->Add(Elementwise::Subtract(Matrix::Diagonal(C), temp1), temp5);
-
+            
+            //new_psi = Elementwise->Add(Elementwise::Subtract(Matrix::Diagonal(C), temp1), temp5);
+            auto diag = Matrix::Diagonal(C);
+            auto tmp3 = Elementwise::Subtract(diag, temp1);
+            new_psi = Elementwise::Add(tmp3, temp5);
+            
             for (int j = 0; j < (int)new_psi.size(); j++)
             {
                 if (new_psi[j] < std::pow(min_noise, 2))
@@ -303,30 +355,49 @@ namespace FlashLFQ
                     new_psi[j] = std::pow(min_noise, 2);
                 }
             }
-
+            
             if (!force_iter)
             {
-                if (Elementwise::Subtract(new_psi, old_psi).Max([&] (std::any p)
-                {
-                    std::abs(p);
-                }) / old_psi.Max() < min_noise / 10)
+#ifdef ORIG
+                if (Elementwise::Subtract(new_psi, old_psi).Max([&] (std::any p)  {
+                            std::abs(p);
+                        }) / old_psi.Max() < min_noise / 10)
                 {
                     break;
                 }
+#endif
+                auto t = Elementwise::Subtract(new_psi, old_psi);
+                std::vector<double> tempvec;
+                for ( auto p: t ) {
+                    tempvec.push_back(std::abs(p));
+                }
+                auto max = std::max(tempvec.begin(), tempvec.end() );
+                auto old_psi_max = std::max ( old_psi.begin(), old_psi.end() );              
+                if ( (*max / *old_psi_max) < (min_noise / 10) ){
+                    break;
+                }
+           
+                //new_psi.CopyTo(old_psi);
+                old_psi = new_psi;
             }
-
-            new_psi.CopyTo(old_psi);
         }
-
-        std::vector<double> loading = Elementwise::Multiply(lambda, std::sqrt(E));
+        
+        auto temps = std::sqrt(E);
+        std::vector<double> loading = Elementwise::Multiply(lambda, temps);
         auto k = Elementwise::Divide(loading, new_psi);
 
-        double max = loading.Max();
+        double max = *std::max(loading.begin(), loading.end());
+#ifdef ORIG
         std::vector<double> weights = loading.Select([&] (std::any p)
         {
-            //delete svd;
             return p / max;
         })->ToArray();
+#endif
+        std::vector<double> weights;
+        for ( auto p: loading ) {
+            weights.push_back(p/max);
+        }
+        
         double noise = 1.0 / (1.0 + Matrix::Dot(loading, k));
 
         // return weights, noise
@@ -346,7 +417,8 @@ namespace FlashLFQ
 
             for (int j = 0; j < n; j++)
             {
-                cov[i][j] = Statistics::PopulationCovariance(data[i], data[j]);
+                //cov[i][j] = Statistics::PopulationCovariance(data[i], data[j]);
+                cov[i][j] = Math::PopulationCovariance(data[i], data[j]);
             }
         }
 
@@ -383,10 +455,21 @@ namespace FlashLFQ
 
         std::vector<std::vector<double>> intensityArray(peptides.size());
 
-        if (spectraFiles.Max([&] (std::any p)
-        {
-            return p->Fraction == 0;
-        }))
+#ifdef ORIG
+        //if (spectraFiles.Max([&] (std::any p)
+        //{
+        //    return p->Fraction == 0;
+        //}))
+#endif
+        std::vector<SpectraFileInfo*> tempvec;
+        for ( auto p : spectraFiles ) {
+            if ( p->Fraction == 0 ) {
+                tempvec.push_back(p);
+            }
+        }
+        auto maxval = *std::max(tempvec.begin(), tempvec.end() );
+        
+        if ( maxval)
         {
             // non-fractionated data
             for (int p = 0; p < (int)peptides.size(); p++)
@@ -408,7 +491,7 @@ namespace FlashLFQ
                 v::Condition;
             }).Distinct().ToList();
 #endif
-            std::vector<string> cond;
+            std::vector<std::string> cond;
             for ( auto v: spectraFiles ) {
                 bool found = false;
                 for ( auto p : cond ) {
@@ -417,12 +500,13 @@ namespace FlashLFQ
                         break;
                     }
                 }
-                if ( != found ) {
-                    cond.push_back(p->Condition);
+                if ( ! found ) {
+                    cond.push_back(v->Condition);
                 }                          
             }
 
-            std::unordered_map<std::tuple<std::string, int>, int> conditionAndBiorepToSampleNumber;
+            //std::unordered_map<std::tuple<std::string, int>, int> conditionAndBiorepToSampleNumber;
+            std::map<std::tuple<std::string, int>, int> conditionAndBiorepToSampleNumber;
 
             int sampleNumber = 0;
             for (int c = 0; c < (int)cond.size(); c++)
@@ -458,7 +542,7 @@ namespace FlashLFQ
                 
                 for (auto biorep : bioreps)
                 {
-                    conditionAndBiorepToSampleNumber.emplace(std::tuple<std::string, int>(cond[c], biorep), sampleNumber);
+                    conditionAndBiorepToSampleNumber.emplace(std::make_tuple(cond[c], biorep), sampleNumber);
                     sampleNumber++;
                 }
             }
@@ -470,7 +554,7 @@ namespace FlashLFQ
                 for (int s = 0; s < (int)spectraFiles.size(); s++)
                 {
                     SpectraFileInfo *spectraFile = spectraFiles[s];
-                    sampleNumber = conditionAndBiorepToSampleNumber[std::tuple<std::string, int>(spectraFile->Condition, spectraFile->BiologicalReplicate)];
+                    sampleNumber = conditionAndBiorepToSampleNumber[std::make_tuple(spectraFile->Condition, spectraFile->BiologicalReplicate)];
 
                     intensityArray[p][sampleNumber] += peptides[p]->GetIntensity(spectraFiles[s]);
                 }

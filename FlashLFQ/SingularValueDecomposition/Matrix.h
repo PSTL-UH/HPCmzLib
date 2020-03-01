@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 namespace FlashLFQ
 {
@@ -200,7 +201,8 @@ namespace FlashLFQ
         }
 
         static double Dot ( std::vector<double> a, std::vector<double> b) {
-            double result;
+            double result=0.0;
+            std::cout << "Function not yet implemented.\n";
             return result;
         }
         
