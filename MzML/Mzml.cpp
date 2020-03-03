@@ -2,14 +2,9 @@
 #include "../MassSpectrometry/MsDataScan.h"
 #include "../MassSpectrometry/SourceFile.h"
 #include "../MassSpectrometry/FilteringParams.h"
-// #include "XSD/IO.MzML.Generated.mzMLType.h"
 #include "MzmlMethods.h"
-// #include "XSD/IO.MzML.Generated.indexedmzML.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "../MassSpectrometry/IFilteringParams.h"
-// #include "XSD/IO.MzML.Generated.InstrumentConfigurationType.h"
-// #include "XSD/IO.MzML.Generated.CVParamType.h"
-// #include "XSD/IO.MzML.Generated.BinaryDataArrayType.h"
 #include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
 
@@ -92,6 +87,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
+            int breakpt = 1;
+
             //add new() here
             ms::mzml::mzMLType *_mzMLConnection;
 
@@ -108,26 +105,23 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     //--------------------------------------------------------------
                     //Deserialize FileStream
                     //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                    std::ifstream fs = std::ifstream(filePath);
-
+                    // std::ifstream fs = std::ifstream(filePath);
                     
                     try{
-                        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (fs, "mzML1.1.1_idx.xsd"));
-
-                        //is this correct way to create _mzMLConnection pointer when mzML() returns object not pointer?
+                        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (filePath));
                         _mzMLConnection = &_indexedmzMLConnection->mzML();
                     }
                     catch (const xml_schema::exception& e){
                         std::cerr << e << std::endl;
                     }
 
-                    fs.close();
+                    // fs.close();
                     //----------------------------------------------------------------
                 }
             }
             catch (...)
             {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
+
 //ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
 #ifdef ORIG
@@ -138,21 +132,22 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     //----------------------------------------------------------------
                     //Deserialize FileStream
                     //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                    std::ifstream fs = std::ifstream(filePath);
+                    // std::ifstream fs = std::ifstream(filePath);
 
                     try{
-                        std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (fs, "mzML1.1.0.xsd"));
+                        std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
                     }
                     catch (const xml_schema::exception& e){
                         std::cerr << e << std::endl;
                     }
 
-                    fs.close();
+                    // fs.close();
                     //----------------------------------------------------------------
                 }
             }
-// 
+
             MassSpectrometry::SourceFile *sourceFile;
+            int Break_point = 5;
             if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
                 !_mzMLConnection->fileDescription().sourceFileList()->sourceFile().empty() && 
                 //if segfault check here
@@ -166,67 +161,44 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::string checkSumType = "";
                 for (auto cv : simpler.cvParam())
                 {
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000563)"))
                     if (cv.accession() == R"(MS:1000563)")
                     {
                         fileFormat = "Thermo RAW format";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000584)"))
                     if (cv.accession() == R"(MS:1000584)")
                     {
                         fileFormat = "mzML format";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000768)"))
                     if (cv.accession() == R"(MS:1000768)")
                     {
                         nativeIdFormat = "Thermo nativeID format";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000776)"))
                     if (cv.accession() == R"(MS:1000776)")
                     {
                         nativeIdFormat = "scan number only nativeID format";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000824)"))
                     if (cv.accession() == R"(MS:1000824)")
                     {
                         nativeIdFormat = "no nativeID format";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000568)"))
                     if (cv.accession() == R"(MS:1000568)")
                     {
-                        //Original
-                        // checkSum = cv->value;
                         checkSum = cv.value().get();
                         checkSumType = "MD5";
                     }
-                    //Original
-                    // if (cv->accession->Equals(R"(MS:1000569)"))
                     if (cv.accession() == R"(MS:1000569)")
                     {
-                        //Original
-                        // checkSum = cv->value;
                         checkSum = cv.value().get();
                         checkSumType = "SHA-1";
                     }
                 }
 
-                //Original
-                // Uri tempVar(simpler->location);
-                // sourceFile = new SourceFile(nativeIdFormat, fileFormat, checkSum, checkSumType, &tempVar, simpler->id, simpler->name);
                 Uri tempVar(simpler.location());
                 sourceFile = new SourceFile(nativeIdFormat, fileFormat, checkSum, checkSumType, &tempVar, simpler.id(), simpler.name());
             }
             else
             {
                 std::string sendCheckSum;
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (FileStream stream = File.OpenRead(filePath))
                 {
 #ifdef ORIG
                     FileStream stream = File::OpenRead(filePath);
@@ -234,9 +206,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     std::ifstream stream = std::ifstream(filePath);
 
 
-
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (SHA1Managed sha = new SHA1Managed())
                     {
 #ifdef ORIG
                         SHA1Managed sha = SHA1Managed();
@@ -246,11 +215,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                         sendCheckSum = BitConverter::ToString(checksum)->Replace("-", "");
 #endif
 
-                        sendCheckSum = "1111100000";
-
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                        
-
+                        sendCheckSum = "1111100000";                   
                     }
                 }
 
@@ -289,7 +254,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 //check if no duplicates
                 if (!checkForDuplicateScans.insert(scan->getOneBasedScanNumber())) //returns false if the scan already exists
                 {
-//C# TO C++ CONVERTER TODO TASK: A 'delete tempVar2' statement was not added since tempVar2 was passed to a method or constructor. Handle memory management manually.
                     delete sourceFile;
                     throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
                 }
@@ -352,14 +316,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
         MsDataScan *Mzml::GetMsDataOneBasedScanFromConnection(ms::mzml::mzMLType *_mzMLConnection, int oneBasedIndex, IFilteringParams *filterParams)
         {
             // Read in the instrument configuration types from connection (in mzml it's at the start)
-
-            //original
-            // std::vector<ms::mzml::InstrumentConfigurationType*> configs(_mzMLConnection->instrumentConfigurationList()->getinstrumentConfiguration().size());
             std::vector<ms::mzml::InstrumentConfigurationType*> configs(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size());
             for (long unsigned int i = 0; i < _mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size(); i++)
             {
-                //original
-                // configs[i] = _mzMLConnection->instrumentConfigurationList()->instrumentConfiguration()[i];
                 *configs[i] = _mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i];
             }
 
@@ -412,8 +371,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             Polarity polarity = Polarity::Unknown;
             double tic = NAN;
 
-            //original
-            // for (ms::mzml::CVParamType *cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].cvParam())
             for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].cvParam())
             {
                 if (cv.accession() == _msnOrderAccession)
@@ -450,8 +407,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::vector<double> masses(0);
             std::vector<double> intensities(0);
 
-            //Original
-            // for (ms::mzml::BinaryDataArrayType *binaryData : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].binaryDataArrayList()->binaryDataArray())
             for (ms::mzml::BinaryDataArrayType binaryData : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].binaryDataArrayList()->binaryDataArray())
             {
                 bool compressed = false;
@@ -466,9 +421,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     mzArray |= cv.accession() == _mzArray;
                     intensityArray |= cv.accession() == _intensityArray;
                 }
-
-                //original
-                // std::vector<unsigned char> bin_data = binaryData.binary();
 
                 //get binaryData as string
                 std::string binary_data = binaryData.binary().encode();
@@ -493,8 +445,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             if (aScanWindowList != nullptr)
             {
-                //original
-                // for (ms::mzml::CVParamType *cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList().scanWindow()[0].cvParam)
                 for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList()->scanWindow()[0].cvParam())
                 {
                     if (cv.accession() == _scanWindowLowerLimit)
@@ -508,12 +458,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
 
-            //Original C# line
-            //if (filterParams != null && intensities.Length > 0 && ((filterParams.ApplyTrimmingToMs1 && msOrder.Value == 1) || (filterParams.ApplyTrimmingToMsMs && msOrder.Value > 1)))
             if (filterParams != nullptr && intensities.size() > 0 && (filterParams->getMinimumAllowedIntensityRatioToBasePeakM() || filterParams->getNumberOfPeaksToKeepPerWindow()) && ((filterParams->getApplyTrimmingToMs1() && msOrder.value() == 1) || (filterParams->getApplyTrimmingToMsMs() && msOrder.value() > 1)))
             {
 
-                //I dont see this in the C# mzlib.  Only the next Else statement is present
                 if (!filterParams->getNumberOfWindows())
                 {
                     int numPeaks = TopNpeakHelper(intensities, masses, filterParams);
@@ -543,12 +490,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::optional<double> injectionTime;
             int oneBasedScanNumber = oneBasedIndex;
 
-            //Original
-            // if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam() != nullptr)
             if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam().empty())
             {
-                //Original
-                // for (ms::mzml::CVParamType *cv : _mzMLConnection->run()->getspectrumList()->getspectrum()[oneBasedIndex - 1]->scanList().scan()[0].cvParam())
                 for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam())
                 {
                     if (cv.accession() == _retentionTime)
@@ -584,8 +527,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             double selectedIonMz = NAN;
             std::optional<int> selectedIonCharge;
             std::optional<double> selectedIonIntensity;
-            //original
-            // for (ms::mzml::CVParamType *cv : _mzMLConnection->run()->getspectrumList()->getspectrum()[oneBasedIndex - 1]->precursorList.precursor[0].selectedIonList.selectedIon[0].cvParam)
+
             for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam())
             {
                 if (cv.accession() == _selectedIonMz)
@@ -607,8 +549,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             double highIsolation = NAN;
             if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow() != nullptr)
             {
-                //original
-                // for (ms::mzml::CVParamType *cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow()->cvParam())
                 for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow()->cvParam())
                 {
                     if (cv.accession() == _isolationWindowTargetMZ)
@@ -627,12 +567,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             DissociationType dissociationType = DissociationType::Unknown;
-            //original
-            // if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam() != nullptr)
             if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam().empty())
             {
-                //Original
-                // for (ms::mzml::CVParamType *cv : _mzMLConnection->run()->getspectrumList()->getspectrum()[oneBasedIndex - 1]->precursorList.precursor[0].activation.cvParam)
                 for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam())
                 {
                     std::unordered_map<std::string, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv.accession());
@@ -640,8 +576,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
             std::optional<double> monoisotopicMz;
-            //original
-            // if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam() != nullptr)
             if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam().empty())
             {
                 for (auto userParam : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam())
@@ -669,7 +603,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 precursorScanNumber = std::make_optional(GetOneBasedPrecursorScanNumber(_mzMLConnection, oneBasedIndex));
             }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete mzmlMzSpectrum' statement was not added since mzmlMzSpectrum was passed to a method or constructor. Handle memory management manually.
             MzRange tempVar2(low, high);
             return new MsDataScan(mzmlMzSpectrum, oneBasedIndex, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar2, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId, std::make_optional(selectedIonMz), selectedIonCharge, selectedIonIntensity, isolationMz, std::make_optional(lowIsolation + highIsolation), std::make_optional(dissociationType), precursorScanNumber, monoisotopicMz);
         }
@@ -682,14 +615,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             if (zlibCompressed)
             {
                 auto output = new MemoryStream();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var compressStream = new MemoryStream(bytes))
                 {
                     auto compressStream = MemoryStream(bytes);
                     compressStream.ReadByte();
                     compressStream.ReadByte();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
                     {
                         auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
                         decompressor.CopyTo(output);
@@ -698,8 +627,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                         bytes = output->ToArray();
                     }
                 }
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete output' statement was not added since output was passed to a method or constructor. Handle memory management manually.
             }
 #endif
 

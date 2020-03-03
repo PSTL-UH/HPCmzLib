@@ -204,8 +204,8 @@ namespace Test
         Mzml *ok = Mzml::LoadAllStaticData(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what.mzML"));
 #endif
 
-        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, std::experimental::filesystem::current_path().string() + "what.mzML", false);
-        Mzml *ok = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "what.mzML");
+        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, std::experimental::filesystem::current_path().string() + "/what.mzML", false);
+    	Mzml *ok = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "/what.mzML");
 
 #ifdef ORIG
         auto scanWithPrecursor = ok->GetAllScansList().Last([&] (std::any b)){
