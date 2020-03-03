@@ -19,6 +19,8 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../Chemistry/Constants.h"
 
+#include <string>
+
 using namespace Chemistry;
 //using namespace MathNet::Numerics::Statistics;
 using namespace MzLibUtil;
@@ -27,7 +29,7 @@ using namespace UsefulProteomicsDatabases;
 namespace FlashLFQ
 {
 
-    FlashLfqEngine::FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize, bool advancedProteinQuant, bool matchBetweenRuns, double ppmTolerance, double isotopeTolerancePpm, double matchBetweenRunsPpmTolerance, bool integrate, int numIsotopesRequired, bool idSpecificChargeState, bool requireMonoisotopicMass, bool silent, const std::string &optionalPeriodicTablePath, double maxMbrWindow, int maxThreads) : Silent(silent), MaxThreads(maxThreads), PeakfindingPpmTolerance(20.0), PpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm), Integrate(integrate), MissedScansAllowed(1), NumIsotopesRequired(numIsotopesRequired), MbrRtWindow(maxMbrWindow), MbrPpmTolerance(matchBetweenRunsPpmTolerance), ErrorCheckAmbiguousMatches(true), MatchBetweenRuns(matchBetweenRuns), IdSpecificChargeState(idSpecificChargeState), RequireMonoisotopicMass(requireMonoisotopicMass), Normalize(normalize), MinDiscFactorToCutAt(0.6), AdvancedProteinQuant(advancedProteinQuant)
+    FlashLfqEngine::FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize, bool advancedProteinQuant, bool matchBetweenRuns, double ppmTolerance, double isotopeTolerancePpm, double matchBetweenRunsPpmTolerance, bool integrate, int numIsotopesRequired, bool idSpecificChargeState, bool requireMonoisotopicMass, bool silent, std::string optionalPeriodicTablePath, double maxMbrWindow, int maxThreads) : Silent(silent), MaxThreads(maxThreads), PeakfindingPpmTolerance(20.0), PpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm), Integrate(integrate), MissedScansAllowed(1), NumIsotopesRequired(numIsotopesRequired), MbrRtWindow(maxMbrWindow), MbrPpmTolerance(matchBetweenRunsPpmTolerance), ErrorCheckAmbiguousMatches(true), MatchBetweenRuns(matchBetweenRuns), IdSpecificChargeState(idSpecificChargeState), RequireMonoisotopicMass(requireMonoisotopicMass), Normalize(normalize), MinDiscFactorToCutAt(0.6), AdvancedProteinQuant(advancedProteinQuant)
     {
         if (optionalPeriodicTablePath == "")
         {
@@ -200,7 +202,8 @@ namespace FlashLFQ
             std::vector<double> abundances = isotopicDistribution->getIntensities(); //.ToArray();
 
             double unmodifiedMonoisotopicMass = p->getMonoisotopicMass();
-            double highestAbundance = abundances.Max();
+            //double highestAbundance = abundances.Max();
+            double highestAbundance = *std::max(abundances.begin(), abundances.end());
 
             for (int i = 0; i < (int) masses.size(); i++)
             {
@@ -222,14 +225,26 @@ namespace FlashLFQ
             delete p;
         }
 
+#ifdef ORIG
         auto minChargeState = _allIdentifications.Min([&] (std::any p)
         {
             p::precursorChargeState;
         });
+#endif
+        auto  minChargeState = (*std::min(_allIdentifications.begin(), _allIdentifications.end(), [&] ( Identification *l, Identification *r ) {
+                return l->precursorChargeState < r->precursorChargeState;
+                }))->precursorChargeState;
+        
+#ifdef ORIG
         auto maxChargeState = _allIdentifications.Max([&] (std::any p)
         {
             p::precursorChargeState;
         });
+#endif
+        auto maxChargeState = (*std::max(_allIdentifications.begin(), _allIdentifications.end(), [&] ( Identification *l, Identification *r ) {
+                return l->precursorChargeState < r->precursorChargeState;
+                }))->precursorChargeState;
+
         _chargeStates = Enumerable::Range(minChargeState, (maxChargeState - minChargeState) + 1);
 
         auto peptideModifiedSequences = _allIdentifications.GroupBy([&] (std::any p)
@@ -296,53 +311,77 @@ namespace FlashLFQ
             
             for (auto chargeState : _chargeStates)
             {
-                if (IdSpecificChargeState && chargeState != identification.precursorChargeState)
+                if (IdSpecificChargeState && chargeState != identification->precursorChargeState)
                 {
                     continue;
                 }
                 
                 // get XIC (peakfinding)
-                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification.ms2RetentionTimeInMinutes, identification.massToLookFor, chargeState, identification.fileInfo, peakfindingTol).OrderBy([&] (std::any p) {
+                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes, identification->massToLookFor, chargeState, identification.fileInfo, peakfindingTol).OrderBy([&] (std::any p) {
                         p::RetentionTime;
                     }).ToList();
     
                 // filter by smaller mass tolerance
                 xic.RemoveAll([&] (std::any p)   {
-                        !ppmTolerance->Within(p::Mz::ToMass(chargeState), identification.massToLookFor);
+                        !ppmTolerance->Within(p::Mz::ToMass(chargeState), identification->massToLookFor);
                     });
                 
                 // filter by isotopic distribution
-                std::vector<IsotopicEnvelope*> isotopicEnvelopes = GetIsotopicEnvelopes(xic, identification, chargeState, true);
+                std::vector<IsotopicEnvelope*> isotopicEnvelopes = GetIsotopicEnvelopes(xic,
+                                                          identification, chargeState, true);
                 
                 // add isotopic envelopes to the chromatographic peak
-                msmsFeature->IsotopicEnvelopes.insert(msmsFeature->IsotopicEnvelopes.end(), isotopicEnvelopes.begin(), isotopicEnvelopes.end());
+                msmsFeature->IsotopicEnvelopes.insert(msmsFeature->IsotopicEnvelopes.end(),
+                                        isotopicEnvelopes.begin(), isotopicEnvelopes.end());
             }
             
             msmsFeature->CalculateIntensityForThisFeature(Integrate);
-            CutPeak(msmsFeature, identification.ms2RetentionTimeInMinutes);
+            CutPeak(msmsFeature, identification->ms2RetentionTimeInMinutes);
             
             if (!msmsFeature->IsotopicEnvelopes.empty())
             {
                 continue;
             }
-    
+
+#ifdef ORIG           
             auto precursorXic = msmsFeature->IsotopicEnvelopes.Where([&] (std::any p)  {
                     delete ppmTolerance;
                     return p->ChargeState == identification.precursorChargeState;
                 }).ToList();
+#endif
+            std::vector<IsotopicEnvelope *> precursorXic;
+            for ( auto p:  msmsFeature->IsotopicEnvelopes ) {
+                if ( p->ChargeState == identification->precursorChargeState ) {
+                    precursorXic.push_back(p);
+                }
+            }
     
             if (!precursorXic.empty())
             {
                 msmsFeature->IsotopicEnvelopes.clear();
                 continue;
             }
-    
+#ifdef ORIG    
             int min = precursorXic.Min([&] (std::any p)  {
                     p::IndexedPeak::ZeroBasedMs1ScanIndex;
                 });
+#endif
+            int min = (*std::min(precursorXic.begin(), precursorXic.end(),
+                                 [&] ( IsotopicEnvelope *l, IsotopicEnvelope *r) {
+                                     return l->IndexedPeak->ZeroBasedMs1ScanIndex <
+                                     r->IndexedPeak->ZeroBasedMs1ScanIndex;
+                                 }))->IndexedPeak->ZeroBasedMs1ScanIndex;
+#ifdef ORIG            
             int max = precursorXic.Max([&] (std::any p) {
                 p::IndexedPeak::ZeroBasedMs1ScanIndex;
                 });
+#endif
+            int max = (*std::max(precursorXic.begin(), precursorXic.end(),
+                                 [&] ( IsotopicEnvelope *l, IsotopicEnvelope *r) {
+                                     return l->IndexedPeak->ZeroBasedMs1ScanIndex <
+                                     r->IndexedPeak->ZeroBasedMs1ScanIndex;
+                                 }))->IndexedPeak->ZeroBasedMs1ScanIndex;
+
             msmsFeature->IsotopicEnvelopes.RemoveAll([&] (std::any p)   {
                     delete ppmTolerance;
                     return p::IndexedPeak::ZeroBasedMs1ScanIndex < min;
@@ -572,9 +611,16 @@ namespace FlashLFQ
                 continue;
             }
             
+#ifdef ORIG
             double maxIntensity = allEnvs.Max([&] (std::any p) {
                     p::Intensity;
                 });
+#endif
+            double maxIntensity = (*std::max(allEnvs.begin(), allEnvs.end()
+                                             [&] (IsotopicEnvelope *l, IsotopicEnvelope *r ) {
+                        return l->Intensity < r->Intensity;
+                    }) )->Intensity;
+
             bestEnv = allEnvs.First([&] (std::any p) {
                     delete acceptorPeak;
                     return p->Intensity == maxIntensity;

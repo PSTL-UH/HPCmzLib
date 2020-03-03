@@ -75,7 +75,7 @@ namespace FlashLFQ
             //delete _peakIndexingEngine;
         }
 
-        FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize = false, bool advancedProteinQuant = false, bool matchBetweenRuns = false, double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0, double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false, int numIsotopesRequired = 2, bool idSpecificChargeState = false, bool requireMonoisotopicMass = true, bool silent = false, const std::string &optionalPeriodicTablePath = "", double maxMbrWindow = 2.5, int maxThreads = -1);
+        FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize = false, bool advancedProteinQuant = false, bool matchBetweenRuns = false, double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0, double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false, int numIsotopesRequired = 2, bool idSpecificChargeState = false, bool requireMonoisotopicMass = true, bool silent = false, std::string optionalPeriodicTablePath = "", double maxMbrWindow = 2.5, int maxThreads = -1);
 
         FlashLfqResults *Run();
 
