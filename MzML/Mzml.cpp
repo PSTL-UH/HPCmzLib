@@ -87,8 +87,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
-            int breakpt = 1;
-
             //add new() here
             ms::mzml::mzMLType *_mzMLConnection;
 
@@ -147,7 +145,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             MassSpectrometry::SourceFile *sourceFile;
-            int Break_point = 5;
+
             if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
                 !_mzMLConnection->fileDescription().sourceFileList()->sourceFile().empty() && 
                 //if segfault check here

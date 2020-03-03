@@ -220,9 +220,8 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 analyzersInThisFileDict[analyzersInThisFile[i]] = "IC" + std::to_string(i + 1);
                 ms::mzml::InstrumentConfigurationType *tempVar20 = new ms::mzml::InstrumentConfigurationType("IC" + std::to_string(i + 1));
 
-                int breakpoint = 3;
                 ms::mzml::ComponentListType *tempVar21 = new ms::mzml::ComponentListType(3);
-                tempVar20->componentList(*tempVar21);
+                // tempVar20->componentList(*tempVar21);
                 // tempVar20->cvParam(std::vector<ms::mzml::CVParamType*>(1));
                 // mzML->instrumentConfigurationList()->instrumentConfiguration()[i] = tempVar20;
 
@@ -293,6 +292,8 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar21->analyzer().push_back(*tempVar25);
                 tempVar21->detector().push_back(*tempVar27);
 
+                tempVar20->componentList(*tempVar21);
+
                 //add instrumentConfiguration (tempVar20) to instrumentonfigurationList (tmepVar19)
                 tempVar19->instrumentConfiguration().push_back(*tempVar20);
 
@@ -313,13 +314,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             ms::mzml::DataProcessingType *tempVar30 = new ms::mzml::DataProcessingType("mzLibProcessing");
             tempVar29->dataProcessing().push_back(*tempVar30);
 
-            //Nick Todo add tempVar31?
-            int break_point = 4;
             ms::mzml::ProcessingMethodType *tempVar31 = new ms::mzml::ProcessingMethodType(0, "mzLib");
-            // tempVar31->setorder("0");
-            // tempVar31->setsoftwareRef("mzLib");
-            // tempVar31->cvParam(std::vector<ms::mzml::CVParamType*>(1));
-            // mzML->getdataProcessingList()->getdataProcessing()[0]->processingMethod[0] = tempVar31;
 
             ms::mzml::CVParamType *tempVar32 = new ms::mzml::CVParamType("MS", "MS:1000544", "Conversion to mzML");
             tempVar32->value("");
@@ -328,10 +323,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             tempVar31->cvParam().push_back(*tempVar32);
             // mzML->getdataProcessingList()->getdataProcessing()[0]->processingMethod[0].cvParam[0] = tempVar32;
 
+            tempVar29->dataProcessing()[0].processingMethod().push_back(*tempVar31);
+
             ms::mzml::RunType *tempVar33 = new ms::mzml::RunType(idTitle, analyzersInThisFileDict[analyzersInThisFile[0]]);
-            // mzML->setrun(&tempVar33);
-            // mzML->getrun()->setdefaultInstrumentConfigurationRef(analyzersInThisFileDict[analyzersInThisFile[0]]);
-            // mzML->getrun()->setid(idTitle);
 
             //---------------------------------------------
             //Can now create instance of mzMLType
@@ -1027,7 +1021,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 mzmlSerializer->Serialize(writer, mzML);
 #endif
 
-                int breakpt = 2;
                 xml_schema::namespace_infomap map;
                 map[""].name = "http://psi.hupo.org/ms/mzml";
                 map[""].schema = "/home/nrbiddle/mzlib-c/MzML/XSD/mzML1.1.0.xsd";
