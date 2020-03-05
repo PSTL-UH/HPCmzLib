@@ -8,6 +8,16 @@
 
 class Math {
 public:
+    template <typename T>
+        static void Clear (std::vector<T> &array, int index, int length)    
+    {
+        for ( int i=index; i<length; i++ ) {
+            array[i] = static_cast<T>(0);
+        }
+        
+        return;
+    }
+
     static double Round(double myNumber, int places)
     {
         double nm;

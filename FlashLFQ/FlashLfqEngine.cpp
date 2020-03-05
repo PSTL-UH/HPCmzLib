@@ -10,7 +10,8 @@
 #include "ProteinQuantificationEngine.h"
 #include "../Proteomics/AminoAcidPolymer/Peptide.h"
 #include "../Chemistry/IsotopicDistribution.h"
-#include "../MzLibUtil/Tolerance.h"
+#include "PpmTolerance.h"
+#include "Tolerance.h"
 #include "ChromatographicPeak.h"
 #include "ProteinGroup.h"
 #include "RetentionTimeCalibDataPoint.h"
@@ -19,17 +20,37 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../Chemistry/Constants.h"
 
+#include "Math.h"
+#include "Group.h"
+
 #include <string>
 
 using namespace Chemistry;
-//using namespace MathNet::Numerics::Statistics;
 using namespace MzLibUtil;
 using namespace UsefulProteomicsDatabases;
 
 namespace FlashLFQ
 {
 
-    FlashLfqEngine::FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize, bool advancedProteinQuant, bool matchBetweenRuns, double ppmTolerance, double isotopeTolerancePpm, double matchBetweenRunsPpmTolerance, bool integrate, int numIsotopesRequired, bool idSpecificChargeState, bool requireMonoisotopicMass, bool silent, std::string optionalPeriodicTablePath, double maxMbrWindow, int maxThreads) : Silent(silent), MaxThreads(maxThreads), PeakfindingPpmTolerance(20.0), PpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm), Integrate(integrate), MissedScansAllowed(1), NumIsotopesRequired(numIsotopesRequired), MbrRtWindow(maxMbrWindow), MbrPpmTolerance(matchBetweenRunsPpmTolerance), ErrorCheckAmbiguousMatches(true), MatchBetweenRuns(matchBetweenRuns), IdSpecificChargeState(idSpecificChargeState), RequireMonoisotopicMass(requireMonoisotopicMass), Normalize(normalize), MinDiscFactorToCutAt(0.6), AdvancedProteinQuant(advancedProteinQuant)
+    FlashLfqEngine::FlashLfqEngine(std::vector<Identification*> &allIdentifications,
+                                   bool normalize, bool advancedProteinQuant,
+                                   bool matchBetweenRuns, double ppmTolerance,
+                                   double isotopeTolerancePpm,
+                                   double matchBetweenRunsPpmTolerance,
+                                   bool integrate, int numIsotopesRequired,
+                                   bool idSpecificChargeState,
+                                   bool requireMonoisotopicMass, bool silent,
+                                   std::string optionalPeriodicTablePath,
+                                   double maxMbrWindow, int maxThreads) :
+        Silent(silent), MaxThreads(maxThreads), PeakfindingPpmTolerance(20.0),
+        PpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm),
+        Integrate(integrate), MissedScansAllowed(1), NumIsotopesRequired(numIsotopesRequired),
+        MbrRtWindow(maxMbrWindow), MbrPpmTolerance(matchBetweenRunsPpmTolerance),
+        ErrorCheckAmbiguousMatches(true), MatchBetweenRuns(matchBetweenRuns),
+        IdSpecificChargeState(idSpecificChargeState),
+        RequireMonoisotopicMass(requireMonoisotopicMass),
+        Normalize(normalize), MinDiscFactorToCutAt(0.6),
+        AdvancedProteinQuant(advancedProteinQuant)
     {
         if (optionalPeriodicTablePath == "")
         {
@@ -39,10 +60,10 @@ namespace FlashLFQ
 
         Loaders::LoadElements(optionalPeriodicTablePath);
 
-        //_globalStopwatch = new Stopwatch();
         _chargeStates = std::vector<int>();
         _peakIndexingEngine = new PeakIndexingEngine();
 
+ #ifdef ORIG       
         _spectraFileInfo = allIdentifications.Select([&] (std::any p)
         {
             p::fileInfo;
@@ -59,9 +80,40 @@ namespace FlashLFQ
         {
             p::TechnicalReplicate;
         }).ToList();
-
+#endif
+        // This does the Select and Distinct part
+        for ( auto p =allIdentifications.begin(); p != allIdentifications.end(); p++ ) {
+            bool found = false;
+            if ( p == allIdentifications.begin() ) {
+                _spectraFileInfo.push_back ( (*p)->fileInfo );
+                continue;
+            }
+            for ( auto t : _spectraFileInfo ) {
+                if ( (*p)->fileInfo == t ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( !found ) {
+                _spectraFileInfo.push_back ( (*p)->fileInfo );
+            }
+        }
+        // Now to the ordering.
+        std::sort ( _spectraFileInfo.begin(),  _spectraFileInfo.end(), [&]
+                    (SpectraFileInfo *l, SpectraFileInfo *r) {
+                        if (l->Condition < r->Condition ) return true;
+                        if (l->Condition > r->Condition ) return false;
+                        if (l->BiologicalReplicate < r->BiologicalReplicate ) return true;
+                        if (l->BiologicalReplicate > r->BiologicalReplicate ) return false;
+                        if (l->Fraction < r->Fraction ) return true;
+                        if (l->Fraction > r->Fraction ) return false;
+                        if (l->TechnicalReplicate < r->TechnicalReplicate ) return true;
+                        return false;       
+                    } );
+        
         _allIdentifications = allIdentifications;
 
+#ifdef ORIG
         if (MaxThreads == -1 || MaxThreads >= Environment::ProcessorCount)
         {
             MaxThreads = Environment::ProcessorCount - 1;
@@ -71,6 +123,7 @@ namespace FlashLFQ
         {
             MaxThreads = 1;
         }
+#endif
 
     }
 
@@ -147,7 +200,7 @@ namespace FlashLFQ
             }
             catch (const std::runtime_error &e)
             {
-                throw MzLibException("A crash occured in FlashLFQ during the intensity normalization process:\n" + e.what());
+                throw MzLibException("A crash occured in FlashLFQ during the intensity normalization process:\n" );
             }
         }
 
@@ -175,7 +228,7 @@ namespace FlashLFQ
 
     void FlashLfqEngine::CalculateTheoreticalIsotopeDistributions()
     {
-        _baseSequenceToIsotopicDistribution = std::unordered_map<std::string, std::vector<KeyValuePair<double, double>*>>();
+        _baseSequenceToIsotopicDistribution = std::unordered_map<std::string, std::vector<std::tuple<double, double>*>>();
 
         // calculate monoisotopic masses and isotopic envelope
         for (auto id : _allIdentifications)
@@ -187,7 +240,7 @@ namespace FlashLFQ
 
             auto formula = id->OptionalChemicalFormula;
 
-            auto isotopicMassesAndNormalizedAbundances = std::vector<KeyValuePair<double, double>*>();
+            auto isotopicMassesAndNormalizedAbundances = std::vector<std::unordered_map<double, double>>();
 
             Proteomics::AminoAcidPolymer::Peptide *p = new Proteomics::AminoAcidPolymer::Peptide(id->BaseSequence);
 
@@ -214,9 +267,10 @@ namespace FlashLFQ
                 abundances[i] /= highestAbundance;
 
                 // look for these isotopes
-                if (isotopicMassesAndNormalizedAbundances.size() < NumIsotopesRequired || abundances[i] > 0.1)
+                if ((int)isotopicMassesAndNormalizedAbundances.size() < NumIsotopesRequired ||
+                    abundances[i] > 0.1)
                 {
-                    isotopicMassesAndNormalizedAbundances.push_back(KeyValuePair<double, double>(masses[i], abundances[i]));
+                    isotopicMassesAndNormalizedAbundances.push_back(std::unordered_map<double, double>(masses[i], abundances[i]));
                 }
             }
 
@@ -231,35 +285,59 @@ namespace FlashLFQ
             p::precursorChargeState;
         });
 #endif
-        auto  minChargeState = (*std::min(_allIdentifications.begin(), _allIdentifications.end(), [&] ( Identification *l, Identification *r ) {
-                return l->precursorChargeState < r->precursorChargeState;
-                }))->precursorChargeState;
+        auto  minChargeState = (*std::min(_allIdentifications.begin(), _allIdentifications.end(),
+                                          [&] ( auto l, auto r ) {
+                                              return (*l)->precursorChargeState < (*r)->precursorChargeState;
+                                          }))->precursorChargeState;
         
 #ifdef ORIG
         auto maxChargeState = _allIdentifications.Max([&] (std::any p)
         {
             p::precursorChargeState;
         });
-#endif
-        auto maxChargeState = (*std::max(_allIdentifications.begin(), _allIdentifications.end(), [&] ( Identification *l, Identification *r ) {
-                return l->precursorChargeState < r->precursorChargeState;
-                }))->precursorChargeState;
-
         _chargeStates = Enumerable::Range(minChargeState, (maxChargeState - minChargeState) + 1);
 
+#endif
+        auto maxChargeState = (*std::max(_allIdentifications.begin(), _allIdentifications.end(),
+                                         [&] ( auto l,  auto r ) {
+                                             return (*l)->precursorChargeState < (*r)->precursorChargeState;
+                }))->precursorChargeState;
+
+        for (int p = minChargeState; p< ((maxChargeState - minChargeState) + 1); p++ ) {
+            _chargeStates.push_back(p);
+        }
+        
+#ifdef ORIG
         auto peptideModifiedSequences = _allIdentifications.GroupBy([&] (std::any p)
         {
             p::ModifiedSequence;
         });
+#endif
+        std::function<bool(Identification*, Identification*)> f1 = [&] (Identification*l, Identification* r) {
+            return l->ModifiedSequence < r->ModifiedSequence; };
+        std::function<bool(Identification*, Identification*)> f2 = [&] (Identification*l, Identification* r) {
+            return l->ModifiedSequence != r->ModifiedSequence; };
+        std::vector<std::vector<Identification*>> peptideModifiedSequences = Group::GroupBy (_allIdentifications, f1, f2);
+        
         for (auto identifications : peptideModifiedSequences)
         {
             // isotope where normalized abundance is 1
+#ifdef ORIG
             double mostAbundantIsotopeShift = _baseSequenceToIsotopicDistribution[identifications->First().BaseSequence].First([&] (std::any p)
             {
                 return p->Value == 1.0;
             }).Key;
-
-            double thisPeptidesMostAbundantMass = identifications->First().monoisotopicMass + mostAbundantIsotopeShift;
+#endif
+            auto t =identifications.front()->BaseSequence;
+            double mostAbundantIsotopeShift;
+            for ( auto p: _baseSequenceToIsotopicDistribution[t] ) {
+                if ( std::get<1>(*p) == 1.0 ) {
+                    mostAbundantIsotopeShift = std::get<0>(*p);
+                    break;
+                }
+            }
+            
+            double thisPeptidesMostAbundantMass = identifications.front()->monoisotopicMass + mostAbundantIsotopeShift;
 
             for (auto identification : identifications)
             {
@@ -317,14 +395,33 @@ namespace FlashLFQ
                 }
                 
                 // get XIC (peakfinding)
-                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes, identification->massToLookFor, chargeState, identification.fileInfo, peakfindingTol).OrderBy([&] (std::any p) {
+#ifdef ORIG
+                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes, identification->massToLookFor, chargeState, identification->fileInfo, peakfindingTol).OrderBy([&] (std::any p) {
                         p::RetentionTime;
                     }).ToList();
+#endif
     
+                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes,
+                                                                     identification->massToLookFor,
+                                                                     chargeState, identification->fileInfo,
+                                                                     peakfindingTol);
+                std::sort(xic.begin(), xic.end(), [&] (IndexedMassSpectralPeak* l, IndexedMassSpectralPeak* r) {
+                        return l->RetentionTime < r->RetentionTime;
+                    });
+
+
+#ifdef ORIG
                 // filter by smaller mass tolerance
                 xic.RemoveAll([&] (std::any p)   {
                         !ppmTolerance->Within(p::Mz::ToMass(chargeState), identification->massToLookFor);
                     });
+#endif
+                for ( auto p = xic.begin(); p!= xic.end(); p++ ) {
+                    if ( !ppmTolerance->Within(Chemistry::ClassExtensions::ToMass((*p)->Mz, chargeState),
+                                               identification->massToLookFor ) ) {
+                        xic.erase(p);
+                    }
+                }
                 
                 // filter by isotopic distribution
                 std::vector<IsotopicEnvelope*> isotopicEnvelopes = GetIsotopicEnvelopes(xic,
@@ -367,9 +464,9 @@ namespace FlashLFQ
                 });
 #endif
             int min = (*std::min(precursorXic.begin(), precursorXic.end(),
-                                 [&] ( IsotopicEnvelope *l, IsotopicEnvelope *r) {
-                                     return l->IndexedPeak->ZeroBasedMs1ScanIndex <
-                                     r->IndexedPeak->ZeroBasedMs1ScanIndex;
+                                 [&] ( auto l,  auto r) {
+                                     return (*l)->IndexedPeak->ZeroBasedMs1ScanIndex <
+                                     (*r)->IndexedPeak->ZeroBasedMs1ScanIndex;
                                  }))->IndexedPeak->ZeroBasedMs1ScanIndex;
 #ifdef ORIG            
             int max = precursorXic.Max([&] (std::any p) {
@@ -377,26 +474,37 @@ namespace FlashLFQ
                 });
 #endif
             int max = (*std::max(precursorXic.begin(), precursorXic.end(),
-                                 [&] ( IsotopicEnvelope *l, IsotopicEnvelope *r) {
-                                     return l->IndexedPeak->ZeroBasedMs1ScanIndex <
-                                     r->IndexedPeak->ZeroBasedMs1ScanIndex;
+                                 [&] ( auto l,  auto r) {
+                                     return (*l)->IndexedPeak->ZeroBasedMs1ScanIndex <
+                                     (*r)->IndexedPeak->ZeroBasedMs1ScanIndex;
                                  }))->IndexedPeak->ZeroBasedMs1ScanIndex;
-
+#ifdef ORIG
             msmsFeature->IsotopicEnvelopes.RemoveAll([&] (std::any p)   {
                     delete ppmTolerance;
                     return p::IndexedPeak::ZeroBasedMs1ScanIndex < min;
                 });
+
             msmsFeature->IsotopicEnvelopes.RemoveAll([&] (std::any p) {
                     delete ppmTolerance;
                     return p::IndexedPeak::ZeroBasedMs1ScanIndex > max;
                 });
+
+#endif
+            for ( auto p = msmsFeature->IsotopicEnvelopes.begin(); p != msmsFeature->IsotopicEnvelopes.end(); p++ ){
+                if ( (*p)->IndexedPeak->ZeroBasedMs1ScanIndex < min  ||
+                     (*p)->IndexedPeak->ZeroBasedMs1ScanIndex > max ) {
+                    msmsFeature->IsotopicEnvelopes.erase(p);
+                }
+            }
+
+            
             msmsFeature->CalculateIntensityForThisFeature(Integrate);
 
             //C# TO C++ CONVERTER TODO TASK: A 'delete msmsFeature' statement was not added since msmsFeature was
             // passed to a method or constructor. Handle memory management manually.
         }
 
-        _results->Peaks.emplace(fileInfo, chromatographicPeaks.ToList());
+        _results->Peaks.emplace(fileInfo, chromatographicPeaks);
 
         // C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added
         // since tempVar was passed to a method or constructor. Handle memory management manually.
@@ -409,13 +517,14 @@ namespace FlashLFQ
     {
         auto acceptorFileIdentifiedPeaks = _results->Peaks[idAcceptorFile];
 
-        if (!acceptorFileIdentifiedPeaks.Any())
+        if (!acceptorFileIdentifiedPeaks.empty())
         {
             return;
         }
 
         _peakIndexingEngine->DeserializeIndex(idAcceptorFile);
 
+#ifdef ORIG
         auto thisFilesIds = std::unordered_set<std::string>(acceptorFileIdentifiedPeaks.Where([&] (std::any p){
             p::IsotopicEnvelopes::Any();
         }).SelectMany([&] (std::any p) {
@@ -423,257 +532,283 @@ namespace FlashLFQ
                         d::ModifiedSequence;
                     });
             }));
-        auto thisFilesMsmsIdentifiedProteins = std::unordered_set<ProteinGroup*>();
+#endif
+        std::unordered_set<std::string> thisFilesIds;
+        for ( auto p: acceptorFileIdentifiedPeaks ) {
+            if ( !p->IsotopicEnvelopes.empty() ) {
+                for ( auto d: p->getIdentifications() ) {
+                    thisFilesIds.insert(d->ModifiedSequence);
+                }
+            }
+        }
+        std::unordered_set<ProteinGroup*> thisFilesMsmsIdentifiedProteins;
 
         // only match peptides from proteins that have at least one MS/MS identified peptide in the condition
-        for (SpectraFileInfo *conditionFile : _spectraFileInfo.Where([&] (std::any p)  {
-            return p->Condition == idAcceptorFile->Condition;
-        }))
+#ifdef ORIG
+        // The converted C++ by the tool was useless, replaced it by the original C# code.
+        foreach (SpectraFileInfo conditionFile in _spectraFileInfo.Where(p => p.Condition ==
+                                                                         idAcceptorFile.Condition))
         {
-            for (ProteinGroup *proteinGroup : _results->Peaks[conditionFile].Where([&] (std::any p)  {
-                !p::IsMbrPeak;
-            }).SelectMany([&] (std::any p)   {
-                    p::Identifications::SelectMany([&] (std::any v)  {
-                    v::proteinGroups;
-                        });
-            }))
+            foreach (ProteinGroup proteinGroup in _results.Peaks[conditionFile].Where(p => !p.IsMbrPeak).
+                     SelectMany(p => p.Identifications.SelectMany(v => v.proteinGroups)))
             {
+                thisFilesMsmsIdentifiedProteins.Add(proteinGroup);
             }
+        }
+#endif
+        for ( SpectraFileInfo *conditionFile : _spectraFileInfo ) {
+            if (conditionFile->Condition  == idAcceptorFile->Condition ) {
+                for (auto p : _results->Peaks[conditionFile] ) {
+                    if ( !p->IsMbrPeak ) {
+                        for ( auto t:  p->getIdentifications() ) {
+                            for ( auto proteinGroup : t->proteinGroups ) {
+                                thisFilesMsmsIdentifiedProteins.insert(proteinGroup);                            
+                            }
+                        }
+                    }
+                }
             }
-    }
-
-    *FlashLfqEngine::foreach(SpectraFileInfo idDonorFile in *_spectraFileInfo)
-    {
-        if (idAcceptorFile->Equals(idDonorFile))
-        {
-            continue;
         }
-
-        // these peaks have no IDs in the acceptor file
-        // match their IDs to this file
-        auto donorPeaksToMatch = _results->Peaks[idDonorFile].Where([&] (std::any p)   {
-            return p->NumIdentificationsByFullSeq == 1 && p::IsotopicEnvelopes::Any() && !p::Identifications::Any([&] (std::any v)  {
-                    thisFilesIds->Contains(v::ModifiedSequence);
-            }) && p::Identifications::Any([&] (std::any v) {
-                    v::proteinGroups::Any([&] (std::any g)  {
-                    thisFilesMsmsIdentifiedProteins->Contains(g);
-                        });
-                });
-            }).ToList();
-
-        if (!donorPeaksToMatch.empty())
-        {
-            continue;
-        }
-
-        std::vector<RetentionTimeCalibDataPoint*> rtCalibrationCurve = GetRtCalSpline(idDonorFile, idAcceptorFile);
-
-        std::vector<ChromatographicPeak*> matchedPeaks(donorPeaksToMatch.size());
-        std::vector<double> donorRts = rtCalibrationCurve.Select([&] (std::any p) {
-            p::DonorFilePeak::Apex::IndexedPeak::RetentionTime;
-        })->ToArray();
-
-        //ParallelOptions *tempVar = new ParallelOptions();
-        //tempVar->MaxDegreeOfParallelism = MaxThreads;
-        //Parallel::ForEach(Partitioner::Create(0, donorPeaksToMatch.size()), tempVar, [&] (range, loopState)
-        //{
-        //        for (int i = range::Item1; i < range::Item2; i++)
-        for ( int i = 0; i < (int)donorPeaksToMatch.size(); i++ ) {
-            ChromatographicPeak *donorPeak = donorPeaksToMatch[i];
-            Identification *identification = donorPeak->getIdentifications().front();
-            
-            auto acceptorPeak = new ChromatographicPeak(identification, true, idAcceptorFile);
-            matchedPeaks[i] = acceptorPeak;
+        
     
-            int rtHypothesisIndex = Array::BinarySearch(donorRts, donorPeak->getApex()->IndexedPeak->RetentionTime);
-            if (rtHypothesisIndex < 0)
+
+        //foreach(SpectraFileInfo idDonorFile in *_spectraFileInfo)
+        for ( SpectraFileInfo* idDonorFile : _spectraFileInfo )
+        {
+            if (idAcceptorFile->Equals(idDonorFile))
             {
-                rtHypothesisIndex = ~rtHypothesisIndex;
-            }
-            if (rtHypothesisIndex >= donorRts.size() && rtHypothesisIndex >= 1)
-            {
-                rtHypothesisIndex = donorRts.size() - 1;
-            }
-            
-            std::vector<RetentionTimeCalibDataPoint*> nearbyDataPoints;
-            
-            // calculate accepted range of RTs
-            for (int r = rtHypothesisIndex; r < rtCalibrationCurve.size(); r++)
-            {
-                RetentionTimeCalibDataPoint *rightDataPoint = rtCalibrationCurve[r];
-                if (std::abs(rightDataPoint->DonorFilePeak->getApex()->IndexedPeak->RetentionTime - donorPeak->getApex()->IndexedPeak->RetentionTime) < 0.5)
-                {
-                    nearbyDataPoints.push_back(rtCalibrationCurve[r]);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            
-            for (int l = rtHypothesisIndex - 1; l >= 0; l--)
-            {
-                RetentionTimeCalibDataPoint *leftDataPoint = rtCalibrationCurve[l];
-                if (std::abs(leftDataPoint->DonorFilePeak->getApex()->IndexedPeak->RetentionTime - donorPeak->getApex()->IndexedPeak->RetentionTime) < 0.5)
-                {
-                    nearbyDataPoints.push_back(rtCalibrationCurve[l]);
-                }
-                else
-                {
-                    break;
-                }
-            }
-            
-            double acceptorFileRtHypothesis;
-            double lowerRange;
-            double upperRange;
-            
-            if (nearbyDataPoints.size() >= 4)
-            {
-                std::vector<double> nearbyRts = nearbyDataPoints.Select([&] (std::any p) {
-                        p::RtDiff;
-                    }).ToList();
-                
-                acceptorFileRtHypothesis = donorPeak->getApex()->IndexedPeak->RetentionTime + Statistics::Median(nearbyRts);
-                double firstQuartile = Statistics::LowerQuartile(nearbyRts);
-                double thirdQuartile = Statistics::UpperQuartile(nearbyRts);
-                double iqr = Statistics::InterquartileRange(nearbyRts);
-                
-                lowerRange = firstQuartile - 1.5 * iqr;
-                upperRange = thirdQuartile + 1.5 * iqr;
-            }
-            else
-            {
-                delete acceptorPeak;
                 continue;
             }
             
-            double lowerBoundRt = acceptorFileRtHypothesis + lowerRange;
-            double upperBoundRt = acceptorFileRtHypothesis + upperRange;
+            // these peaks have no IDs in the acceptor file
+            // match their IDs to this file
+            auto donorPeaksToMatch = _results->Peaks[idDonorFile].Where([&] (std::any p)   {
+                    return p->NumIdentificationsByFullSeq == 1 && p::IsotopicEnvelopes::Any() && !p::Identifications::Any([&] (std::any v)  {
+                            thisFilesIds->Contains(v::ModifiedSequence);
+                        }) && p::Identifications::Any([&] (std::any v) {
+                                v::proteinGroups::Any([&] (std::any g)  {
+                                        thisFilesMsmsIdentifiedProteins->Contains(g);
+                                    });
+                            });
+                }).ToList();
             
-            if (upperBoundRt - acceptorFileRtHypothesis > MbrRtWindow)
+            if (!donorPeaksToMatch.empty())
             {
-                upperBoundRt = acceptorFileRtHypothesis + MbrRtWindow;
+                continue;
             }
             
-            if (acceptorFileRtHypothesis - lowerBoundRt > MbrRtWindow)
-            {
-                lowerBoundRt = acceptorFileRtHypothesis - MbrRtWindow;
-            }
+            std::vector<RetentionTimeCalibDataPoint*> rtCalibrationCurve = GetRtCalSpline(idDonorFile, idAcceptorFile);
             
-            std::vector<Ms1ScanInfo*> ms1ScanInfos = _ms1Scans[idAcceptorFile];
-            Ms1ScanInfo *start = ms1ScanInfos[0];
-            Ms1ScanInfo *end = ms1ScanInfos[0];
-            for (int j = 0; i < (int)ms1ScanInfos.size(); j++)
-            {
-                Ms1ScanInfo *scan = ms1ScanInfos[j];
-                if (scan->RetentionTime <= lowerBoundRt)
+            std::vector<ChromatographicPeak*> matchedPeaks(donorPeaksToMatch.size());
+            std::vector<double> donorRts = rtCalibrationCurve.Select([&] (std::any p) {
+                    p::DonorFilePeak::Apex::IndexedPeak::RetentionTime;
+                })->ToArray();
+            
+            //ParallelOptions *tempVar = new ParallelOptions();
+            //tempVar->MaxDegreeOfParallelism = MaxThreads;
+            //Parallel::ForEach(Partitioner::Create(0, donorPeaksToMatch.size()), tempVar, [&] (range, loopState)
+            //{
+            //        for (int i = range::Item1; i < range::Item2; i++)
+            for ( int i = 0; i < (int)donorPeaksToMatch.size(); i++ ) {
+                ChromatographicPeak *donorPeak = donorPeaksToMatch[i];
+                Identification *identification = donorPeak->getIdentifications().front();
+                
+                auto acceptorPeak = new ChromatographicPeak(identification, true, idAcceptorFile);
+                matchedPeaks[i] = acceptorPeak;
+                
+                int rtHypothesisIndex = Array::BinarySearch(donorRts, donorPeak->getApex()->IndexedPeak->RetentionTime);
+                if (rtHypothesisIndex < 0)
                 {
-                    start = scan;
+                    rtHypothesisIndex = ~rtHypothesisIndex;
+                }
+                if (rtHypothesisIndex >= donorRts.size() && rtHypothesisIndex >= 1)
+                {
+                    rtHypothesisIndex = donorRts.size() - 1;
                 }
                 
-                if (scan->RetentionTime >= upperBoundRt)
+                std::vector<RetentionTimeCalibDataPoint*> nearbyDataPoints;
+                
+                // calculate accepted range of RTs
+                for (int r = rtHypothesisIndex; r < rtCalibrationCurve.size(); r++)
                 {
-                    end = scan;
-                    break;
-                }
-            }
-            
-            IsotopicEnvelope *bestEnv = nullptr;
-            std::vector<IsotopicEnvelope*> allEnvs;
-            for (int chargeState : donorPeak->IsotopicEnvelopes.Select([&] (std::any p){
-                        p::ChargeState;
-                    }).Distinct())
-            {
-                std::vector<IndexedMassSpectralPeak*> binPeaks;
-    
-                for (int j = start->ZeroBasedMs1ScanIndex; j <= end->ZeroBasedMs1ScanIndex; j++)
-                {
-                    IndexedMassSpectralPeak *peak = _peakIndexingEngine->GetIndexedPeak(identification->massToLookFor, j, mbrTol, chargeState);
-                    
-                    if (peak != nullptr)
+                    RetentionTimeCalibDataPoint *rightDataPoint = rtCalibrationCurve[r];
+                    if (std::abs(rightDataPoint->DonorFilePeak->getApex()->IndexedPeak->RetentionTime - donorPeak->getApex()->IndexedPeak->RetentionTime) < 0.5)
                     {
-                        binPeaks.push_back(peak);
+                        nearbyDataPoints.push_back(rtCalibrationCurve[r]);
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
                 
-                std::vector<IsotopicEnvelope*> envsForThisCharge = GetIsotopicEnvelopes(binPeaks, identification, chargeState, true);
+                for (int l = rtHypothesisIndex - 1; l >= 0; l--)
+                {
+                    RetentionTimeCalibDataPoint *leftDataPoint = rtCalibrationCurve[l];
+                    if (std::abs(leftDataPoint->DonorFilePeak->getApex()->IndexedPeak->RetentionTime - donorPeak->getApex()->IndexedPeak->RetentionTime) < 0.5)
+                    {
+                        nearbyDataPoints.push_back(rtCalibrationCurve[l]);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 
-                if (envsForThisCharge.Any())
+                double acceptorFileRtHypothesis;
+                double lowerRange;
+                double upperRange;
+                
+                if (nearbyDataPoints.size() >= 4)
                 {
-                    allEnvs.insert(allEnvs.end(), envsForThisCharge.begin(), envsForThisCharge.end());
+                    std::vector<double> nearbyRts = nearbyDataPoints.Select([&] (std::any p) {
+                            p::RtDiff;
+                        }).ToList();
+                    
+                    acceptorFileRtHypothesis = donorPeak->getApex()->IndexedPeak->RetentionTime + Statistics::Median(nearbyRts);
+                    double firstQuartile = Statistics::LowerQuartile(nearbyRts);
+                    double thirdQuartile = Statistics::UpperQuartile(nearbyRts);
+                    double iqr = Statistics::InterquartileRange(nearbyRts);
+                    
+                    lowerRange = firstQuartile - 1.5 * iqr;
+                    upperRange = thirdQuartile + 1.5 * iqr;
                 }
-            }
-            
-            if (!allEnvs.empty())
-            {
-                delete acceptorPeak;
-                continue;
-            }
-            
-#ifdef ORIG
-            double maxIntensity = allEnvs.Max([&] (std::any p) {
-                    p::Intensity;
-                });
-#endif
-            double maxIntensity = (*std::max(allEnvs.begin(), allEnvs.end()
-                                             [&] (IsotopicEnvelope *l, IsotopicEnvelope *r ) {
-                        return l->Intensity < r->Intensity;
-                    }) )->Intensity;
-
-            bestEnv = allEnvs.First([&] (std::any p) {
+                else
+                {
                     delete acceptorPeak;
-                    return p->Intensity == maxIntensity;
-                });
-    
-            auto bestChargeXic = Peakfind(bestEnv->IndexedPeak->RetentionTime, identification->massToLookFor, bestEnv->ChargeState, idAcceptorFile, mbrTol);
-            std::vector<IsotopicEnvelope*> envs2 = GetIsotopicEnvelopes(bestChargeXic, identification, bestEnv->ChargeState, true);
-            double maxRt = envs2.Max([&] (std::any p) {
-                    p::IndexedPeak::RetentionTime;
-                });
-            double minRt = envs2.Min([&] (std::any p) {
-                    p::IndexedPeak::RetentionTime;
-                });
-            acceptorPeak->IsotopicEnvelopes.insert(acceptorPeak->IsotopicEnvelopes.end(), envs2.begin(), envs2.end());
-            acceptorPeak->IsotopicEnvelopes.AddRange(allEnvs.Where([&] (std::any p) {
-                        delete acceptorPeak;
-                        return p::ChargeState != bestEnv->ChargeState && p::IndexedPeak::RetentionTime < maxRt && p::IndexedPeak::RetentionTime > minRt;
-                    }));
-            acceptorPeak->CalculateIntensityForThisFeature(Integrate);
-            CutPeak(acceptorPeak, bestEnv->IndexedPeak->RetentionTime);
-
-            //C# TO C++ CONVERTER TODO TASK: A 'delete acceptorPeak' statement was not added since
-            // acceptorPeak was passed to a method or constructor. Handle memory management manually.
-        }
-
-        // save MBR results
-        for (auto peak : matchedPeaks.Where([&] (std::any p) {
-                    return p != nullptr && p::IsotopicEnvelopes::Any();
-                }))
-        {
-            std::any oldPeak;
-            if (bestMbrHits::TryGetValue(peak::Identifications::First().ModifiedSequence, oldPeak))
-            {
-                if (peak::Intensity > oldPeak::Intensity)
+                    continue;
+                }
+                
+                double lowerBoundRt = acceptorFileRtHypothesis + lowerRange;
+                double upperBoundRt = acceptorFileRtHypothesis + upperRange;
+                
+                if (upperBoundRt - acceptorFileRtHypothesis > MbrRtWindow)
                 {
-                    bestMbrHits[peak::Identifications::First().ModifiedSequence] = peak;
+                    upperBoundRt = acceptorFileRtHypothesis + MbrRtWindow;
+                }
+                
+                if (acceptorFileRtHypothesis - lowerBoundRt > MbrRtWindow)
+                {
+                    lowerBoundRt = acceptorFileRtHypothesis - MbrRtWindow;
+                }
+                
+                std::vector<Ms1ScanInfo*> ms1ScanInfos = _ms1Scans[idAcceptorFile];
+                Ms1ScanInfo *start = ms1ScanInfos[0];
+                Ms1ScanInfo *end = ms1ScanInfos[0];
+                for (int j = 0; i < (int)ms1ScanInfos.size(); j++)
+                {
+                    Ms1ScanInfo *scan = ms1ScanInfos[j];
+                    if (scan->RetentionTime <= lowerBoundRt)
+                    {
+                        start = scan;
+                    }
+                    
+                    if (scan->RetentionTime >= upperBoundRt)
+                    {
+                        end = scan;
+                        break;
+                    }
+                }
+                
+                IsotopicEnvelope *bestEnv = nullptr;
+                std::vector<IsotopicEnvelope*> allEnvs;
+                for (int chargeState : donorPeak->IsotopicEnvelopes.Select([&] (std::any p){
+                            p::ChargeState;
+                        }).Distinct())
+                {
+                    std::vector<IndexedMassSpectralPeak*> binPeaks;
+                    
+                    for (int j = start->ZeroBasedMs1ScanIndex; j <= end->ZeroBasedMs1ScanIndex; j++)
+                    {
+                        IndexedMassSpectralPeak *peak = _peakIndexingEngine->GetIndexedPeak(identification->massToLookFor, j, mbrTol, chargeState);
+                        
+                        if (peak != nullptr)
+                        {
+                            binPeaks.push_back(peak);
+                        }
+                    }
+                    
+                    std::vector<IsotopicEnvelope*> envsForThisCharge = GetIsotopicEnvelopes(binPeaks, identification, chargeState, true);
+                    
+                    if (!envsForThisCharge.empty())
+                    {
+                        allEnvs.insert(allEnvs.end(), envsForThisCharge.begin(), envsForThisCharge.end());
+                    }
+                }
+                
+                if (!allEnvs.empty())
+                {
+                    delete acceptorPeak;
+                    continue;
+                }
+                
+#ifdef ORIG
+                double maxIntensity = allEnvs.Max([&] (std::any p) {
+                        p::Intensity;
+                    });
+#endif
+                double maxIntensity = (*std::max(allEnvs.begin(), allEnvs.end(),
+                                                 [&] ( auto l, auto r ) {
+                                                     return (*l)->getIntensity() < (*r)->getIntensity();
+                                                 }) )->getIntensity();
+                
+                bestEnv = allEnvs.First([&] (std::any p) {
+                        delete acceptorPeak;
+                        return p->Intensity == maxIntensity;
+                    });
+                
+                auto bestChargeXic = Peakfind(bestEnv->IndexedPeak->RetentionTime, identification->massToLookFor, bestEnv->ChargeState, idAcceptorFile, mbrTol);
+                std::vector<IsotopicEnvelope*> envs2 = GetIsotopicEnvelopes(bestChargeXic, identification, bestEnv->ChargeState, true);
+                double maxRt = envs2.Max([&] (std::any p) {
+                        p::IndexedPeak::RetentionTime;
+                    });
+                double minRt = envs2.Min([&] (std::any p) {
+                        p::IndexedPeak::RetentionTime;
+                    });
+                acceptorPeak->IsotopicEnvelopes.insert(acceptorPeak->IsotopicEnvelopes.end(), envs2.begin(), envs2.end());
+                acceptorPeak->IsotopicEnvelopes.AddRange(allEnvs.Where([&] (std::any p) {
+                            delete acceptorPeak;
+                            return p::ChargeState != bestEnv->ChargeState && p::IndexedPeak::RetentionTime < maxRt && p::IndexedPeak::RetentionTime > minRt;
+                        }));
+                acceptorPeak->CalculateIntensityForThisFeature(Integrate);
+                CutPeak(acceptorPeak, bestEnv->IndexedPeak->RetentionTime);
+                
+                //C# TO C++ CONVERTER TODO TASK: A 'delete acceptorPeak' statement was not added since
+                // acceptorPeak was passed to a method or constructor. Handle memory management manually.
+            }
+            
+            // save MBR results
+#ifdef ORIG
+            //for (auto peak : matchedPeaks.Where([&] (std::any p) {
+            //            return p != nullptr && p::IsotopicEnvelopes::Any();
+            //        }))
+#endif
+            for ( auto peak : matchedPeaks ) {
+                if ( peak != nullptr && !peak->IsotopicEnvelopes.empty() ) {
+                    ChromatographicPeak *oldPeak;
+                    if (bestMbrHits.TryGetValue(peak->getIdentifications().front()->ModifiedSequence, oldPeak))
+                    {
+                        if (peak->Intensity > oldPeak->Intensity)
+                        {
+                            bestMbrHits[peak->getIdentifications().front()->ModifiedSequence] = peak;
+                        }
+                    }
+                    else
+                    {
+                        bestMbrHits[peak->getIdentifications().front()->ModifiedSequence]= peak;
+                    }
                 }
             }
-            else
-            {
-                bestMbrHits->Add(peak::Identifications::First().ModifiedSequence, peak);
-            }
         }
-
-        // C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since tempVar was
-        // passed to a method or constructor. Handle memory management manually.
+        
+        //foreach(var peak in *bestMbrHits)
+        for ( auto peak : bestMbrHits )
+        {
+            _results->Peaks[idAcceptorFile].push_back(std::get<1>(peak));
+        }
+        RunErrorChecking (idAcceptorFile);
     }
-
-    *FlashLfqEngine::foreach(var peak in *bestMbrHits)
-    {
-        _results->Peaks[idAcceptorFile].push_back(peak->Value);
-    }
-
+        
     std::vector<RetentionTimeCalibDataPoint*> FlashLfqEngine::GetRtCalSpline(SpectraFileInfo *donor, SpectraFileInfo *acceptor)
     {
         auto donorFileBestMsmsPeaks = std::unordered_map<std::string, ChromatographicPeak*>();
@@ -694,19 +829,19 @@ namespace FlashLFQ
         for (auto acceptorPeak : acceptorPeaks)
         {
             ChromatographicPeak currentBestPeak;
-            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator acceptorFileBestMsmsPeaks_iterator = acceptorFileBestMsmsPeaks.find(acceptorPeak.Identifications.First().ModifiedSequence);
+            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator acceptorFileBestMsmsPeaks_iterator = acceptorFileBestMsmsPeaks.find(acceptorPeak.Identifications.front()->ModifiedSequence);
             if (acceptorFileBestMsmsPeaks_iterator != acceptorFileBestMsmsPeaks.end())
             {
                 currentBestPeak = acceptorFileBestMsmsPeaks_iterator->second;
                 if (currentBestPeak::Intensity > acceptorPeak->Intensity)
                 {
-                    acceptorFileBestMsmsPeaks[acceptorPeak->getIdentifications().front().ModifiedSequence] = acceptorPeak;
+                    acceptorFileBestMsmsPeaks[acceptorPeak->getIdentifications().front()->ModifiedSequence] = acceptorPeak;
                 }
             }
             else
             {
                 currentBestPeak = acceptorFileBestMsmsPeaks_iterator->second;
-                acceptorFileBestMsmsPeaks.emplace(acceptorPeak->getIdentifications().front().ModifiedSequence, acceptorPeak);
+                acceptorFileBestMsmsPeaks.emplace(acceptorPeak->getIdentifications().front()->ModifiedSequence, acceptorPeak);
             }
         }
 
@@ -720,27 +855,28 @@ namespace FlashLFQ
                 currentBestPeak = donorFileBestMsmsPeaks_iterator->second;
                 if (currentBestPeak::Intensity > donorPeak->Intensity)
                 {
-                    donorFileBestMsmsPeaks[donorPeak->getIdentifications().front().ModifiedSequence] = donorPeak;
+                    donorFileBestMsmsPeaks[donorPeak->getIdentifications().front()->ModifiedSequence] = donorPeak;
                 }
             }
             else
             {
                 currentBestPeak = donorFileBestMsmsPeaks_iterator->second;
-                donorFileBestMsmsPeaks.emplace(donorPeak->getIdentifications().front().ModifiedSequence, donorPeak);
+                donorFileBestMsmsPeaks.emplace(donorPeak->getIdentifications().front()->ModifiedSequence,
+                                               donorPeak);
             }
         }
 
         // create RT calibration curve
         for (auto peak : acceptorFileBestMsmsPeaks)
         {
-            ChromatographicPeak *acceptorFilePeak = peak->Value;
+            ChromatographicPeak *acceptorFilePeak = std::get<1>(peak);
 
             ChromatographicPeak donorFilePeak;
-            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator donorFileBestMsmsPeaks_iterator = donorFileBestMsmsPeaks.find(peak.Key);
+            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator donorFileBestMsmsPeaks_iterator = donorFileBestMsmsPeaks.find(std::get<0>(peak));
             if (donorFileBestMsmsPeaks_iterator != donorFileBestMsmsPeaks.end())
             {
                 donorFilePeak = donorFileBestMsmsPeaks_iterator->second;
-                RetentionTimeCalibDataPoint tempVar(donorFilePeak, acceptorFilePeak);
+                RetentionTimeCalibDataPoint tempVar(&donorFilePeak, acceptorFilePeak);
                 rtCalibrationCurve.push_back(&tempVar);
             }
             else
@@ -762,10 +898,16 @@ namespace FlashLFQ
             std::cout << "Checking errors" << std::endl;
         }
 
+#ifdef ORIG
         _results::Peaks[spectraFile].RemoveAll([&] (std::any p)
         {
             return p == nullptr || p::IsMbrPeak && !p::IsotopicEnvelopes::Any();
         });
+#endif
+        for ( auto p = _results->Peaks[spectraFile].begin() ; p != _results->Peaks[spectraFile].end(); p++ ) {
+            if ( (*p)  == nullptr || ( (*p)->IsMbrPeak && !(*p)->IsotopicEnvelopes.empty()) ) {
+                _results->Peaks[spectraFile].erase(p);
+            }
 
         // merge duplicate peaks and handle MBR/MSMS peakfinding conflicts
         auto peaksGroupedByApex = std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>();
@@ -827,17 +969,25 @@ namespace FlashLFQ
             }
         }
 
+#ifdef ORIG
         peaks.AddRange(peaksGroupedByApex.Values->Where([&] (std::any p)
         {
             return p != nullptr;
         }));
-        _results::Peaks[spectraFile] = peaks;
+#endif
+        for ( auto p = peaksGroupedByApex.begin(); p!= peaksGroupedByApex.end(); p++ ) {
+            if ( std::get<1>(*p) != nullptr ) {
+                peaks.push_back(std::get<1>(*p));
+            }
+        }
+        _results->Peaks[spectraFile] = peaks;
 
         // merge multiple peaks for the same peptide within a time window
         peaks = _results::Peaks[spectraFile].Where([&] (std::any p)
         {
             return p::NumIdentificationsByFullSeq > 1;
         }).ToList();
+
         auto temp = _results::Peaks[spectraFile].Where([&] (std::any p)
         {
             return p->NumIdentificationsByFullSeq == 1;
@@ -868,7 +1018,10 @@ namespace FlashLFQ
 
                 auto toMerge = temp2.Where([&] (std::any p)
                 {
-                    return std::abs(p::Apex::IndexedPeak::RetentionTime - peak->getApex()->IndexedPeak->RetentionTime) < RtTol && !std::find(merged.begin(), merged.end(), p) != merged.end() && p != peak;
+                    return
+                    std::abs(p::Apex::IndexedPeak::RetentionTime-peak->getApex()->IndexedPeak->RetentionTime)<RtTol &&
+                    std::find(merged.begin(), merged.end(), p) == merged.end() &&
+                    p != peak;
                 });
                 for (auto peakToMerge : toMerge)
                 {
@@ -881,9 +1034,12 @@ namespace FlashLFQ
         }
 
         _results::Peaks[spectraFile] = peaks;
+        }
     }
 
-    std::vector<IsotopicEnvelope*> FlashLfqEngine::GetIsotopicEnvelopes(std::vector<IndexedMassSpectralPeak*> &peaks, Identification *identification, int chargeState, bool matchBetweenRuns)
+    std::vector<IsotopicEnvelope*> FlashLfqEngine::GetIsotopicEnvelopes(std::vector<IndexedMassSpectralPeak*> &peaks,
+                                                                        Identification *identification,
+                                                                        int chargeState, bool matchBetweenRuns)
     {
         auto isotopicEnvelopes = std::vector<IsotopicEnvelope*>();
         auto isotopeMassShifts = _baseSequenceToIsotopicDistribution[identification->BaseSequence];
@@ -895,34 +1051,44 @@ namespace FlashLFQ
 
         PpmTolerance *isotopeTolerance = new PpmTolerance(IsotopePpmTolerance);
 
-        auto theorIsotopeMasses = std::vector<double>(isotopeMassShifts->Count);
-        auto expIsotopeMasses = std::vector<double>(isotopeMassShifts->Count);
-        auto experimentalIsotopeAbundances = std::vector<double>(isotopeMassShifts->Count);
+        auto theorIsotopeMasses = std::vector<double>(isotopeMassShifts.size());
+        auto expIsotopeMasses = std::vector<double>(isotopeMassShifts.size());
+        auto experimentalIsotopeAbundances = std::vector<double>(isotopeMassShifts.size());
+#ifdef ORIG
         auto theoreticalIsotopeAbundances = isotopeMassShifts->Select([&] (std::any p)
         {
             p->Value;
         })->ToArray();
+#endif
+        std::vector<double> theoreticalIsotopeAbundances;
+        for ( auto p : isotopeMassShifts ) {
+            theoreticalIsotopeAbundances.push_back(std::get<1>(*p));
+        }
 
         for (auto peak : peaks)
         {
             // calculate theoretical isotopes relative to observed peak
-            Array::Clear(theorIsotopeMasses, 0, theorIsotopeMasses.size());
-            Array::Clear(expIsotopeMasses, 0, expIsotopeMasses.size());
-            Array::Clear(experimentalIsotopeAbundances, 0, experimentalIsotopeAbundances.size());
+            Math::Clear(theorIsotopeMasses, 0, theorIsotopeMasses.size());
+            Math::Clear(expIsotopeMasses, 0, expIsotopeMasses.size());
+            Math::Clear(experimentalIsotopeAbundances, 0, experimentalIsotopeAbundances.size());
 
             double observedMass = Chemistry::ClassExtensions::ToMass(peak->Mz, chargeState);
             double theorMass = identification->massToLookFor;
             double mainPeakError = observedMass - theorMass;
-            for (int i = 0; i < theorIsotopeMasses.size(); i++)
+            for (int i = 0; i < (int)theorIsotopeMasses.size(); i++)
             {
-                theorIsotopeMasses[i] = mainPeakError + identification->massToLookFor + isotopeMassShifts[i].Key;
+                theorIsotopeMasses[i] = mainPeakError + identification->massToLookFor +
+                    std::get<0>(*isotopeMassShifts[i]);
             }
 
             if (matchBetweenRuns)
             {
                 double unexpectedIsotopeMass = observedMass - Constants::C13MinusC12;
-                auto unexpectedPeak = _peakIndexingEngine::GetIndexedPeak(unexpectedIsotopeMass, peak->ZeroBasedMs1ScanIndex, isotopeTolerance, chargeState);
-                bool unexpectedIsotopePeakObserved = unexpectedPeak != nullptr && unexpectedPeak->Intensity / peak->Intensity > 0.3;
+                auto unexpectedPeak = _peakIndexingEngine->GetIndexedPeak(unexpectedIsotopeMass,
+                                                                          peak->ZeroBasedMs1ScanIndex,
+                                                                          isotopeTolerance, chargeState);
+                bool unexpectedIsotopePeakObserved = unexpectedPeak != nullptr &&
+                    unexpectedPeak->Intensity / peak->Intensity > 0.3;
 
                 if (unexpectedIsotopePeakObserved)
                 {
@@ -932,7 +1098,9 @@ namespace FlashLFQ
 
             for (int t = 0; t < theorIsotopeMasses.size(); t++)
             {
-                auto isotopePeak = _peakIndexingEngine::GetIndexedPeak(theorIsotopeMasses[t], peak->ZeroBasedMs1ScanIndex, isotopeTolerance, chargeState);
+                auto isotopePeak = _peakIndexingEngine->GetIndexedPeak(theorIsotopeMasses[t],
+                                                                       peak->ZeroBasedMs1ScanIndex,
+                                                                       isotopeTolerance, chargeState);
 
                 if (isotopePeak == nullptr)
                 {
@@ -1023,9 +1191,12 @@ namespace FlashLFQ
         return isotopicEnvelopes;
     }
 
-    std::vector<IndexedMassSpectralPeak*> FlashLfqEngine::Peakfind(double idRetentionTime, double mass, int charge, SpectraFileInfo *spectraFileInfo, Tolerance *tolerance)
+    std::vector<IndexedMassSpectralPeak*> FlashLfqEngine::Peakfind(double idRetentionTime, double mass,
+                                                                   int charge,
+                                                                   SpectraFileInfo *spectraFileInfo,
+                                                                   Tolerance *tolerance)
     {
-        auto xic = std::vector<IndexedMassSpectralPeak*>();
+        std::vector<IndexedMassSpectralPeak*> xic;
 
         // get precursor scan to start at
         std::vector<Ms1ScanInfo*> ms1Scans = _ms1Scans[spectraFileInfo];
@@ -1046,7 +1217,7 @@ namespace FlashLFQ
         int missedScans = 0;
         for (int t = precursorScanIndex; t < ms1Scans.size(); t++)
         {
-            auto peak = _peakIndexingEngine::GetIndexedPeak(mass, t, tolerance, charge);
+            auto peak = _peakIndexingEngine->GetIndexedPeak(mass, t, tolerance, charge);
 
             if (peak == nullptr && t != precursorScanIndex)
             {
@@ -1068,7 +1239,7 @@ namespace FlashLFQ
         missedScans = 0;
         for (int t = precursorScanIndex - 1; t >= 0; t--)
         {
-            auto peak = _peakIndexingEngine::GetIndexedPeak(mass, t, tolerance, charge);
+            auto peak = _peakIndexingEngine->GetIndexedPeak(mass, t, tolerance, charge);
 
             if (peak == nullptr && t != precursorScanIndex)
             {
@@ -1087,11 +1258,11 @@ namespace FlashLFQ
         }
 
         // sort by RT
-//C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while the .NET Comparison parameter produces a tri-state result:
-//ORIGINAL LINE: xic.Sort((x, y) => x.RetentionTime.CompareTo(y.RetentionTime));
-        std::sort(xic.begin(), xic.end(), [&] (x, y)
-        {
-            x::RetentionTime->CompareTo(y::RetentionTime);
+        //C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value,
+        // while the .NET Comparison parameter produces a tri-state result:
+        //ORIGINAL LINE: xic.Sort((x, y) => x.RetentionTime.CompareTo(y.RetentionTime));
+        std::sort(xic.begin(), xic.end(), [&] (IndexedMassSpectralPeak* x, IndexedMassSpectralPeak* y){
+            x->RetentionTime < y->RetentionTime);
         });
 
         return xic;
@@ -1100,105 +1271,122 @@ namespace FlashLFQ
     void FlashLfqEngine::CutPeak(ChromatographicPeak *peak, double identificationTime)
     {
         // find out if we need to split this peak by using the discrimination factor
-        // this method assumes that the isotope envelopes in a chromatographic peak are already sorted by MS1 scan number
+        // this method assumes that the isotope envelopes in a chromatographic peak are
+        // already sorted by MS1 scan number
         bool cutThisPeak = false;
-
+        
         if (peak->IsotopicEnvelopes.size() < 5)
         {
             return;
         }
-
-        auto timePointsForApexZ = peak->IsotopicEnvelopes.Where([&] (std::any p)
-        {
-            return p->ChargeState == peak->getApex()->ChargeState;
-        }).ToList();
-        std::unordered_set<int> scanNumbers = std::unordered_set<int>(timePointsForApexZ.Select([&] (std::any p)
-        {
-            p::IndexedPeak::ZeroBasedMs1ScanIndex;
-        }));
+        
+        auto timePointsForApexZ = peak->IsotopicEnvelopes.Where([&] (std::any p)  {
+                return p->ChargeState == peak->getApex()->ChargeState;
+            }).ToList();
+        std::unordered_set<int> scanNumbers = std::unordered_set<int>(timePointsForApexZ.Select([&] (std::any p) {
+                    p::IndexedPeak::ZeroBasedMs1ScanIndex;
+                }));
         int apexIndex = timePointsForApexZ.find(peak->getApex());
         IsotopicEnvelope *valleyTimePoint = nullptr;
-
+        
         // -1 checks the left side, +1 checks the right side
         std::vector<int> iters = {1, -1};
-
+        
         for (auto iter : iters)
         {
             valleyTimePoint = nullptr;
             int indexOfValley = 0;
-
-            for (int i = apexIndex + iter; i < timePointsForApexZ.size() && i >= 0; i += iter)
+            
+            for (int i = apexIndex + iter; i < (int)timePointsForApexZ.size() && i >= 0; i += iter)
             {
                 IsotopicEnvelope *timepoint = timePointsForApexZ[i];
-
-                if (valleyTimePoint == nullptr || timepoint->getIntensity() < valleyTimePoint->getIntensity())
+                
+                if ( valleyTimePoint == nullptr ||
+                     timepoint->getIntensity() < valleyTimePoint->getIntensity())
                 {
                     valleyTimePoint = timepoint;
                     indexOfValley = timePointsForApexZ.find(valleyTimePoint);
                 }
-
-                double discriminationFactor = (timepoint->getIntensity() - valleyTimePoint->getIntensity()) / timepoint->getIntensity();
-
-                if (discriminationFactor > MinDiscFactorToCutAt && (indexOfValley + iter < timePointsForApexZ.size() && indexOfValley + iter >= 0))
+                
+                double discriminationFactor = (timepoint->getIntensity() - valleyTimePoint->getIntensity()) /
+                    timepoint->getIntensity();
+                
+                if (discriminationFactor > MinDiscFactorToCutAt &&
+                    (indexOfValley + iter < timePointsForApexZ.size() && indexOfValley + iter >= 0))
                 {
                     IsotopicEnvelope *secondValleyTimepoint = timePointsForApexZ[indexOfValley + iter];
-
-                    discriminationFactor = (timepoint->getIntensity() - secondValleyTimepoint->getIntensity()) / timepoint->getIntensity();
-
+                    
+                    discriminationFactor = (timepoint->getIntensity() - secondValleyTimepoint->getIntensity()) /
+                        timepoint->getIntensity();
+                    
                     if (discriminationFactor > MinDiscFactorToCutAt)
                     {
                         cutThisPeak = true;
                         break;
                     }
-
+                    
                     int nextMs1ScanNum = -1;
-                    for (int j = valleyTimePoint->IndexedPeak->ZeroBasedMs1ScanIndex - 1; j < _ms1Scans[peak->SpectraFileInfo]->Length && j >= 0; j += iter)
+                    for (int j = valleyTimePoint->IndexedPeak->ZeroBasedMs1ScanIndex - 1;
+                         j < _ms1Scans[peak->spectraFileInfo].size() && j >= 0; j += iter)
                     {
-                        if (_ms1Scans[peak->SpectraFileInfo][j].OneBasedScanNumber >= 0 && _ms1Scans[peak->SpectraFileInfo][j].OneBasedScanNumber != valleyTimePoint->IndexedPeak->ZeroBasedMs1ScanIndex)
+                        if (_ms1Scans[peak->spectraFileInfo][j]->OneBasedScanNumber >= 0 &&
+                            _ms1Scans[peak->spectraFileInfo][j]->OneBasedScanNumber != valleyTimePoint->IndexedPeak->ZeroBasedMs1ScanIndex)
                         {
                             nextMs1ScanNum = j + 1;
                             break;
                         }
                     }
-
-                    if (!std::find(scanNumbers.begin(), scanNumbers.end(), nextMs1ScanNum) != scanNumbers.end())
+                    
+                    if (std::find(scanNumbers.begin(), scanNumbers.end(), nextMs1ScanNum) == scanNumbers.end() )
                     {
                         cutThisPeak = true;
                         break;
                     }
                 }
             }
-
+            
             if (cutThisPeak)
             {
                 break;
             }
         }
-
+        
         // cut
         if (cutThisPeak)
         {
             if (identificationTime > valleyTimePoint->IndexedPeak->RetentionTime)
             {
                 // MS2 identification is to the right of the valley; remove all peaks left of the valley
-                peak->IsotopicEnvelopes.RemoveAll([&] (std::any p)
-                {
-                    return p::IndexedPeak::RetentionTime <= valleyTimePoint->IndexedPeak->RetentionTime;
-                });
+#ifdef ORIG
+                peak->IsotopicEnvelopes.RemoveAll([&] (std::any p) {
+                        return p::IndexedPeak::RetentionTime <= valleyTimePoint->IndexedPeak->RetentionTime;
+                    });
+#endif
+                for ( auto p = peak->IsotopicEnvelopes.begin(); p != peak->IsotopicEnvelopes.end(); p++ ) {
+                    if ( (*p)->IndexedPeak->RetentionTime <= valleyTimePoint->IndexedPeak->RetentionTime ) {
+                        peak->IsotopicEnvelopes.erase(p);
+                    }
+                }
             }
             else
             {
                 // MS2 identification is to the left of the valley; remove all peaks right of the valley
-                peak->IsotopicEnvelopes.RemoveAll([&] (std::any p)
-                {
-                    return p::IndexedPeak::RetentionTime >= valleyTimePoint->IndexedPeak->RetentionTime;
-                });
+#ifdef ORIG
+                peak->IsotopicEnvelopes.RemoveAll([&] (std::any p) {
+                        return p::IndexedPeak::RetentionTime >= valleyTimePoint->IndexedPeak->RetentionTime;
+                    });
+#endif
+                for ( auto p = peak->IsotopicEnvelopes.begin(); p != peak->IsotopicEnvelopes.end(); p++ ) {
+                    if ( (*p)->IndexedPeak->RetentionTime >= valleyTimePoint->IndexedPeak->RetentionTime ) {
+                        peak->IsotopicEnvelopes.erase(p);
+                    }
+                }
             }
-
+            
             // recalculate intensity for the peak
             peak->CalculateIntensityForThisFeature(Integrate);
             peak->SplitRT = valleyTimePoint->IndexedPeak->RetentionTime;
-
+            
             // recursively cut
             CutPeak(peak, identificationTime);
         }

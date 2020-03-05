@@ -4,8 +4,8 @@
 #include <cmath>
 #include <regex>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class DoubleRange; }
+#include "DoubleRange.h"
+//namespace MzLibUtil { class DoubleRange; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
@@ -69,21 +69,29 @@ namespace MzLibUtil {
         /// </summary>
         /// <param name="mean">The mean value</param>
         /// <returns></returns>
-        virtual DoubleRange *GetRange(double mean) = 0;
+        virtual DoubleRange *GetRange(double mean) {
+            return NULL;
+        }
 
         /// <summary>
         /// Gets the minimum value that is still within this tolerance
         /// </summary>
         /// <param name="mean"></param>
         /// <returns></returns>
-        virtual double GetMinimumValue(double mean) = 0;
+        virtual double GetMinimumValue(double mean) {
+            return (double) 0.0;
+        }
+             
 
         /// <summary>
         /// Gets the maximum value that is still within this tolerance
         /// </summary>
         /// <param name="mean"></param>
         /// <returns></returns>
-        virtual double GetMaximumValue(double mean) = 0;
+        virtual double GetMaximumValue(double mean) {
+            return (double) 0.0;
+        }
+
 
         /// <summary>
         /// Indicates if the two values provided are within this tolerance
@@ -91,7 +99,10 @@ namespace MzLibUtil {
         /// <param name="experimental">The experimental value</param>
         /// <param name="theoretical">The theoretical value</param>
         /// <returns>Returns true if the value is within this tolerance  </returns>
-        virtual bool Within(double experimental, double theoretical) = 0;
+        virtual bool Within(double experimental, double theoretical){
+            return false;
+        }
+                
 
     };
 }

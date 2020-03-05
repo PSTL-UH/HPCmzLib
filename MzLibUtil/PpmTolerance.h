@@ -5,8 +5,7 @@
 #include <cmath>
 #include "stringhelper.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class DoubleRange; }
+#include "DoubleRange.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev
