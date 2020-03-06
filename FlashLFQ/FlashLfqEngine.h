@@ -58,7 +58,7 @@ namespace FlashLFQ
         std::vector<SpectraFileInfo*> _spectraFileInfo;
         time_t start, stop;
         std::vector<Identification*> _allIdentifications;
-        std::unordered_map<std::string, std::vector<std::tuple<double, double>*>> _baseSequenceToIsotopicDistribution;
+        std::unordered_map<std::string, std::vector<std::tuple<double, double>>> _baseSequenceToIsotopicDistribution;
         std::vector<int> _chargeStates;
         FlashLfqResults *_results;
         std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>> _ms1Scans;
@@ -72,7 +72,14 @@ namespace FlashLFQ
             //delete _peakIndexingEngine;
         }
 
-        FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize = false, bool advancedProteinQuant = false, bool matchBetweenRuns = false, double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0, double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false, int numIsotopesRequired = 2, bool idSpecificChargeState = false, bool requireMonoisotopicMass = true, bool silent = false, std::string optionalPeriodicTablePath = "", double maxMbrWindow = 2.5, int maxThreads = -1);
+        FlashLfqEngine(std::vector<Identification*> &allIdentifications, bool normalize = false,
+                       bool advancedProteinQuant = false, bool matchBetweenRuns = false,
+                       double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0,
+                       double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false,
+                       int numIsotopesRequired = 2, bool idSpecificChargeState = false,
+                       bool requireMonoisotopicMass = true, bool silent = false,
+                       std::string optionalPeriodicTablePath = "", double maxMbrWindow = 2.5,
+                       int maxThreads = -1);
 
         FlashLfqResults *Run();
 

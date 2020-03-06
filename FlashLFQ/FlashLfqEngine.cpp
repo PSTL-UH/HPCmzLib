@@ -25,6 +25,7 @@
 #include "Search.h"
 
 #include <string>
+#include <numeric>
 
 using namespace Chemistry;
 using namespace MzLibUtil;
@@ -229,7 +230,7 @@ namespace FlashLFQ
 
     void FlashLfqEngine::CalculateTheoreticalIsotopeDistributions()
     {
-        _baseSequenceToIsotopicDistribution = std::unordered_map<std::string, std::vector<std::tuple<double, double>*>>();
+        _baseSequenceToIsotopicDistribution = std::unordered_map<std::string, std::vector<std::tuple<double, double>>>();
 
         // calculate monoisotopic masses and isotopic envelope
         for (auto id : _allIdentifications)
@@ -332,8 +333,8 @@ namespace FlashLFQ
             auto t =identifications.front()->BaseSequence;
             double mostAbundantIsotopeShift;
             for ( auto p: _baseSequenceToIsotopicDistribution[t] ) {
-                if ( std::get<1>(*p) == 1.0 ) {
-                    mostAbundantIsotopeShift = std::get<0>(*p);
+                if ( std::get<1>(p) == 1.0 ) {
+                    mostAbundantIsotopeShift = std::get<0>(p);
                     break;
                 }
             }
@@ -704,10 +705,10 @@ namespace FlashLFQ
                     for ( auto p : nearbyDataPoints ) {
                         nearbyRts.push_back(p->RtDiff);
                     }
-                    acceptorFileRtHypothesis = donorPeak->getApex()->IndexedPeak->RetentionTime + Statistics::Median(nearbyRts);
-                    double firstQuartile = Statistics::LowerQuartile(nearbyRts);
-                    double thirdQuartile = Statistics::UpperQuartile(nearbyRts);
-                    double iqr = Statistics::InterquartileRange(nearbyRts);
+                    acceptorFileRtHypothesis = donorPeak->getApex()->IndexedPeak->RetentionTime + Math::Median(nearbyRts);
+                    double firstQuartile = Math::LowerQuartile(nearbyRts);
+                    double thirdQuartile = Math::UpperQuartile(nearbyRts);
+                    double iqr = Math::InterquartileRange(nearbyRts);
                     
                     lowerRange = firstQuartile - 1.5 * iqr;
                     upperRange = thirdQuartile + 1.5 * iqr;
@@ -874,10 +875,10 @@ namespace FlashLFQ
 #endif
             for ( auto peak : matchedPeaks ) {
                 if ( peak != nullptr && !peak->IsotopicEnvelopes.empty() ) {
-                    ChromatographicPeak *oldPeak;
-                    if (bestMbrHits.TryGetValue(peak->getIdentifications().front()->ModifiedSequence, oldPeak))
+                    std::unordered_map<std::string, ChromatographicPeak*>::iterator oldPeak  = bestMbrHits.find(peak->getIdentifications().front()->ModifiedSequence);
+                    if (oldPeak != bestMbrHits.end())
                     {
-                        if (peak->Intensity > oldPeak->Intensity)
+                        if (peak->Intensity > std::get<1>(*oldPeak)->Intensity)
                         {
                             bestMbrHits[peak->getIdentifications().front()->ModifiedSequence] = peak;
                         }
@@ -905,24 +906,40 @@ namespace FlashLFQ
         auto rtCalibrationCurve = std::vector<RetentionTimeCalibDataPoint*>();
 
         // get all peaks, not counting ambiguous peaks
+#ifdef ORIG
         std::vector<ChromatographicPeak*> donorPeaks = _results::Peaks[donor].Where([&] (std::any p)
         {
             return p::Apex != nullptr && !p::IsMbrPeak && p->NumIdentificationsByFullSeq == 1;
         });
+#endif
+        std::vector<ChromatographicPeak*> donorPeaks;
+        for ( auto p: _results->Peaks[donor] ) {
+            if ( p->getApex() != nullptr && !p->IsMbrPeak && p->getNumIdentificationsByFullSeq() == 1) {
+                donorPeaks.push_back(p);
+            }
+        }
+        
+#ifdef ORIG
         std::vector<ChromatographicPeak*> acceptorPeaks = _results::Peaks[acceptor].Where([&] (std::any p)
         {
             return p::Apex != nullptr && !p::IsMbrPeak && p->NumIdentificationsByFullSeq == 1;
         });
-
+#endif
+        std::vector<ChromatographicPeak*> acceptorPeaks;
+        for ( auto p: _results->Peaks[acceptor] ) {
+            if ( p->getApex() != nullptr && !p->IsMbrPeak && p->getNumIdentificationsByFullSeq() == 1) {
+                donorPeaks.push_back(p);
+            }
+        }
         // get the best (most intense) peak for each peptide in the acceptor file
         for (auto acceptorPeak : acceptorPeaks)
         {
-            ChromatographicPeak currentBestPeak;
-            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator acceptorFileBestMsmsPeaks_iterator = acceptorFileBestMsmsPeaks.find(acceptorPeak.Identifications.front()->ModifiedSequence);
+            ChromatographicPeak *currentBestPeak;
+            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator acceptorFileBestMsmsPeaks_iterator = acceptorFileBestMsmsPeaks.find(acceptorPeak->getIdentifications().front()->ModifiedSequence);
             if (acceptorFileBestMsmsPeaks_iterator != acceptorFileBestMsmsPeaks.end())
             {
                 currentBestPeak = acceptorFileBestMsmsPeaks_iterator->second;
-                if (currentBestPeak::Intensity > acceptorPeak->Intensity)
+                if (currentBestPeak->Intensity > acceptorPeak->Intensity)
                 {
                     acceptorFileBestMsmsPeaks[acceptorPeak->getIdentifications().front()->ModifiedSequence] = acceptorPeak;
                 }
@@ -937,12 +954,12 @@ namespace FlashLFQ
         // get the best (most intense) peak for each peptide in the donor file
         for (auto donorPeak : donorPeaks)
         {
-            ChromatographicPeak currentBestPeak;
-            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator donorFileBestMsmsPeaks_iterator = donorFileBestMsmsPeaks.find(donorPeak.Identifications.First().ModifiedSequence);
+            ChromatographicPeak *currentBestPeak;
+            std::unordered_map<std::string, ChromatographicPeak*>::const_iterator donorFileBestMsmsPeaks_iterator = donorFileBestMsmsPeaks.find(donorPeak->getIdentifications().front()->ModifiedSequence);
             if (donorFileBestMsmsPeaks_iterator != donorFileBestMsmsPeaks.end())
             {
                 currentBestPeak = donorFileBestMsmsPeaks_iterator->second;
-                if (currentBestPeak::Intensity > donorPeak->Intensity)
+                if (currentBestPeak->Intensity > donorPeak->Intensity)
                 {
                     donorFileBestMsmsPeaks[donorPeak->getIdentifications().front()->ModifiedSequence] = donorPeak;
                 }
@@ -960,12 +977,12 @@ namespace FlashLFQ
         {
             ChromatographicPeak *acceptorFilePeak = std::get<1>(peak);
 
-            ChromatographicPeak donorFilePeak;
+            ChromatographicPeak *donorFilePeak;
             std::unordered_map<std::string, ChromatographicPeak*>::const_iterator donorFileBestMsmsPeaks_iterator = donorFileBestMsmsPeaks.find(std::get<0>(peak));
             if (donorFileBestMsmsPeaks_iterator != donorFileBestMsmsPeaks.end())
             {
                 donorFilePeak = donorFileBestMsmsPeaks_iterator->second;
-                RetentionTimeCalibDataPoint tempVar(&donorFilePeak, acceptorFilePeak);
+                RetentionTimeCalibDataPoint tempVar(donorFilePeak, acceptorFilePeak);
                 rtCalibrationCurve.push_back(&tempVar);
             }
             else
@@ -974,10 +991,17 @@ namespace FlashLFQ
             }
         }
 
+#ifdef ORIG
         return rtCalibrationCurve.OrderBy([&] (std::any p)
         {
             p::DonorFilePeak::Apex::IndexedPeak::RetentionTime;
         })->ToArray();
+#endif
+        std::sort( rtCalibrationCurve.begin(),  rtCalibrationCurve.end(), [&] ( auto l, auto r) {
+                return l->DonorFilePeak->getApex()->IndexedPeak->RetentionTime <
+                    l->DonorFilePeak->getApex()->IndexedPeak->RetentionTime;
+            });
+        return rtCalibrationCurve;
     }
 
     void FlashLfqEngine::RunErrorChecking(SpectraFileInfo *spectraFile)
@@ -999,19 +1023,27 @@ namespace FlashLFQ
             }
 
         // merge duplicate peaks and handle MBR/MSMS peakfinding conflicts
-        auto peaksGroupedByApex = std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>();
-        auto peaks = std::vector<ChromatographicPeak*>();
-        for (ChromatographicPeak *tryPeak : _results::Peaks[spectraFile].OrderBy([&] (std::any p)
-        {
-            p::IsMbrPeak;
-        }))
-        {
-            tryPeak::CalculateIntensityForThisFeature(Integrate);
-            tryPeak::ResolveIdentifications();
+            std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>peaksGroupedByApex;
+        std::vector<ChromatographicPeak*>peaks;
+#ifdef ORIG
+        //for (ChromatographicPeak *tryPeak : _results::Peaks[spectraFile].OrderBy([&] (std::any p)
+        // {
+        //    p::IsMbrPeak;
+        //}))
+#endif
+        auto tempvec = _results->Peaks[spectraFile];
+        std::sort(tempvec.begin(), tempvec.end(), [&] ( auto l, auto r ) {
+                return l->IsMbrPeak < r->IsMbrPeak;
+            });
 
-            if (tryPeak->Apex == nullptr)
+        for ( ChromatographicPeak *tryPeak : tempvec )
+        {
+            tryPeak->CalculateIntensityForThisFeature(Integrate);
+            tryPeak->ResolveIdentifications();
+
+            if (tryPeak->getApex() == nullptr)
             {
-                if (tryPeak::IsMbrPeak)
+                if (tryPeak->IsMbrPeak)
                 {
                     continue;
                 }
@@ -1020,34 +1052,35 @@ namespace FlashLFQ
                 continue;
             }
 
-            IndexedMassSpectralPeak *apexPeak = tryPeak::Apex::IndexedPeak;
-            ChromatographicPeak storedPeak;
+            IndexedMassSpectralPeak *apexPeak = tryPeak->getApex()->IndexedPeak;
+            ChromatographicPeak *storedPeak;
             std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>::const_iterator peaksGroupedByApex_iterator = peaksGroupedByApex.find(apexPeak);
             if (peaksGroupedByApex_iterator != peaksGroupedByApex.end())
             {
                 storedPeak = peaksGroupedByApex_iterator->second;
-                if (tryPeak::IsMbrPeak && storedPeak == nullptr)
+                if (tryPeak->IsMbrPeak && storedPeak == nullptr)
                 {
                     continue;
                 }
 
-                if (!tryPeak::IsMbrPeak && !storedPeak::IsMbrPeak)
+                if (!tryPeak->IsMbrPeak && !storedPeak->IsMbrPeak)
                 {
-                    storedPeak::MergeFeatureWith(tryPeak, Integrate);
+                    storedPeak->MergeFeatureWith(tryPeak, Integrate);
                 }
-                else if (tryPeak::IsMbrPeak && !storedPeak::IsMbrPeak)
+                else if (tryPeak->IsMbrPeak && !storedPeak->IsMbrPeak)
                 {
                     continue;
                 }
-                else if (tryPeak::IsMbrPeak && storedPeak::IsMbrPeak)
+                else if (tryPeak->IsMbrPeak && storedPeak->IsMbrPeak)
                 {
-                    if (tryPeak::Identifications::First()->ModifiedSequence == storedPeak::Identifications::First().ModifiedSequence)
+                    if (tryPeak->getIdentifications().front()->ModifiedSequence ==
+                        storedPeak->getIdentifications().front()->ModifiedSequence)
                     {
-                        storedPeak::MergeFeatureWith(tryPeak, Integrate);
+                        storedPeak->MergeFeatureWith(tryPeak, Integrate);
                     }
                     else
                     {
-                        peaksGroupedByApex[tryPeak::Apex::IndexedPeak] = nullptr;
+                        peaksGroupedByApex[tryPeak->getApex()->IndexedPeak] = nullptr;
                     }
                 }
             }
@@ -1115,10 +1148,18 @@ namespace FlashLFQ
                 continue;
             }
 
+#ifdef ORIG
             auto temp2 = sequence.Where([&] (std::any p)
             {
                 return p::Apex != nullptr;
             }).ToList();
+#endif
+            std::vector<ChromatographicPeak *> temp2;
+            for ( auto p: sequence ) {
+                if ( p->getApex() != nullptr ) {
+                    temp2.push_back(p);
+                }
+            }
 
             std::unordered_set<ChromatographicPeak*> merged;
             for (auto peak : temp2)
@@ -1128,6 +1169,7 @@ namespace FlashLFQ
                     continue;
                 }
 
+#ifdef ORIG
                 auto toMerge = temp2.Where([&] (std::any p)
                 {
                     return
@@ -1135,6 +1177,17 @@ namespace FlashLFQ
                     std::find(merged.begin(), merged.end(), p) == merged.end() &&
                     p != peak;
                 });
+#endif
+                std::vector<ChromatographicPeak *>toMerge;
+                for ( auto p: temp2 ) {                    
+                    if ( std::abs(p->getApex()->IndexedPeak->RetentionTime -
+                                  peak->getApex()->IndexedPeak->RetentionTime ) < RtTol &&
+                         std::find(merged.begin(), merged.end(), p) == merged.end() &&
+                         p != peak ) {
+                        toMerge.push_back(p);
+                    }
+                }
+
                 for (auto peakToMerge : toMerge)
                 {
                     peak->MergeFeatureWith(peakToMerge, Integrate);
@@ -1145,7 +1198,7 @@ namespace FlashLFQ
             }
         }
 
-        _results::Peaks[spectraFile] = peaks;
+        _results->Peaks[spectraFile] = peaks;
         }
     }
 
@@ -1156,7 +1209,7 @@ namespace FlashLFQ
         auto isotopicEnvelopes = std::vector<IsotopicEnvelope*>();
         auto isotopeMassShifts = _baseSequenceToIsotopicDistribution[identification->BaseSequence];
 
-        if (isotopeMassShifts.size() < NumIsotopesRequired)
+        if ( (int)isotopeMassShifts.size() < NumIsotopesRequired)
         {
             return isotopicEnvelopes;
         }
@@ -1174,7 +1227,7 @@ namespace FlashLFQ
 #endif
         std::vector<double> theoreticalIsotopeAbundances;
         for ( auto p : isotopeMassShifts ) {
-            theoreticalIsotopeAbundances.push_back(std::get<1>(*p));
+            theoreticalIsotopeAbundances.push_back(std::get<1>(p));
         }
 
         for (auto peak : peaks)
@@ -1190,12 +1243,12 @@ namespace FlashLFQ
             for (int i = 0; i < (int)theorIsotopeMasses.size(); i++)
             {
                 theorIsotopeMasses[i] = mainPeakError + identification->massToLookFor +
-                    std::get<0>(*isotopeMassShifts[i]);
+                    std::get<0>(isotopeMassShifts[i]);
             }
 
             if (matchBetweenRuns)
             {
-                double unexpectedIsotopeMass = observedMass - Constants::C13MinusC12;
+                double unexpectedIsotopeMass = observedMass - Chemistry::Constants::C13MinusC12;
                 auto unexpectedPeak = _peakIndexingEngine->GetIndexedPeak(unexpectedIsotopeMass,
                                                                           peak->ZeroBasedMs1ScanIndex,
                                                                           isotopeTolerance, chargeState);
@@ -1208,7 +1261,7 @@ namespace FlashLFQ
                 }
             }
 
-            for (int t = 0; t < theorIsotopeMasses.size(); t++)
+            for (int t = 0; t < (int) theorIsotopeMasses.size(); t++)
             {
                 auto isotopePeak = _peakIndexingEngine->GetIndexedPeak(theorIsotopeMasses[t],
                                                                        peak->ZeroBasedMs1ScanIndex,
@@ -1230,7 +1283,7 @@ namespace FlashLFQ
 
             int numIsotopePeaksObserved = 0;
             int mainPeakIndex = static_cast<int>(std::round(observedMass - identification->monoisotopicMass * std::pow(10, 0))) / std::pow(10, 0);
-            for (int i = mainPeakIndex; i < expIsotopeMasses.size(); i++)
+            for (int i = mainPeakIndex; i < (int)expIsotopeMasses.size(); i++)
             {
                 if (expIsotopeMasses[i] > 0)
                 {
@@ -1255,12 +1308,14 @@ namespace FlashLFQ
 
             if (numIsotopePeaksObserved >= NumIsotopesRequired)
             {
-                double corr = Correlation::Pearson(experimentalIsotopeAbundances, theoreticalIsotopeAbundances);
+                double corr = Math::PearsonCorrelation(experimentalIsotopeAbundances, theoreticalIsotopeAbundances);
 
                 //TODO: include isotope imputation, more tolerance, etc
                 if (corr > 0.7)
                 {
-                    IsotopicEnvelope tempVar(peak, chargeState, experimentalIsotopeAbundances.Sum());
+                    //IsotopicEnvelope tempVar(peak, chargeState, experimentalIsotopeAbundances.Sum());
+                    auto thissum = std::accumulate(experimentalIsotopeAbundances.begin(), experimentalIsotopeAbundances.end(), 0);
+                    IsotopicEnvelope tempVar(peak, chargeState, thissum);
                     isotopicEnvelopes.push_back(&tempVar);
                 }
                 //else
@@ -1327,7 +1382,7 @@ namespace FlashLFQ
 
         // go right
         int missedScans = 0;
-        for (int t = precursorScanIndex; t < ms1Scans.size(); t++)
+        for (int t = precursorScanIndex; t < (int)ms1Scans.size(); t++)
         {
             auto peak = _peakIndexingEngine->GetIndexedPeak(mass, t, tolerance, charge);
 
@@ -1392,13 +1447,31 @@ namespace FlashLFQ
             return;
         }
         
+#ifdef ORIG
         auto timePointsForApexZ = peak->IsotopicEnvelopes.Where([&] (std::any p)  {
                 return p->ChargeState == peak->getApex()->ChargeState;
             }).ToList();
+#endif
+        std::vector<IsotopicEnvelope*>  timePointsForApexZ;
+        for ( auto p: peak->IsotopicEnvelopes ) {
+            if ( p->ChargeState == peak->getApex()->ChargeState ) {
+                timePointsForApexZ.push_back(p);
+            }
+        }
+
+#ifdef ORIG
         std::unordered_set<int> scanNumbers = std::unordered_set<int>(timePointsForApexZ.Select([&] (std::any p) {
                     p::IndexedPeak::ZeroBasedMs1ScanIndex;
                 }));
-        int apexIndex = timePointsForApexZ.find(peak->getApex());
+#endif
+        std::unordered_set<int> scanNumbers;
+        for ( auto p: timePointsForApexZ ) {
+            scanNumbers.insert(p->IndexedPeak->ZeroBasedMs1ScanIndex);
+        }
+        
+        auto t = std::find(timePointsForApexZ.begin(), timePointsForApexZ.end(), peak->getApex());
+        int apexIndex = std::distance(timePointsForApexZ.begin(), t);
+            
         IsotopicEnvelope *valleyTimePoint = nullptr;
         
         // -1 checks the left side, +1 checks the right side
@@ -1417,14 +1490,15 @@ namespace FlashLFQ
                      timepoint->getIntensity() < valleyTimePoint->getIntensity())
                 {
                     valleyTimePoint = timepoint;
-                    indexOfValley = timePointsForApexZ.find(valleyTimePoint);
+                    auto tp = std::find(timePointsForApexZ.begin(), timePointsForApexZ.end(), valleyTimePoint);
+                    indexOfValley = std::distance(timePointsForApexZ.begin(), tp);
                 }
                 
                 double discriminationFactor = (timepoint->getIntensity() - valleyTimePoint->getIntensity()) /
                     timepoint->getIntensity();
                 
                 if (discriminationFactor > MinDiscFactorToCutAt &&
-                    (indexOfValley + iter < timePointsForApexZ.size() && indexOfValley + iter >= 0))
+                    (indexOfValley + iter < (int)timePointsForApexZ.size() && indexOfValley + iter >= 0))
                 {
                     IsotopicEnvelope *secondValleyTimepoint = timePointsForApexZ[indexOfValley + iter];
                     
