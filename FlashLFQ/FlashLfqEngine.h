@@ -37,7 +37,7 @@ namespace FlashLFQ
         const bool Silent;
         const int MaxThreads;
         const double PeakfindingPpmTolerance;
-        const double PpmTolerance;
+        const double fPpmTolerance;
         const double RtTol;
         const double IsotopePpmTolerance;
         const bool Integrate;

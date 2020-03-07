@@ -11,6 +11,7 @@
 #include "../Test/FakeMsDataFile.h"
 
 #include "Assert.h"
+#include "Quantiles.h"
 
 std::string testdir="/home/gabriel/XLMS/mzlib-master/";
 

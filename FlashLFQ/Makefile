@@ -44,8 +44,9 @@ OBJ = ChromatographicPeak.o         \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB) 
 	cd BoundedNelderMeadOptimizer ; make ; cd ..
+	cd SingularValueDecomposition ; make ; cd ..
+	make $(MZLIB_LIB) 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
@@ -57,3 +58,4 @@ $(OBJ):	$(HEADER)
 clean:  
 	rm -rf *.o *~
 	cd BoundedNelderMeadOptimizer ; make clean ; cd ..
+	cd SingularValueDecomposition ; make clean ; cd ..

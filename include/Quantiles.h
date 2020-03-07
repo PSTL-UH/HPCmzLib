@@ -376,6 +376,7 @@ public:
                      throw std::invalid_argument("Invalid quantile type, must be between 1 and 9 (inclusive)");
              }
          }
+        return result;
     }    
     
 private:

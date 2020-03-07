@@ -45,7 +45,7 @@ namespace FlashLFQ
                                    std::string optionalPeriodicTablePath,
                                    double maxMbrWindow, int maxThreads) :
         Silent(silent), MaxThreads(maxThreads), PeakfindingPpmTolerance(20.0),
-        PpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm),
+        fPpmTolerance(ppmTolerance), RtTol(5.0), IsotopePpmTolerance(isotopeTolerancePpm),
         Integrate(integrate), MissedScansAllowed(1), NumIsotopesRequired(numIsotopesRequired),
         MbrRtWindow(maxMbrWindow), MbrPpmTolerance(matchBetweenRunsPpmTolerance),
         ErrorCheckAmbiguousMatches(true), MatchBetweenRuns(matchBetweenRuns),
@@ -374,7 +374,7 @@ namespace FlashLFQ
         }
 
         Tolerance *peakfindingTol = new PpmTolerance(PeakfindingPpmTolerance);
-        Tolerance *ppmTolerance = new PpmTolerance(PpmTolerance);
+        Tolerance *ppmTolerance = new PpmTolerance(fPpmTolerance);
 
         auto chromatographicPeaks = std::vector<ChromatographicPeak*>(ms2IdsForThisFile.size());
 
@@ -1272,7 +1272,7 @@ namespace FlashLFQ
                     continue;
                 }
 
-                expIsotopeMasses[t] = isotopePeak->Mz.ToMass(chargeState);
+                expIsotopeMasses[t] = Chemistry::ClassExtensions::ToMass(isotopePeak->Mz, chargeState);
                 experimentalIsotopeAbundances[t] = isotopePeak->Intensity;
             }
 
