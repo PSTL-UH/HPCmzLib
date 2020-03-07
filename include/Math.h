@@ -6,6 +6,8 @@
 #include <numeric>
 #include <limits>
 
+#include "Quantiles.h"
+
 class Math {
 public:
     template <typename T>
@@ -127,20 +129,12 @@ public:
 
     static double LowerQuartile ( std::vector<double> samples )
     {
-        if (samples.empty())
-            return std::numeric_limits<double>::quiet_NaN();
-
-        std::cout << " Math::LowerQuartile: function is not correctly implemented. Please revisit if necessary" << std::endl;
-        return  (double)0.0;
+        return Measures::LowerQuartile(samples);
     }
 
     static double UpperQuartile ( std::vector<double> samples )
     {
-        if (samples.empty())
-            return std::numeric_limits<double>::quiet_NaN();
-
-        std::cout << " Math::UpperQuartile: function is not correctly implemented. Please revisit if necessary" << std::endl;
-        return  (double)0.0;
+        return Measures::UpperQuartile(samples);
     }
     
     static double PopulationCovariance ( std::vector<double> &a, std::vector<double> &b)
