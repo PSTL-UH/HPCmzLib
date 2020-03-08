@@ -216,6 +216,12 @@ namespace ms
     // 
 
     name::
+    name ()
+    : ::xml_schema::string ()
+    {
+    }
+
+    name::
     name (value v)
     : ::xml_schema::string (_xsd_name_literals_[v])
     {
@@ -362,6 +368,14 @@ namespace ms
     //
 
     IndexListType::
+    IndexListType ()
+    : ::xml_schema::type (),
+      index_ (this),
+      count_ (this)
+    {
+    }
+
+    IndexListType::
     IndexListType (const count_type& count)
     : ::xml_schema::type (),
       index_ (this),
@@ -468,6 +482,14 @@ namespace ms
     //
 
     IndexType::
+    IndexType ()
+    : ::xml_schema::type (),
+      offset_ (this),
+      name_ (this)
+    {
+    }
+
+    IndexType::
     IndexType (const name_type& name)
     : ::xml_schema::type (),
       offset_ (this),
@@ -572,6 +594,15 @@ namespace ms
 
     // OffsetType
     //
+
+    OffsetType::
+    OffsetType ()
+    : ::xsd::cxx::tree::fundamental_base< ::xml_schema::long_, char, ::xml_schema::simple_type > (),
+      idRef_ (this),
+      spotID_ (this),
+      scanTime_ (this)
+    {
+    }
 
     OffsetType::
     OffsetType (const ::xml_schema::long_& _xsd_long__base,
@@ -745,6 +776,16 @@ namespace ms
 
     // indexedmzML
     //
+
+    indexedmzML::
+    indexedmzML ()
+    : ::xml_schema::type (),
+      mzML_ (this),
+      indexList_ (this),
+      indexListOffset_ (this),
+      fileChecksum_ (this)
+    {
+    }
 
     indexedmzML::
     indexedmzML (const mzML_type& mzML,

@@ -250,7 +250,8 @@ namespace xml_schema
   }
 }
 
-// #ifdef ORIG
+// Forward declarations.
+//
 namespace ms
 {
   namespace mzml
@@ -305,7 +306,7 @@ namespace ms
     class id;
   }
 }
-// #endif
+
 
 #include <memory>    // ::std::unique_ptr
 #include <limits>    // std::numeric_limits
@@ -554,6 +555,8 @@ namespace ms
 
       // Constructors.
       //
+      mzMLType ();
+
       mzMLType (const cvList_type&,
                 const fileDescription_type&,
                 const softwareList_type&,
@@ -670,6 +673,8 @@ namespace ms
 
       // Constructors.
       //
+      FileDescriptionType ();
+
       FileDescriptionType (const fileContent_type&);
 
       FileDescriptionType (::std::unique_ptr< fileContent_type >);
@@ -741,6 +746,8 @@ namespace ms
 
       // Constructors.
       //
+      SourceFileListType ();
+
       SourceFileListType (const count_type&);
 
       SourceFileListType (const ::xercesc::DOMElement& e,
@@ -918,6 +925,8 @@ namespace ms
 
       // Constructors.
       //
+      SourceFileType ();
+
       SourceFileType (const id_type&,
                       const name_type&,
                       const location_type&);
@@ -1030,6 +1039,8 @@ namespace ms
 
       // Constructors.
       //
+      CVType ();
+
       CVType (const id_type&,
               const fullName_type&,
               const URI_type&);
@@ -1102,6 +1113,8 @@ namespace ms
 
       // Constructors.
       //
+      CVListType ();
+
       CVListType (const count_type&);
 
       CVListType (const ::xercesc::DOMElement& e,
@@ -1170,6 +1183,8 @@ namespace ms
 
       // Constructors.
       //
+      ReferenceableParamGroupListType ();
+
       ReferenceableParamGroupListType (const count_type&);
 
       ReferenceableParamGroupListType (const ::xercesc::DOMElement& e,
@@ -1258,6 +1273,8 @@ namespace ms
 
       // Constructors.
       //
+      ReferenceableParamGroupType ();
+
       ReferenceableParamGroupType (const id_type&);
 
       ReferenceableParamGroupType (const ::xercesc::DOMElement& e,
@@ -1431,6 +1448,8 @@ namespace ms
 
       // Constructors.
       //
+      CVParamType ();
+
       CVParamType (const cvRef_type&,
                    const accession_type&,
                    const name_type&);
@@ -1597,6 +1616,8 @@ namespace ms
 
       // Constructors.
       //
+      UserParamType ();
+
       UserParamType (const name_type&);
 
       UserParamType (const ::xercesc::DOMElement& e,
@@ -1655,6 +1676,8 @@ namespace ms
 
       // Constructors.
       //
+      ReferenceableParamGroupRefType ();
+
       ReferenceableParamGroupRefType (const ref_type&);
 
       ReferenceableParamGroupRefType (const ::xercesc::DOMElement& e,
@@ -1722,6 +1745,8 @@ namespace ms
 
       // Constructors.
       //
+      SampleListType ();
+
       SampleListType (const count_type&);
 
       SampleListType (const ::xercesc::DOMElement& e,
@@ -1797,6 +1822,8 @@ namespace ms
 
       // Constructors.
       //
+      SampleType ();
+
       SampleType (const id_type&);
 
       SampleType (const ::xercesc::DOMElement& e,
@@ -1865,6 +1892,8 @@ namespace ms
 
       // Constructors.
       //
+      InstrumentConfigurationListType ();
+
       InstrumentConfigurationListType (const count_type&);
 
       InstrumentConfigurationListType (const ::xercesc::DOMElement& e,
@@ -1916,6 +1945,8 @@ namespace ms
 
       // Constructors.
       //
+      ComponentType ();
+
       ComponentType (const order_type&);
 
       ComponentType (const ::xercesc::DOMElement& e,
@@ -1952,6 +1983,8 @@ namespace ms
       public:
       // Constructors.
       //
+      SourceComponentType ();
+
       SourceComponentType (const order_type&);
 
       SourceComponentType (const ::xercesc::DOMElement& e,
@@ -1975,6 +2008,8 @@ namespace ms
       public:
       // Constructors.
       //
+      DetectorComponentType ();
+
       DetectorComponentType (const order_type&);
 
       DetectorComponentType (const ::xercesc::DOMElement& e,
@@ -1998,6 +2033,8 @@ namespace ms
       public:
       // Constructors.
       //
+      AnalyzerComponentType ();
+
       AnalyzerComponentType (const order_type&);
 
       AnalyzerComponentType (const ::xercesc::DOMElement& e,
@@ -2086,6 +2123,8 @@ namespace ms
 
       // Constructors.
       //
+      ComponentListType ();
+
       ComponentListType (const count_type&);
 
       ComponentListType (const ::xercesc::DOMElement& e,
@@ -2205,6 +2244,8 @@ namespace ms
 
       // Constructors.
       //
+      InstrumentConfigurationType ();
+
       InstrumentConfigurationType (const id_type&);
 
       InstrumentConfigurationType (const ::xercesc::DOMElement& e,
@@ -2261,6 +2302,8 @@ namespace ms
 
       // Constructors.
       //
+      SoftwareRefType ();
+
       SoftwareRefType (const ref_type&);
 
       SoftwareRefType (const ::xercesc::DOMElement& e,
@@ -2328,6 +2371,8 @@ namespace ms
 
       // Constructors.
       //
+      SoftwareListType ();
+
       SoftwareListType (const count_type&);
 
       SoftwareListType (const ::xercesc::DOMElement& e,
@@ -2399,6 +2444,8 @@ namespace ms
 
       // Constructors.
       //
+      SoftwareType ();
+
       SoftwareType (const id_type&,
                     const version_type&);
 
@@ -2468,6 +2515,8 @@ namespace ms
 
       // Constructors.
       //
+      DataProcessingListType ();
+
       DataProcessingListType (const count_type&);
 
       DataProcessingListType (const ::xercesc::DOMElement& e,
@@ -2539,6 +2588,8 @@ namespace ms
 
       // Constructors.
       //
+      DataProcessingType ();
+
       DataProcessingType (const id_type&);
 
       DataProcessingType (const ::xercesc::DOMElement& e,
@@ -2607,6 +2658,8 @@ namespace ms
 
       // Constructors.
       //
+      ProcessingMethodType ();
+
       ProcessingMethodType (const order_type&,
                             const softwareRef_type&);
 
@@ -2676,6 +2729,8 @@ namespace ms
 
       // Constructors.
       //
+      ScanSettingsListType ();
+
       ScanSettingsListType (const count_type&);
 
       ScanSettingsListType (const ::xercesc::DOMElement& e,
@@ -2772,6 +2827,8 @@ namespace ms
 
       // Constructors.
       //
+      ScanSettingsType ();
+
       ScanSettingsType (const id_type&);
 
       ScanSettingsType (const ::xercesc::DOMElement& e,
@@ -2841,6 +2898,8 @@ namespace ms
 
       // Constructors.
       //
+      TargetListType ();
+
       TargetListType (const count_type&);
 
       TargetListType (const ::xercesc::DOMElement& e,
@@ -3017,6 +3076,8 @@ namespace ms
 
       // Constructors.
       //
+      RunType ();
+
       RunType (const id_type&,
                const defaultInstrumentConfigurationRef_type&);
 
@@ -3077,6 +3138,8 @@ namespace ms
 
       // Constructors.
       //
+      SourceFileRefType ();
+
       SourceFileRefType (const ref_type&);
 
       SourceFileRefType (const ::xercesc::DOMElement& e,
@@ -3144,6 +3207,8 @@ namespace ms
 
       // Constructors.
       //
+      SourceFileRefListType ();
+
       SourceFileRefListType (const count_type&);
 
       SourceFileRefListType (const ::xercesc::DOMElement& e,
@@ -3229,6 +3294,8 @@ namespace ms
 
       // Constructors.
       //
+      SpectrumListType ();
+
       SpectrumListType (const count_type&,
                         const defaultDataProcessingRef_type&);
 
@@ -3299,6 +3366,8 @@ namespace ms
 
       // Constructors.
       //
+      ScanWindowListType ();
+
       ScanWindowListType (const count_type&);
 
       ScanWindowListType (const ::xercesc::DOMElement& e,
@@ -3367,6 +3436,8 @@ namespace ms
 
       // Constructors.
       //
+      ScanListType ();
+
       ScanListType (const count_type&);
 
       ScanListType (const ::xercesc::DOMElement& e,
@@ -3580,6 +3651,8 @@ namespace ms
 
       // Constructors.
       //
+      PrecursorListType ();
+
       PrecursorListType (const count_type&);
 
       PrecursorListType (const ::xercesc::DOMElement& e,
@@ -3739,6 +3812,8 @@ namespace ms
 
       // Constructors.
       //
+      PrecursorType ();
+
       PrecursorType (const activation_type&);
 
       PrecursorType (::std::unique_ptr< activation_type >);
@@ -3813,6 +3888,8 @@ namespace ms
 
       // Constructors.
       //
+      SelectedIonListType ();
+
       SelectedIonListType (const count_type&);
 
       SelectedIonListType (const ::xercesc::DOMElement& e,
@@ -3881,6 +3958,8 @@ namespace ms
 
       // Constructors.
       //
+      ProductListType ();
+
       ProductListType (const count_type&);
 
       ProductListType (const ::xercesc::DOMElement& e,
@@ -4006,6 +4085,8 @@ namespace ms
 
       // Constructors.
       //
+      BinaryDataArrayListType ();
+
       BinaryDataArrayListType (const count_type&);
 
       BinaryDataArrayListType (const ::xercesc::DOMElement& e,
@@ -4113,6 +4194,8 @@ namespace ms
 
       // Constructors.
       //
+      BinaryDataArrayType ();
+
       BinaryDataArrayType (const binary_type&,
                            const encodedLength_type&);
 
@@ -4345,6 +4428,8 @@ namespace ms
 
       // Constructors.
       //
+      SpectrumType ();
+
       SpectrumType (const id_type&,
                     const index_type&,
                     const defaultArrayLength_type&);
@@ -4440,6 +4525,8 @@ namespace ms
 
       // Constructors.
       //
+      ChromatogramListType ();
+
       ChromatogramListType (const count_type&,
                             const defaultDataProcessingRef_type&);
 
@@ -4604,6 +4691,8 @@ namespace ms
 
       // Constructors.
       //
+      ChromatogramType ();
+
       ChromatogramType (const binaryDataArrayList_type&,
                         const id_type&,
                         const index_type&,
@@ -4686,7 +4775,6 @@ namespace ms
       virtual 
       ~id ();
     };
-
   }
 }
 

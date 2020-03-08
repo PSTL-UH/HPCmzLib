@@ -179,9 +179,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 	      //tempVar5 is fileDescriptionType
 	    else{
 	      //tempVar5.sourceFileList(tempVar8);
-	      std::string n = "mzLib";
-	      ms::mzml::id *source_id = new ms::mzml::id(n);
-	      ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType(*source_id,"file name","/file/location/uri");
+	      // std::string n = "mzLib";
+	      //ms::mzml::id *source_id = new ms::mzml::id(n);
+	      //ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType(*source_id,"file name","/file/location/uri");
+	      ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType("1", "file name", "/file/location/uri");
 	      tempVar8.sourceFile().push_back(*tempfile);
 	      tempVar5.sourceFileList().set(tempVar8);
 	      int breakp = 2;

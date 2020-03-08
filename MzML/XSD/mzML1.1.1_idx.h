@@ -321,6 +321,8 @@ namespace ms
 
       // Constructors.
       //
+      IndexListType ();
+
       IndexListType (const count_type&);
 
       IndexListType (const ::xercesc::DOMElement& e,
@@ -392,6 +394,8 @@ namespace ms
 
       // Constructors.
       //
+      IndexType ();
+
       IndexType (const name_type&);
 
       IndexType (const ::xercesc::DOMElement& e,
@@ -485,6 +489,8 @@ namespace ms
 
       // Constructors.
       //
+      OffsetType ();
+
       OffsetType (const ::xml_schema::long_&,
                   const idRef_type&);
 
@@ -527,6 +533,8 @@ namespace ms
         spectrum,
         chromatogram
       };
+
+      name ();
 
       name (value v);
 
@@ -645,6 +653,8 @@ namespace ms
 
       // Constructors.
       //
+      indexedmzML ();
+
       indexedmzML (const mzML_type&,
                    const indexList_type&,
                    const indexListOffset_type&,
