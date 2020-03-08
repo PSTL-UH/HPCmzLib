@@ -4,7 +4,9 @@
 #include <type_traits>
 
 #include <cfenv>
+#include "DoubleRange.h"
 
+using namespace MzLibUtil;
 
 // Accord Statistics Library
 // The Accord.NET Framework

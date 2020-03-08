@@ -24,13 +24,15 @@ using namespace MassSpectrometry;
 using namespace MzLibUtil;
 //using namespace NetSerializer;
 
+#include "../MzML/Mzml.h"
+
 namespace FlashLFQ
 {
     class PeakIndexingEngine
     {
     private:
         std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks;
-        //Serializer *const _serializer;
+        //XmlSerializer * _serializer;
         static constexpr int BinsPerDalton = 100;
 
     public:
@@ -50,9 +52,11 @@ namespace FlashLFQ
 
         void DeserializeIndex(SpectraFileInfo *file);
 
-        IndexedMassSpectralPeak *GetIndexedPeak(double theorMass, int zeroBasedScanIndex, Tolerance *tolerance, int chargeState);
+        IndexedMassSpectralPeak *GetIndexedPeak(double theorMass, int zeroBasedScanIndex,
+                                                Tolerance *tolerance, int chargeState);
 
     private:
-        int BinarySearchForIndexedPeak(std::vector<IndexedMassSpectralPeak*> &indexedPeaks, int zeroBasedScanIndex);
+        int BinarySearchForIndexedPeak(std::vector<IndexedMassSpectralPeak*> &indexedPeaks,
+                                       int zeroBasedScanIndex);
     };
 }

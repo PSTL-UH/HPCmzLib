@@ -10,6 +10,8 @@
 
 
 #include <iostream>
+#include <typeinfo>
+#include <algorithm>
 
 using namespace IO::MzML;
 //using namespace NetSerializer;
@@ -17,13 +19,17 @@ using namespace IO::MzML;
 namespace FlashLFQ
 {
 
-    PeakIndexingEngine::PeakIndexingEngine() : _serializer(new Serializer(messageTypes))
+    PeakIndexingEngine::PeakIndexingEngine() : 
     {
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = std::vector<std::type_info> {typeof(std::vector<IndexedMassSpectralPeak*>[]), typeof(std::vector<IndexedMassSpectralPeak*>), typeof(IndexedMassSpectralPeak)};
+        auto messageTypes = std::vector<std::type_info> { typeid(std::vector<IndexedMassSpectralPeak*>[]),
+                                                          typeid(std::vector<IndexedMassSpectralPeak*>),
+                                                          typeid(IndexedMassSpectralPeak)};
+        _serializer = new Serializer(messageTypes))
     }
 
-    bool PeakIndexingEngine::IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent, std::unordered_map<SpectraFileInfo*,
+    bool PeakIndexingEngine::IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent,
+                                                    std::unordered_map<SpectraFileInfo*,
                                                     std::vector<Ms1ScanInfo*>> &_ms1Scans)
     {
         if (!silent)
@@ -35,7 +41,10 @@ namespace FlashLFQ
 
         // read spectra file
         //C# TO C++ CONVERTER TODO TASK: There is no direct C++ equivalent to this .NET String method:
-        auto ext = Path::GetExtension(fileInfo->FullFilePathWithExtension).ToUpperInvariant();
+        //auto ext = Path::GetExtension(fileInfo->FullFilePathWithExtension).ToUpperInvariant();
+        std::string fn = fileInfo->FullFilePathWithExtension;
+        auto ext = fn.substr(fn.find_last_of(".") + 1);
+        std::transform (ext.begin(), ext.end(), ext.begin(), ::toupper);
         if (ext == ".MZML")
         {
             try
@@ -192,8 +201,8 @@ namespace FlashLFQ
                 }
 
                 _indexedPeaks[i].clear();
-                _indexedPeaks[i].TrimExcess();
-                _indexedPeaks[i] = std::vector<IndexedMassSpectralPeak*>();
+                //_indexedPeaks[i].TrimExcess();
+                //_indexedPeaks[i] = std::vector<IndexedMassSpectralPeak*>();
             }
         }
 
