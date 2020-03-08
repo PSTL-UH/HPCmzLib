@@ -87,72 +87,67 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
+	    
             //add new() here
             ms::mzml::mzMLType *_mzMLConnection;
 
+            try{
+                std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
+            }
+            catch (const xml_schema::exception& e){
+                std::cerr << e << std::endl;
+	    }
+#ifdef LATER
             try
             {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-#ifdef ORIG
+             #ifdef ORIG
                     FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
                     auto _indexedmzMLConnection = static_cast<ms::mzml::indexedmzML*>(MzmlMethods::indexedSerializer->Deserialize(fs));
                     _mzMLConnection = _indexedmzMLConnection->getmzML();
-#endif
-                    //--------------------------------------------------------------
-                    //Deserialize FileStream
-                    //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                    // std::ifstream fs = std::ifstream(filePath);
-                    
-                    try{
-                        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (filePath));
-                        _mzMLConnection = &_indexedmzMLConnection->mzML();
-                    }
-                    catch (const xml_schema::exception& e){
-                        std::cerr << e << std::endl;
-                    }
-
-                    // fs.close();
-                    //----------------------------------------------------------------
-                }
+             #endif
+                //--------------------------------------------------------------
+                //Deserialize FileStream
+                //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
+                // std::ifstream fs = std::ifstream(filePath);
+	        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (filePath));                                                                                                                _mzMLConnection = &_indexedmzMLConnection->mzML();
+		// fs.close();
+                //----------------------------------------------------------------
+		    
             }
             catch (...)
             {
-
-//ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-#ifdef ORIG
+             #ifdef ORIG
                     FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
                     _mzMLConnection = static_cast<ms::mzml::mzMLType*>(MzmlMethods::mzmlSerializer->Deserialize(fs));
-#endif
+             #endif
 
-                    //----------------------------------------------------------------
-                    //Deserialize FileStream
-                    //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                    // std::ifstream fs = std::ifstream(filePath);
-
-                    try{
-                        std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
-                    }
-                    catch (const xml_schema::exception& e){
-                        std::cerr << e << std::endl;
-                    }
-
-                    // fs.close();
-                    //----------------------------------------------------------------
-                }
+               //----------------------------------------------------------------
+               //Deserialize FileStream
+               //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
+               // std::ifstream fs = std::ifstream(filePath);
+               try{
+                   std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
+               }
+         	catch (const xml_schema::exception& e){
+                     std::cerr << e << std::endl;
+               }
+               // fs.close();
+               //----------------------------------------------------------------
             }
+#endif
 
             MassSpectrometry::SourceFile *sourceFile;
 
-            if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
-                !_mzMLConnection->fileDescription().sourceFileList()->sourceFile().empty() && 
+            if (_mzMLConnection->fileDescription().sourceFileList() != nullptr) 
+
                 //if segfault check here
-                // _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0] != nullptr && 
-                !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
-            {
-                auto simpler = _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0];
+		//_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0] != nullptr && 
+                //  !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
+             {
+	       if ( !_mzMLConnection->fileDescription().sourceFileList().get().sourceFile().empty()  ){}
+	       if (!_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty() ) {
+	       }
+		 auto simpler = _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0];
                 std::string nativeIdFormat = "";
                 std::string fileFormat = "";
                 std::string checkSum = "";
