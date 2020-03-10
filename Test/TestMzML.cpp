@@ -956,9 +956,9 @@ namespace Test
         auto secondScan = myMsDataFile->GetOneBasedScan(2);
         Assert::AreEqual(1, secondScan->getIsolationRange()->getMaximum() - secondScan->getIsolationRange()->getMinimum());
 
-        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, "argh.mzML", false);
+        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, std::experimental::filesystem::current_path().string() + "/argh.mzML", false);
 
-        Mzml *okay = Mzml::LoadAllStaticData(R"(argh.mzML)");
+        Mzml *okay = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "/argh.mzML");
         okay->GetOneBasedScan(2);
 
         Assert::AreEqual(1, okay->GetClosestOneBasedSpectrumNumber(1));
@@ -1663,15 +1663,15 @@ namespace Test
         FakeMsDataFile *fakeFile = new FakeMsDataFile(scans);
         // MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what.mzML"), false);
         // Mzml *fakeMzml = Mzml::LoadAllStaticData(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what.mzML"));
-        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile, std::experimental::filesystem::current_path().string() + "what.mzML", false);
-        Mzml *fakeMzml = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "what.mzML");
+        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile, std::experimental::filesystem::current_path().string() + "/what.mzML", false);
+        Mzml *fakeMzml = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "/what.mzML");
         
 
         FakeMsDataFile *fakeFile1 = new FakeMsDataFile(scans1);
         // MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile1, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what1.mzML"), false);
         // Mzml *fakeMzml1 = Mzml::LoadAllStaticData(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what1.mzML"));
-        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile1, std::experimental::filesystem::current_path().string() + "what1.mzML", false);
-        Mzml *fakeMzml1 = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "what1.mzML");
+        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(fakeFile1, std::experimental::filesystem::current_path().string() + "/what1.mzML", false);
+        Mzml *fakeMzml1 = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "/what1.mzML");
 
         Assert::AreEqual(3, fakeMzml->GetAllScansList().at(5)->getOneBasedPrecursorScanNumber().value());
         Assert::AreEqual(1, fakeMzml1->GetAllScansList().at(3)->getOneBasedPrecursorScanNumber().value());

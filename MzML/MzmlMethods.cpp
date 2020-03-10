@@ -797,8 +797,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 // ms::mzml::BinaryDataArrayType *tempVar78 = new ms::mzml::BinaryDataArrayType();
                 // tempVar78->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum().Get64BitXarray());
 
-                std::vector<unsigned char> XArray = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
-                xml_schema::base64_binary binary_64bitXArray((void*)&XArray, XArray.size());  
+                std::vector<unsigned char> XArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
+		unsigned char XArray[XArrayVec.size()];
+		std::copy(XArrayVec.begin(), XArrayVec.end(), XArray);
+		xml_schema::base64_binary binary_64bitXArray((void*)&XArray, (sizeof(XArray)/sizeof(*XArray)));  
 
                 ms::mzml::BinaryDataArrayType *tempVar78 = new ms::mzml::BinaryDataArrayType(binary_64bitXArray, 4 * std::ceil((static_cast<double>(binary_64bitXArray.encode().length()) / 3)));
 
@@ -832,8 +834,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 // //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
 //                 mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[1]->encodedLength() = (4 * std::ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
-                std::vector<unsigned char> YArray = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
-                xml_schema::base64_binary binary_64bitYArray((void*)&YArray, YArray.size());  
+                std::vector<unsigned char> YArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
+		unsigned char YArray[YArrayVec.size()];
+		xml_schema::base64_binary binary_64bitYArray((void*)&YArray, (sizeof(YArray)/sizeof(*YArray)));  
 
                 ms::mzml::BinaryDataArrayType *tempVar82 = new ms::mzml::BinaryDataArrayType(binary_64bitYArray, 4 * std::ceil((static_cast<double>(binary_64bitYArray.encode().length()) / 3)));
 

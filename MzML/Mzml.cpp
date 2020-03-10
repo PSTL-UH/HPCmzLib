@@ -97,14 +97,17 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
-            // std::unique_ptr<ms::mzml::mzMLType> _mzML_object;
-            std::ifstream fs = std::ifstream(filePath);
-            // try{
-            std::unique_ptr<ms::mzml::mzMLType> _mzML_object (ms::mzml::mzML (fs));
-            // }
-            // catch (const xml_schema::exception& e){
-            //     std::cerr << e << std::endl;
-            // }
+
+	    // std::unique_ptr<ms::mzml::mzMLType> _mzML_object;
+	    //ms::mzml::mzMLType *_mzMLConnection;
+	    std::ifstream fs = std::ifstream(filePath);
+            //try{
+            std::unique_ptr<ms::mzml::mzMLType> _mzML_object (ms::mzml::mzML (fs, xml_schema::flags::dont_validate));
+	    //*_mzMLConnection = _mzML_object.get();
+	    //    }
+      //catch (const xml_schema::exception& e){
+      //         std::cerr << e << std::endl;
+      //    }
             fs.close();
 
             ms::mzml::mzMLType *_mzMLConnection = _mzML_object.get();
