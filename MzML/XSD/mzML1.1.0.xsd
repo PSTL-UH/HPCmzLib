@@ -828,6 +828,7 @@
           <xs:simpleType>
             <xs:restriction base="xs:string">
               <!-- <xs:pattern value="\S+=\S+( \S+=\S+)*" /> -->
+              <xs:pattern value="[\s\S]*" />
             </xs:restriction>
           </xs:simpleType>
         </xs:attribute>

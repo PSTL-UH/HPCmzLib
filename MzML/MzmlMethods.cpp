@@ -123,11 +123,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             ms::mzml::FileDescriptionType tempVar5 = ms::mzml::FileDescriptionType(tempVar6);
             // mzML->getfileDescription()->setfileContent(&tempVar6);
 
-	    int breakpy = 1;
             ms::mzml::SourceFileListType tempVar8 = ms::mzml::SourceFileListType(1);
             // mzML->getfileDescription()->setsourceFileList(&tempVar7);
-	    ms::mzml::SourceFileType *TempFile = nullptr;
-	    //	    tempVar7.sourceFile().push_back(*TempFile);
+	        // ms::mzml::SourceFileType *TempFile = nullptr;
+	        //tempVar7.sourceFile().push_back(*TempFile);
             if (myMsDataFile->getSourceFile()->getNativeIdFormat() != "" && myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat() != "" && myMsDataFile->getSourceFile()->getFileChecksumType() != "")
             {
 	      //ms::mzml::SourceFileListType tempVar8 = ms::mzml::SourceFileListType(1);
@@ -172,21 +171,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 //tempVar5.sourceFileList(tempVar8);
             }
 
-	    //int breakpointt = 2;
-	    //ms::mzml::SourceFileType *tempVar9 = new ms::mzml::SourceFileType("id", "filename", "URI");
-	      //tempVar7 is SourceFileListType
-	      //tempVar7.sourceFile().push_back(*tempVar9);
-	      //tempVar5 is fileDescriptionType
-	    else{
-	      //tempVar5.sourceFileList(tempVar8);
-	      // std::string n = "mzLib";
-	      //ms::mzml::id *source_id = new ms::mzml::id(n);
-	      //ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType(*source_id,"file name","/file/location/uri");
-	      ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType("1", "file name", "/file/location/uri");
-	      tempVar8.sourceFile().push_back(*tempfile);
-	      tempVar5.sourceFileList().set(tempVar8);
-	      int breakp = 2;
-	    }
+    	    // else{
+    	    //   ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType("id", "file name", "/file/location/uri");
+    	    //   tempVar8.sourceFile().push_back(*tempfile);
+    	    //   tempVar5.sourceFileList().set(tempVar8);
+    	    // }
 	      
             ms::mzml::CVParamType *tempVar14 = new ms::mzml::CVParamType("MS", "MS:1000579", "MS1 spectrum");
             tempVar14->value("");
@@ -356,7 +345,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             //run_type   -> *tempVar33
             //version_type   -> "1.1.0"
             ms::mzml::mzMLType *mzML_type = new ms::mzml::mzMLType(*tempVar, tempVar5, *tempVar16, *tempVar19, *tempVar29, *tempVar33, "1.1.0");
-	    int breakpoint = 4;
 
             ms::mzml::ChromatogramListType *tempVar34 = new ms::mzml::ChromatogramListType(1, "mzLibProcessing");
             mzML_type->run().chromatogramList(*tempVar34);

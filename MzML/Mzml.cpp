@@ -17,9 +17,19 @@
 
 #include "XSD/mzML1.1.0.h"
 #include "XSD/mzML1.1.1_idx.h"
+// #include "XSD/mzML1.1.0-pskel.h"
+// #include "XSD/mzML1.1.1_idx-pskel.h"
+
+
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/sax/HandlerBase.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
+using namespace xercesc_3_1;
 namespace IO
 {
     namespace MzML
@@ -87,16 +97,19 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
-	    
-            //add new() here
-            ms::mzml::mzMLType *_mzMLConnection;
+            // std::unique_ptr<ms::mzml::mzMLType> _mzML_object;
+            std::ifstream fs = std::ifstream(filePath);
+            // try{
+            std::unique_ptr<ms::mzml::mzMLType> _mzML_object (ms::mzml::mzML (fs));
+            // }
+            // catch (const xml_schema::exception& e){
+            //     std::cerr << e << std::endl;
+            // }
+            fs.close();
 
-            try{
-                std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
-            }
-            catch (const xml_schema::exception& e){
-                std::cerr << e << std::endl;
-	    }
+            ms::mzml::mzMLType *_mzMLConnection = _mzML_object.get();
+
+
 #ifdef LATER
             try
             {
@@ -108,9 +121,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 //--------------------------------------------------------------
                 //Deserialize FileStream
                 //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                // std::ifstream fs = std::ifstream(filePath);
-	        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (filePath));                                                                                                                _mzMLConnection = &_indexedmzMLConnection->mzML();
-		// fs.close();
+                std::ifstream fs = std::ifstream(filePath);
+                std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (fs));                                                                                                                _mzMLConnection = &_indexedmzMLConnection->mzML();
+                fs.close();
                 //----------------------------------------------------------------
 		    
             }
@@ -124,14 +137,14 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                //----------------------------------------------------------------
                //Deserialize FileStream
                //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-               // std::ifstream fs = std::ifstream(filePath);
+               std::ifstream fs = std::ifstream(filePath);
                try{
-                   std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (filePath));
+                   std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (fs));
                }
          	catch (const xml_schema::exception& e){
                      std::cerr << e << std::endl;
                }
-               // fs.close();
+               fs.close();
                //----------------------------------------------------------------
             }
 #endif
@@ -255,9 +268,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 std::unordered_set<int>::const_iterator dup_iterator = checkForDuplicateScans.find(scan->getOneBasedScanNumber());
                 if (dup_iterator == checkForDuplicateScans.end()) {
 
-                    // not sure why the delete sourceFile was added here
-                    delete sourceFile;
-                    throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
+                    // not sure why the delete sourceFile was added here...causes error:free(): invalid pointer:
+                    // delete sourceFile;
+                    // throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
+                    std::cout << "TODO fix exception Mzml.cpp line 274:  Scan number " << std::to_string(scan->getOneBasedScanNumber()) << " appeared multiple times in " << filePath << std::endl;
                 }
 
                 //check if scans are in order
@@ -309,10 +323,11 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
         MsDataScan *Mzml::GetMsDataOneBasedScanFromConnection(ms::mzml::mzMLType *_mzMLConnection, int oneBasedIndex, IFilteringParams *filterParams)
         {
             // Read in the instrument configuration types from connection (in mzml it's at the start)
-            std::vector<ms::mzml::InstrumentConfigurationType*> configs(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size());
+            std::vector<ms::mzml::InstrumentConfigurationType> configs;
             for (long unsigned int i = 0; i < _mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size(); i++)
             {
-                *configs[i] = _mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i];
+                // *configs[i] = _mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i];
+                configs.push_back(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i]);
             }
 
             auto defaultInstrumentConfig = _mzMLConnection->run().defaultInstrumentConfigurationRef();
@@ -323,14 +338,14 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             // use default
             if (scanSpecificInsturmentConfig == nullptr || *scanSpecificInsturmentConfig == *defaultInstrumentConfig)
             {
-                if (configs[0]->componentList() == nullptr)
+                if (configs[0].componentList() == nullptr)
                 {
                     analyzer = static_cast<MassSpectrometry::MZAnalyzerType>(0);
                 }
                 else
                 {
                     MZAnalyzerType returnVal;
-                    std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[0]->componentList()->analyzer()[0].cvParam()[0].accession());
+                    std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[0].componentList()->analyzer()[0].cvParam()[0].accession());
                     if (analyzerDictionary_iterator != analyzerDictionary.end())
                     {
                     returnVal = analyzerDictionary_iterator->second;
@@ -347,10 +362,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             {
                 for (long unsigned int i = 0; i < _mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size(); i++)
                 {
-                    if (configs[i]->id() == *scanSpecificInsturmentConfig)
+                    if (configs[i].id() == *scanSpecificInsturmentConfig)
                     {
                         MZAnalyzerType returnVal;
-                        std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[i]->componentList()->analyzer()[0].cvParam()[0].accession());
+                        std::unordered_map<std::string, MZAnalyzerType>::const_iterator analyzerDictionary_iterator = analyzerDictionary.find(configs[i].componentList()->analyzer()[0].cvParam()[0].accession());
                         returnVal = analyzerDictionary_iterator->second;
                         analyzer = returnVal;
                     }
@@ -388,7 +403,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 if (polarity == Polarity::Unknown)
                 {
                     std::unordered_map<std::string, Polarity>::const_iterator polarityDictionary_iterator = polarityDictionary.find(cv.accession());
-                    polarity = polarityDictionary_iterator->second;
+                    if (polarityDictionary_iterator != polarityDictionary.end())
+                        polarity = polarityDictionary_iterator->second;
+                    else
+                        polarity = Polarity::Unknown;
                 }
             }
 
