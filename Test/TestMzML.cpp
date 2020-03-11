@@ -201,11 +201,6 @@ namespace Test
 
         FakeMsDataFile *f = new FakeMsDataFile(scans);
 
-#ifdef ORIG
-        MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what.mzML"), false);
-        Mzml *ok = Mzml::LoadAllStaticData(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "what.mzML"));
-#endif
-
         MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, std::experimental::filesystem::current_path().string() + "/what.mzML", false);
     	Mzml *ok = Mzml::LoadAllStaticData(std::experimental::filesystem::current_path().string() + "/what.mzML");
 
@@ -231,7 +226,7 @@ namespace Test
             }
         }
         scanWithPrecursor = filteredScansList.back();
-        Assert::AreEqual(3, scanWithPrecursor->getOneBasedPrecursorScanNumber());
+        Assert::AreEqual(3, scanWithPrecursor->getOneBasedPrecursorScanNumber().value());
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec4' statement was not added since massSpec4 was passed to a method or constructor. Handle memory management manually.
@@ -510,7 +505,7 @@ namespace Test
         // Assert::That(std::round(myPeaks[0]->intensity * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.SumOfAllY * std::pow(10, 0)) / std::pow(10, 0));
         Assert::AreEqual(std::round(myPeaks[0].second * std::pow(10, 0)) / std::pow(10, 0), std::round(ok->GetAllScansList().front()->getMassSpectrum()->getSumOfAllY() * std::pow(10, 0)) / std::pow(10, 0));
         // Assert::That(1 == ok->GetAllScansList().front().MassSpectrum.XArray->Length);
-        Assert::AreEqual(1, ok->GetAllScansList().front()->getMassSpectrum()->getXArray().size());
+        Assert::AreEqual(1, static_cast<int>(ok->GetAllScansList().front()->getMassSpectrum()->getXArray().size()));
         // Assert::That(std::round(myPeaks[0]->mz * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.XArray[0] * std::pow(10, 0)) / std::pow(10, 0));
         Assert::AreEqual(std::round(myPeaks[0].first * std::pow(10, 0)) / std::pow(10, 0), std::round(ok->GetAllScansList().front()->getMassSpectrum()->getXArray()[0] * std::pow(10, 0)) / std::pow(10, 0));
         // Assert::That(std::round(myPeaks[0]->intensity * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.YArray[0] * std::pow(10, 0)) / std::pow(10, 0));
@@ -954,7 +949,7 @@ namespace Test
         auto oldFirstValue = myMsDataFile->GetOneBasedScan(1)->getMassSpectrum()->getFirstX();
 
         auto secondScan = myMsDataFile->GetOneBasedScan(2);
-        Assert::AreEqual(1, secondScan->getIsolationRange()->getMaximum() - secondScan->getIsolationRange()->getMinimum());
+        Assert::AreEqual((double)1, secondScan->getIsolationRange()->getMaximum() - secondScan->getIsolationRange()->getMinimum());
 
         MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(myMsDataFile, std::experimental::filesystem::current_path().string() + "/argh.mzML", false);
 
@@ -969,7 +964,7 @@ namespace Test
 
         auto secondScan2 = okay->GetOneBasedScan(2);
 
-        Assert::AreEqual(1, secondScan2->getIsolationRange()->getMaximum() - secondScan2->getIsolationRange()->getMinimum());
+        Assert::AreEqual((double)1, secondScan2->getIsolationRange()->getMaximum() - secondScan2->getIsolationRange()->getMinimum());
 
     #ifdef ORIG
         secondScan2->getMassSpectrum().ReplaceXbyApplyingFunction([&] (a)

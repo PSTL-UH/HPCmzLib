@@ -379,7 +379,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             //TODO:  original C# is binary.Length...does this mean the length of a string? if so C++ version should be binary().encode().length(), encode() to get string
             // double binsize = static_cast<double>(mzML->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0].binary().encode().length()) / 3;
             std::vector<unsigned char> bin_times_vector = MzSpectrum::Get64Bitarray(times);
-            xml_schema::base64_binary bindata((void *)&bin_times_vector, bin_times_vector.size());  
+            unsigned char bin_times[bin_times_vector.size()]; 
+            std::copy(bin_times_vector.begin(), bin_times_vector.end(), bin_times);
+            xml_schema::base64_binary bindata((void*)&bin_times, (sizeof(bin_times)/sizeof(*bin_times))); 
 	    
             //TODO uses .ToString(CultureInfo::InvariantCulture).  is that the same as std::to_string(double)?
             ms::mzml::BinaryDataArrayType *tempVar38 = new ms::mzml::BinaryDataArrayType(bindata, 4 * std::ceil((static_cast<double>(bindata.encode().length()) / 3)));
@@ -404,7 +406,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             //Chromatogram Y axis (total intensity)
             std::vector<unsigned char> bin_intensities_vector = MzSpectrum::Get64Bitarray(intensities);
-            xml_schema::base64_binary bindata_intensities((void*)&bin_intensities_vector, bin_intensities_vector.size());  
+            unsigned char bin_intensities[bin_intensities_vector.size()]; 
+            std::copy(bin_intensities_vector.begin(), bin_intensities_vector.end(), bin_intensities);
+            xml_schema::base64_binary bindata_intensities((void*)&bin_intensities, (sizeof(bin_intensities)/sizeof(*bin_intensities))); 
 
             ms::mzml::BinaryDataArrayType *tempVar42 = new ms::mzml::BinaryDataArrayType(bindata_intensities, 4 * std::ceil((static_cast<double>(bindata_intensities.encode().length()) / 3)));
 
@@ -798,9 +802,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 // tempVar78->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum().Get64BitXarray());
 
                 std::vector<unsigned char> XArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
-		unsigned char XArray[XArrayVec.size()];
-		std::copy(XArrayVec.begin(), XArrayVec.end(), XArray);
-		xml_schema::base64_binary binary_64bitXArray((void*)&XArray, (sizeof(XArray)/sizeof(*XArray)));  
+				unsigned char XArray[XArrayVec.size()];
+				std::copy(XArrayVec.begin(), XArrayVec.end(), XArray);
+				xml_schema::base64_binary binary_64bitXArray((void*)&XArray, (sizeof(XArray)/sizeof(*XArray)));  
 
                 ms::mzml::BinaryDataArrayType *tempVar78 = new ms::mzml::BinaryDataArrayType(binary_64bitXArray, 4 * std::ceil((static_cast<double>(binary_64bitXArray.encode().length()) / 3)));
 
@@ -835,8 +839,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 //                 mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[1]->encodedLength() = (4 * std::ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
                 std::vector<unsigned char> YArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
-		unsigned char YArray[YArrayVec.size()];
-		xml_schema::base64_binary binary_64bitYArray((void*)&YArray, (sizeof(YArray)/sizeof(*YArray)));  
+				unsigned char YArray[YArrayVec.size()];
+				std::copy(YArrayVec.begin(), YArrayVec.end(), YArray);
+				xml_schema::base64_binary binary_64bitYArray((void*)&YArray, (sizeof(YArray)/sizeof(*YArray)));  
 
                 ms::mzml::BinaryDataArrayType *tempVar82 = new ms::mzml::BinaryDataArrayType(binary_64bitYArray, 4 * std::ceil((static_cast<double>(binary_64bitYArray.encode().length()) / 3)));
 
@@ -874,8 +879,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     // mzML_type->run().spectrumList()->spectrum()[i - 1].binaryDataArrayList()->binaryDataArray()[2].cvParam() = std::vector<ms::mzml::CVParamType*>(3);
 
 
-                    std::vector<unsigned char> noiseDataMass = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataMass();
-                    xml_schema::base64_binary binary_noiseDataMass((void*)&noiseDataMass, noiseDataMass.size());  
+                    std::vector<unsigned char> noiseDataMassVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataMass();
+                    unsigned char noiseDataMass[noiseDataMassVec.size()]; 
+                    std::copy(noiseDataMassVec.begin(), noiseDataMassVec.end(), noiseDataMass);
+                    xml_schema::base64_binary binary_noiseDataMass((void*)&noiseDataMass, (sizeof(noiseDataMass)/sizeof(*noiseDataMass)));  
 
 
                     ms::mzml::BinaryDataArrayType *tempVar86 = new ms::mzml::BinaryDataArrayType(binary_noiseDataMass, 4 * std::ceil((static_cast<double>(binary_noiseDataMass.encode().length()) / 3)));
@@ -915,9 +922,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     //push back 3 cvparams
                     // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->cvParam = std::vector<ms::mzml::CVParamType*>(3);
 
-                    std::vector<unsigned char> noiseDataNoise = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise();
-                    xml_schema::base64_binary binary_noiseDataNoise((void*)&noiseDataNoise, noiseDataNoise.size());  
-
+                    std::vector<unsigned char> noiseDataNoiseVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise();
+                    unsigned char noiseDataNoise[noiseDataNoiseVec.size()]; 
+                    std::copy(noiseDataNoiseVec.begin(), noiseDataNoiseVec.end(), noiseDataNoise);
+                    xml_schema::base64_binary binary_noiseDataNoise((void*)&noiseDataNoise, (sizeof(noiseDataNoise)/sizeof(*noiseDataNoise)));  
 
 
                     ms::mzml::BinaryDataArrayType *tempVar91 = new ms::mzml::BinaryDataArrayType(binary_noiseDataNoise, 4 * std::ceil((static_cast<double>(binary_noiseDataNoise.encode().length()) / 3)));
@@ -956,8 +964,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     //push back 4 cvparams
                     // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[4]->cvParam() = std::vector<ms::mzml::CVParamType*>(3);
 
-                    std::vector<unsigned char> noiseDataBaseline = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline();
-                    xml_schema::base64_binary binary_noiseDataBaseline((void*)&noiseDataBaseline, noiseDataBaseline.size());  
+                    std::vector<unsigned char> noiseDataBaselineVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline();
+                    unsigned char noiseDataBaseline[noiseDataBaselineVec.size()]; 
+                    std::copy(noiseDataBaselineVec.begin(), noiseDataBaselineVec.end(), noiseDataBaseline);
+                    xml_schema::base64_binary binary_noiseDataBaseline((void*)&noiseDataBaseline, (sizeof(noiseDataBaseline)/sizeof(*noiseDataBaseline))); 
 
 
                     ms::mzml::BinaryDataArrayType *tempVar96 = new ms::mzml::BinaryDataArrayType(binary_noiseDataBaseline, 4 * std::ceil((static_cast<double>(binary_noiseDataBaseline.encode().length()) / 3)));

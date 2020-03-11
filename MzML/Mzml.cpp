@@ -17,15 +17,6 @@
 
 #include "XSD/mzML1.1.0.h"
 #include "XSD/mzML1.1.1_idx.h"
-// #include "XSD/mzML1.1.0-pskel.h"
-// #include "XSD/mzML1.1.1_idx-pskel.h"
-
-
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/sax/HandlerBase.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -98,16 +89,16 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
 
-	    // std::unique_ptr<ms::mzml::mzMLType> _mzML_object;
-	    //ms::mzml::mzMLType *_mzMLConnection;
-	    std::ifstream fs = std::ifstream(filePath);
+    	    // std::unique_ptr<ms::mzml::mzMLType> _mzML_object;
+    	    //ms::mzml::mzMLType *_mzMLConnection;
+    	    std::ifstream fs = std::ifstream(filePath);
             //try{
             std::unique_ptr<ms::mzml::mzMLType> _mzML_object (ms::mzml::mzML (fs, xml_schema::flags::dont_validate));
-	    //*_mzMLConnection = _mzML_object.get();
-	    //    }
-      //catch (const xml_schema::exception& e){
-      //         std::cerr << e << std::endl;
-      //    }
+            //*_mzMLConnection = _mzML_object.get();
+            //    }
+            //catch (const xml_schema::exception& e){
+            //         std::cerr << e << std::endl;
+            //    }
             fs.close();
 
             ms::mzml::mzMLType *_mzMLConnection = _mzML_object.get();
@@ -154,16 +145,12 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             MassSpectrometry::SourceFile *sourceFile;
 
-            if (_mzMLConnection->fileDescription().sourceFileList() != nullptr) 
-
-                //if segfault check here
-		//_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0] != nullptr && 
-                //  !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
+            if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
+		      // _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0] != nullptr && 
+                !_mzMLConnection->fileDescription().sourceFileList().get().sourceFile().empty() &&
+                !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
              {
-	       if ( !_mzMLConnection->fileDescription().sourceFileList().get().sourceFile().empty()  ){}
-	       if (!_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty() ) {
-	       }
-		 auto simpler = _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0];
+                auto simpler = _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0];
                 std::string nativeIdFormat = "";
                 std::string fileFormat = "";
                 std::string checkSum = "";
@@ -269,12 +256,15 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 #endif
                 //check if no duplicates
                 std::unordered_set<int>::const_iterator dup_iterator = checkForDuplicateScans.find(scan->getOneBasedScanNumber());
-                if (dup_iterator == checkForDuplicateScans.end()) {
 
-                    // not sure why the delete sourceFile was added here...causes error:free(): invalid pointer:
-                    // delete sourceFile;
-                    // throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
-                    std::cout << "TODO fix exception Mzml.cpp line 274:  Scan number " << std::to_string(scan->getOneBasedScanNumber()) << " appeared multiple times in " << filePath << std::endl;
+                //for all scans, if scan not in checkForDuplicateScans set, it is inserted
+                if (dup_iterator == checkForDuplicateScans.end()) {
+                    checkForDuplicateScans.insert(scan->getOneBasedScanNumber());
+                }
+                //if scan is in checkForDuplicateScans set, throw exception
+                else{
+                    throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
+                    // std::cout << "TODO fix exception Mzml.cpp line 274:  Scan number " << std::to_string(scan->getOneBasedScanNumber()) << " appeared multiple times in " << filePath << std::endl;   
                 }
 
                 //check if scans are in order
