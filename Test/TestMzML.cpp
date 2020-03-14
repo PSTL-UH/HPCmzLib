@@ -87,6 +87,7 @@
 #include <time.h>
 #include <algorithm>
 #include <../include/Sort.h>
+#include <math.h>
 
 //need to include .h files
 using namespace Chemistry;
@@ -315,17 +316,17 @@ namespace Test
         });
 
         //take first 'numPeaks' number of elements from beginning of sorted vector
-        std::vector<std::pair<double, double>> sub_vector(&myPeaksOrderedByIntensity[0], &myPeaksOrderedByIntensity[numPeaks]);
-        myPeaksOrderedByIntensity = sub_vector;
+        std::vector<std::pair<double, double>> top_intensity_peaks(&myPeaksOrderedByIntensity[0], &myPeaksOrderedByIntensity[numPeaks]);
+        // myPeaksOrderedByIntensity = top_intensity_peaks;
 
         //filter peaks
         std::vector<std::pair<double,double>> filteredPeaks;
-        for (long unsigned int i=0;i<myPeaksOrderedByIntensity.size();i++){
-            if ((myPeaksOrderedByIntensity[i].second / myMaxIntensity) > minRatio){
-                filteredPeaks.push_back(myPeaksOrderedByIntensity[i]);
+        for (long unsigned int i=0;i<top_intensity_peaks.size();i++){
+            if ((top_intensity_peaks[i].second / myMaxIntensity) > minRatio){
+                filteredPeaks.push_back(top_intensity_peaks[i]);
             }
         }
-        myPeaksOrderedByIntensity = filteredPeaks;
+        // myPeaksOrderedByIntensity = filteredPeaks;
         //----------------------------------------------
 
         //-----------------------------------------------
@@ -338,8 +339,8 @@ namespace Test
     #endif
 
         double sumOfAllIntensities = 0;
-        for (long unsigned int i=0;i<myPeaksOrderedByIntensity.size();i++){
-            sumOfAllIntensities += myPeaksOrderedByIntensity[i].second;
+        for (long unsigned int i=0;i<filteredPeaks.size();i++){
+            sumOfAllIntensities += filteredPeaks[i].second;
         }
         //----------------------------------------------
 
@@ -365,8 +366,11 @@ namespace Test
         //-----------------------------------------------
 
         MzSpectrum *massSpec1 = new MzSpectrum(mz1, intensities1, false);
-        MzRange tempVar(400, 1600);
-        std::vector<MsDataScan*> scans = {new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, &tempVar, "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(), std::nullopt, std::vector<std::vector<double>>(), "1")};
+        MzRange *tempVar = new MzRange(400, 1600);
+        MsDataScan* scan = new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, tempVar, "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(), std::nullopt, std::vector<std::vector<double>>(), "1");
+        // std::vector<MsDataScan*> scans = {new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, tempVar, "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(), std::nullopt, std::vector<std::vector<double>>(), "1")};
+        std::vector<MsDataScan*> scans;
+        scans.push_back(scan);
         FakeMsDataFile *f = new FakeMsDataFile(scans);
 
         // MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "mzml.mzML"), false);
@@ -424,7 +428,7 @@ namespace Test
         // Assert::That(std::round(sumOfAllIntensities * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.SumOfAllY * std::pow(10, 0)) / std::pow(10, 0));
         Assert::AreEqual(std::round(sumOfAllIntensities * std::pow(10, 0)) / std::pow(10, 0), std::round(ok->GetAllScansList().front()->getMassSpectrum()->getSumOfAllY() * std::pow(10, 0)) / std::pow(10, 0));
         // Assert::That(myPeaksOrderedByIntensity.size() == ok->GetAllScansList().front().MassSpectrum.XArray->Length);
-        Assert::AreEqual(myPeaksOrderedByIntensity.size(), ok->GetAllScansList().front()->getMassSpectrum()->getXArray().size());
+        Assert::AreEqual(filteredPeaks.size(), ok->GetAllScansList().front()->getMassSpectrum()->getXArray().size());
         // Assert::That(expMinRatio >= minRatio);
         Assert::IsTrue(expMinRatio >= minRatio);
         //tests that myExpPeaks with myPeaksOrderedByIntensity elements removed contains no values
@@ -433,9 +437,9 @@ namespace Test
         std::vector<std::pair<double, double>> myExpPeaksCopy;
         std::vector<std::pair<double, double>> myPeaksOrderedByIntensityCopy;
         myExpPeaksCopy = myExpPeaks;
-        myPeaksOrderedByIntensityCopy = myPeaksOrderedByIntensity;
-        for (long unsigned int i=0;i<myPeaksOrderedByIntensity.size();i++){
-            myExpPeaksCopy.erase(std::remove(myExpPeaksCopy.begin(), myExpPeaksCopy.end(), myPeaksOrderedByIntensity[i]), myExpPeaksCopy.end());
+        myPeaksOrderedByIntensityCopy = filteredPeaks;
+        for (long unsigned int i=0;i<filteredPeaks.size();i++){
+            myExpPeaksCopy.erase(std::remove(myExpPeaksCopy.begin(), myExpPeaksCopy.end(), filteredPeaks[i]), myExpPeaksCopy.end());
         }
         for (long unsigned int i=0;i<myExpPeaks.size();i++){
             myPeaksOrderedByIntensityCopy.erase(std::remove(myPeaksOrderedByIntensityCopy.begin(), myPeaksOrderedByIntensityCopy.end(), myExpPeaks[i]), myPeaksOrderedByIntensityCopy.end());
