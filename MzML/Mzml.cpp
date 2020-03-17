@@ -309,7 +309,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar2' statement was not added since tempVar2 was passed to a method or constructor. Handle memory management manually.
-            delete sourceFile;
+            //delete sourceFile;
             return new Mzml(scans, sourceFile);
         }
 
@@ -523,7 +523,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             if (msOrder.value() == 1)
             {
-                delete mzmlMzSpectrum;
+                //delete mzmlMzSpectrum;
                 MzRange tempVar(low, high);
                 return new MsDataScan(mzmlMzSpectrum, oneBasedScanNumber, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId);
             }
