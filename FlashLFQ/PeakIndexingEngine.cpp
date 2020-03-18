@@ -8,6 +8,10 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../MzML/Mzml.h"
 
+//For XML serialization / deserialization
+#include "../include/cereal/types/memory.hpp"
+#include "../include/cereal/archives/xml.hpp"
+#include <../include/cereal/types/vector.hpp>
 
 #include <iostream>
 #include <typeinfo>
@@ -25,7 +29,7 @@ namespace FlashLFQ
         auto messageTypes = std::vector<std::type_info> { typeid(std::vector<IndexedMassSpectralPeak*>[]),
                                                           typeid(std::vector<IndexedMassSpectralPeak*>),
                                                           typeid(IndexedMassSpectralPeak)};
-        _serializer = new Serializer(messageTypes))
+        // _serializer = new Serializer(messageTypes))
     }
 
     bool PeakIndexingEngine::IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent,
@@ -55,6 +59,7 @@ namespace FlashLFQ
                     p::OneBasedScanNumber;
                 })->ToArray();
 #endif
+                // arguments:  const std::string &filePath, FilteringParams *filterParams, int maxThreads
                 msDataScans = Mzml::LoadAllStaticData(fileInfo->FullFilePathWithExtension)->GetAllScansList();
                 std::sort(msDataScans.begin(), msDataScans.end(), [&] (MsDataScan *l, MsDataScan *r)  {
                         return l->getOneBasedScanNumber() > r->getOneBasedScanNumber();
@@ -211,20 +216,110 @@ namespace FlashLFQ
 
     void PeakIndexingEngine::SerializeIndex(SpectraFileInfo *file)
     {
+#ifdef ORIG
         std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
         std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
 
         auto indexFile = File::Create(indexPath);
         _serializer->Serialize(indexFile, _indexedPeaks);
+#endif
+
+
+        std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
+        std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
+
+        auto indexFile = File::Create(indexPath);
+
+        //----------------------------------------------------------------
+        //SERIALIZE DATA TO FILE
+
+        //open ofstream of file
+        std::ofstream os(indexPath);
+        cereal::XMLOutputArchive archive( os );
+
+        //Cereal only works with smart pointers, so all raw pointers in std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks
+        //must be converted to unique pointers with std::make_unique.  This requires traversing the vector and performing the
+        //transformation for each entry.
+        std::vector<std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>>> unique_vector;
+
+        for (int i=0; i < _indexedpeaks.size(); i++){
+        std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>> unique_vec_row;
+
+        for (int j=0;j<_indexedpeaks[i].size();j++){
+
+            //create unique pointer from raw pointer
+            auto p = std::make_unique<FlashLFQ::IndexedMassSpectralPeak>(*_indexedpeaks[i][j]);
+
+            //push unique pointer into vector of unique pointers
+            unique_vec_row.push_back(std::move(p));
+        }
+
+        //push vector of unique pointers into vector of vectors of unique pointers
+        unique_vector.push_back(std::move(unique_vec_row));
+        }
+
+        //finally serialize the vector of vectors of unique pointers to an XML file
+        //this will write the info contained in _indexedpeaks to the XML file 
+        //specified in the indexPath variable.
+        archive(unique_vector);
+        //----------------------------------------------------------------
     }
 
     void PeakIndexingEngine::DeserializeIndex(SpectraFileInfo *file)
     {
+#ifdef ORIG
         std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
         std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
 
         auto indexFile = File::OpenRead(indexPath);
         _indexedPeaks = static_cast<std::vector<std::vector<IndexedMassSpectralPeak*>>>(_serializer->Deserialize(indexFile));
+    
+        File::Delete(indexPath);
+#endif
+
+        
+        std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
+        std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
+
+        auto indexFile = File::OpenRead(indexPath);
+
+        //------------------------------------------------------
+        //DESERIALIZE FILE INDEXFILE TO OBJECT
+
+        //open ifstream for indexPath
+        std::ifstream is(indexPath);
+        cereal::XMLInputArchive archive_read(is);
+
+        //Cereal only has functionality for smart pointers.  Must deserialize data from file to vector
+        //of vecotrs of unique pointers
+        std::vector<std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>>> unique_vec;
+
+        //deserialize xml file to unique_vec structure
+        archive_read(unique_vec);
+
+        //now must convert unique pointers to raw pointers.  This requires traversing the structure
+        std::vector<std::vector<FlashLFQ::IndexedMassSpectralPeak*>> raw_vec;
+
+        for (int i=0; i < unique_vec.size(); i++){
+        std::vector<FlashLFQ::IndexedMassSpectralPeak*> raw_vec_row;
+
+        for (int j=0;j<unique_vec[i].size();j++){
+            //this sets everything but ZeroBasedMs1ScanIndex.  Im not sure why.
+            // auto p = unique_vec[i][j].get();
+
+            //because ZeroBasedMs1ScanIndex was not set with the line above, we create a new FlashLFQ::IndexedMassSpectralPeak object with
+            //the information stored in the unique_vec entry.  This DOES set all values including ZeroBasedMs1ScanIndex.
+            FlashLFQ::IndexedMassSpectralPeak* p = new FlashLFQ::IndexedMassSpectralPeak(unique_vec[i][j]->Mz, unique_vec[i][j]->Intensity, unique_vec[i][j]->ZeroBasedMs1ScanIndex, unique_vec[i][j]->RetentionTime);
+            raw_vec_row.push_back(p);
+        }
+
+        raw_vec.push_back(raw_vec_row);
+        }
+
+        //set _indexedpeaks to equal the vector of vectors of raw pointers.
+        _indexedpeaks = raw_vec;
+        // return raw_vec;
+        //------------------------------------------------------
     
         File::Delete(indexPath);
     }
