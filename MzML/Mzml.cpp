@@ -17,6 +17,7 @@
 
 #include "XSD/mzML1.1.0.h"
 #include "XSD/mzML1.1.1_idx.h"
+#include <cmath>
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -219,7 +220,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 sourceFile = new SourceFile(R"(no nativeID format)", R"(mzML format)", sendCheckSum, R"(No checksum type)", std::experimental::filesystem::absolute(fp), fp.stem());
             }
 
-            auto numSpecta = _mzMLConnection->run().spectrumList()->spectrum().size();
+            auto numSpecta = _mzMLConnection->run().spectrumList().get().spectrum().size();
             std::vector<MsDataScan*> scans(numSpecta);
 
 #ifdef ORIG
@@ -237,6 +238,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
             }
 
+            int breakpt2 = 2;
             //Mzml sometimes have scan numbers specified, but usually not.
             //In the event that they do, the iterator above unintentionally assigned them to an incorrect index.
             //Check to make sure that the scans are in order and that there are no duplicate scans
@@ -323,9 +325,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 configs.push_back(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i]);
             }
 
+            int breakpt3 = 3;
             auto defaultInstrumentConfig = _mzMLConnection->run().defaultInstrumentConfigurationRef();
             // May be null!
-            auto scanSpecificInsturmentConfig = _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].instrumentConfigurationRef();
+            auto scanSpecificInsturmentConfig = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].instrumentConfigurationRef();
 
             MZAnalyzerType analyzer = static_cast<MassSpectrometry::MZAnalyzerType>(0);
             // use default
@@ -365,14 +368,15 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
 
-            std::string nativeId = _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].id();
+            std::string nativeId = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].id();
 
             std::optional<int> msOrder;
             std::optional<bool> isCentroid;
             Polarity polarity = Polarity::Unknown;
             double tic = NAN;
 
-            for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].cvParam())
+            int breakpt4 = 4;
+            for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].cvParam())
             {
                 if (cv.accession() == _msnOrderAccession)
                 {
@@ -411,7 +415,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::vector<double> masses(0);
             std::vector<double> intensities(0);
 
-            for (ms::mzml::BinaryDataArrayType binaryData : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].binaryDataArrayList()->binaryDataArray())
+            int breakpt = 1;
+            for (ms::mzml::BinaryDataArrayType binaryData : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].binaryDataArrayList().get().binaryDataArray())
             {
                 bool compressed = false;
                 bool mzArray = false;
@@ -445,11 +450,11 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             double high = NAN;
             double low = NAN;
 
-            auto aScanWindowList = _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList();
+            auto aScanWindowList = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList();
 
             if (aScanWindowList != nullptr)
             {
-                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList()->scanWindow()[0].cvParam())
+                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].scanWindowList()->scanWindow()[0].cvParam())
                 {
                     if (cv.accession() == _scanWindowLowerLimit)
                     {
@@ -487,6 +492,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 #endif
             Sort::SortPairs(masses, intensities, masses.size());
 
+            int breakpt5 = 5;
             auto mzmlMzSpectrum = new MzSpectrum(masses, intensities, false);
 
             double rtInMinutes = NAN;
@@ -494,9 +500,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::optional<double> injectionTime;
             int oneBasedScanNumber = oneBasedIndex;
 
-            if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam().empty())
+            if (!_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam().empty())
             {
-                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam())
+                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].cvParam())
                 {
                     if (cv.accession() == _retentionTime)
                     {
@@ -532,7 +538,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::optional<int> selectedIonCharge;
             std::optional<double> selectedIonIntensity;
 
-            for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam())
+            for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam())
             {
                 if (cv.accession() == _selectedIonMz)
                 {
@@ -551,9 +557,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::optional<double> isolationMz;
             double lowIsolation = NAN;
             double highIsolation = NAN;
-            if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow() != nullptr)
+            if (_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow() != nullptr)
             {
-                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow()->cvParam())
+                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].isolationWindow()->cvParam())
                 {
                     if (cv.accession() == _isolationWindowTargetMZ)
                     {
@@ -571,18 +577,18 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             DissociationType dissociationType = DissociationType::Unknown;
-            if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam().empty())
+            if (!_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam().empty())
             {
-                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam())
+                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam())
                 {
                     std::unordered_map<std::string, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv.accession());
                     dissociationType = dissociationDictionary_iterator->second;
                 }
             }
             std::optional<double> monoisotopicMz;
-            if (!_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam().empty())
+            if (!_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam().empty())
             {
-                for (auto userParam : _mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam())
+                for (auto userParam : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam())
                 {
 
                     std::string fullstring = userParam.name();
@@ -598,7 +604,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             std::optional<int> precursorScanNumber;
-            if (_mzMLConnection->run().spectrumList()->spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].spectrumRef() == nullptr)
+            if (_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].spectrumRef() == nullptr)
             {
                 precursorScanNumber = std::nullopt;
             }
@@ -666,11 +672,11 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
         int Mzml::GetOneBasedPrecursorScanNumber(ms::mzml::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber)
         {
-            std::string precursorID = _mzMLConnection->run().spectrumList()->spectrum()[oneBasedSpectrumNumber - 1].precursorList()->precursor()[0].spectrumRef().get();
+            std::string precursorID = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedSpectrumNumber - 1].precursorList()->precursor()[0].spectrumRef().get();
             do
             {
                 oneBasedSpectrumNumber--;
-            } while (precursorID != _mzMLConnection->run().spectrumList()->spectrum()[oneBasedSpectrumNumber - 1].id());
+            } while (precursorID != _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedSpectrumNumber - 1].id());
             return oneBasedSpectrumNumber;
         }
     }

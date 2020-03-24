@@ -108,25 +108,31 @@ int main ( int argc, char **argv )
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
+#ifdef TESTING
     std::cout << ++i << ". AnotherMzMLtest" << std::endl;
     Test::TestMzML::AnotherMzMLtest();
+#endif
 
 #ifdef THROWS_EXCEPTION
     std::cout << ++i << ". LoadBadMzml" << std::endl;
     Test::TestMzML::LoadBadMzml();
 #endif
 
+#ifdef TESTING
     std::cout << ++i << ". TestPeakTrimmingWithOneWindow" << std::endl;
     Test::TestMzML::TestPeakTrimmingWithOneWindow();
+#endif
 
     std::cout << ++i << ". TestPeakTrimmingWithTooManyWindows" << std::endl;
     Test::TestMzML::TestPeakTrimmingWithTooManyWindows();
 
+#ifdef TESTING
     std::cout << ++i << ". WriteEmptyScan" << std::endl;
     Test::TestMzML::WriteEmptyScan();
 
     std::cout << ++i << ". DifferentAnalyzersTest" << std::endl;
     Test::TestMzML::DifferentAnalyzersTest();
+#endif
 
 #ifdef LATER
     std::cout << ++i << ". Mzid111Test" << std::endl;
@@ -136,16 +142,20 @@ int main ( int argc, char **argv )
     TestTestMzML::Mzid120Test();
 #endif
 
+#ifdef TESTING
     std::cout << ++i << ". LoadMzmlTest" << std::endl;
     Test::TestMzML::LoadMzmlTest();
+#endif
 
 #ifdef FIX_LATER
     std::cout << ++i << ". LoadMzmlFromConvertedMGFTest" << std::endl;
     Test::TestMzML::LoadMzmlFromConvertedMGFTest();
 #endif
 
+#ifdef TESTING
     std::cout << ++i << ". WriteMzmlTest" << std::endl;
     Test::TestMzML::WriteMzmlTest();
+#endif
 
 #ifdef LATER
     std::cout << ++i << ". MzidTest" << std::endl;
@@ -161,9 +171,10 @@ int main ( int argc, char **argv )
     Test::TestMzML::Mzid120Test_();
 #endif
 
+#ifdef TESTING
     std::cout << ++i << ". MzmlFindPrecursorReferenceScan" << std::endl;
     Test::TestMzML::MzmlFindPrecursorReferenceScan();
-
+#endif
     return 0;
 }
 
@@ -228,6 +239,9 @@ namespace Test
         }
         scanWithPrecursor = filteredScansList.back();
         Assert::AreEqual(3, scanWithPrecursor->getOneBasedPrecursorScanNumber().value());
+
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/what.mzML";
+        remove(filePath.c_str());
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec4' statement was not added since massSpec4 was passed to a method or constructor. Handle memory management manually.
@@ -448,6 +462,9 @@ namespace Test
         //tests that myPeaksOrderedByIntensity with myExpPeaks elements removed still contains values
         Assert::IsTrue(myPeaksOrderedByIntensityCopy.size() == 0);
 
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/mzml.mzML";
+        remove(filePath.c_str());
+
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec1' statement was not added since massSpec1 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete testFilteringParams' statement was not added since testFilteringParams was passed to a method or constructor. Handle memory management manually.
@@ -484,7 +501,8 @@ namespace Test
         std::vector<std::pair<double, double>> myPeaks;
         std::pair<double, double> p;
         p.first = 400;
-        p.second = rand() % 1000000 + 1000;
+        // p.second = rand() % 1000000 + 1000;
+        p.second = 250000;
         myPeaks.push_back(p); 
 
         std::vector<double> intensities1;
@@ -495,10 +513,16 @@ namespace Test
         }
 
         MzSpectrum *massSpec1 = new MzSpectrum(mz1, intensities1, false);
-        MzRange tempVar(400, 1600);
-        std::vector<MsDataScan*> scans = {new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, &tempVar,
-                                                         "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(),
-                                                         std::nullopt, std::vector<std::vector<double>>(), "1")};
+        // MzRange tempVar(400, 1600);
+        MzRange *tempVar = new MzRange(400, 1600);
+
+        MsDataScan* scan = new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, tempVar, "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(), std::nullopt, std::vector<std::vector<double>>(), "1");
+
+        // std::vector<MsDataScan*> scans = {new MsDataScan(massSpec1, 1, 1, true, Polarity::Positive, 1, tempVar,
+                                                         // "f", MZAnalyzerType::Orbitrap, massSpec1->getSumOfAllY(),
+                                                         // std::nullopt, std::vector<std::vector<double>>(), "1")};
+        std::vector<MsDataScan*> scans;
+        scans.push_back(scan);
         FakeMsDataFile *f = new FakeMsDataFile(scans);
 
         // MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(f, FileSystem::combine(TestContext::CurrentContext->TestDirectory,
@@ -537,6 +561,8 @@ namespace Test
         Assert::AreEqual(std::round(myPeaks[0].second * std::pow(10, 0)) / std::pow(10, 0),
                          std::round(ok->GetAllScansList().front()->getMassSpectrum()->getYArray()[0] * std::pow(10, 0)) / std::pow(10, 0));
 
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/mzml2.mzML";
+        remove(filePath.c_str());
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec1' statement was not added since massSpec1 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete testFilteringParams' statement was not added since testFilteringParams was passed to a method or constructor. Handle memory management manually.
@@ -570,6 +596,11 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: A 'delete testFilteringParams' statement was not added since testFilteringParams was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec1' statement was not added since massSpec1 was passed to a method or constructor. Handle memory management manually.
+
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/mzmlWithEmptyScan.mzML";
+        remove(filePath.c_str());
+        std::string filePath1 = std::experimental::filesystem::current_path().string() + "/mzmlWithEmptyScan2.mzML";
+        remove(filePath1.c_str());
     }
 
     void TestMzML::DifferentAnalyzersTest()
@@ -602,6 +633,9 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec2' statement was not added since massSpec2 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec1' statement was not added since massSpec1 was passed to a method or constructor. Handle memory management manually.
+
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/asdfefsf.mzML";
+        remove(filePath.c_str());        
     }
 
 
@@ -1005,6 +1039,10 @@ namespace Test
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete myMsDataFile' statement was not added since myMsDataFile was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete carbamidomethylationOfCMod' statement was not added since carbamidomethylationOfCMod was passed to a method or constructor. Handle memory management manually.
+        
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/argh.mzML";
+        remove(filePath.c_str());
+
         delete peptide;
     }
 
@@ -1703,6 +1741,11 @@ namespace Test
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec4' statement was not added since massSpec4 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec3' statement was not added since massSpec3 was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec2' statement was not added since massSpec2 was passed to a method or constructor. Handle memory management manually.
+        std::string filePath = std::experimental::filesystem::current_path().string() + "/what.mzML";
+        remove(filePath.c_str());        
+        std::string filePath1 = std::experimental::filesystem::current_path().string() + "/what1.mzML";
+        remove(filePath1.c_str());
+
         delete massSpec1;
 //C# TO C++ CONVERTER TODO TASK: A 'delete massSpec0' statement was not added since massSpec0 was passed to a method or constructor. Handle memory management manually.
     }
