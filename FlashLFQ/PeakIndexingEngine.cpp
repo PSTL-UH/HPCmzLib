@@ -14,22 +14,22 @@
 #include <../include/cereal/types/vector.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <typeinfo>
 #include <algorithm>
 #include <experimental/filesystem>
 
 using namespace IO::MzML;
-//using namespace NetSerializer;
 
 namespace FlashLFQ
 {
 
-    PeakIndexingEngine::PeakIndexingEngine() : 
+    PeakIndexingEngine::PeakIndexingEngine() 
     {
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = std::vector<std::type_info> { typeid(std::vector<IndexedMassSpectralPeak*>[]),
-                                                          typeid(std::vector<IndexedMassSpectralPeak*>),
-                                                          typeid(IndexedMassSpectralPeak)};
+        //auto messageTypes = std::vector<std::type_info> { typeid(std::vector<IndexedMassSpectralPeak*>[]),
+        //                                                  typeid(std::vector<IndexedMassSpectralPeak*>),
+        //                                                  typeid(IndexedMassSpectralPeak)};
         // _serializer = new Serializer(messageTypes))
     }
 
@@ -71,7 +71,8 @@ namespace FlashLFQ
             {
                 if (!silent)
                 {
-                    std::cout << "\nCan't find .mzML file" << fileInfo->FullFilePathWithExtension << "\n" << std::endl;
+                    std::cout << "\nCan't find .mzML file" << fileInfo->FullFilePathWithExtension << "\n"
+                              << std::endl;
                 }
 
                 return false;
@@ -81,7 +82,8 @@ namespace FlashLFQ
             {
                 if (!silent)
                 {
-                    std::cout << "Problem opening .mzML file " << fileInfo->FullFilePathWithExtension << "; " << e.what() << std::endl;
+                    std::cout << "Problem opening .mzML file " << fileInfo->FullFilePathWithExtension << "; "
+                              << e.what() << std::endl;
                 }
 
                 return false;
@@ -100,7 +102,8 @@ namespace FlashLFQ
         {
             if (!silent)
             {
-                std::cout << "Cannot open RAW with .NETStandard code - are you on Linux? " << fileInfo->FullFilePathWithExtension << std::endl;
+                std::cout << "Cannot open RAW with .NETStandard code - are you on Linux? " <<
+                    fileInfo->FullFilePathWithExtension << std::endl;
             }
             return false;
         }
@@ -172,7 +175,8 @@ namespace FlashLFQ
                     _indexedPeaks[roundedMz] = std::vector<IndexedMassSpectralPeak*>();
                 }
 
-                IndexedMassSpectralPeak tempVar2(msDataScans[i]->getMassSpectrum()->getXArray()[j], msDataScans[i]->getMassSpectrum()->getYArray()[j],
+                IndexedMassSpectralPeak tempVar2(msDataScans[i]->getMassSpectrum()->getXArray()[j],
+                                                 msDataScans[i]->getMassSpectrum()->getYArray()[j],
                                                  scanIndex, msDataScans[i]->getRetentionTime());
                 _indexedPeaks[roundedMz].push_back(&tempVar2);
             }
@@ -186,7 +190,8 @@ namespace FlashLFQ
         {
             if (!silent)
             {
-                std::cout << "FlashLFQ Error: The file " << fileInfo->FilenameWithoutExtension << " contained no MS1 peaks!" << std::endl;
+                std::cout << "FlashLFQ Error: The file " << fileInfo->FilenameWithoutExtension
+                          << " contained no MS1 peaks!" << std::endl;
             }
 
             return false;
@@ -212,7 +217,7 @@ namespace FlashLFQ
             }
         }
 
-        GC::Collect();
+        //GC::Collect();
     }
 
     void PeakIndexingEngine::SerializeIndex(SpectraFileInfo *file)
@@ -225,11 +230,13 @@ namespace FlashLFQ
         _serializer->Serialize(indexFile, _indexedPeaks);
 #endif
 
-        //get directory name from SpectraFileInfo FullFilePathWithExtension.  Need to cast string to std::experimental::filesystem::path
-        //in order to get path without filename.
+        // get directory name from SpectraFileInfo FullFilePathWithExtension.  Need to cast
+        // string to std::experimental::filesystem::path
+        // in order to get path without filename.
         std::experimental::filesystem::path directory = std::experimental::filesystem::path(file->FullFilePathWithExtension);
 
-        // combine directory string with new file name.  need to add "/" to separate directory from filename and add ".ind" extension
+        // combine directory string with new file name.  need to add "/" to separate directory
+        // from filename and add ".ind" extension
         std::string indexPath = directory.string() + "/" + file->FilenameWithoutExtension + ".ind";
 
         //file is created when calling ofstream with indexPath.
@@ -241,25 +248,27 @@ namespace FlashLFQ
         std::ofstream os(indexPath);
         cereal::XMLOutputArchive archive( os );
 
-        //Cereal only works with smart pointers, so all raw pointers in std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks
-        //must be converted to unique pointers with std::make_unique.  This requires traversing the vector and performing the
+        //Cereal only works with smart pointers, so all raw pointers in
+        //std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks
+        //must be converted to unique pointers with std::make_unique.  This requires traversing the
+        //vector and performing the
         //transformation for each entry.
         std::vector<std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>>> unique_vector;
 
-        for (int i=0; i < _indexedpeaks.size(); i++){
-        std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>> unique_vec_row;
+        for (int i=0; i < (int)_indexedPeaks.size(); i++){
+            std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>> unique_vec_row;
 
-        for (int j=0;j<_indexedpeaks[i].size();j++){
+            for (int j=0;j<(int)_indexedPeaks[i].size();j++){
 
-            //create unique pointer from raw pointer
-            auto p = std::make_unique<FlashLFQ::IndexedMassSpectralPeak>(*_indexedpeaks[i][j]);
-
-            //push unique pointer into vector of unique pointers
-            unique_vec_row.push_back(std::move(p));
-        }
-
-        //push vector of unique pointers into vector of vectors of unique pointers
-        unique_vector.push_back(std::move(unique_vec_row));
+                //create unique pointer from raw pointer
+                auto p = std::make_unique<FlashLFQ::IndexedMassSpectralPeak>(*_indexedPeaks[i][j]);
+                
+                //push unique pointer into vector of unique pointers
+                unique_vec_row.push_back(std::move(p));
+            }
+            
+            //push vector of unique pointers into vector of vectors of unique pointers
+            unique_vector.push_back(std::move(unique_vec_row));
         }
 
         //finally serialize the vector of vectors of unique pointers to an XML file
@@ -311,27 +320,29 @@ namespace FlashLFQ
         //now must convert unique pointers to raw pointers.  This requires traversing the structure
         std::vector<std::vector<FlashLFQ::IndexedMassSpectralPeak*>> raw_vec;
 
-        for (int i=0; i < unique_vec.size(); i++){
-        std::vector<FlashLFQ::IndexedMassSpectralPeak*> raw_vec_row;
+        for (int i=0; i < (int)unique_vec.size(); i++){
+            std::vector<FlashLFQ::IndexedMassSpectralPeak*> raw_vec_row;
+            
+            for (int j=0;j< (int)unique_vec[i].size();j++){
+                //this sets everything but ZeroBasedMs1ScanIndex.  Im not sure why.
+                // auto p = unique_vec[i][j].get();
+                
+                //because ZeroBasedMs1ScanIndex was not set with the line above, we create a
+                //new FlashLFQ::IndexedMassSpectralPeak object with
+                //the information stored in the unique_vec entry.  This DOES set all values
+                //including ZeroBasedMs1ScanIndex.
+                FlashLFQ::IndexedMassSpectralPeak* p = new FlashLFQ::IndexedMassSpectralPeak(unique_vec[i][j]->Mz, unique_vec[i][j]->Intensity, unique_vec[i][j]->ZeroBasedMs1ScanIndex, unique_vec[i][j]->RetentionTime);
+                raw_vec_row.push_back(p);
+            }
 
-        for (int j=0;j<unique_vec[i].size();j++){
-            //this sets everything but ZeroBasedMs1ScanIndex.  Im not sure why.
-            // auto p = unique_vec[i][j].get();
-
-            //because ZeroBasedMs1ScanIndex was not set with the line above, we create a new FlashLFQ::IndexedMassSpectralPeak object with
-            //the information stored in the unique_vec entry.  This DOES set all values including ZeroBasedMs1ScanIndex.
-            FlashLFQ::IndexedMassSpectralPeak* p = new FlashLFQ::IndexedMassSpectralPeak(unique_vec[i][j]->Mz, unique_vec[i][j]->Intensity, unique_vec[i][j]->ZeroBasedMs1ScanIndex, unique_vec[i][j]->RetentionTime);
-            raw_vec_row.push_back(p);
-        }
-
-        raw_vec.push_back(raw_vec_row);
+            raw_vec.push_back(raw_vec_row);
         }
 
         //set _indexedpeaks to equal the vector of vectors of raw pointers.
-        _indexedpeaks = raw_vec;
+        _indexedPeaks = raw_vec;
         // return raw_vec;
         //------------------------------------------------------
-        is.close()
+        is.close();
         //Remove file at indexPath
         // File::Delete(indexPath);
         remove(indexPath.c_str());

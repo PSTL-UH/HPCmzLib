@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #include <string>
-#include <any>
-
+#include "cereal/cereal.hpp"
 
 namespace FlashLFQ
 {

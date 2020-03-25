@@ -60,8 +60,9 @@ namespace FlashLFQ
             optionalPeriodicTablePath = "elements.dat";
         }
 
-        Loaders::LoadElements(optionalPeriodicTablePath);
-
+        //Loaders::LoadElements(optionalPeriodicTablePath);
+        UsefulProteomicsDatabases::PeriodicTableLoader::Load (optionalPeriodicTablePath);
+        
         _chargeStates = std::vector<int>();
         _peakIndexingEngine = new PeakIndexingEngine();
 
@@ -244,7 +245,9 @@ namespace FlashLFQ
 
             auto isotopicMassesAndNormalizedAbundances = std::vector<std::tuple<double, double>>();
 
-            Proteomics::AminoAcidPolymer::Peptide *p = new Proteomics::AminoAcidPolymer::Peptide(id->BaseSequence);
+            std::string st = id->BaseSequence;
+            std::string &s = st;
+            Proteomics::AminoAcidPolymer::Peptide *p = new Proteomics::AminoAcidPolymer::Peptide(s);
 
             if (formula == nullptr)
             {
