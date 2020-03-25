@@ -27,7 +27,7 @@ all:
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
-	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
+	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(FLASHLFQ_LIB) $(OBJ)
 
 $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
