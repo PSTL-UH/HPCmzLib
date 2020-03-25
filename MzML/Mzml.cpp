@@ -22,6 +22,19 @@
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace xercesc_3_1;
+
+#include <stdio.h>
+
+void print_chars (char * c_ptr, int len )
+{
+    while ( len > 0 )
+    {
+        printf ( " %2.2x", (0xff&(int)*c_ptr++));
+        len--;
+    }
+    printf ( "\n" );
+}
+
 namespace IO
 {
     namespace MzML
@@ -432,8 +445,16 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
 
                 //get binaryData as string
-                std::string binary_data = binaryData.binary().encode();
-                std::vector<unsigned char> bin_data(binary_data.begin(), binary_data.end());
+                char *binary_data = binaryData.binary().data();
+                long binsize = binaryData.binary().size();
+                std::vector<unsigned char> bin_data; 
+                char *p = binary_data;
+                for ( int iii=0; iii<binsize; iii++ ) {
+                    bin_data.push_back(*p);
+                    p++;
+                }
+
+                print_chars( binary_data, binsize );
                 
                 std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
                 if (mzArray)
