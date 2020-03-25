@@ -229,6 +229,7 @@ namespace MassSpectrometry
                                                  i::Mz;
                                              })->ToArray();
 #endif
+        mArray.clear();
         std::for_each ( mzIntensites_reduced.begin(), mzIntensites_reduced.end(), [&] (MzPeak *m) {
                 mArray.push_back(m->getMz());
             });
@@ -238,6 +239,7 @@ namespace MassSpectrometry
                                                       i::Intensity;
                                                   })->ToArray();
 #endif
+        intensities.clear();
         std::for_each ( mzIntensites_reduced.begin(), mzIntensites_reduced.end(), [&] (MzPeak *m) {
                 intensities.push_back(m->getIntensity());
             });

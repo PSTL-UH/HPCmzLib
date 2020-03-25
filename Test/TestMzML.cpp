@@ -108,31 +108,25 @@ int main ( int argc, char **argv )
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-#ifdef TESTING
     std::cout << ++i << ". AnotherMzMLtest" << std::endl;
     Test::TestMzML::AnotherMzMLtest();
-#endif
 
 #ifdef THROWS_EXCEPTION
     std::cout << ++i << ". LoadBadMzml" << std::endl;
     Test::TestMzML::LoadBadMzml();
 #endif
 
-#ifdef TESTING
     std::cout << ++i << ". TestPeakTrimmingWithOneWindow" << std::endl;
     Test::TestMzML::TestPeakTrimmingWithOneWindow();
-#endif
 
     std::cout << ++i << ". TestPeakTrimmingWithTooManyWindows" << std::endl;
     Test::TestMzML::TestPeakTrimmingWithTooManyWindows();
 
-#ifdef TESTING
     std::cout << ++i << ". WriteEmptyScan" << std::endl;
     Test::TestMzML::WriteEmptyScan();
 
     std::cout << ++i << ". DifferentAnalyzersTest" << std::endl;
     Test::TestMzML::DifferentAnalyzersTest();
-#endif
 
 #ifdef LATER
     std::cout << ++i << ". Mzid111Test" << std::endl;
@@ -152,10 +146,8 @@ int main ( int argc, char **argv )
     Test::TestMzML::LoadMzmlFromConvertedMGFTest();
 #endif
 
-#ifdef TESTING
     std::cout << ++i << ". WriteMzmlTest" << std::endl;
     Test::TestMzML::WriteMzmlTest();
-#endif
 
 #ifdef LATER
     std::cout << ++i << ". MzidTest" << std::endl;
@@ -171,10 +163,9 @@ int main ( int argc, char **argv )
     Test::TestMzML::Mzid120Test_();
 #endif
 
-#ifdef TESTING
     std::cout << ++i << ". MzmlFindPrecursorReferenceScan" << std::endl;
     Test::TestMzML::MzmlFindPrecursorReferenceScan();
-#endif
+
     return 0;
 }
 
@@ -501,8 +492,8 @@ namespace Test
         std::vector<std::pair<double, double>> myPeaks;
         std::pair<double, double> p;
         p.first = 400;
-        // p.second = rand() % 1000000 + 1000;
-        p.second = 250000;
+        p.second = rand() % 1000000 + 1000;
+        // p.second = 250000;
         myPeaks.push_back(p); 
 
         std::vector<double> intensities1;

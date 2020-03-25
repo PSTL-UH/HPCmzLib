@@ -251,7 +251,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
             }
 
-            int breakpt2 = 2;
             //Mzml sometimes have scan numbers specified, but usually not.
             //In the event that they do, the iterator above unintentionally assigned them to an incorrect index.
             //Check to make sure that the scans are in order and that there are no duplicate scans
@@ -338,7 +337,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 configs.push_back(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i]);
             }
 
-            int breakpt3 = 3;
             auto defaultInstrumentConfig = _mzMLConnection->run().defaultInstrumentConfigurationRef();
             // May be null!
             auto scanSpecificInsturmentConfig = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].instrumentConfigurationRef();
@@ -388,7 +386,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             Polarity polarity = Polarity::Unknown;
             double tic = NAN;
 
-            int breakpt4 = 4;
             for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].cvParam())
             {
                 if (cv.accession() == _msnOrderAccession)
@@ -428,7 +425,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::vector<double> masses(0);
             std::vector<double> intensities(0);
 
-            int breakpt = 1;
             for (ms::mzml::BinaryDataArrayType binaryData : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].binaryDataArrayList().get().binaryDataArray())
             {
                 bool compressed = false;
@@ -454,7 +450,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     p++;
                 }
 
-                print_chars( binary_data, binsize );
+                // print_chars( binary_data, binsize );
                 
                 std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
                 if (mzArray)
@@ -513,7 +509,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 #endif
             Sort::SortPairs(masses, intensities, masses.size());
 
-            int breakpt5 = 5;
             auto mzmlMzSpectrum = new MzSpectrum(masses, intensities, false);
 
             double rtInMinutes = NAN;

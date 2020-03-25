@@ -72,7 +72,7 @@ namespace MassSpectrometry
         /// <param name="intensities"></param>
         /// <param name="mArray"></param>
         /// <param name="filteringParams"></param>
-        static void WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams, double scanRangeMinMz, double scanRangeMaxMz, std::optional<double> WindowMaxNormalizationToValue = 0);
+        static void WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams, double scanRangeMinMz, double scanRangeMaxMz, std::optional<double> WindowMaxNormalizationToValue = std::nullopt);
 
         static void XCorrPrePreprocessing(std::vector<double> &intensities, std::vector<double> &mArray, double scanRangeMinMz, double scanRangeMaxMz, double precursorMz, double precursorDiscardRange = 1.5, double discreteMassBin = 1.0005079, double percentMaxThreshold = 5);
 

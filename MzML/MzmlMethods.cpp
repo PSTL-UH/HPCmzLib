@@ -422,7 +422,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             tempVar44->value("");
             mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[1].cvParam().push_back(*tempVar44);
 
-            int break_intensities = 0;
             ms::mzml::CVParamType *tempVar45 = new ms::mzml::CVParamType("MS", "MS:1000515", "intensity array");
             tempVar45->unitAccession("MS:1000131");
             tempVar45->unitName("number of counts");
@@ -839,7 +838,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 // //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
 //                 mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[1]->encodedLength() = (4 * ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
-                int breakpt6 = 6;
                 std::vector<unsigned char> YArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitYarray();
 				unsigned char YArray[YArrayVec.size()];
 				std::copy(YArrayVec.begin(), YArrayVec.end(), YArray);
