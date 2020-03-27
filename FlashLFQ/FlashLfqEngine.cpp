@@ -290,11 +290,12 @@ namespace FlashLFQ
             p::precursorChargeState;
         });
 #endif
-        auto  minChargeState = (*std::min(_allIdentifications.begin(), _allIdentifications.end(),
-                                          [&] ( auto l, auto r ) {
-                                              return (*l)->precursorChargeState < (*r)->precursorChargeState;
-                                          }))->precursorChargeState;
-        
+        int minChargeState = (*_allIdentifications.begin())->precursorChargeState;
+        for ( auto t : _allIdentifications ) {
+            if ( t->precursorChargeState < minChargeState ) {
+                minChargeState =  t->precursorChargeState;
+            }
+        }
 #ifdef ORIG
         auto maxChargeState = _allIdentifications.Max([&] (std::any p)
         {
@@ -303,10 +304,12 @@ namespace FlashLFQ
         _chargeStates = Enumerable::Range(minChargeState, (maxChargeState - minChargeState) + 1);
 
 #endif
-        auto maxChargeState = (*std::max(_allIdentifications.begin(), _allIdentifications.end(),
-                                         [&] ( auto l,  auto r ) {
-                                             return (*l)->precursorChargeState < (*r)->precursorChargeState;
-                }))->precursorChargeState;
+        int maxChargeState = (*_allIdentifications.begin())->precursorChargeState;
+        for ( auto t: _allIdentifications ) {
+            if ( t->precursorChargeState > maxChargeState ) {
+                maxChargeState = t->precursorChargeState;
+            }
+        }
 
         for (int p = minChargeState; p< ((maxChargeState - minChargeState) + 1); p++ ) {
             _chargeStates.push_back(p);

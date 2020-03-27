@@ -13,7 +13,7 @@
 #include "Assert.h"
 #include "Quantiles.h"
 
-std::string testdir="/home/gabriel/XLMS/mzlib-master/";
+std::string testdir="/home/gabriel/XLMS/mzlib-master/TestFlashLFQ/";
 
 int main ( int argc, char **argv )
 {

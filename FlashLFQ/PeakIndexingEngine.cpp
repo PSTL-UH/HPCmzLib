@@ -50,7 +50,7 @@ namespace FlashLFQ
         std::string fn = fileInfo->FullFilePathWithExtension;
         auto ext = fn.substr(fn.find_last_of(".") + 1);
         std::transform (ext.begin(), ext.end(), ext.begin(), ::toupper);
-        if (ext == ".MZML")
+        if (ext == "MZML")
         {
             try
             {
@@ -98,7 +98,7 @@ namespace FlashLFQ
                 }
             }
         }
-        else if (ext == ".RAW")
+        else if (ext == "RAW")
         {
             if (!silent)
             {
