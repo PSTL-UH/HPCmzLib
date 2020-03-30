@@ -13,7 +13,7 @@
 #include "Assert.h"
 #include "Quantiles.h"
 
-std::string testdir="/home/gabriel/XLMS/mzlib-master/TestFlashLFQ/";
+
 
 int main ( int argc, char **argv )
 {
@@ -50,8 +50,10 @@ namespace Test
     void TestFlashLFQ::TestFlashLfq()
     {
         // get the raw file paths
-        SpectraFileInfo *raw = new SpectraFileInfo(testdir+"sliced-raw.raw", "a", 0, 0, 0);
-        SpectraFileInfo *mzml = new SpectraFileInfo(testdir+"sliced-mzml.mzml", "a", 0, 1, 0);
+        std::string testdir=std::experimental::filesystem::current_path().string();
+
+        SpectraFileInfo *raw = new SpectraFileInfo(testdir+"/sliced-raw.raw", "a", 0, 0, 0);
+        SpectraFileInfo *mzml = new SpectraFileInfo(testdir+"/sliced-mzml.mzml", "a", 0, 1, 0);
 
         // create some PSMs
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
@@ -108,8 +110,10 @@ namespace Test
     {
         // ********************************* check biorep normalization *********************************
         // get the raw file paths
-        SpectraFileInfo *raw = new SpectraFileInfo(testdir+"(sliced-raw.raw)", "a", 0, 0, 0);
-        SpectraFileInfo *mzml = new SpectraFileInfo(testdir+"(sliced-mzml.mzml)", "a", 1, 0, 0);
+        std::string testdir=std::experimental::filesystem::current_path().string();
+
+        SpectraFileInfo *raw = new SpectraFileInfo(testdir+"/sliced-raw.raw", "a", 0, 0, 0);
+        SpectraFileInfo *mzml = new SpectraFileInfo(testdir+"/sliced-mzml.mzml", "a", 1, 0, 0);
 
         // create some PSMs
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
@@ -130,8 +134,8 @@ namespace Test
         Assert::IsTrue(int1 == int2);
 
         // ********************************* check condition normalization *********************************
-        raw = new SpectraFileInfo(testdir+"(sliced-raw.raw)", "a", 0, 0, 0);
-        mzml = new SpectraFileInfo(testdir+"(sliced-mzml.mzml)", "b", 0, 0, 0);
+        raw = new SpectraFileInfo(testdir+"/sliced-raw.raw", "a", 0, 0, 0);
+        mzml = new SpectraFileInfo(testdir+"/sliced-mzml.mzml", "b", 0, 0, 0);
 
         std::vector<ProteinGroup *> v3 = {pg};
         std::vector<ProteinGroup *> v4 = {pg};
@@ -148,8 +152,8 @@ namespace Test
         Assert::IsTrue(int3 == int4);
 
         // ********************************* check techrep normalization *********************************
-        raw = new SpectraFileInfo( testdir+"(sliced-raw.raw)", "a", 0, 0, 0);
-        mzml = new SpectraFileInfo( testdir+"(sliced-mzml.mzml)", "a", 0, 1, 0);
+        raw = new SpectraFileInfo( testdir+"/sliced-raw.raw", "a", 0, 0, 0);
+        mzml = new SpectraFileInfo( testdir+"/sliced-mzml.mzml", "a", 0, 1, 0);
 
         std::vector<ProteinGroup *> v5 = {pg};
         std::vector<ProteinGroup *> v6 = {pg};
@@ -169,10 +173,10 @@ namespace Test
         Assert::IsTrue(int1 == int5);
 
         // ********************************* check fraction normalization *********************************
-        raw = new SpectraFileInfo(testdir+"(sliced-raw.raw)", "a", 0, 0, 0);
-        auto raw2 = new SpectraFileInfo(testdir+"(sliced-raw.raw)", "a", 0, 0, 1);
-        mzml = new SpectraFileInfo(testdir+"(sliced-mzml.mzml)", "a", 1, 0, 0);
-        auto mzml2 = new SpectraFileInfo(testdir+"(sliced-mzml.mzml)", "a", 1, 0, 1);
+        raw = new SpectraFileInfo(testdir+"/sliced-raw.raw", "a", 0, 0, 0);
+        auto raw2 = new SpectraFileInfo(testdir+"/sliced-raw.raw", "a", 0, 0, 1);
+        mzml = new SpectraFileInfo(testdir+"/sliced-mzml.mzml", "a", 1, 0, 0);
+        auto mzml2 = new SpectraFileInfo(testdir+"/sliced-mzml.mzml", "a", 1, 0, 1);
 
         std::vector<ProteinGroup *> v7 = {pg};
         std::vector<ProteinGroup *> v8 = {pg};
@@ -207,8 +211,11 @@ namespace Test
     
     void TestFlashLFQ::TestFlashLfqMergeResults()
     {
-        SpectraFileInfo *rawA = new SpectraFileInfo(testdir+ R"(sliced-raw.raw)"), "a", 0, 0, 0);
-        SpectraFileInfo *mzmlA = new SpectraFileInfo(testdir+ R"(sliced-mzml.mzml)"), "a", 0, 1, 0);
+
+        std::string testdir=std::experimental::filesystem::current_path().string();
+
+        SpectraFileInfo *rawA = new SpectraFileInfo(testdir+ "/sliced-raw.raw"), "a", 0, 0, 0);
+        SpectraFileInfo *mzmlA = new SpectraFileInfo(testdir+ "/sliced-mzml.mzml"), "a", 0, 1, 0);
 
         // create some PSMs
         auto pgA = new ProteinGroup("MyProtein", "gene", "org");
@@ -223,8 +230,8 @@ namespace Test
         // run the engine
         auto resultsA = engineA->Run();
 
-        SpectraFileInfo *rawB = new SpectraFileInfo(testdir+ R"(sliced-raw.raw)"), "b", 0, 0, 0);
-        SpectraFileInfo *mzmlB = new SpectraFileInfo(testdir+ R"(sliced-mzml.mzml)"), "b", 0, 1, 0);
+        SpectraFileInfo *rawB = new SpectraFileInfo(testdir+ "/sliced-raw.raw"), "b", 0, 0, 0);
+        SpectraFileInfo *mzmlB = new SpectraFileInfo(testdir+ "/sliced-mzml.mzml"), "b", 0, 1, 0);
 
         // create some PSMs
         auto pgB = new ProteinGroup("MyProtein", "gene", "org");
