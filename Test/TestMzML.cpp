@@ -136,10 +136,8 @@ int main ( int argc, char **argv )
     TestTestMzML::Mzid120Test();
 #endif
 
-#ifdef TESTING
     std::cout << ++i << ". LoadMzmlTest" << std::endl;
     Test::TestMzML::LoadMzmlTest();
-#endif
 
 #ifdef FIX_LATER
     std::cout << ++i << ". LoadMzmlFromConvertedMGFTest" << std::endl;
@@ -270,7 +268,6 @@ namespace Test
         
         // std::vector<(double mz, double intensity)*> myPeaks;
         std::vector<std::pair<double,double>> myPeaks;
-
         for (int mz = 400; mz < 1600; mz++)
         {
             // myPeaks.push_back((mz, rand->Next(1000, 1000000)));
@@ -420,35 +417,34 @@ namespace Test
             myExpPeaks.push_back(p);
         }
 
-        //C# Asserts
-        // Assert.That(Math.Round(myMaxIntensity, 0) == Math.Round(ok.GetAllScansList().First().MassSpectrum.YofPeakWithHighestY.Value, 0));
-        // Assert.That(Math.Round(sumOfAllIntensities, 0) == Math.Round(ok.GetAllScansList().First().MassSpectrum.SumOfAllY, 0));
-        // Assert.That(myPeaksOrderedByIntensity.Count == ok.GetAllScansList().First().MassSpectrum.XArray.Length);
-        // Assert.That(expMinRatio >= minRatio);
-        // Assert.That(!myExpPeaks.Except(myPeaksOrderedByIntensity).Any());
-        // Assert.That(!myPeaksOrderedByIntensity.Except(myExpPeaks).Any());
-
-        // Assert::That(std::round(myMaxIntensity * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.YofPeakWithHighestY->Value * std::pow(10, 0)) / std::pow(10, 0));
         Assert::AreEqual(std::round(myMaxIntensity * std::pow(10, 0)) / std::pow(10, 0), std::round(ok->GetAllScansList().front()->getMassSpectrum()->getYofPeakWithHighestY().value() * std::pow(10, 0)) / std::pow(10, 0));
-        // Assert::That(std::round(sumOfAllIntensities * std::pow(10, 0)) / std::pow(10, 0) == std::round(ok->GetAllScansList().front().MassSpectrum.SumOfAllY * std::pow(10, 0)) / std::pow(10, 0));
         Assert::AreEqual(std::round(sumOfAllIntensities * std::pow(10, 0)) / std::pow(10, 0), std::round(ok->GetAllScansList().front()->getMassSpectrum()->getSumOfAllY() * std::pow(10, 0)) / std::pow(10, 0));
-        // Assert::That(myPeaksOrderedByIntensity.size() == ok->GetAllScansList().front().MassSpectrum.XArray->Length);
         Assert::AreEqual(filteredPeaks.size(), ok->GetAllScansList().front()->getMassSpectrum()->getXArray().size());
-        // Assert::That(expMinRatio >= minRatio);
         Assert::IsTrue(expMinRatio >= minRatio);
         //tests that myExpPeaks with myPeaksOrderedByIntensity elements removed contains no values
         //Any() returns True or False if array contains values
         //Expects !False = True
-        std::vector<std::pair<double, double>> myExpPeaksCopy;
-        std::vector<std::pair<double, double>> myPeaksOrderedByIntensityCopy;
-        myExpPeaksCopy = myExpPeaks;
-        myPeaksOrderedByIntensityCopy = filteredPeaks;
+        std::vector<std::pair<double, double>> myExpPeaksCopy(myExpPeaks);
+        std::vector<std::pair<double, double>> myPeaksOrderedByIntensityCopy(filteredPeaks);
+        // myExpPeaksCopy = myExpPeaks;
+        // myPeaksOrderedByIntensityCopy = filteredPeaks;
         for (long unsigned int i=0;i<filteredPeaks.size();i++){
-            myExpPeaksCopy.erase(std::remove(myExpPeaksCopy.begin(), myExpPeaksCopy.end(), filteredPeaks[i]), myExpPeaksCopy.end());
+            // myExpPeaksCopy.erase(std::remove(myExpPeaksCopy.begin(), myExpPeaksCopy.end(), filteredPeaks[i]), myExpPeaksCopy.end());
+            for (long unsigned int j=0; j<myExpPeaksCopy.size(); j++){
+                if (filteredPeaks[i].second == myExpPeaksCopy[j].second){
+                    myExpPeaksCopy.erase(myExpPeaksCopy.begin() + j);
+                }
+            }
         }
         for (long unsigned int i=0;i<myExpPeaks.size();i++){
-            myPeaksOrderedByIntensityCopy.erase(std::remove(myPeaksOrderedByIntensityCopy.begin(), myPeaksOrderedByIntensityCopy.end(), myExpPeaks[i]), myPeaksOrderedByIntensityCopy.end());
+            // myPeaksOrderedByIntensityCopy.erase(std::remove(myPeaksOrderedByIntensityCopy.begin(), myPeaksOrderedByIntensityCopy.end(), myExpPeaks[i]), myPeaksOrderedByIntensityCopy.end());
+            for (long unsigned int j=0; j<myPeaksOrderedByIntensityCopy.size(); j++){
+                if (myExpPeaks[i].second == myPeaksOrderedByIntensityCopy[j].second){
+                    myPeaksOrderedByIntensityCopy.erase(myPeaksOrderedByIntensityCopy.begin() + j);
+                }
+            }        
         }
+
         Assert::IsTrue(myExpPeaksCopy.size() == 0);
         //tests that myPeaksOrderedByIntensity with myExpPeaks elements removed still contains values
         Assert::IsTrue(myPeaksOrderedByIntensityCopy.size() == 0);
@@ -986,14 +982,19 @@ namespace Test
         auto p = peptide->Fragment(FragmentTypes::b | FragmentTypes::y, true);
         MzSpectrum *MS2 = CreateMS2spectrum(p, 100, 1500);
 
-        std::vector<MsDataScan*> Scans(2);
+        std::vector<MsDataScan*> Scans;
 
-        MzRange tempVar(300, 2000);
-        Scans[0] = new MsDataScan(MS1, 1, 1, true, Polarity::Positive, 1.0, &tempVar, " first spectrum", MZAnalyzerType::Unknown, MS1->getSumOfAllY(), std::make_optional(1), std::vector<std::vector<double>>(), "scan=1");
+        // MzRange tempVar(300, 2000);
+        MzRange *tempVar = new MzRange(300, 2000);
+        MsDataScan *Scan1 = new MsDataScan(MS1, 1, 1, true, Polarity::Positive, 1.0, tempVar, " first spectrum", MZAnalyzerType::Unknown, MS1->getSumOfAllY(), std::make_optional(1), std::vector<std::vector<double>>(), "scan=1");
         //            scans[1] = new MsDataScanZR(massSpec2, 2, 2, true, Polarity.Positive, 2, new MzRange(1, 100), "f", MZAnalyzerType.IonTrap3D, massSpec2.SumOfAllY, null, null, "2", 50, null, null, 50, 1, DissociationType.CID, 1, null);
 
-        MzRange tempVar2(100, 1500);
-        Scans[1] = new MsDataScan(MS2, 2, 2, true, Polarity::Positive, 2.0, &tempVar2, " second spectrum", MZAnalyzerType::Unknown, MS2->getSumOfAllY(), std::make_optional(1), std::vector<std::vector<double>>(), "scan=2", std::make_optional(1134.26091302033), std::make_optional(3), std::make_optional(0.141146966879759), std::make_optional(1134.3), std::make_optional(1), std::make_optional(DissociationType::Unknown), std::make_optional(1), std::make_optional(1134.26091302033));
+        // MzRange tempVar2(100, 1500);
+        MzRange *tempVar2 = new MzRange(100, 1500);
+        MsDataScan *Scan2 = new MsDataScan(MS2, 2, 2, true, Polarity::Positive, 2.0, tempVar2, " second spectrum", MZAnalyzerType::Unknown, MS2->getSumOfAllY(), std::make_optional(1), std::vector<std::vector<double>>(), "scan=2", std::make_optional(1134.26091302033), std::make_optional(3), std::make_optional(0.141146966879759), std::make_optional(1134.3), std::make_optional(1), std::make_optional(DissociationType::Unknown), std::make_optional(1), std::make_optional(1134.26091302033));
+        
+        Scans.push_back(Scan1);
+        Scans.push_back(Scan2);
 
         auto myMsDataFile = new FakeMsDataFile(Scans);
 
@@ -1011,6 +1012,8 @@ namespace Test
         Assert::AreEqual(2, okay->GetClosestOneBasedSpectrumNumber(2));
 
         auto newFirstValue = okay->GetOneBasedScan(1)->getMassSpectrum()->getFirstX();
+
+        //fails
         Assert::AreEqual(oldFirstValue.value(), newFirstValue.value(), 1e-9);
 
         auto secondScan2 = okay->GetOneBasedScan(2);
@@ -1026,7 +1029,9 @@ namespace Test
 
         std::function<double(MzPeak*)> f1 = [&](MzPeak* a){return 44;};
         secondScan2->getMassSpectrum()->ReplaceXbyApplyingFunction(f1);
-        Assert::AreEqual(44, secondScan2->getMassSpectrum()->getLastX());
+
+        //fails
+        Assert::AreEqual(44, secondScan2->getMassSpectrum()->getLastX().value());
 
 //C# TO C++ CONVERTER TODO TASK: A 'delete myMsDataFile' statement was not added since myMsDataFile was passed to a method or constructor. Handle memory management manually.
 //C# TO C++ CONVERTER TODO TASK: A 'delete carbamidomethylationOfCMod' statement was not added since carbamidomethylationOfCMod was passed to a method or constructor. Handle memory management manually.

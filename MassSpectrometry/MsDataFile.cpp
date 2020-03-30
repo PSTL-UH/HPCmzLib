@@ -115,8 +115,8 @@ namespace MassSpectrometry
             if ((!filteringParams->getMinimumAllowedIntensityRatioToBasePeakM().has_value()) ||
                 (intensities[i] > (maximumIntensityInArray * filteringParams->getMinimumAllowedIntensityRatioToBasePeakM().value())))
             {
-                MzPeak tempVar(mArray[i], intensities[i]);
-                mzIntensites.push_back(&tempVar);
+                MzPeak *tempVar = new MzPeak(mArray[i], intensities[i]);
+                mzIntensites.push_back(tempVar);
             }
         }
         
