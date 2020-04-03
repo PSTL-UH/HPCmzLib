@@ -13,23 +13,13 @@
 #include "exceptionhelper.h"
 #include "tangible_filesystem.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
 #include "../MassSpectrometry/MsDataScan.h"
-// namespace MassSpectrometry { class MsDataScan; }
 #include "../MassSpectrometry/SourceFile.h"
-// namespace MassSpectrometry { class SourceFile; }
 #include "../MassSpectrometry/FilteringParams.h"
-// namespace MassSpectrometry { class FilteringParams; }
 #include "../MassSpectrometry/IFilteringParams.h"
-// namespace MassSpectrometry { class IFilteringParams; }
-// #include "XSD/IO.MzML.Generated.mzMLType.h"
 
 #include "XSD/mzML1.1.0.h"
 #include "XSD/mzML1.1.1_idx.h"
-// #include "XSD/mzML1.1.0-pskel.h"
-// #include "XSD/mzML1.1.1_idx-pskel.h"
-
-// namespace IO { namespace MzML { namespace Generated { class mzMLType; } } }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016, 2017 Stefan Solntsev
@@ -94,7 +84,6 @@ namespace IO
             static Mzml *LoadAllStaticData(const std::string &filePath, FilteringParams *filterParams = nullptr, int maxThreads = -1);
 
         private:
-            //static MsDataScan *GetMsDataOneBasedScanFromConnection(Generated::mzMLType *_mzMLConnection, int oneBasedIndex, IFilteringParams *filterParams);
             static MsDataScan *GetMsDataOneBasedScanFromConnection(ms::mzml::mzMLType *_mzMLConnection, int oneBasedIndex, IFilteringParams *filterParams);
             
             /// <summary>
