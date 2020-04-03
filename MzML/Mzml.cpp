@@ -33,31 +33,6 @@ void print_chars (char * c_ptr, int len )
     printf ( "\n" );
 }
 
-ms::mzml::mzMLType* get_mzml_connection(std::string filePath){
-    try{
-        std::cout << "In mzml try..." << std::endl;
-        std::ifstream fs = std::ifstream(filePath);
-
-        std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection_object (ms::mzml::indexedmzML_ (fs, xml_schema::flags::dont_validate));
-
-        fs.close();
-
-        ms::mzml::mzMLType *mzMLConnection = &_indexedmzMLConnection_object.get()->mzML();
-        return mzMLConnection;
-    }
-    catch (...){
-        std::cout << "In mzml catch..." << std::endl;
-        std::ifstream fs = std::ifstream(filePath);
-
-        std::unique_ptr<ms::mzml::mzMLType> _mzML_object (ms::mzml::mzML (fs, xml_schema::flags::dont_validate));
-
-        fs.close();
-
-        ms::mzml::mzMLType *mzMLConnection = _mzML_object.get();
-        return mzMLConnection;
-    }
-}
-
 namespace IO
 {
     namespace MzML
@@ -136,7 +111,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
                 fs.close();
 
-                *_mzMLConnection = _indexedmzMLConnection_object.get()->mzML();
+                _mzMLConnection = &_indexedmzMLConnection_object.get()->mzML();
             }
             catch (const xml_schema::exception& e){
                 std::ifstream fs = std::ifstream(filePath);
