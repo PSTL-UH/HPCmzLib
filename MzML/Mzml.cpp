@@ -603,7 +603,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam())
                 {
                     std::unordered_map<std::string, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv.accession());
-                    dissociationType = dissociationDictionary_iterator->second;
+                    if (dissociationDictionary_iterator != dissociationDictionary.end()){
+                        dissociationType = dissociationDictionary_iterator->second;
+                    }
                 }
             }
             std::optional<double> monoisotopicMz;
