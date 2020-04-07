@@ -1,0 +1,12 @@
+https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/
+
+xsdcxx cxx-tree --std c++11 --generate-serialization --hxx-suffix .h mzML1.1.0.xsd
+
+generate with default constructors (This is what we are using now):
+xsdcxx cxx-tree --std c++11 --generate-serialization --generate-default-ctor --hxx-suffix .h mzML1.1.0.xsd
+
+generate with default constructors and os and is stream operators:
+xsdcxx cxx-tree --std c++11 --generate-serialization --generate-default-ctor --generate-insertion os --generate-extraction is --hxx-suffix .h mzML1.1.0.xsd
+
+parser:
+xsd cxx-parser --xml-parser xerces --type-map mzML1.1.0.map mzML1.1.0.xsd
