@@ -18,46 +18,49 @@ namespace pepXML { namespace Generated { class mixtureModelType; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class ptmprophet_summary
-        class ptmprophet_summary {
+        class ptmprophet_summary
+        {
 
         private:
             std::vector<inputFileType*> inputfileField;
 
             std::vector<mixtureModelType*> mixturemodelField;
 
-            std::wstring versionField;
+            std::string versionField;
 
-            std::wstring optionsField;
+            std::string optionsField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("inputfile")] public inputFileType[] inputfile
             std::vector<inputFileType*> getinputfile() const;
             void setinputfile(const std::vector<inputFileType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("mixturemodel")] public mixtureModelType[] mixturemodel
             std::vector<mixtureModelType*> getmixturemodel() const;
             void setmixturemodel(const std::vector<mixtureModelType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string version
-            std::wstring getversion() const;
-            void setversion(const std::wstring &value);
+            std::string getversion() const;
+            void setversion(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string options
-            std::wstring getoptions() const;
-            void setoptions(const std::wstring &value);
+            std::string getoptions() const;
+            void setoptions(const std::string &value);
         };
     }
 }

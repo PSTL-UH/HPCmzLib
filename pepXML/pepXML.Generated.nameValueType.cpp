@@ -1,37 +1,47 @@
 ﻿#include "pepXML.Generated.nameValueType.h"
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
 
-        std::wstring nameValueType::getname() const {
+        std::string nameValueType::getname() const
+        {
             return this->nameField;
         }
 
-        void nameValueType::setname(const std::wstring &value) {
+        void nameValueType::setname(const std::string &value)
+        {
             this->nameField = value;
         }
 
-        std::wstring nameValueType::getvalue() const {
+        std::string nameValueType::getvalue() const
+        {
             return this->valueField;
         }
 
-        void nameValueType::setvalue(const std::wstring &value) {
+        void nameValueType::setvalue(const std::string &value)
+        {
             this->valueField = value;
         }
 
-        std::wstring nameValueType::gettype() const {
+        std::string nameValueType::gettype() const
+        {
             return this->typeField;
         }
 
-        void nameValueType::settype(const std::wstring &value) {
+        void nameValueType::settype(const std::string &value)
+        {
             this->typeField = value;
         }
 
-        std::wstring nameValueType::getValue() const {
+        std::string nameValueType::getValue() const
+        {
             return this->valueField1;
         }
 
-        void nameValueType::setValue(const std::wstring &value) {
+        void nameValueType::setValue(const std::string &value)
+        {
             this->valueField1 = value;
         }
     }

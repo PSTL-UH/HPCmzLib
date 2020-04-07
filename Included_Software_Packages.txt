@@ -12,3 +12,13 @@ For XML serialization and deserialization
 Code Synthesis XSD and Xercesc
 https://www.codesynthesis.com/products/xsd/
 for XML serialization and deserialization
+
+Accord-Framework:
+https://github.com/accord-net/framework 
+used in FlashLFQ/SingularValueDecomposition and
+include/Quantiles
+
+Sharp-Learning:
+https://github.com/mdabros/SharpLearning
+used in FlashLFQ/BoundedNelderMeadOptimizer
+

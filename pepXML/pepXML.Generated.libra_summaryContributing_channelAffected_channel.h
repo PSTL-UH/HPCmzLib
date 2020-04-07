@@ -11,12 +11,15 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class libra_summaryContributing_channelAffected_channel
-        class libra_summaryContributing_channelAffected_channel {
+        class libra_summaryContributing_channelAffected_channel
+        {
 
         private:
             unsigned int channelField = 0;
@@ -25,13 +28,13 @@ namespace pepXML {
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint channel
             unsigned int getchannel() const;
             void setchannel(unsigned int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float correction
             float getcorrection() const;
             void setcorrection(float value);

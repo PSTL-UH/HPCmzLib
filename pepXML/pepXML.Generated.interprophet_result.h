@@ -17,38 +17,41 @@ namespace pepXML { namespace Generated { class nameValueType; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class interprophet_result
-        class interprophet_result {
+        class interprophet_result
+        {
 
         private:
             std::vector<nameValueType*> search_score_summaryField;
 
             float probabilityField = 0;
 
-            std::wstring all_ntt_probField;
+            std::string all_ntt_probField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlArrayItemAttribute("parameter", IsNullable = false)] public nameValueType[] search_score_summary
             std::vector<nameValueType*> getsearch_score_summary() const;
             void setsearch_score_summary(const std::vector<nameValueType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float probability
             float getprobability() const;
             void setprobability(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string all_ntt_prob
-            std::wstring getall_ntt_prob() const;
-            void setall_ntt_prob(const std::wstring &value);
+            std::string getall_ntt_prob() const;
+            void setall_ntt_prob(const std::string &value);
         };
     }
 }

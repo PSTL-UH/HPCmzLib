@@ -20,8 +20,10 @@ namespace pepXML { namespace Generated { class peptideprophet_summaryMixture_mod
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
 
             /// <remarks/>
@@ -53,9 +55,10 @@ namespace pepXML {
             /// <remarks/>
 
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class peptideprophet_summary
-        class peptideprophet_summary {
+        class peptideprophet_summary
+        {
 
         private:
             std::vector<inputFileType*> inputfileField;
@@ -66,13 +69,13 @@ namespace pepXML {
 
             std::vector<peptideprophet_summaryMixture_model*> mixture_modelField;
 
-            std::wstring versionField;
+            std::string versionField;
 
-            std::wstring authorField;
+            std::string authorField;
 
             float min_probField = 0;
 
-            std::wstring optionsField;
+            std::string optionsField;
 
             float est_tot_num_correctField = 0;
 
@@ -80,61 +83,61 @@ namespace pepXML {
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("inputfile")] public inputFileType[] inputfile
             std::vector<inputFileType*> getinputfile() const;
             void setinputfile(const std::vector<inputFileType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("roc_error_data")] public rocErrorDataType[] roc_error_data
             std::vector<rocErrorDataType*> getroc_error_data() const;
             void setroc_error_data(const std::vector<rocErrorDataType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("distribution_point")] public peptideprophet_summaryDistribution_point[] distribution_point
             std::vector<peptideprophet_summaryDistribution_point*> getdistribution_point() const;
             void setdistribution_point(const std::vector<peptideprophet_summaryDistribution_point*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("mixture_model")] public peptideprophet_summaryMixture_model[] mixture_model
             std::vector<peptideprophet_summaryMixture_model*> getmixture_model() const;
             void setmixture_model(const std::vector<peptideprophet_summaryMixture_model*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string version
-            std::wstring getversion() const;
-            void setversion(const std::wstring &value);
+            std::string getversion() const;
+            void setversion(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string author
-            std::wstring getauthor() const;
-            void setauthor(const std::wstring &value);
+            std::string getauthor() const;
+            void setauthor(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float min_prob
             float getmin_prob() const;
             void setmin_prob(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string options
-            std::wstring getoptions() const;
-            void setoptions(const std::wstring &value);
+            std::string getoptions() const;
+            void setoptions(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float est_tot_num_correct
             float getest_tot_num_correct() const;
             void setest_tot_num_correct(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool est_tot_num_correctSpecified
             bool getest_tot_num_correctSpecified() const;
             void setest_tot_num_correctSpecified(bool value);

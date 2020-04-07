@@ -21,12 +21,15 @@ namespace pepXML { namespace Generated { class msms_pipeline_analysisMsms_run_su
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summary
-        class msms_pipeline_analysisMsms_run_summary {
+        class msms_pipeline_analysisMsms_run_summary
+        {
 
         private:
             msms_pipeline_analysisMsms_run_summarySample_enzyme *sample_enzymeField;
@@ -39,25 +42,26 @@ namespace pepXML {
 
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_query*> spectrum_queryField;
 
-            std::wstring base_nameField;
+            std::string base_nameField;
 
-            std::wstring raw_data_typeField;
+            std::string raw_data_typeField;
 
-            std::wstring raw_dataField;
+            std::string raw_dataField;
 
-            std::wstring msManufacturerField;
+            std::string msManufacturerField;
 
-            std::wstring msModelField;
+            std::string msModelField;
 
-            std::wstring msIonizationField;
+            std::string msIonizationField;
 
-            std::wstring msMassAnalyzerField;
+            std::string msMassAnalyzerField;
 
-            std::wstring msDetectorField;
+            std::string msDetectorField;
 
             /// <remarks/>
         public:
-            virtual ~msms_pipeline_analysisMsms_run_summary() {
+            virtual ~msms_pipeline_analysisMsms_run_summary()
+            {
                 delete sample_enzymeField;
                 delete cross_linkerField;
             }
@@ -70,70 +74,70 @@ namespace pepXML {
             void setcross_linker(msms_pipeline_analysisMsms_run_summaryCross_linker *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("search_summary")] public msms_pipeline_analysisMsms_run_summarySearch_summary[] search_summary
             std::vector<msms_pipeline_analysisMsms_run_summarySearch_summary*> getsearch_summary() const;
             void setsearch_summary(const std::vector<msms_pipeline_analysisMsms_run_summarySearch_summary*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("analysis_timestamp")] public msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp[] analysis_timestamp
             std::vector<msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp*> getanalysis_timestamp() const;
             void setanalysis_timestamp(const std::vector<msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("spectrum_query")] public msms_pipeline_analysisMsms_run_summarySpectrum_query[] spectrum_query
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_query*> getspectrum_query() const;
             void setspectrum_query(const std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_query*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string base_name
-            std::wstring getbase_name() const;
-            void setbase_name(const std::wstring &value);
+            std::string getbase_name() const;
+            void setbase_name(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string raw_data_type
-            std::wstring getraw_data_type() const;
-            void setraw_data_type(const std::wstring &value);
+            std::string getraw_data_type() const;
+            void setraw_data_type(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string raw_data
-            std::wstring getraw_data() const;
-            void setraw_data(const std::wstring &value);
+            std::string getraw_data() const;
+            void setraw_data(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string msManufacturer
-            std::wstring getmsManufacturer() const;
-            void setmsManufacturer(const std::wstring &value);
+            std::string getmsManufacturer() const;
+            void setmsManufacturer(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string msModel
-            std::wstring getmsModel() const;
-            void setmsModel(const std::wstring &value);
+            std::string getmsModel() const;
+            void setmsModel(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string msIonization
-            std::wstring getmsIonization() const;
-            void setmsIonization(const std::wstring &value);
+            std::string getmsIonization() const;
+            void setmsIonization(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string msMassAnalyzer
-            std::wstring getmsMassAnalyzer() const;
-            void setmsMassAnalyzer(const std::wstring &value);
+            std::string getmsMassAnalyzer() const;
+            void setmsMassAnalyzer(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string msDetector
-            std::wstring getmsDetector() const;
-            void setmsDetector(const std::wstring &value);
+            std::string getmsDetector() const;
+            void setmsDetector(const std::string &value);
         };
     }
 }

@@ -13,70 +13,73 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class asapratio_summary
-        class asapratio_summary {
+        class asapratio_summary
+        {
 
         private:
-            std::wstring versionField;
+            std::string versionField;
 
-            std::wstring authorField;
+            std::string authorField;
 
-            std::wstring elutionField;
+            std::string elutionField;
 
-            std::wstring labeled_residuesField;
+            std::string labeled_residuesField;
 
-            std::wstring area_flagField;
+            std::string area_flagField;
 
-            std::wstring static_quantField;
+            std::string static_quantField;
 
-            std::wstring specified_residue_massesField;
+            std::string specified_residue_massesField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string version
-            std::wstring getversion() const;
-            void setversion(const std::wstring &value);
+            std::string getversion() const;
+            void setversion(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string author
-            std::wstring getauthor() const;
-            void setauthor(const std::wstring &value);
+            std::string getauthor() const;
+            void setauthor(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")] public string elution
-            std::wstring getelution() const;
-            void setelution(const std::wstring &value);
+            std::string getelution() const;
+            void setelution(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string labeled_residues
-            std::wstring getlabeled_residues() const;
-            void setlabeled_residues(const std::wstring &value);
+            std::string getlabeled_residues() const;
+            void setlabeled_residues(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string area_flag
-            std::wstring getarea_flag() const;
-            void setarea_flag(const std::wstring &value);
+            std::string getarea_flag() const;
+            void setarea_flag(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string static_quant
-            std::wstring getstatic_quant() const;
-            void setstatic_quant(const std::wstring &value);
+            std::string getstatic_quant() const;
+            void setstatic_quant(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string specified_residue_masses
-            std::wstring getspecified_residue_masses() const;
-            void setspecified_residue_masses(const std::wstring &value);
+            std::string getspecified_residue_masses() const;
+            void setspecified_residue_masses(const std::string &value);
         };
     }
 }

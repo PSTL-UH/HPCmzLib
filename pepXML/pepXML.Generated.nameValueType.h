@@ -13,46 +13,49 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class nameValueType
-        class nameValueType {
+        class nameValueType
+        {
 
         private:
-            std::wstring nameField;
+            std::string nameField;
 
-            std::wstring valueField;
+            std::string valueField;
 
-            std::wstring typeField;
+            std::string typeField;
 
-            std::wstring valueField1;
+            std::string valueField1;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string name
-            std::wstring getname() const;
-            void setname(const std::wstring &value);
+            std::string getname() const;
+            void setname(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string value
-            std::wstring getvalue() const;
-            void setvalue(const std::wstring &value);
+            std::string getvalue() const;
+            void setvalue(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string type
-            std::wstring gettype() const;
-            void settype(const std::wstring &value);
+            std::string gettype() const;
+            void settype(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlTextAttribute()] public string Value
-            std::wstring getValue() const;
-            void setValue(const std::wstring &value);
+            std::string getValue() const;
+            void setValue(const std::string &value);
         };
     }
 }

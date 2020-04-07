@@ -14,8 +14,10 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
 
             /// <remarks/>
@@ -57,75 +59,76 @@ namespace pepXML {
             /// <remarks/>
 
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySearch_summaryTerminal_modification
-        class msms_pipeline_analysisMsms_run_summarySearch_summaryTerminal_modification {
+        class msms_pipeline_analysisMsms_run_summarySearch_summaryTerminal_modification
+        {
 
         private:
-            std::wstring terminusField;
+            std::string terminusField;
 
-            std::wstring massdiffField;
+            std::string massdiffField;
 
             float massField = 0;
 
-            std::wstring variableField;
+            std::string variableField;
 
             term_symbolType symbolField = static_cast<term_symbolType>(0);
 
             bool symbolFieldSpecified = false;
 
-            std::wstring protein_terminusField;
+            std::string protein_terminusField;
 
-            std::wstring descriptionField;
+            std::string descriptionField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string terminus
-            std::wstring getterminus() const;
-            void setterminus(const std::wstring &value);
+            std::string getterminus() const;
+            void setterminus(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string massdiff
-            std::wstring getmassdiff() const;
-            void setmassdiff(const std::wstring &value);
+            std::string getmassdiff() const;
+            void setmassdiff(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float mass
             float getmass() const;
             void setmass(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string variable
-            std::wstring getvariable() const;
-            void setvariable(const std::wstring &value);
+            std::string getvariable() const;
+            void setvariable(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public term_symbolType symbol
             term_symbolType getsymbol() const;
             void setsymbol(term_symbolType value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool symbolSpecified
             bool getsymbolSpecified() const;
             void setsymbolSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string protein_terminus
-            std::wstring getprotein_terminus() const;
-            void setprotein_terminus(const std::wstring &value);
+            std::string getprotein_terminus() const;
+            void setprotein_terminus(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string description
-            std::wstring getdescription() const;
-            void setdescription(const std::wstring &value);
+            std::string getdescription() const;
+            void setdescription(const std::string &value);
         };
     }
 }

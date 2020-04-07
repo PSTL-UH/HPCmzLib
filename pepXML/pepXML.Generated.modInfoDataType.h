@@ -18,12 +18,15 @@ namespace pepXML { namespace Generated { class modInfoDataTypeMod_aminoacid_mass
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class modInfoDataType
-        class modInfoDataType {
+        class modInfoDataType
+        {
 
         private:
             std::vector<subInfoDataType*> aminoacid_substitutionField;
@@ -38,50 +41,50 @@ namespace pepXML {
 
             bool mod_cterm_massFieldSpecified = false;
 
-            std::wstring modified_peptideField;
+            std::string modified_peptideField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("aminoacid_substitution")] public subInfoDataType[] aminoacid_substitution
             std::vector<subInfoDataType*> getaminoacid_substitution() const;
             void setaminoacid_substitution(const std::vector<subInfoDataType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("mod_aminoacid_mass")] public modInfoDataTypeMod_aminoacid_mass[] mod_aminoacid_mass
             std::vector<modInfoDataTypeMod_aminoacid_mass*> getmod_aminoacid_mass() const;
             void setmod_aminoacid_mass(const std::vector<modInfoDataTypeMod_aminoacid_mass*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public double mod_nterm_mass
             double getmod_nterm_mass() const;
             void setmod_nterm_mass(double value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool mod_nterm_massSpecified
             bool getmod_nterm_massSpecified() const;
             void setmod_nterm_massSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public double mod_cterm_mass
             double getmod_cterm_mass() const;
             void setmod_cterm_mass(double value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool mod_cterm_massSpecified
             bool getmod_cterm_massSpecified() const;
             void setmod_cterm_massSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string modified_peptide
-            std::wstring getmodified_peptide() const;
-            void setmodified_peptide(const std::wstring &value);
+            std::string getmodified_peptide() const;
+            void setmodified_peptide(const std::string &value);
         };
     }
 }

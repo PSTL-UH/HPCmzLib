@@ -13,94 +13,97 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class xpressratio_summary
-        class xpressratio_summary {
+        class xpressratio_summary
+        {
 
         private:
-            std::wstring versionField;
+            std::string versionField;
 
-            std::wstring authorField;
+            std::string authorField;
 
-            std::wstring same_scan_rangeField;
+            std::string same_scan_rangeField;
 
-            std::wstring labeled_residuesField;
+            std::string labeled_residuesField;
 
             unsigned int xpress_lightField = 0;
 
-            std::wstring massdiffField;
+            std::string massdiffField;
 
             float masstolField = 0;
 
-            std::wstring ppmtolField;
+            std::string ppmtolField;
 
-            std::wstring min_num_chromatogram_pointsField;
+            std::string min_num_chromatogram_pointsField;
 
-            std::wstring min_num_isotope_peaksField;
+            std::string min_num_isotope_peaksField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string version
-            std::wstring getversion() const;
-            void setversion(const std::wstring &value);
+            std::string getversion() const;
+            void setversion(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string author
-            std::wstring getauthor() const;
-            void setauthor(const std::wstring &value);
+            std::string getauthor() const;
+            void setauthor(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string same_scan_range
-            std::wstring getsame_scan_range() const;
-            void setsame_scan_range(const std::wstring &value);
+            std::string getsame_scan_range() const;
+            void setsame_scan_range(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string labeled_residues
-            std::wstring getlabeled_residues() const;
-            void setlabeled_residues(const std::wstring &value);
+            std::string getlabeled_residues() const;
+            void setlabeled_residues(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint xpress_light
             unsigned int getxpress_light() const;
             void setxpress_light(unsigned int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string massdiff
-            std::wstring getmassdiff() const;
-            void setmassdiff(const std::wstring &value);
+            std::string getmassdiff() const;
+            void setmassdiff(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float masstol
             float getmasstol() const;
             void setmasstol(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")] public string ppmtol
-            std::wstring getppmtol() const;
-            void setppmtol(const std::wstring &value);
+            std::string getppmtol() const;
+            void setppmtol(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")] public string min_num_chromatogram_points
-            std::wstring getmin_num_chromatogram_points() const;
-            void setmin_num_chromatogram_points(const std::wstring &value);
+            std::string getmin_num_chromatogram_points() const;
+            void setmin_num_chromatogram_points(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")] public string min_num_isotope_peaks
-            std::wstring getmin_num_isotope_peaks() const;
-            void setmin_num_isotope_peaks(const std::wstring &value);
+            std::string getmin_num_isotope_peaks() const;
+            void setmin_num_isotope_peaks(const std::string &value);
         };
     }
 }

@@ -16,12 +16,15 @@ namespace pepXML { namespace Generated { class libra_summaryContributing_channel
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class libra_summaryContributing_channel
-        class libra_summaryContributing_channel {
+        class libra_summaryContributing_channel
+        {
 
         private:
             std::vector<libra_summaryContributing_channelAffected_channel*> affected_channelField;
@@ -30,13 +33,13 @@ namespace pepXML {
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("affected_channel")] public libra_summaryContributing_channelAffected_channel[] affected_channel
             std::vector<libra_summaryContributing_channelAffected_channel*> getaffected_channel() const;
             void setaffected_channel(const std::vector<libra_summaryContributing_channelAffected_channel*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint channel
             unsigned int getchannel() const;
             void setchannel(unsigned int value);

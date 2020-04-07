@@ -13,38 +13,41 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class inputFileType
-        class inputFileType {
+        class inputFileType
+        {
 
         private:
-            std::wstring nameField;
+            std::string nameField;
 
-            std::wstring directoryField;
+            std::string directoryField;
 
-            std::wstring valueField;
+            std::string valueField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string name
-            std::wstring getname() const;
-            void setname(const std::wstring &value);
+            std::string getname() const;
+            void setname(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string directory
-            std::wstring getdirectory() const;
-            void setdirectory(const std::wstring &value);
+            std::string getdirectory() const;
+            void setdirectory(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlTextAttribute()] public string Value
-            std::wstring getValue() const;
-            void setValue(const std::wstring &value);
+            std::string getValue() const;
+            void setValue(const std::string &value);
         };
     }
 }

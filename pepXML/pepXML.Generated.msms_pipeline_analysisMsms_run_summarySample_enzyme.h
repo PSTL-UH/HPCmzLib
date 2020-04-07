@@ -18,19 +18,22 @@ namespace pepXML { namespace Generated { class msms_pipeline_analysisMsms_run_su
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySample_enzyme
-        class msms_pipeline_analysisMsms_run_summarySample_enzyme {
+        class msms_pipeline_analysisMsms_run_summarySample_enzyme
+        {
 
         private:
             std::vector<msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity*> specificityField;
 
-            std::wstring nameField;
+            std::string nameField;
 
-            std::wstring descriptionField;
+            std::string descriptionField;
 
             msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity fidelityField = static_cast<msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity>(0);
 
@@ -40,31 +43,31 @@ namespace pepXML {
             msms_pipeline_analysisMsms_run_summarySample_enzyme();
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("specificity")] public msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity[] specificity
             std::vector<msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity*> getspecificity() const;
             void setspecificity(const std::vector<msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string name
-            std::wstring getname() const;
-            void setname(const std::wstring &value);
+            std::string getname() const;
+            void setname(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string description
-            std::wstring getdescription() const;
-            void setdescription(const std::wstring &value);
+            std::string getdescription() const;
+            void setdescription(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()][System.ComponentModel.DefaultValueAttribute(msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity.specific)] public msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity fidelity
             msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity getfidelity() const;
             void setfidelity(msms_pipeline_analysisMsms_run_summarySample_enzymeFidelity value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()][System.ComponentModel.DefaultValueAttribute(true)] public bool independent
             bool getindependent() const;
             void setindependent(bool value);

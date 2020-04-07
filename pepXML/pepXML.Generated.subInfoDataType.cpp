@@ -1,45 +1,57 @@
 ﻿#include "pepXML.Generated.subInfoDataType.h"
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
 
-        std::wstring subInfoDataType::getposition() const {
+        std::string subInfoDataType::getposition() const
+        {
             return this->positionField;
         }
 
-        void subInfoDataType::setposition(const std::wstring &value) {
+        void subInfoDataType::setposition(const std::string &value)
+        {
             this->positionField = value;
         }
 
-        std::wstring subInfoDataType::getorig_aa() const {
+        std::string subInfoDataType::getorig_aa() const
+        {
             return this->orig_aaField;
         }
 
-        void subInfoDataType::setorig_aa(const std::wstring &value) {
+        void subInfoDataType::setorig_aa(const std::string &value)
+        {
             this->orig_aaField = value;
         }
 
-        std::wstring subInfoDataType::getnum_tol_term() const {
+        std::string subInfoDataType::getnum_tol_term() const
+        {
             return this->num_tol_termField;
         }
 
-        void subInfoDataType::setnum_tol_term(const std::wstring &value) {
+        void subInfoDataType::setnum_tol_term(const std::string &value)
+        {
             this->num_tol_termField = value;
         }
 
-        std::wstring subInfoDataType::getpeptide_prev_aa() const {
+        std::string subInfoDataType::getpeptide_prev_aa() const
+        {
             return this->peptide_prev_aaField;
         }
 
-        void subInfoDataType::setpeptide_prev_aa(const std::wstring &value) {
+        void subInfoDataType::setpeptide_prev_aa(const std::string &value)
+        {
             this->peptide_prev_aaField = value;
         }
 
-        std::wstring subInfoDataType::getpeptide_next_aa() const {
+        std::string subInfoDataType::getpeptide_next_aa() const
+        {
             return this->peptide_next_aaField;
         }
 
-        void subInfoDataType::setpeptide_next_aa(const std::wstring &value) {
+        void subInfoDataType::setpeptide_next_aa(const std::string &value)
+        {
             this->peptide_next_aaField = value;
         }
     }

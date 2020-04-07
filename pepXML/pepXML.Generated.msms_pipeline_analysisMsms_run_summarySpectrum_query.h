@@ -18,19 +18,22 @@ namespace pepXML { namespace Generated { class msms_pipeline_analysisMsms_run_su
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySpectrum_query
-        class msms_pipeline_analysisMsms_run_summarySpectrum_query {
+        class msms_pipeline_analysisMsms_run_summarySpectrum_query
+        {
 
         private:
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result*> search_resultField;
 
-            std::wstring spectrumField;
+            std::string spectrumField;
 
-            std::wstring spectrumNativeIDField;
+            std::string spectrumNativeIDField;
 
             unsigned int start_scanField = 0;
 
@@ -58,123 +61,123 @@ namespace pepXML {
 
             float precursor_neutral_massField = 0;
 
-            std::wstring assumed_chargeField;
+            std::string assumed_chargeField;
 
-            std::wstring search_specificationField;
+            std::string search_specificationField;
 
             unsigned int indexField = 0;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("search_result")] public msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result[] search_result
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result*> getsearch_result() const;
             void setsearch_result(const std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string spectrum
-            std::wstring getspectrum() const;
-            void setspectrum(const std::wstring &value);
+            std::string getspectrum() const;
+            void setspectrum(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string spectrumNativeID
-            std::wstring getspectrumNativeID() const;
-            void setspectrumNativeID(const std::wstring &value);
+            std::string getspectrumNativeID() const;
+            void setspectrumNativeID(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint start_scan
             unsigned int getstart_scan() const;
             void setstart_scan(unsigned int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint end_scan
             unsigned int getend_scan() const;
             void setend_scan(unsigned int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float retention_time_sec
             float getretention_time_sec() const;
             void setretention_time_sec(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool retention_time_secSpecified
             bool getretention_time_secSpecified() const;
             void setretention_time_secSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float collision_energy
             float getcollision_energy() const;
             void setcollision_energy(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool collision_energySpecified
             bool getcollision_energySpecified() const;
             void setcollision_energySpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float compensation_voltage
             float getcompensation_voltage() const;
             void setcompensation_voltage(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool compensation_voltageSpecified
             bool getcompensation_voltageSpecified() const;
             void setcompensation_voltageSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float precursor_intensity
             float getprecursor_intensity() const;
             void setprecursor_intensity(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool precursor_intensitySpecified
             bool getprecursor_intensitySpecified() const;
             void setprecursor_intensitySpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public activationMethodType activation_method
             activationMethodType getactivation_method() const;
             void setactivation_method(activationMethodType value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool activation_methodSpecified
             bool getactivation_methodSpecified() const;
             void setactivation_methodSpecified(bool value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float precursor_neutral_mass
             float getprecursor_neutral_mass() const;
             void setprecursor_neutral_mass(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string assumed_charge
-            std::wstring getassumed_charge() const;
-            void setassumed_charge(const std::wstring &value);
+            std::string getassumed_charge() const;
+            void setassumed_charge(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string search_specification
-            std::wstring getsearch_specification() const;
-            void setsearch_specification(const std::wstring &value);
+            std::string getsearch_specification() const;
+            void setsearch_specification(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint index
             unsigned int getindex() const;
             void setindex(unsigned int value);

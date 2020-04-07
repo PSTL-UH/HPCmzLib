@@ -13,8 +13,10 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
 
             /// <remarks/>
@@ -22,35 +24,36 @@ namespace pepXML {
             /// <remarks/>
 
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySearch_summaryEnzymatic_search_constraint
-        class msms_pipeline_analysisMsms_run_summarySearch_summaryEnzymatic_search_constraint {
+        class msms_pipeline_analysisMsms_run_summarySearch_summaryEnzymatic_search_constraint
+        {
 
         private:
-            std::wstring enzymeField;
+            std::string enzymeField;
 
-            std::wstring max_num_internal_cleavagesField;
+            std::string max_num_internal_cleavagesField;
 
-            std::wstring min_number_terminiField;
+            std::string min_number_terminiField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string enzyme
-            std::wstring getenzyme() const;
-            void setenzyme(const std::wstring &value);
+            std::string getenzyme() const;
+            void setenzyme(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string max_num_internal_cleavages
-            std::wstring getmax_num_internal_cleavages() const;
-            void setmax_num_internal_cleavages(const std::wstring &value);
+            std::string getmax_num_internal_cleavages() const;
+            void setmax_num_internal_cleavages(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string min_number_termini
-            std::wstring getmin_number_termini() const;
-            void setmin_number_termini(const std::wstring &value);
+            std::string getmin_number_termini() const;
+            void setmin_number_termini(const std::string &value);
         };
     }
 }

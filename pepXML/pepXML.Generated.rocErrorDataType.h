@@ -18,19 +18,22 @@ namespace pepXML { namespace Generated { class rocErrorDataTypeError_point; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class rocErrorDataType
-        class rocErrorDataType {
+        class rocErrorDataType
+        {
 
         private:
             std::vector<rocErrorDataTypeRoc_data_point*> roc_data_pointField;
 
             std::vector<rocErrorDataTypeError_point*> error_pointField;
 
-            std::wstring chargeField;
+            std::string chargeField;
 
             float charge_est_correctField = 0;
 
@@ -38,31 +41,31 @@ namespace pepXML {
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("roc_data_point")] public rocErrorDataTypeRoc_data_point[] roc_data_point
             std::vector<rocErrorDataTypeRoc_data_point*> getroc_data_point() const;
             void setroc_data_point(const std::vector<rocErrorDataTypeRoc_data_point*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("error_point")] public rocErrorDataTypeError_point[] error_point
             std::vector<rocErrorDataTypeError_point*> geterror_point() const;
             void seterror_point(const std::vector<rocErrorDataTypeError_point*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string charge
-            std::wstring getcharge() const;
-            void setcharge(const std::wstring &value);
+            std::string getcharge() const;
+            void setcharge(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float charge_est_correct
             float getcharge_est_correct() const;
             void setcharge_est_correct(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlIgnoreAttribute()] public bool charge_est_correctSpecified
             bool getcharge_est_correctSpecified() const;
             void setcharge_est_correctSpecified(bool value);

@@ -17,12 +17,15 @@ namespace pepXML { namespace Generated { class nameValueType; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisAnalysis_summary
-        class msms_pipeline_analysisAnalysis_summary {
+        class msms_pipeline_analysisAnalysis_summary
+        {
 
         private:
             System::Xml::XmlElement *anyField;
@@ -31,44 +34,45 @@ namespace pepXML {
 
             DateTime timeField;
 
-            std::wstring analysisField;
+            std::string analysisField;
 
-            std::wstring versionField;
+            std::string versionField;
 
             /// <remarks/>
         public:
-            virtual ~msms_pipeline_analysisAnalysis_summary() {
+            virtual ~msms_pipeline_analysisAnalysis_summary()
+            {
                 delete anyField;
             }
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAnyElementAttribute()] public System.Xml.XmlElement Any
             System::Xml::XmlElement *getAny() const;
             void setAny(System::Xml::XmlElement *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("parameter")] public nameValueType[] parameter
             std::vector<nameValueType*> getparameter() const;
             void setparameter(const std::vector<nameValueType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public System.DateTime time
             DateTime gettime() const;
             void settime(DateTime value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string analysis
-            std::wstring getanalysis() const;
-            void setanalysis(const std::wstring &value);
+            std::string getanalysis() const;
+            void setanalysis(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string version
-            std::wstring getversion() const;
-            void setversion(const std::wstring &value);
+            std::string getversion() const;
+            void setversion(const std::string &value);
         };
     }
 }

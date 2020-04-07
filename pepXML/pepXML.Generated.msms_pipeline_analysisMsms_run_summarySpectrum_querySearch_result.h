@@ -16,12 +16,15 @@ namespace pepXML { namespace Generated { class msms_pipeline_analysisMsms_run_su
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result
-        class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result {
+        class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result
+        {
 
         private:
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hit*> search_hitField;
@@ -32,13 +35,14 @@ namespace pepXML {
             msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_result();
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("search_hit")] public msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hit[] search_hit
             std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hit*> getsearch_hit() const;
             void setsearch_hit(const std::vector<msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hit*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()][System.ComponentModel.DefaultValueAttribute(typeof(uint), "1")] public uint search_id
             unsigned int getsearch_id() const;
             void setsearch_id(unsigned int value);

@@ -1,37 +1,47 @@
 ﻿#include "pepXML.Generated.msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp.h"
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
 
-        System::Xml::XmlElement *msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getAny() const {
+        System::Xml::XmlElement *msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getAny() const
+        {
             return this->anyField;
         }
 
-        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setAny(System::Xml::XmlElement *value) {
+        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setAny(System::Xml::XmlElement *value)
+        {
             this->anyField = value;
         }
 
-        DateTime msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::gettime() const {
+        DateTime msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::gettime() const
+        {
             return this->timeField;
         }
 
-        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::settime(DateTime value) {
+        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::settime(DateTime value)
+        {
             this->timeField = value;
         }
 
-        std::wstring msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getanalysis() const {
+        std::string msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getanalysis() const
+        {
             return this->analysisField;
         }
 
-        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setanalysis(const std::wstring &value) {
+        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setanalysis(const std::string &value)
+        {
             this->analysisField = value;
         }
 
-        unsigned int msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getid() const {
+        unsigned int msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::getid() const
+        {
             return this->idField;
         }
 
-        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setid(unsigned int value) {
+        void msms_pipeline_analysisMsms_run_summaryAnalysis_timestamp::setid(unsigned int value)
+        {
             this->idField = value;
         }
     }

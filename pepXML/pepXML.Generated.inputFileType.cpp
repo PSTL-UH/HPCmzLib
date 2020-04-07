@@ -1,29 +1,37 @@
 ﻿#include "pepXML.Generated.inputFileType.h"
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
 
-        std::wstring inputFileType::getname() const {
+        std::string inputFileType::getname() const
+        {
             return this->nameField;
         }
 
-        void inputFileType::setname(const std::wstring &value) {
+        void inputFileType::setname(const std::string &value)
+        {
             this->nameField = value;
         }
 
-        std::wstring inputFileType::getdirectory() const {
+        std::string inputFileType::getdirectory() const
+        {
             return this->directoryField;
         }
 
-        void inputFileType::setdirectory(const std::wstring &value) {
+        void inputFileType::setdirectory(const std::string &value)
+        {
             this->directoryField = value;
         }
 
-        std::wstring inputFileType::getValue() const {
+        std::string inputFileType::getValue() const
+        {
             return this->valueField;
         }
 
-        void inputFileType::setValue(const std::wstring &value) {
+        void inputFileType::setValue(const std::string &value)
+        {
             this->valueField = value;
         }
     }

@@ -17,23 +17,27 @@ namespace pepXML { namespace Generated { class peptideprophet_summaryMixture_mod
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class peptideprophet_summaryMixture_modelMixturemodel_distribution
-        class peptideprophet_summaryMixture_modelMixturemodel_distribution {
+        class peptideprophet_summaryMixture_modelMixturemodel_distribution
+        {
 
         private:
             peptideprophet_summaryMixture_modelMixturemodel_distributionPosmodel_distribution *posmodel_distributionField;
 
             peptideprophet_summaryMixture_modelMixturemodel_distributionNegmodel_distribution *negmodel_distributionField;
 
-            std::wstring nameField;
+            std::string nameField;
 
             /// <remarks/>
         public:
-            virtual ~peptideprophet_summaryMixture_modelMixturemodel_distribution() {
+            virtual ~peptideprophet_summaryMixture_modelMixturemodel_distribution()
+            {
                 delete posmodel_distributionField;
                 delete negmodel_distributionField;
             }
@@ -46,10 +50,10 @@ namespace pepXML {
             void setnegmodel_distribution(peptideprophet_summaryMixture_modelMixturemodel_distributionNegmodel_distribution *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string name
-            std::wstring getname() const;
-            void setname(const std::wstring &value);
+            std::string getname() const;
+            void setname(const std::string &value);
         };
     }
 }

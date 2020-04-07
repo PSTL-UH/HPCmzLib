@@ -19,12 +19,15 @@ namespace pepXML { namespace Generated { class nameValueType; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hitXlinkLinked_peptide
-        class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hitXlinkLinked_peptide {
+        class msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hitXlinkLinked_peptide
+        {
 
         private:
             std::vector<altProteinDataType*> alternative_proteinField;
@@ -33,13 +36,13 @@ namespace pepXML {
 
             std::vector<nameValueType*> xlink_scoreField;
 
-            std::wstring peptideField;
+            std::string peptideField;
 
-            std::wstring peptide_prev_aaField;
+            std::string peptide_prev_aaField;
 
-            std::wstring peptide_next_aaField;
+            std::string peptide_next_aaField;
 
-            std::wstring proteinField;
+            std::string proteinField;
 
             unsigned int num_tot_proteinsField = 0;
 
@@ -47,15 +50,16 @@ namespace pepXML {
 
             float complement_massField = 0;
 
-            std::wstring designationField;
+            std::string designationField;
 
             /// <remarks/>
         public:
-            virtual ~msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hitXlinkLinked_peptide() {
+            virtual ~msms_pipeline_analysisMsms_run_summarySpectrum_querySearch_resultSearch_hitXlinkLinked_peptide()
+            {
                 delete modification_infoField;
             }
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("alternative_protein")] public altProteinDataType[] alternative_protein
             std::vector<altProteinDataType*> getalternative_protein() const;
             void setalternative_protein(const std::vector<altProteinDataType*> &value);
@@ -65,58 +69,58 @@ namespace pepXML {
             void setmodification_info(modInfoDataType *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("xlink_score")] public nameValueType[] xlink_score
             std::vector<nameValueType*> getxlink_score() const;
             void setxlink_score(const std::vector<nameValueType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string peptide
-            std::wstring getpeptide() const;
-            void setpeptide(const std::wstring &value);
+            std::string getpeptide() const;
+            void setpeptide(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string peptide_prev_aa
-            std::wstring getpeptide_prev_aa() const;
-            void setpeptide_prev_aa(const std::wstring &value);
+            std::string getpeptide_prev_aa() const;
+            void setpeptide_prev_aa(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string peptide_next_aa
-            std::wstring getpeptide_next_aa() const;
-            void setpeptide_next_aa(const std::wstring &value);
+            std::string getpeptide_next_aa() const;
+            void setpeptide_next_aa(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string protein
-            std::wstring getprotein() const;
-            void setprotein(const std::wstring &value);
+            std::string getprotein() const;
+            void setprotein(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public uint num_tot_proteins
             unsigned int getnum_tot_proteins() const;
             void setnum_tot_proteins(unsigned int value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float calc_neutral_pep_mass
             float getcalc_neutral_pep_mass() const;
             void setcalc_neutral_pep_mass(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float complement_mass
             float getcomplement_mass() const;
             void setcomplement_mass(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string designation
-            std::wstring getdesignation() const;
-            void setdesignation(const std::wstring &value);
+            std::string getdesignation() const;
+            void setdesignation(const std::string &value);
         };
     }
 }

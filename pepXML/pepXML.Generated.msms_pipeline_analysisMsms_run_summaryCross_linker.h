@@ -18,8 +18,10 @@ namespace pepXML { namespace Generated { class nameValueType; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
 
             /// <remarks/>
@@ -35,48 +37,49 @@ namespace pepXML {
             /// <remarks/>
 
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summaryCross_linker
-        class msms_pipeline_analysisMsms_run_summaryCross_linker {
+        class msms_pipeline_analysisMsms_run_summaryCross_linker
+        {
 
         private:
             std::vector<nameValueType*> cross_linker_infoField;
 
-            std::wstring identifierField;
+            std::string identifierField;
 
             float massField = 0;
 
-            std::wstring link_sitesField;
+            std::string link_sitesField;
 
             msms_pipeline_analysisMsms_run_summaryCross_linkerIsotope_labeled isotope_labeledField = static_cast<msms_pipeline_analysisMsms_run_summaryCross_linkerIsotope_labeled>(0);
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlElementAttribute("cross_linker_info")] public nameValueType[] cross_linker_info
             std::vector<nameValueType*> getcross_linker_info() const;
             void setcross_linker_info(const std::vector<nameValueType*> &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string identifier
-            std::wstring getidentifier() const;
-            void setidentifier(const std::wstring &value);
+            std::string getidentifier() const;
+            void setidentifier(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float mass
             float getmass() const;
             void setmass(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string link_sites
-            std::wstring getlink_sites() const;
-            void setlink_sites(const std::wstring &value);
+            std::string getlink_sites() const;
+            void setlink_sites(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public msms_pipeline_analysisMsms_run_summaryCross_linkerIsotope_labeled isotope_labeled
             msms_pipeline_analysisMsms_run_summaryCross_linkerIsotope_labeled getisotope_labeled() const;
             void setisotope_labeled(msms_pipeline_analysisMsms_run_summaryCross_linkerIsotope_labeled value);

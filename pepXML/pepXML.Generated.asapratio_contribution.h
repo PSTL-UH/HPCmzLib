@@ -17,12 +17,15 @@ namespace pepXML { namespace Generated { class asapratio_lc_heavypeak; } }
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")][System.Xml.Serialization.XmlRootAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML", IsNullable = false)] public partial class asapratio_contribution
-        class asapratio_contribution {
+        class asapratio_contribution
+        {
 
         private:
             pepXML::Generated::asapratio_lc_lightpeak *asapratio_lc_lightpeakField;
@@ -33,13 +36,14 @@ namespace pepXML {
 
             float errorField = 0;
 
-            std::wstring chargeField;
+            std::string chargeField;
 
             unsigned char useField = 0;
 
             /// <remarks/>
         public:
-            virtual ~asapratio_contribution() {
+            virtual ~asapratio_contribution()
+            {
                 delete asapratio_lc_lightpeakField;
                 delete asapratio_lc_heavypeakField;
             }
@@ -52,25 +56,25 @@ namespace pepXML {
             void setasapratio_lc_heavypeak(pepXML::Generated::asapratio_lc_heavypeak *value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float ratio
             float getratio() const;
             void setratio(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public float error
             float geterror() const;
             void seterror(float value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string charge
-            std::wstring getcharge() const;
-            void setcharge(const std::wstring &value);
+            std::string getcharge() const;
+            void setcharge(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public byte use
             unsigned char getuse() const;
             void setuse(unsigned char value);

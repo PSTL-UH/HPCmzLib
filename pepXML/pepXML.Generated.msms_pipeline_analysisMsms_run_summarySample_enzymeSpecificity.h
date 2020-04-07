@@ -14,48 +14,51 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity
-        class msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity {
+        class msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity
+        {
 
         private:
             msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificitySense senseField = static_cast<msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificitySense>(0);
 
-            std::wstring min_spacingField;
+            std::string min_spacingField;
 
-            std::wstring cutField;
+            std::string cutField;
 
-            std::wstring no_cutField;
+            std::string no_cutField;
 
         public:
             msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificity();
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificitySense sense
             msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificitySense getsense() const;
             void setsense(msms_pipeline_analysisMsms_run_summarySample_enzymeSpecificitySense value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")][System.ComponentModel.DefaultValueAttribute("1")] public string min_spacing
-            std::wstring getmin_spacing() const;
-            void setmin_spacing(const std::wstring &value);
+            std::string getmin_spacing() const;
+            void setmin_spacing(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string cut
-            std::wstring getcut() const;
-            void setcut(const std::wstring &value);
+            std::string getcut() const;
+            void setcut(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string no_cut
-            std::wstring getno_cut() const;
-            void setno_cut(const std::wstring &value);
+            std::string getno_cut() const;
+            void setno_cut(const std::string &value);
         };
     }
 }

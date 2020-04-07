@@ -13,54 +13,57 @@
 //------------------------------------------------------------------------------
 
 
-namespace pepXML {
-    namespace Generated {
+namespace pepXML
+{
+    namespace Generated
+    {
         /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.7.2046.0")][System.SerializableAttribute()][System.Diagnostics.DebuggerStepThroughAttribute()][System.ComponentModel.DesignerCategoryAttribute("code")][System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://regis-web.systemsbiology.net/pepXML")] public partial class subInfoDataType
-        class subInfoDataType {
+        class subInfoDataType
+        {
 
         private:
-            std::wstring positionField;
+            std::string positionField;
 
-            std::wstring orig_aaField;
+            std::string orig_aaField;
 
-            std::wstring num_tol_termField;
+            std::string num_tol_termField;
 
-            std::wstring peptide_prev_aaField;
+            std::string peptide_prev_aaField;
 
-            std::wstring peptide_next_aaField;
+            std::string peptide_next_aaField;
 
             /// <remarks/>
         public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string position
-            std::wstring getposition() const;
-            void setposition(const std::wstring &value);
+            std::string getposition() const;
+            void setposition(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string orig_aa
-            std::wstring getorig_aa() const;
-            void setorig_aa(const std::wstring &value);
+            std::string getorig_aa() const;
+            void setorig_aa(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute(DataType = "nonNegativeInteger")] public string num_tol_term
-            std::wstring getnum_tol_term() const;
-            void setnum_tol_term(const std::wstring &value);
+            std::string getnum_tol_term() const;
+            void setnum_tol_term(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string peptide_prev_aa
-            std::wstring getpeptide_prev_aa() const;
-            void setpeptide_prev_aa(const std::wstring &value);
+            std::string getpeptide_prev_aa() const;
+            void setpeptide_prev_aa(const std::string &value);
 
             /// <remarks/>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [System.Xml.Serialization.XmlAttributeAttribute()] public string peptide_next_aa
-            std::wstring getpeptide_next_aa() const;
-            void setpeptide_next_aa(const std::wstring &value);
+            std::string getpeptide_next_aa() const;
+            void setpeptide_next_aa(const std::string &value);
         };
     }
 }
