@@ -448,16 +448,17 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 //get binaryData as string
                 char *binary_data = binaryData.binary().data();
                 long binsize = binaryData.binary().size();
-                std::vector<unsigned char> bin_data; 
-                char *p = binary_data;
-                for ( int iii=0; iii<binsize; iii++ ) {
-                    bin_data.push_back(*p);
-                    p++;
-                }
+                // std::vector<unsigned char> bin_data; 
+                // char *p = binary_data;
+                // for ( int iii=0; iii<binsize; iii++ ) {
+                //     bin_data.push_back(*p);
+                //     p++;
+                // }
 
                 // print_chars( binary_data, binsize );
                 
-                std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
+                // std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
+                std::vector<double> data = ConvertBase64ToDoubles(binary_data, binsize, compressed, is32bit);
                 if (mzArray)
                 {
                     masses = data;
@@ -640,7 +641,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             return new MsDataScan(mzmlMzSpectrum, oneBasedIndex, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar2, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId, std::make_optional(selectedIonMz), selectedIonCharge, selectedIonIntensity, isolationMz, std::make_optional(lowIsolation + highIsolation), std::make_optional(dissociationType), precursorScanNumber, monoisotopicMz);
         }
 
-        std::vector<double> Mzml::ConvertBase64ToDoubles(std::vector<unsigned char> &bytes, bool zlibCompressed, bool is32bit)
+        std::vector<double> Mzml::ConvertBase64ToDoubles(char* bytes, long bytes_size, bool zlibCompressed, bool is32bit)
         {
 
 // TODO:  Add capability of compressed data
@@ -665,7 +666,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             int size = is32bit ? sizeof(float) : sizeof(double);
 
-            int length = bytes.size() / size;
+            // int length = bytes.size() / size;
+            int length = bytes_size / size;
             std::vector<double> convertedArray(length);
 
             for (int i = 0; i < length; i++)

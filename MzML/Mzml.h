@@ -92,7 +92,7 @@ namespace IO
             /// <param name="bytes">the 64-bit encoded byte array</param>
             /// <param name="zlibCompressed">Specifies if the byte array is zlib compressed</param>
             /// <returns>a decompressed, de-encoded double[]</returns>
-            static std::vector<double> ConvertBase64ToDoubles(std::vector<unsigned char> &bytes, bool zlibCompressed = false, bool is32bit = true);
+            static std::vector<double> ConvertBase64ToDoubles(char *bytes, long bytes_size, bool zlibCompressed = false, bool is32bit = true);
 
             static int GetOneBasedPrecursorScanNumber(ms::mzml::mzMLType *_mzMLConnection, int oneBasedSpectrumNumber);
         };
