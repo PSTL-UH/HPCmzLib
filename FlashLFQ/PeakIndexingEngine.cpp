@@ -152,7 +152,17 @@ namespace FlashLFQ
             p::MassSpectrum::LastX->Value;
         }) * BinsPerDalton)) + 1);
 #endif
-
+        double max_val =0.0;
+        for ( auto p : msDataScans ) {
+            if ( p != nullptr && p->getMassSpectrum()->getLastX().has_value() ) {
+                if ( max_val < p->getMassSpectrum()->getLastX().value() ) {
+                    max_val = p->getMassSpectrum()->getLastX().value();
+                }
+            }
+        }
+        
+        
+        _indexedPeaks = std::vector<std::vector<IndexedMassSpectralPeak*>>(static_cast<int>(std::ceil(max_val *BinsPerDalton)+1));
         int scanIndex = 0;
         std::vector<Ms1ScanInfo*> scanInfo;
 
