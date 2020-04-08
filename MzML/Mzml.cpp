@@ -679,7 +679,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 strm.next_in = Z_NULL;
                 ret = inflateInit(&strm);
                 if (ret != Z_OK){
-                    // return ret;
                     std::cout << "Error initializing inflate" << std::endl;
                 }
 
@@ -712,13 +711,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                         remaining_bytes = 0;
                     }
 
-                    // if (ferror(source)) {
-                    //     (void)inflateEnd(&strm);
-                    //     return Z_ERRNO;
-                    // }
-                    
-                    if (strm.avail_in == 0)
-                        break;
                     strm.next_in = in;
 
                     /* run inflate() on input until output buffer not full */
