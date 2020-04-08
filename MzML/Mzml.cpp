@@ -636,40 +636,30 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
         std::vector<double> Mzml::ConvertBase64ToDoubles(char* bytes, long bytes_size, bool zlibCompressed, bool is32bit)
         {
-
-// TODO:  Add capability of compressed data
-#ifdef ORIG
-            if (zlibCompressed)
-            {
-                auto output = new MemoryStream();
-                {
-                    auto compressStream = MemoryStream(bytes);
-                    compressStream.ReadByte();
-                    compressStream.ReadByte();
-                    {
-                        auto decompressor = DeflateStream(compressStream, CompressionMode::Decompress);
-                        decompressor.CopyTo(output);
-                        decompressor.Close();
-                        output->Position = 0;
-                        bytes = output->ToArray();
-                    }
-                }
-            }
-#endif
-
+            unsigned char *out_stream = NULL;
             if (zlibCompressed){
                 unsigned char *unsigned_bytes = (unsigned char*)bytes;
-                unsigned char *out_stream = new unsigned char[0];
+                out_stream = (unsigned char*)malloc(bytes_size);
+                if (out_stream == nullptr)
+                    std::cout << "Error allocating out_stream" << std::endl;
 
                 int CHUNK = 16384;
-                long remaining_bytes = bytes_size;
-                long total_copied = 0, copied = 0;
+                long max_size = bytes_size;
 
                 int ret;
                 unsigned have;
                 z_stream strm;
-                unsigned char in[CHUNK];
+
                 unsigned char out[CHUNK];
+
+                //set avail_in to bytes_size
+                strm.avail_in = CHUNK;
+
+                //reset bytes_size to 0
+                bytes_size = 0;
+
+                //set avail_nextin to bytes ptr
+                strm.next_in = unsigned_bytes;
 
                 /* allocate inflate state */
                 strm.zalloc = Z_NULL;
@@ -682,82 +672,35 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     std::cout << "Error initializing inflate" << std::endl;
                 }
 
-                /* while bytes array not null*/
+                /* run inflate() on input until output buffer not full */
                 do {
-                    //copy unsigned array into in array one CHUNK at a time
-                    if (remaining_bytes >= CHUNK) {
-
-                        //copy CHUNK of unsigned bytes to in array
-                        std::memcpy(in, unsigned_bytes, CHUNK);
-
-                        //shift pointer by CHUNK
-                        unsigned_bytes += CHUNK;
-
-                        //decrement remaining bytes by CHUNK
-                        remaining_bytes -= CHUNK;
-
-                        //set the number of copied bytes equal to CHUNK
-                        copied = CHUNK;
-                    }
-                    //if the number of remaining bytes to be copied is less than the CHUNK, copy the remaining bytes
-                    else {
-                        //copy the remaining unsigned bytes to in array
-                        std::memcpy(in, unsigned_bytes, remaining_bytes);
-
-                        //set the number of copied bytes to the remaining bytes
-                        copied = remaining_bytes;
-
-                        //set remaining bytes to 0, this the the termination condition for outer do/while loop.
-                        remaining_bytes = 0;
+                    strm.avail_out = CHUNK;
+                    strm.next_out = out;
+                    ret = inflate(&strm, Z_NO_FLUSH);
+                    assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+                    switch (ret) {
+                    case Z_NEED_DICT:
+                        ret = Z_DATA_ERROR;     /* and fall through */
+                    case Z_DATA_ERROR:
+                    case Z_MEM_ERROR:
+                        (void)inflateEnd(&strm);
+                        std::cout << "Z memory error" << std::endl;
                     }
 
-                    strm.next_in = in;
+                    have = CHUNK - strm.avail_out;
 
-                    /* run inflate() on input until output buffer not full */
-                    do {
-                        strm.avail_out = CHUNK;
-                        strm.next_out = out;
-                        ret = inflate(&strm, Z_NO_FLUSH);
-                        assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
-                        switch (ret) {
-                        case Z_NEED_DICT:
-                            ret = Z_DATA_ERROR;     /* and fall through */
-                        case Z_DATA_ERROR:
-                        case Z_MEM_ERROR:
-                            (void)inflateEnd(&strm);
-                            std::cout << "Z memory error" << std::endl;
-                            // return ret;
-                        }
-                        have = CHUNK - strm.avail_out;
+                    if ((bytes_size + have) > max_size){
+                        out_stream = (unsigned char*)realloc(out_stream, max_size + have);
+                        max_size += have;
+                        if (out_stream == nullptr)
+                            std::cout << "Error reallocating out_stream" << std::endl;
+                    }
 
-                        //create copy array to hold current out_stream contents
-                        unsigned char* out_copy = new unsigned char[total_copied];
-                        memcpy(out_copy, out_stream, total_copied);
+                    memcpy(out_stream + bytes_size, out, have);
 
-                        //delete and reinintialize out_stream with new size equal
-                        //to the total copied up to this iteration plus the 
-                        //number copied in this iteration
-                        delete[] out_stream;
-                        out_stream = new unsigned char[total_copied + copied];
-
-                        //copy the original out stream contents from the copy array
-                        //back to the out stream array
-                        memcpy(out_stream, out_copy, total_copied);
-
-                        //create pointer to previous end of out stream array
-                        unsigned char* pos = out_stream + total_copied;
-
-                        //copy the new contents from in array to the end of out stream array.
-                        memcpy(pos, in, copied);
-
-                        // if (fwrite(out, 1, have, dest) != have || ferror(dest)) {
-                        //     (void)inflateEnd(&strm);
-                        //     return Z_ERRNO;
-                        // }
-
-                    } while (strm.avail_out == 0);
-                } while (remaining_bytes > 0);
-
+                    bytes_size += have;
+                } while (strm.avail_out == 0);
+                (void)inflateEnd(&strm);
                 //cast unsigned char *out_stream to char*, and set
                 //bytes pointer to beginning of out_stream
                 bytes = (char *)out_stream;
@@ -765,7 +708,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             int size = is32bit ? sizeof(float) : sizeof(double);
 
-            // int length = bytes.size() / size;
             int length = bytes_size / size;
             std::vector<double> convertedArray(length);
 
@@ -773,24 +715,16 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             {
                 if (is32bit)
                 {
-#ifdef ORIG
-                    //public static float ToSingle (byte[] value, int startIndex)
-                    convertedArray[i] = BitConverter::ToSingle(bytes, i * size);
-#endif
                     BitConverter bc;
                     convertedArray[i] = bc.toSingle(bytes, i*size);
                 }
                 else
                 {
-#ifdef ORIG
-                    //public static double ToDouble (byte[] value, int startIndex);
-                    convertedArray[i] = BitConverter::ToDouble(bytes, i * size);
-#endif
-
                     BitConverter bc;
                     convertedArray[i] = bc.toDouble(bytes, i*size);
                 }
             }
+            free(out_stream);
             return convertedArray;
         }
 
