@@ -9,7 +9,7 @@
 
 # Generated automatically from Makefile.in by configure.
 
-MZLIB_DIR      = /home/gabriel/XLMS/mzlib-master/
+MZLIB_DIR      = /home/nrbiddle/mzlib-c/
 MZLIB_INC_DIR  = $(MZLIB_DIR)/include 
 MZLIB_LIB_DIR  = $(MZLIB_DIR)/lib
 MZLIB_LIB      = libmzlib.a
@@ -31,5 +31,5 @@ CFLAGS      = -g -O0
 CXX         = g++
 CXXFLAGS    = -Wall -Wno-delete-non-virtual-dtor -g -O0 -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -I$(XSD_INC_DIR)/xsd -I$(XSD_INC_DIR)/xercesc -std=c++17
 CXXLOCALFLAGS = -DNDEBUG
-LDFLAGS     = -L$(MZLIB_LIB_DIR)  -lflashlfq -lmzlib -lstdc++fs -L$(XSD_LIB_DIR) $(XSD_LIB)
+LDFLAGS     = -L$(MZLIB_LIB_DIR)  -lflashlfq -lmzlib -lz -lstdc++fs -L$(XSD_LIB_DIR) $(XSD_LIB)
 

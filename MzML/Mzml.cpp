@@ -17,6 +17,8 @@
 
 #include <cmath>
 
+#include "zlib.h"
+
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 using namespace xercesc_3_1;
@@ -445,19 +447,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     intensityArray |= cv.accession() == _intensityArray;
                 }
 
-                //get binaryData as string
+                //get binaryData as char array
                 char *binary_data = binaryData.binary().data();
                 long binsize = binaryData.binary().size();
-                // std::vector<unsigned char> bin_data; 
-                // char *p = binary_data;
-                // for ( int iii=0; iii<binsize; iii++ ) {
-                //     bin_data.push_back(*p);
-                //     p++;
-                // }
 
-                // print_chars( binary_data, binsize );
-                
-                // std::vector<double> data = ConvertBase64ToDoubles(bin_data, compressed, is32bit);
                 std::vector<double> data = ConvertBase64ToDoubles(binary_data, binsize, compressed, is32bit);
                 if (mzArray)
                 {
@@ -663,6 +656,120 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
 #endif
+
+            if (zlibCompressed){
+                unsigned char *unsigned_bytes = (unsigned char*)bytes;
+                unsigned char *out_stream = new unsigned char[0];
+
+                int CHUNK = 16384;
+                long remaining_bytes = bytes_size;
+                long total_copied = 0, copied = 0;
+
+                int ret;
+                unsigned have;
+                z_stream strm;
+                unsigned char in[CHUNK];
+                unsigned char out[CHUNK];
+
+                /* allocate inflate state */
+                strm.zalloc = Z_NULL;
+                strm.zfree = Z_NULL;
+                strm.opaque = Z_NULL;
+                strm.avail_in = 0;
+                strm.next_in = Z_NULL;
+                ret = inflateInit(&strm);
+                if (ret != Z_OK){
+                    // return ret;
+                    std::cout << "Error initializing inflate" << std::endl;
+                }
+
+                /* while bytes array not null*/
+                do {
+                    //copy unsigned array into in array one CHUNK at a time
+                    if (remaining_bytes >= CHUNK) {
+
+                        //copy CHUNK of unsigned bytes to in array
+                        std::memcpy(in, unsigned_bytes, CHUNK);
+
+                        //shift pointer by CHUNK
+                        unsigned_bytes += CHUNK;
+
+                        //decrement remaining bytes by CHUNK
+                        remaining_bytes -= CHUNK;
+
+                        //set the number of copied bytes equal to CHUNK
+                        copied = CHUNK;
+                    }
+                    //if the number of remaining bytes to be copied is less than the CHUNK, copy the remaining bytes
+                    else {
+                        //copy the remaining unsigned bytes to in array
+                        std::memcpy(in, unsigned_bytes, remaining_bytes);
+
+                        //set the number of copied bytes to the remaining bytes
+                        copied = remaining_bytes;
+
+                        //set remaining bytes to 0, this the the termination condition for outer do/while loop.
+                        remaining_bytes = 0;
+                    }
+
+                    // if (ferror(source)) {
+                    //     (void)inflateEnd(&strm);
+                    //     return Z_ERRNO;
+                    // }
+                    
+                    if (strm.avail_in == 0)
+                        break;
+                    strm.next_in = in;
+
+                    /* run inflate() on input until output buffer not full */
+                    do {
+                        strm.avail_out = CHUNK;
+                        strm.next_out = out;
+                        ret = inflate(&strm, Z_NO_FLUSH);
+                        assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+                        switch (ret) {
+                        case Z_NEED_DICT:
+                            ret = Z_DATA_ERROR;     /* and fall through */
+                        case Z_DATA_ERROR:
+                        case Z_MEM_ERROR:
+                            (void)inflateEnd(&strm);
+                            std::cout << "Z memory error" << std::endl;
+                            // return ret;
+                        }
+                        have = CHUNK - strm.avail_out;
+
+                        //create copy array to hold current out_stream contents
+                        unsigned char* out_copy = new unsigned char[total_copied];
+                        memcpy(out_copy, out_stream, total_copied);
+
+                        //delete and reinintialize out_stream with new size equal
+                        //to the total copied up to this iteration plus the 
+                        //number copied in this iteration
+                        delete[] out_stream;
+                        out_stream = new unsigned char[total_copied + copied];
+
+                        //copy the original out stream contents from the copy array
+                        //back to the out stream array
+                        memcpy(out_stream, out_copy, total_copied);
+
+                        //create pointer to previous end of out stream array
+                        unsigned char* pos = out_stream + total_copied;
+
+                        //copy the new contents from in array to the end of out stream array.
+                        memcpy(pos, in, copied);
+
+                        // if (fwrite(out, 1, have, dest) != have || ferror(dest)) {
+                        //     (void)inflateEnd(&strm);
+                        //     return Z_ERRNO;
+                        // }
+
+                    } while (strm.avail_out == 0);
+                } while (remaining_bytes > 0);
+
+                //cast unsigned char *out_stream to char*, and set
+                //bytes pointer to beginning of out_stream
+                bytes = (char *)out_stream;
+            }
 
             int size = is32bit ? sizeof(float) : sizeof(double);
 
