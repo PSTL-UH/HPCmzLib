@@ -5,10 +5,10 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace mzIdentML110 { namespace Generated { class MzIdentMLType110; } }
-namespace mzIdentML111 { namespace Generated { class MzIdentMLType111; } }
-namespace mzIdentML120 { namespace Generated { class MzIdentMLType120; } }
-namespace MzLibUtil { class Tolerance; }
+#include "mzIdentML110.h"
+#include "mzIdentML111.h"
+#include "mzIdentML120.h"
+#include "Tolerance.h"
 
 // Copyright 2016 Stefan Solntsev
 //
@@ -36,11 +36,9 @@ namespace MzIdentML
     {
 
     private:
-        mzIdentML110::Generated::MzIdentMLType110 *const dd110;
-        mzIdentML111::Generated::MzIdentMLType111 *const dd111;
-        mzIdentML120::Generated::MzIdentMLType120 *const dd120;
-
-
+        mzIdentML110::MzIdentMLType *dd110;
+        mzIdentML111::MzIdentMLType *dd111;
+        mzIdentML120::MzIdentMLType *dd120;
 
     public:
         virtual ~MzidIdentifications()
@@ -52,16 +50,11 @@ namespace MzIdentML
 
         MzidIdentifications(const std::string &mzidFile);
 
-
-
         Tolerance *getParentTolerance() const override;
 
         Tolerance *getFragmentTolerance() const override;
 
         int getCount() const override;
-
-
-//        #region Public Methods
 
         double CalculatedMassToCharge(int sirIndex, int siiIndex) override;
 
@@ -103,6 +96,5 @@ namespace MzIdentML
 
         std::string EndResidueInProtein(int sirIndex, int siiIndex) override;
 
-//        #endregion Public Methods
     };
 }

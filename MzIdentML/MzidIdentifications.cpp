@@ -1,13 +1,10 @@
 ﻿#include "MzidIdentifications.h"
-#include "mzIdentML110.Generated.MzIdentMLType110.h"
-#include "mzIdentML111.Generated.MzIdentMLType111.h"
-#include "mzIdentML120.Generated.MzIdentMLType120.h"
+#include "mzIdentML110.h"
+#include "mzIdentML111.h"
+#include "mzIdentML120.h"
 #include "../MzLibUtil/Tolerance.h"
 #include "../MzLibUtil/AbsoluteTolerance.h"
 #include "../MzLibUtil/PpmTolerance.h"
-#include "mzIdentML110.Generated.PeptideEvidenceRefType.h"
-#include "mzIdentML111.Generated.PeptideEvidenceRefType.h"
-#include "mzIdentML120.Generated.PeptideEvidenceRefType.h"
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -19,50 +16,33 @@ namespace MzIdentML
     {
         try
         {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (Stream stream = new FileStream(mzidFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-                XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::Generated::MzIdentMLType110));
-                // Read the XML file into the variable
-                dd110 = dynamic_cast<mzIdentML110::Generated::MzIdentMLType110*>(_indexedSerializer->Deserialize(stream));
-
-                delete _indexedSerializer;
-            }
+            Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
+            XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::MzIdentMLType));
+            // Read the XML file into the variable
+            dd110 = dynamic_cast<mzIdentML110::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
+            
+            delete _indexedSerializer;
         }
         catch (...)
         {
             try
             {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (Stream stream = new FileStream(mzidFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-                    XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::Generated::MzIdentMLType111));
-                    // Read the XML file into the variable
-                    dd111 = dynamic_cast<mzIdentML111::Generated::MzIdentMLType111*>(_indexedSerializer->Deserialize(stream));
+                Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
+                XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::MzIdentMLType));
+                // Read the XML file into the variable
+                dd111 = dynamic_cast<mzIdentML111::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
 
-                    delete _indexedSerializer;
-                }
+                delete _indexedSerializer;
             }
             catch (...)
             {
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (Stream stream = new FileStream(mzidFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-                    XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::Generated::MzIdentMLType120));
-                    // Read the XML file into the variable
-                    dd120 = dynamic_cast<mzIdentML120::Generated::MzIdentMLType120*>(_indexedSerializer->Deserialize(stream));
+                Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
+                XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::MzIdentMLType));
+                // Read the XML file into the variable
+                dd120 = dynamic_cast<mzIdentML120::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
 
-                    delete _indexedSerializer;
-                }
-            }
-
-
+                delete _indexedSerializer;
+            }            
         }
     }
 
@@ -70,21 +50,22 @@ namespace MzIdentML
     {
         try
         {
-            auto hm = dd110->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance;
-            AbsoluteTolerance tempVar(static_cast<double>(hm[0].value));
+            auto hm = dd110->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].ParentTolerance();
+            //AbsoluteTolerance tempVar(static_cast<double>(hm[0].value));
+            AbsoluteTolerance tempVar(hm.get());
             return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar): new PpmTolerance(static_cast<double>(hm[0].value));
         }
         catch (...)
         {
             try
             {
-                auto hm = dd111->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance;
+                auto hm = dd111->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].ParentTolerance();
                 AbsoluteTolerance tempVar2(static_cast<double>(hm[0].value));
                 return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar2): new PpmTolerance(static_cast<double>(hm[0].value));
             }
             catch (...)
             {
-                auto hm = dd120->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance;
+                auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].ParentTolerance();
                 AbsoluteTolerance tempVar3(static_cast<double>(hm[0].value));
                 return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar3): new PpmTolerance(static_cast<double>(hm[0].value));
             }
@@ -95,7 +76,7 @@ namespace MzIdentML
     {
         try
         {
-            auto hm = dd110->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance;
+            auto hm = dd110->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].FragmentTolerance();
             AbsoluteTolerance tempVar(static_cast<double>(hm[0].value));
             return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar): new PpmTolerance(static_cast<double>(hm[0].value));
         }
@@ -103,13 +84,13 @@ namespace MzIdentML
         {
             try
             {
-                auto hm = dd111->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance;
+                auto hm = dd111->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].FragmentTolerance();
                 AbsoluteTolerance tempVar2(static_cast<double>(hm[0].value));
                 return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar2): new PpmTolerance(static_cast<double>(hm[0].value));
             }
             catch (...)
             {
-                auto hm = dd120->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance;
+                auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].FragmentTolerance();
                 AbsoluteTolerance tempVar3(static_cast<double>(hm[0].value));
                 return hm[0].unitName->Equals("dalton") ? static_cast<Tolerance*>(&tempVar3): new PpmTolerance(static_cast<double>(hm[0].value));
             }
@@ -120,17 +101,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult->Count();
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()->Count();
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult->Count();
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()->Count();
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult->Count();
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()->Count();
             }
         }
     }
@@ -139,17 +120,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].calculatedMassToCharge;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge();
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].calculatedMassToCharge;
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge();
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].calculatedMassToCharge;
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge();
             }
         }
     }
@@ -158,17 +139,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].chargeState;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].chargeState;
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].chargeState;
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
             }
         }
     }
@@ -177,17 +158,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].experimentalMassToCharge;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].experimentalMassToCharge;
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].experimentalMassToCharge;
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
             }
         }
     }
@@ -197,10 +178,10 @@ namespace MzIdentML
         //if any of the peptide evidences is decoy, is decoy
         try
         {
-            for (mzIdentML110::Generated::PeptideEvidenceRefType *pe : dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+            for (mzIdentML110::PeptideEvidenceRefType *pe : dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef)
             {
-                std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
@@ -218,10 +199,10 @@ namespace MzIdentML
             try
             {
 
-                for (mzIdentML111::Generated::PeptideEvidenceRefType *pe : dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML111::PeptideEvidenceRefType *pe : dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef)
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                     {
                         //if (ok.id.Equals(peptideEvidenceRef))
                         //{
@@ -238,10 +219,10 @@ namespace MzIdentML
             }
             catch (...)
             {
-                for (mzIdentML120::Generated::PeptideEvidenceRefType *pe : dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML120::PeptideEvidenceRefType *pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef)
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                     {
                         //if (ok.id.Equals(peptideEvidenceRef))
                         //{
@@ -264,7 +245,7 @@ namespace MzIdentML
     {
         try
         {
-            auto cvParam = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].cvParam.Where([&] (std::any cv)
+            auto cvParam = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].cvParam().Where([&] (std::any cv)
             {
                 return cv->accession == "MS:1002354";
             }).FirstOrDefault();
@@ -274,7 +255,7 @@ namespace MzIdentML
         {
             try
             {
-                auto cvParam = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].cvParam.Where([&] (std::any cv)
+                auto cvParam = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].cvParam().Where([&] (std::any cv)
                 {
                     return cv->accession == "MS:1002354";
                 }).FirstOrDefault();
@@ -282,7 +263,7 @@ namespace MzIdentML
             }
             catch (...)
             {
-                auto cvParam = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].cvParam.Where([&] (std::any cv)
+                auto cvParam = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].cvParam().Where([&] (std::any cv)
                 {
                     return cv->accession == "MS:1002354";
                 }).FirstOrDefault();
@@ -296,7 +277,7 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
             {
                 return i != nullptr;
             });
@@ -305,14 +286,14 @@ namespace MzIdentML
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
                 {
                     return i != nullptr;
                 });
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)
                 {
                     return i != nullptr;
                 });
@@ -325,16 +306,16 @@ namespace MzIdentML
         std::string s = "";
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
-                            s = ok2->Modification[i].cvParam[0].accession;
+                            s = ok2->Modification[i].cvParam()[0].accession;
                             break;
                         }
                     }
@@ -345,16 +326,16 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].accession;
+                                s = ok2->Modification[i].cvParam()[0].accession;
                                 break;
                             }
                         }
@@ -363,16 +344,16 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].accession;
+                                s = ok2->Modification[i].cvParam()[0].accession;
                                 break;
                             }
                         }
@@ -390,16 +371,16 @@ namespace MzIdentML
         std::string s = "";
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
-                            s = ok2->Modification[i].cvParam[0].value;
+                            s = ok2->Modification[i].cvParam()[0].value;
                             break;
                         }
                     }
@@ -410,16 +391,16 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].value;
+                                s = ok2->Modification[i].cvParam()[0].value;
                                 break;
                             }
                         }
@@ -428,16 +409,16 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].value;
+                                s = ok2->Modification[i].cvParam()[0].value;
                                 break;
                             }
                         }
@@ -454,16 +435,16 @@ namespace MzIdentML
         std::string s = "";
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
-                            s = ok2->Modification[i].cvParam[0].cvRef;
+                            s = ok2->Modification[i].cvParam()[0].cvRef;
                             break;
                         }
                     }
@@ -474,16 +455,16 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].cvRef;
+                                s = ok2->Modification[i].cvParam()[0].cvRef;
                                 break;
                             }
                         }
@@ -492,16 +473,16 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
-                                s = ok2->Modification[i].cvParam[0].cvRef;
+                                s = ok2->Modification[i].cvParam()[0].cvRef;
                                 break;
                             }
                         }
@@ -518,12 +499,12 @@ namespace MzIdentML
         int modLoc = -1;
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
@@ -538,12 +519,12 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -556,12 +537,12 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -582,12 +563,12 @@ namespace MzIdentML
         double modMass = -1;
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
@@ -602,12 +583,12 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -620,12 +601,12 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -646,12 +627,12 @@ namespace MzIdentML
         int numMod = 0;
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
@@ -670,12 +651,12 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -692,12 +673,12 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -722,12 +703,12 @@ namespace MzIdentML
         std::string s = "";
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getPeptide())
+                    for (auto ok2 : dd110->SequenceCollection()->Peptide())
                     {
                         if (ok2->id->Equals(ok->peptide_ref))
                         {
@@ -742,12 +723,12 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd111->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -760,12 +741,12 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getPeptide())
+                        for (auto ok2 : dd120->SequenceCollection()->Peptide())
                         {
                             if (ok2->id->Equals(ok->peptide_ref))
                             {
@@ -786,37 +767,37 @@ namespace MzIdentML
         std::string ms2id = "";
         try
         {
-            if (dd110->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Thermo RAW format") || dd110->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("mzML format"))
+            if (dd110->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Thermo RAW format") || dd110->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("mzML format"))
             {
-                ms2id = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].spectrumID;
+                ms2id = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].spectrumID();
             }
-            else if (dd110->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Mascot MGF format"))
+            else if (dd110->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Mascot MGF format"))
             {
-                ms2id = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].cvParam[0].value;
+                ms2id = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].cvParam()[0].value;
             }
         }
         catch (...)
         {
             try
             {
-                if (dd111->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Thermo RAW format") || dd111->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("mzML format"))
+                if (dd111->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Thermo RAW format") || dd111->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("mzML format"))
                 {
-                    ms2id = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].spectrumID;
+                    ms2id = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].spectrumID();
                 }
-                else if (dd111->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Mascot MGF format"))
+                else if (dd111->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Mascot MGF format"))
                 {
-                    ms2id = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].cvParam[0].value;
+                    ms2id = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].cvParam()[0].value;
                 }
             }
             catch (...)
             {
-                if (dd120->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Thermo RAW format") || dd120->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("mzML format"))
+                if (dd120->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Thermo RAW format") || dd120->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("mzML format"))
                 {
-                    ms2id = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].spectrumID;
+                    ms2id = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].spectrumID();
                 }
-                else if (dd120->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat.cvParam.name->Equals("Mascot MGF format"))
+                else if (dd120->DataCollection().Inputs().SpectraData()[0].FileFormat.cvParam().name->Equals("Mascot MGF format"))
                 {
-                    ms2id = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].cvParam[0].value;
+                    ms2id = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].cvParam()[0].value;
                 }
             }
 
@@ -829,17 +810,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values;
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values;
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values;
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values;
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values;
             }
         }
     }
@@ -848,17 +829,17 @@ namespace MzIdentML
     {
         try
         {
-            return dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values->Length;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values->Length;
         }
         catch (...)
         {
             try
             {
-                return dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values->Length;
+                return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values->Length;
             }
             catch (...)
             {
-                return dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].Fragmentation[i].FragmentArray[0].values->Length;
+                return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray[0].values->Length;
             }
         }
     }
@@ -869,12 +850,12 @@ namespace MzIdentML
 
         try
         {
-            std::string peptideEvidenceRef = dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-            for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+            std::string peptideEvidenceRef = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef()[0].peptideEvidence_ref;
+            for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
             {
                 if (ok->id->Equals(peptideEvidenceRef))
                 {
-                    for (auto ok2 : dd110->getSequenceCollection()->getDBSequence())
+                    for (auto ok2 : dd110->SequenceCollection()->DBSequence())
                     {
                         if (ok2->id->Equals(ok->dBSequence_ref))
                         {
@@ -889,12 +870,12 @@ namespace MzIdentML
         {
             try
             {
-                std::string peptideEvidenceRef = dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef()[0].peptideEvidence_ref;
+                for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd111->getSequenceCollection()->getDBSequence())
+                        for (auto ok2 : dd111->SequenceCollection()->DBSequence())
                         {
                             if (ok2->id->Equals(ok->dBSequence_ref))
                             {
@@ -907,12 +888,12 @@ namespace MzIdentML
             }
             catch (...)
             {
-                std::string peptideEvidenceRef = dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef[0].peptideEvidence_ref;
-                for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef()[0].peptideEvidence_ref;
+                for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd120->getSequenceCollection()->getDBSequence())
+                        for (auto ok2 : dd120->SequenceCollection()->DBSequence())
                         {
                             if (ok2->id->Equals(ok->dBSequence_ref))
                             {
@@ -934,14 +915,14 @@ namespace MzIdentML
 
         try
         {
-            for (mzIdentML110::Generated::PeptideEvidenceRefType *pe : dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+            for (mzIdentML110::PeptideEvidenceRefType *pe : dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
             {
-                std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
-                        for (auto ok2 : dd110->getSequenceCollection()->getDBSequence())
+                        for (auto ok2 : dd110->SequenceCollection()->DBSequence())
                         {
                             if (ok2->id->Equals(ok->dBSequence_ref))
                             {
@@ -961,14 +942,14 @@ namespace MzIdentML
         {
             try
             {
-                for (mzIdentML111::Generated::PeptideEvidenceRefType *pe : dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML111::PeptideEvidenceRefType *pe : dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {
-                            for (auto ok2 : dd111->getSequenceCollection()->getDBSequence())
+                            for (auto ok2 : dd111->SequenceCollection()->DBSequence())
                             {
                                 if (ok2->id->Equals(ok->dBSequence_ref))
                                 {
@@ -986,14 +967,14 @@ namespace MzIdentML
             }
             catch (...)
             {
-                for (mzIdentML120::Generated::PeptideEvidenceRefType *pe : dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML120::PeptideEvidenceRefType *pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {
-                            for (auto ok2 : dd120->getSequenceCollection()->getDBSequence())
+                            for (auto ok2 : dd120->SequenceCollection()->DBSequence())
                             {
                                 if (ok2->id->Equals(ok->dBSequence_ref))
                                 {
@@ -1019,10 +1000,10 @@ namespace MzIdentML
         std::string startResidue = "";
         try
         {
-            for (mzIdentML110::Generated::PeptideEvidenceRefType *pe : dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+            for (mzIdentML110::PeptideEvidenceRefType *pe : dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef()
             {
-                std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
@@ -1041,10 +1022,10 @@ namespace MzIdentML
             try
             {
 
-                for (mzIdentML111::Generated::PeptideEvidenceRefType *pe : dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML111::PeptideEvidenceRefType *pe : dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {
@@ -1060,10 +1041,10 @@ namespace MzIdentML
             }
             catch (...)
             {
-                for (mzIdentML120::Generated::PeptideEvidenceRefType *pe : dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML120::PeptideEvidenceRefType *pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {
@@ -1087,10 +1068,10 @@ namespace MzIdentML
         std::string endResidue = "";
         try
         {
-            for (mzIdentML110::Generated::PeptideEvidenceRefType *pe : dd110->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+            for (mzIdentML110::PeptideEvidenceRefType *pe : dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
             {
-                std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                for (auto ok : dd110->getSequenceCollection()->getPeptideEvidence())
+                std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                for (auto ok : dd110->SequenceCollection()->PeptideEvidence())
                 {
                     if (ok->id->Equals(peptideEvidenceRef))
                     {
@@ -1108,10 +1089,10 @@ namespace MzIdentML
         {
             try
             {
-                for (mzIdentML111::Generated::PeptideEvidenceRefType *pe : dd111->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML111::PeptideEvidenceRefType *pe : dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd111->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd111->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {
@@ -1127,10 +1108,10 @@ namespace MzIdentML
             }
             catch (...)
             {
-                for (mzIdentML120::Generated::PeptideEvidenceRefType *pe : dd120->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[sirIndex].SpectrumIdentificationItem[siiIndex].PeptideEvidenceRef)
+                for (mzIdentML120::PeptideEvidenceRefType *pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
                 {
-                    std::string peptideEvidenceRef = pe->getpeptideEvidence_ref();
-                    for (auto ok : dd120->getSequenceCollection()->getPeptideEvidence())
+                    std::string peptideEvidenceRef = pe->peptideEvidence_ref();
+                    for (auto ok : dd120->SequenceCollection()->PeptideEvidence())
                     {
                         if (ok->id->Equals(peptideEvidenceRef))
                         {

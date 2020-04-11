@@ -30,6 +30,9 @@ all:
 	cd Proteomics ; make ; cd ..
 	cd MzML ; make ; cd ..
 	cd FlashLFQ ; make ; cd ..
+	cd pepXML ; make ; cd ..
+
+#	cd MzIdentML ; make ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
@@ -47,6 +50,8 @@ clean:
 	cd Proteomics ; make clean ; cd ..
 	cd MzML ; make clean ; cd ..
 	cd FlashLFQ ; make clean ; cd ..
+	cd pepXML ; make clean ; cd ..
+	cd MzIdentML ; make clean ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(MZLIB_LIB) ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(FLASHLFQ_LIB) ; cd ..
 	rm -rf *.o *~
