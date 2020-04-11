@@ -5,8 +5,9 @@
 #include <vector>
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace mzIdentML { namespace Generated { class MzIdentMLType; } }
-namespace mzIdentML110 { namespace Generated { class MzIdentMLType; } }
+namespace mzIdentML110 { namespace Generated { class MzIdentMLType110; } }
+namespace mzIdentML111 { namespace Generated { class MzIdentMLType111; } }
+namespace mzIdentML120 { namespace Generated { class MzIdentMLType120; } }
 namespace MzLibUtil { class Tolerance; }
 
 // Copyright 2016 Stefan Solntsev
@@ -29,29 +30,29 @@ namespace MzLibUtil { class Tolerance; }
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 
-namespace MzIdentML {
-    class MzidIdentifications : public IIdentifications {
-//        #region Private Fields
+namespace MzIdentML
+{
+    class MzidIdentifications : public IIdentifications
+    {
 
     private:
-        mzIdentML::Generated::MzIdentMLType *const dd;
-        mzIdentML110::Generated::MzIdentMLType *const dd110;
+        mzIdentML110::Generated::MzIdentMLType110 *const dd110;
+        mzIdentML111::Generated::MzIdentMLType111 *const dd111;
+        mzIdentML120::Generated::MzIdentMLType120 *const dd120;
 
-//        #endregion Private Fields
 
-//        #region Public Constructors
 
     public:
-        virtual ~MzidIdentifications() {
-            delete dd;
+        virtual ~MzidIdentifications()
+        {
             delete dd110;
+            delete dd111;
+            delete dd120;
         }
 
-        MzidIdentifications(const std::wstring &mzidFile);
+        MzidIdentifications(const std::string &mzidFile);
 
-//        #endregion Public Constructors
 
-//        #region Public Properties
 
         Tolerance *getParentTolerance() const override;
 
@@ -59,7 +60,6 @@ namespace MzIdentML {
 
         int getCount() const override;
 
-//        #endregion Public Properties
 
 //        #region Public Methods
 
@@ -75,11 +75,11 @@ namespace MzIdentML {
 
         int NumPSMsFromScan(int sirIndex) override;
 
-        std::wstring ModificationAcession(int sirIndex, int siiIndex, int i) override;
+        std::string ModificationAcession(int sirIndex, int siiIndex, int i) override;
 
-        std::wstring ModificationValue(int sirIndex, int siiIndex, int i) override;
+        std::string ModificationValue(int sirIndex, int siiIndex, int i) override;
 
-        std::wstring ModificationDictionary(int sirIndex, int siiIndex, int i) override;
+        std::string ModificationDictionary(int sirIndex, int siiIndex, int i) override;
 
         int ModificationLocation(int sirIndex, int siiIndex, int i) override;
 
@@ -87,21 +87,21 @@ namespace MzIdentML {
 
         int NumModifications(int sirIndex, int siiIndex) override;
 
-        std::wstring PeptideSequenceWithoutModifications(int sirIndex, int siiIndex) override;
+        std::string PeptideSequenceWithoutModifications(int sirIndex, int siiIndex) override;
 
-        std::wstring Ms2SpectrumID(int sirIndex) override;
+        std::string Ms2SpectrumID(int sirIndex) override;
 
         std::vector<float> MatchedIons(int sirIndex, int siiIndex, int i) override;
 
         int MatchedIonCounts(int sirIndex, int siiIndex, int i) override;
 
-        std::wstring ProteinAccession(int sirIndex, int siiIndex) override;
+        std::string ProteinAccession(int sirIndex, int siiIndex) override;
 
-        std::wstring ProteinFullName(int sirIndex, int siiIndex) override;
+        std::string ProteinFullName(int sirIndex, int siiIndex) override;
 
-        std::wstring StartResidueInProtein(int sirIndex, int siiIndex) override;
+        std::string StartResidueInProtein(int sirIndex, int siiIndex) override;
 
-        std::wstring EndResidueInProtein(int sirIndex, int siiIndex) override;
+        std::string EndResidueInProtein(int sirIndex, int siiIndex) override;
 
 //        #endregion Public Methods
     };

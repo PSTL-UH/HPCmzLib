@@ -1,0 +1,11 @@
+mzIdentML source code was generated using the following command lines:
+
+
+xsdcxx cxx-tree --std c++11 --generate-serialization --generate-default-ctor --hxx-suffix .h  --cxx-suffix .cpp --namespace-map http://psidev.info/psi/pi/mzIdentML/1.2=mzIdentML120 mzIdentML120.xsd
+
+xsdcxx cxx-tree --std c++11 --generate-serialization --generate-default-ctor --hxx-suffix .h  --cxx-suffix .cpp --namespace-map http://psidev.info/psi/pi/mzIdentML/1.1=mzIdentML110 mzIdentML110.xsd
+
+xsdcxx cxx-tree --std c++11 --generate-serialization --generate-default-ctor --hxx-suffix .h  --cxx-suffix .cpp --namespace-map http://psidev.info/psi/pi/mzIdentML/1.1.1=mzIdentML111 mzIdentML111.xsd
+
+xsd files were downloaded (and renamed) from :
+https://github.com/HUPO-PSI/mzIdentML/tree/master/schema

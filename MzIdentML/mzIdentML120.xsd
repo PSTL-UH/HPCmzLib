@@ -1,8 +1,7 @@
-<!-- edited with XMLSpy v2011 sp1 (x64) (http://www.altova.com) by Martin Eisenacher (Medizinisches Proteom-Center) -->
-<!-- mzIdentML version 1.1.1
+<!-- mzIdentML version 1.2.0
 Distributed under the Creative Commons license http://creativecommons.org/licenses/by/2.0/.
 -->
-<xsd:schema xmlns:psi-pi="http://psidev.info/psi/pi/mzIdentML/1.1.1" xmlns="http://psidev.info/psi/pi/mzIdentML/1.1.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://psidev.info/psi/pi/mzIdentML/1.1.1" elementFormDefault="qualified" version="1.1.1">
+<xsd:schema xmlns:psi-pi="http://psidev.info/psi/pi/mzIdentML/1.2" xmlns="http://psidev.info/psi/pi/mzIdentML/1.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://psidev.info/psi/pi/mzIdentML/1.2" elementFormDefault="qualified" version="1.2.0">
 	<xsd:element name="MzIdentML" type="MzIdentMLType">
 		<xsd:unique name="PK_MZIDENTML">
 			<xsd:selector xpath="."/>
@@ -103,6 +102,11 @@ Distributed under the Creative Commons license http://creativecommons.org/licens
 		<xsd:unique name="PK_Bibref">
 			<xsd:selector xpath="./psi-pi:BibliographicReference"/>
 			<xsd:field xpath="@id"/>
+		</xsd:unique>
+		<xsd:unique name="PK_spectrumID">		
+			<xsd:selector xpath="./psi-pi:DataCollection/psi-pi:AnalysisData/psi-pi:SpectrumIdentificationList/psi-pi:SpectrumIdentificationResult/psi-pi:SpectrumIdentificationItem"/>
+			<xsd:field xpath="@spectrumID"/>
+			<xsd:field xpath="@spectraData_ref"/>
 		</xsd:unique>
 		<xsd:keyref name="FK_SoftwareContact" refer="PK_AUDIT">
 			<xsd:selector xpath="./psi-pi:AnalysisSoftwareList/psi-pi:AnalysisSoftware/psi-pi:ContactRole"/>
@@ -315,7 +319,7 @@ Distributed under the Creative Commons license http://creativecommons.org/licens
 			<xsd:documentation>The collection of sequences (DBSequence or Peptide) identified and their relationship between each other (PeptideEvidence) to be referenced elsewhere in the results. </xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element name="DBSequence" type="DBSequenceType" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="DBSequence" type="DBSequenceType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="Peptide" type="PeptideType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="PeptideEvidence" type="PeptideEvidenceType" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
@@ -408,7 +412,7 @@ Distributed under the Creative Commons license http://creativecommons.org/licens
 	</xsd:complexType>
 	<xsd:complexType name="SearchDatabaseType">
 		<xsd:annotation>
-			<xsd:documentation>A database for searching mass spectra. Examples include a set of amino acid sequence entries, or annotated spectra libraries. </xsd:documentation>
+			<xsd:documentation>A database for searching mass spectra. Examples include a set of amino acid sequence entries, nucleotide databases (e.g. 6 frame translated) or annotated spectra libraries. </xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="ExternalDataType">
@@ -682,7 +686,7 @@ Distributed under the Creative Commons license http://creativecommons.org/licens
 				<xsd:documentation>True, if the modification is static (i.e. occurs always).</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="massDelta" type="xsd:double" use="required">
+		<xsd:attribute name="massDelta" type="xsd:float" use="required">
 			<xsd:annotation>
 				<xsd:documentation>The mass delta of the searched modification in Daltons.</xsd:documentation>
 			</xsd:annotation>
@@ -714,15 +718,20 @@ Distributed under the Creative Commons license http://creativecommons.org/licens
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element name="FragmentArray" type="FragmentArrayType" minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="cvParam" type="CVParamType">
+			<xsd:element maxOccurs="unbounded" minOccurs="0" name="userParam" type="UserParamType">
 				<xsd:annotation>
-					<xsd:documentation>The type of ion identified.</xsd:documentation>
+					<xsd:documentation>In case more information about the ions annotation has to be conveyed, that has no fit in FragmentArray. Note: It is suggested that the value attribute takes the form of a list of the same size as FragmentArray values. However, there is no formal encoding and it cannot be expeceted that other software will process or impart that information properly.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cvParam" type="CVParamType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The type of ion identified. In the case of neutral losses, one term should report the ion type, a second term should report the neutral loss - note: this is a change in practice from mzIdentML 1.1.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="index" type="listOfIntegers">
 			<xsd:annotation>
-				<xsd:documentation>The index of ions identified as integers, following standard notation for a-c, x-z e.g. if b3 b5 and b6 have been identified, the index would store "3 5 6". For internal ions, the index contains pairs defining the start and end point - see specification document for examples. For immonium ions, the index is the position of the identified ion within the peptide sequence - if the peptide contains the same amino acid in multiple positions that cannot be distinguished, all positions should be given. </xsd:documentation>
+				<xsd:documentation>The index of ions identified as integers, following standard notation for a-c, x-z e.g. if b3 b5 and b6 have been identified, the index would store "3 5 6". For internal ions, the index contains pairs defining the start and end point - see specification document for examples. For immonium ions, the index is the position of the identified ion within the peptide sequence - if the peptide contains the same amino acid in multiple positions that cannot be distinguished, all positions should be given. For precursor ions, including neutral losses, the index value MUST be 0. For any other ions not related to the position within the peptide sequence e.g. quantification reporter ions, the index value MUST be 0. </xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="charge" type="xsd:int" use="required">
@@ -757,7 +766,7 @@ PeptideEvidence elements should be given for all mappings of the corresponding P
 		<xsd:complexContent>
 			<xsd:extension base="IdentifiableType">
 				<xsd:sequence>
-					<xsd:element name="PeptideEvidenceRef" type="PeptideEvidenceRefType" minOccurs="1" maxOccurs="unbounded"/>
+					<xsd:element name="PeptideEvidenceRef" type="PeptideEvidenceRefType" minOccurs="0" maxOccurs="unbounded"/>
 					<xsd:element name="Fragmentation" type="FragmentationType" minOccurs="0"/>
 					<xsd:group ref="ParamGroup" minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
@@ -785,7 +794,7 @@ PeptideEvidence elements should be given for all mappings of the corresponding P
 						<xsd:documentation>The calculated isoelectric point of the (poly)peptide, with relevant modifications included. Do not supply this value if the PI cannot be calcuated properly. </xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="peptide_ref" type="xsd:string">
+				<xsd:attribute name="peptide_ref" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>A reference to the identified (poly)peptide sequence in the Peptide element. </xsd:documentation>
 					</xsd:annotation>
@@ -952,9 +961,9 @@ PeptideEvidence elements should be given for all mappings of the corresponding P
 						</xsd:annotation>
 					</xsd:group>
 				</xsd:sequence>
-				<xsd:attribute name="dBSequence_ref" type="xsd:string">
+				<xsd:attribute name="dBSequence_ref" type="xsd:string"  use="required">
 					<xsd:annotation>
-						<xsd:documentation>A reference to the corresponding DBSequence entry. This optional and redundant, because the PeptideEvidence elements referenced from here also map to the DBSequence. </xsd:documentation>
+						<xsd:documentation>A reference to the corresponding DBSequence entry. Note - this attribute was optional in mzIdentML 1.1 but is now mandatory in mzIdentML 1.2. Consuming software should assume that the DBSequence entry referenced here is the definitive identifier for the protein. </xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="passThreshold" type="xsd:boolean" use="required">
@@ -1471,7 +1480,7 @@ Material.</xsd:documentation>
 	</xsd:simpleType>
 	<xsd:simpleType name="versionRegex">
 		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="(1\.1\.\d+)"/>
+			<xsd:pattern value="(1\.2\.\d+)"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<!-- FuGE stuff -->
@@ -1487,7 +1496,7 @@ Material.</xsd:documentation>
 							<xsd:documentation>A URI to access documentation and tools to interpret the external format of the ExternalData instance. For example, XML Schema or static libraries (APIs) to access binary formats.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="FileFormat" type="FileFormatType" minOccurs="0"/>
+					<xsd:element name="FileFormat" type="FileFormatType" minOccurs="1"/>
 				</xsd:sequence>
 				<xsd:attribute name="location" type="xsd:anyURI" use="required">
 					<xsd:annotation>
@@ -1843,3 +1852,4 @@ vocabulary.</xsd:documentation>
 		</xsd:choice>
 	</xsd:group>
 </xsd:schema>
+
