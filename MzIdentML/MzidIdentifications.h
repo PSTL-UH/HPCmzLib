@@ -32,6 +32,12 @@ using namespace MzLibUtil;
 
 namespace MzIdentML
 {
+    enum class MzidIdentType {
+        v110 = 0,
+        v111 = 1,
+        v120 = 2
+    };
+
     class MzidIdentifications : public IIdentifications
     {
 
@@ -40,6 +46,8 @@ namespace MzIdentML
         mzIdentML111::MzIdentMLType *dd111;
         mzIdentML120::MzIdentMLType *dd120;
 
+        MzidIdentType _type;
+        
     public:
         virtual ~MzidIdentifications()
         {
