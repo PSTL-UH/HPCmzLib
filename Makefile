@@ -31,8 +31,7 @@ all:
 	cd MzML ; make ; cd ..
 	cd FlashLFQ ; make ; cd ..
 	cd pepXML ; make ; cd ..
-
-#	cd MzIdentML ; make ; cd ..
+	cd MzIdentML ; make ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)

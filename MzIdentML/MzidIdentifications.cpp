@@ -72,14 +72,15 @@ namespace MzIdentML
             }
             return new PpmTolerance(std::stod((hm.value().get())));
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].ParentTolerance().get().cvParam()[0];
-            if ( hm.unitName().get()=="dalton" ) {
-                auto tempVar = new AbsoluteTolerance (std::stod(hm.value().get()));
-                return static_cast<Tolerance*>(tempVar);
-            }
-            return new PpmTolerance(std::stod((hm.value().get())));
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].ParentTolerance().get().cvParam()[0];
+        if ( hm.unitName().get()=="dalton" ) {
+            auto tempVar = new AbsoluteTolerance (std::stod(hm.value().get()));
+            return static_cast<Tolerance*>(tempVar);
         }
+        return new PpmTolerance(std::stod((hm.value().get())));
+        //}
     }
     
     Tolerance *MzidIdentifications::getFragmentTolerance() const
@@ -105,14 +106,15 @@ namespace MzIdentML
             }
             return new PpmTolerance(std::stod((hm.value().get())));
         }
-        else if ( _type == MzidIdentType::v120 ) { 
-            auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].FragmentTolerance().get().cvParam()[0];
-            if ( hm.unitName().get()=="dalton" ) {
-                auto tempVar = new AbsoluteTolerance (std::stod(hm.value().get()));
-                return static_cast<Tolerance*>(tempVar);
-            }
-            return new PpmTolerance(std::stod((hm.value().get())));
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) { 
+        auto hm = dd120->AnalysisProtocolCollection().SpectrumIdentificationProtocol()[0].FragmentTolerance().get().cvParam()[0];
+        if ( hm.unitName().get()=="dalton" ) {
+            auto tempVar = new AbsoluteTolerance (std::stod(hm.value().get()));
+            return static_cast<Tolerance*>(tempVar);
         }
+        return new PpmTolerance(std::stod((hm.value().get())));
+        //}
     }
     
     int MzidIdentifications::getCount() const
@@ -123,9 +125,10 @@ namespace MzIdentML
         else if ( _type == MzidIdentType::v111 ) {
             return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult().size();
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult().size();
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult().size();
+        //}
     }
     
     double MzidIdentifications::CalculatedMassToCharge(int sirIndex, int siiIndex)
@@ -136,9 +139,10 @@ namespace MzIdentML
         else if ( _type == MzidIdentType::v111 ) {
             return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge().get();
         }
-        else if ( _type == MzidIdentType::v120 ) { 
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge().get();
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) { 
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].calculatedMassToCharge().get();
+        //}
     }
 
     int MzidIdentifications::ChargeState(int sirIndex, int siiIndex)
@@ -149,9 +153,10 @@ namespace MzIdentML
         else if ( _type == MzidIdentType::v111 ) {
             return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].chargeState();
+        //}
     }
 
     double MzidIdentifications::ExperimentalMassToCharge(int sirIndex, int siiIndex)
@@ -162,9 +167,10 @@ namespace MzIdentML
         else if ( _type == MzidIdentType::v111 ) {
             return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].experimentalMassToCharge();
+        //}
     }
 
     bool MzidIdentifications::IsDecoy(int sirIndex, int siiIndex)
@@ -198,21 +204,22 @@ namespace MzIdentML
             }
             return true;
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            for (auto pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        for (auto pe : dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].PeptideEvidenceRef())
+        {
+            std::string peptideEvidenceRef = pe.peptideEvidence_ref();
+            for (auto ok : dd120->SequenceCollection()->PeptideEvidence() )
             {
-                std::string peptideEvidenceRef = pe.peptideEvidence_ref();
-                for (auto ok : dd120->SequenceCollection()->PeptideEvidence() )
+                if (ok.id() == peptideEvidenceRef && !ok.isDecoy() )
                 {
-                    if (ok.id() == peptideEvidenceRef && !ok.isDecoy() )
-                    {
-                        return false;
-                    }
-                    
+                    return false;
                 }
+                
             }
-            return true;
         }
+        return true;
+        //}
     }
 
     double MzidIdentifications::QValue(int sirIndex, int siiIndex)
@@ -245,56 +252,40 @@ namespace MzIdentML
             auto cvParam = tmpParam.front();
             return cvtmpParam.empty() ? -1 : std::stod(cvParam.value().get());
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            auto tmpParam = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].cvParam();
-            mzIdentML120::SpectrumIdentificationItemType::cvParam_sequence cvtmpParam;
-            for ( auto cv : tmpParam ) {
-                if ( cv.accession() == "MS:1002354" ) {
-                    cvtmpParam.push_back(cv);
-                }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        auto tmpParam = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].cvParam();
+        mzIdentML120::SpectrumIdentificationItemType::cvParam_sequence cvtmpParam;
+        for ( auto cv : tmpParam ) {
+            if ( cv.accession() == "MS:1002354" ) {
+                cvtmpParam.push_back(cv);
             }
-            auto cvParam = tmpParam.front();
-            return cvtmpParam.empty() ? -1 : std::stod(cvParam.value().get());
         }
+        auto cvParam = tmpParam.front();
+        return cvtmpParam.empty() ? -1 : std::stod(cvParam.value().get());
+        //}
     }
 
     int MzidIdentifications::NumPSMsFromScan(int sirIndex)
     {
+        int count=0;
         if ( _type == MzidIdentType::v110 ) {
 #ifdef ORIG
             return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem->Count([&] (std::any i)  {
                     return i != nullptr;
                 });
 #endif
-            auto tmp = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem();
-            int count=0;
-            for ( auto i : tmp ) {
-                if ( i ) {
-                    count++;
-                }
-            }
-            return count;
+            // Based on what I see, there can't be any invalid items in the list, so just return the vector size
+            count = dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem().size();
         }
         else if ( _type == MzidIdentType::v111 ) {
-            auto tmp = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem();
-            int count=0;
-            for ( auto i : tmp ) {
-                if ( i ) {
-                    count++;
-                }
-            }
-            return count;
+            count = dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem().size();
         }
         else if ( _type == MzidIdentType::v120 ) {
-            auto tmp = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem();
-            int count=0;
-            for ( auto i : tmp ) {
-                if ( i ) {
-                    count++;
-                }
-            }
-            return count;
+            count = dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem().size();
         }
+
+        return count;
     }
 
     std::string MzidIdentifications::ModificationAcession(int sirIndex, int siiIndex, int i)
@@ -758,27 +749,29 @@ namespace MzIdentML
     std::vector<float> MzidIdentifications::MatchedIons(int sirIndex, int siiIndex, int i)
     {
         if ( _type == MzidIdentType::v110 ) {  
-            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values();
         }
         else if ( _type == MzidIdentType::v111 ) {
-            return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values;
+            return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values();
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values;
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values();
+        //}
     }
 
     int MzidIdentifications::MatchedIonCounts(int sirIndex, int siiIndex, int i)
     {
         if ( _type == MzidIdentType::v110 ) { 
-            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values->Length;
+            return dd110->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values().size();
         }
         else if ( _type == MzidIdentType::v111 ) {
-            return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values->Length;
+            return dd111->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values().size();
         }
-        else if ( _type == MzidIdentType::v120 ) {
-            return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation()[i].FragmentArray()[0].values->Length;
-        }
+        // Remove last else if part to silence the compiler
+        //else if ( _type == MzidIdentType::v120 ) {
+        return dd120->DataCollection().AnalysisData().SpectrumIdentificationList()[0].SpectrumIdentificationResult()[sirIndex].SpectrumIdentificationItem()[siiIndex].Fragmentation().get().IonType()[i].FragmentArray()[0].values().size();
+        //}
     }
     
     std::string MzidIdentifications::ProteinAccession(int sirIndex, int siiIndex)
