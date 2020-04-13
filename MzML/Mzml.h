@@ -73,9 +73,7 @@ namespace IO
             // static Regex *const MZAnalyzerTypeRegex;
 
             static std::unordered_map<std::string, Polarity> polarityDictionary;
-
             static std::unordered_map<std::string, MZAnalyzerType> analyzerDictionary;
-
             static std::unordered_map<std::string, DissociationType> dissociationDictionary;
 
             Mzml(std::vector<MsDataScan*> &scans, MassSpectrometry::SourceFile *sourceFile);

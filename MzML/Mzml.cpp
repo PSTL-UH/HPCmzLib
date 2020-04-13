@@ -95,10 +95,8 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
         Mzml *Mzml::LoadAllStaticData(const std::string &filePath, FilteringParams *filterParams, int maxThreads)
         {
-            // if (!FileSystem::fileExists(filePath))
             if (!std::experimental::filesystem::exists(filePath))
             {
-                // throw FileNotFoundException();
                 std::cout << "ERROR:  File "  << filePath <<  " not found" << std::endl;
             }
 
@@ -108,66 +106,20 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             try{
                 std::ifstream fs = std::ifstream(filePath);
-
                 _indexedmzMLConnection_object = ms::mzml::indexedmzML_ (fs, xml_schema::flags::dont_validate);
-
                 fs.close();
-
                 _mzMLConnection = &_indexedmzMLConnection_object.get()->mzML();
             }
             catch (const xml_schema::exception& e){
                 std::ifstream fs = std::ifstream(filePath);
-
                 _mzML_object = ms::mzml::mzML (fs, xml_schema::flags::dont_validate);
-
                 fs.close();
-
                 _mzMLConnection = _mzML_object.get();
             }
-
-#ifdef LATER
-            try
-            {
-             #ifdef ORIG
-                    FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
-                    auto _indexedmzMLConnection = static_cast<ms::mzml::indexedmzML*>(MzmlMethods::indexedSerializer->Deserialize(fs));
-                    _mzMLConnection = _indexedmzMLConnection->getmzML();
-             #endif
-                //--------------------------------------------------------------
-                //Deserialize FileStream
-                //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-                std::ifstream fs = std::ifstream(filePath);
-                std::unique_ptr<ms::mzml::indexedmzML> _indexedmzMLConnection (ms::mzml::indexedmzML_ (fs));                                                                                                                _mzMLConnection = &_indexedmzMLConnection->mzML();
-                fs.close();
-                //----------------------------------------------------------------
-		    
-            }
-            catch (...)
-            {
-             #ifdef ORIG
-                    FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
-                    _mzMLConnection = static_cast<ms::mzml::mzMLType*>(MzmlMethods::mzmlSerializer->Deserialize(fs));
-             #endif
-
-               //----------------------------------------------------------------
-               //Deserialize FileStream
-               //info at https://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/ under section 5 parsing
-               std::ifstream fs = std::ifstream(filePath);
-               try{
-                   std::unique_ptr<ms::mzml::mzMLType> _mzMLConnection (ms::mzml::mzML (fs));
-               }
-         	catch (const xml_schema::exception& e){
-                     std::cerr << e << std::endl;
-               }
-               fs.close();
-               //----------------------------------------------------------------
-            }
-#endif
 
             MassSpectrometry::SourceFile *sourceFile;
 
             if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
-		      // _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0] != nullptr && 
                 !_mzMLConnection->fileDescription().sourceFileList().get().sourceFile().empty() &&
                 !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
              {
@@ -217,21 +169,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             {
                 std::string sendCheckSum;
                 {
-#ifdef ORIG
-                    FileStream stream = File::OpenRead(filePath);
-#endif
                     std::ifstream stream = std::ifstream(filePath);
-
-
                     {
-#ifdef ORIG
-                        SHA1Managed sha = SHA1Managed();
-
-                        std::vector<unsigned char> checksum = sha.ComputeHash(stream);
-
-                        sendCheckSum = BitConverter::ToString(checksum)->Replace("-", "");
-#endif
-
+                        //Original computed hashstring from file stream
                         sendCheckSum = "1111100000";                   
                     }
                 }
@@ -243,17 +183,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             auto numSpecta = _mzMLConnection->run().spectrumList().get().spectrum().size();
             std::vector<MsDataScan*> scans(numSpecta);
 
-#ifdef ORIG
-            ParallelOptions *tempVar2 = new ParallelOptions();
-            tempVar2->MaxDegreeOfParallelism = maxThreads;
-            Parallel::ForEach(Partitioner::Create(0, numSpecta), tempVar2, [&] (std::any fff)
-            {
-                for (int i = fff::Item1; i < fff::Item2; i++)
-                {
-                    scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
-                }
-            });
-#endif
             for ( long unsigned int i = 0; i < numSpecta; i++)  {
                 scans[i] = GetMsDataOneBasedScanFromConnection(_mzMLConnection, i + 1, filterParams);
             }
@@ -266,15 +195,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             int previousScanNumber = -1;
             for (auto scan : scans)
             {
-                
-#ifdef ORIG
-                //check if no duplicates
-                if (!checkForDuplicateScans.insert(scan->getOneBasedScanNumber())) //returns false if the scan already exists
-                {
-                    delete sourceFile;
-                    throw MzLibException("Scan number " + std::to_string(scan->getOneBasedScanNumber()) + " appeared multiple times in " + filePath);
-                }
-#endif
                 //check if no duplicates
                 std::unordered_set<int>::const_iterator dup_iterator = checkForDuplicateScans.find(scan->getOneBasedScanNumber());
 
@@ -298,9 +218,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             if (!ordered) //reassign indexes if not ordered
             {
-#ifdef ORIG
-                std::vector<MsDataScan*> indexedScans(checkForDuplicateScans.Max());
-#endif
                 std::vector<MsDataScan*> indexedScans(checkForDuplicateScans.size());
                 for (auto scan : scans)
                 {
@@ -328,9 +245,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     }
                 }
             }
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete tempVar2' statement was not added since tempVar2 was passed to a method or constructor. Handle memory management manually.
-            //delete sourceFile;
             return new Mzml(scans, sourceFile);
         }
 
@@ -340,7 +254,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             std::vector<ms::mzml::InstrumentConfigurationType> configs;
             for (long unsigned int i = 0; i < _mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size(); i++)
             {
-                // *configs[i] = _mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i];
                 configs.push_back(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i]);
             }
 
@@ -411,9 +324,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 {
                     tic = std::stod(cv.value().get());
                 }
-#ifdef ORIG
-                if (polarity.Equals(Polarity::Unknown))
-#endif
                 if (polarity == Polarity::Unknown)
                 {
                     std::unordered_map<std::string, Polarity>::const_iterator polarityDictionary_iterator = polarityDictionary.find(cv.accession());
@@ -489,10 +399,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 if (!filterParams->getNumberOfWindows())
                 {
                     int numPeaks = TopNpeakHelper(intensities, masses, filterParams);
-#ifdef ORIG
-                    Array::Resize(intensities, numPeaks);
-                    Array::Resize(masses, numPeaks);
-#endif
                     intensities.resize(numPeaks);
                     masses.resize(numPeaks);
                 }
@@ -503,9 +409,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             //Sort items in array based on keys in first array
-#ifdef ORIG
-            Array::Sort(masses, intensities);
-#endif
             Sort::SortPairs(masses, intensities, masses.size());
 
             auto mzmlMzSpectrum = new MzSpectrum(masses, intensities, false);
@@ -544,7 +447,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             if (msOrder.value() == 1)
             {
-                //delete mzmlMzSpectrum;
                 MzRange tempVar(low, high);
                 return new MsDataScan(mzmlMzSpectrum, oneBasedScanNumber, msOrder.value(), isCentroid.value(), polarity, rtInMinutes, &tempVar, scanFilter, analyzer, tic, injectionTime, std::vector<std::vector<double>>(), nativeId);
             }
@@ -610,9 +512,6 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
                     std::string fullstring = userParam.name();
                     std::string ending = "Monoisotopic M/Z:";
-
-                    //original
-                    // if (userParam.name().EndsWith("Monoisotopic M/Z:"))
                     if (hasEnding(fullstring, ending))
                     {
                         monoisotopicMz = std::make_optional(std::stod(userParam.value().get()));

@@ -16,13 +16,6 @@ namespace IO
 {
     namespace MzML
     {
-
-#ifdef ORIG
-XmlSerializer *const MzmlMethods::indexedSerializer = new XmlSerializer(typeof(ms::mzml::indexedmzML));
-XmlSerializer *const MzmlMethods::mzmlSerializer = new XmlSerializer(typeof(ms::mzml::mzMLType));
-#endif
-
-
 std::unordered_map<DissociationType, std::string> MzmlMethods::DissociationTypeAccessions =
 {
     {DissociationType::CID, "MS:1000133"},
@@ -93,9 +86,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
         void MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(MsDataFile *myMsDataFile, const std::string &outputFile, bool writeIndexed)
         {
-            //original
-            // std::string title = Path::GetFileNameWithoutExtension(outputFile);
-
             //returns filename WITH extension
             std::string title_with_extension = std::experimental::filesystem::path(outputFile).filename();
 
@@ -121,23 +111,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             ms::mzml::ParamGroupType tempVar6 = ms::mzml::ParamGroupType();
             ms::mzml::FileDescriptionType tempVar5 = ms::mzml::FileDescriptionType(tempVar6);
-            // mzML->getfileDescription()->setfileContent(&tempVar6);
 
             ms::mzml::SourceFileListType tempVar8 = ms::mzml::SourceFileListType(1);
-            // mzML->getfileDescription()->setsourceFileList(&tempVar7);
-	        // ms::mzml::SourceFileType *TempFile = nullptr;
-	        //tempVar7.sourceFile().push_back(*TempFile);
+
             if (myMsDataFile->getSourceFile()->getNativeIdFormat() != "" && myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat() != "" && myMsDataFile->getSourceFile()->getFileChecksumType() != "")
             {
-	      //ms::mzml::SourceFileListType tempVar8 = ms::mzml::SourceFileListType(1);
-
-                // mzML->getfileDescription()->setsourceFileList(&tempVar8);
-                // mzML->getfileDescription()->getsourceFileList()->setcount("1");
-                // mzML->getfileDescription()->getsourceFileList()->setsourceFile(std::vector<ms::mzml::SourceFileType*>(1));
-#ifdef ORIG
-                std::string idName = char::IsNumber(myMsDataFile->getSourceFile()->getFileName()[0]) ? "id:" + myMsDataFile->getSourceFile()->getFileName()[0] : myMsDataFile->getSourceFile()->getFileName();
-#endif
-
                 std::string idName = isdigit(myMsDataFile->getSourceFile()->getFileName()[0]) ? "id:" + myMsDataFile->getSourceFile()->getFileName()[0] : myMsDataFile->getSourceFile()->getFileName();
 
                 ms::mzml::SourceFileType *tempVar9 = new ms::mzml::SourceFileType(idName, myMsDataFile->getSourceFile()->getFileName(), myMsDataFile->getSourceFile()->getUri()->getFileName());
@@ -154,28 +132,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                 ms::mzml::CVParamType *tempVar12 = new ms::mzml::CVParamType("MS", FileChecksumAccessions[myMsDataFile->getSourceFile()->getFileChecksumType()], myMsDataFile->getSourceFile()->getFileChecksumType());
 
-                //TODO:  getCheckSum returns string not pointer.  How to check if NULL? Use empty()? isnt that the same as s = ""?
                 std::string tempVar13 = myMsDataFile->getSourceFile()->getCheckSum();
                 
                 tempVar12->value((!tempVar13.empty()) ? tempVar13 : "");
                 tempVar8.sourceFile()[0].cvParam().push_back(*tempVar12);
-                // delete tempVar12;
-                // delete tempVar11;
-                // delete tempVar10;
-                // delete tempVar9;
-
-                //******************
-                //SourceFileList is tempVar8
-                //fileDescription is tempVar5
-                //add sourcefilelist to filedescription
-                //tempVar5.sourceFileList(tempVar8);
             }
-
-    	    // else{
-    	    //   ms::mzml::SourceFileType *tempfile = new ms::mzml::SourceFileType("id", "file name", "/file/location/uri");
-    	    //   tempVar8.sourceFile().push_back(*tempfile);
-    	    //   tempVar5.sourceFileList().set(tempVar8);
-    	    // }
 	      
             ms::mzml::CVParamType *tempVar14 = new ms::mzml::CVParamType("MS", "MS:1000579", "MS1 spectrum");
             tempVar14->value("");
@@ -195,18 +156,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             tempVar18->value("mzLib");
             tempVar16->software()[0].cvParam().push_back(*tempVar18);
 
-#ifdef ORIG
-            // CS version:
-            // List<MZAnalyzerType> analyzersInThisFile = (new HashSet<MZAnalyzerType>(myMsDataFile.GetAllScansList().S
-            // Dictionary<MZAnalyzerType, string> analyzersInThisFileDict = new Dictionary<MZAnalyzerType, string>();
-            std::vector<MZAnalyzerType> analyzersInThisFile = (std::unordered_set<MZAnalyzerType>(myMsDataFile->GetAllScansList().Select([&] (std::any b)
-            {
-                b::MzAnalyzer;
-            })))->ToList();
-            std::unordered_map<MZAnalyzerType, std::string> analyzersInThisFileDict;
-#endif
-
-            //TODO  Need to convert std::vector<MassSpectrometry::MsDataScan*> to std::unordered_set?
             std::vector<MassSpectrometry::MsDataScan*> dataScans = myMsDataFile->GetAllScansList();
             std::vector<MZAnalyzerType> analyzersInThisFile;
             for (auto i : dataScans){
@@ -219,8 +168,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             ms::mzml::InstrumentConfigurationListType *tempVar19 = new ms::mzml::InstrumentConfigurationListType(analyzersInThisFile.size());
 
             // Write the analyzers, also the default, also in the scans if needed
-            //original
-            // for (int i = 0; i < mzML->instrumentConfigurationList()->instrumentConfiguration().size(); i++)
             for (long long unsigned int i = 0; i < tempVar19->count(); i++)
             {
 
@@ -228,9 +175,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 ms::mzml::InstrumentConfigurationType *tempVar20 = new ms::mzml::InstrumentConfigurationType("IC" + std::to_string(i + 1));
 
                 ms::mzml::ComponentListType *tempVar21 = new ms::mzml::ComponentListType(3);
-                // tempVar20->componentList(*tempVar21);
-                // tempVar20->cvParam(std::vector<ms::mzml::CVParamType*>(1));
-                // mzML->instrumentConfigurationList()->instrumentConfiguration()[i] = tempVar20;
 
                 ms::mzml::CVParamType *tempVar22 = new ms::mzml::CVParamType("MS", "MS:1000031", "instrument model");
                 tempVar22->value("");
@@ -238,7 +182,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                 ms::mzml::SourceComponentType *tempVar23 = new ms::mzml::SourceComponentType(1);
 
-                //original
                 ms::mzml::CVParamType *tempVar24 = new ms::mzml::CVParamType("MS", "MS:1000008", "ionization type");
                 tempVar24->value("");
                 tempVar23->cvParam().push_back(*tempVar24);
@@ -257,17 +200,12 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 // FTICR = 6,
                 // Sector = 7
 
-                //original
-                // if (analyzersInThisFile[i].ToString()->ToLower() == "unknown")
                 if (analyzersInThisFile[i] == MZAnalyzerType::Unknown)
                 {
                     anName = "mass analyzer type";
                 }
                 else
                 {
-                    //original
-                    // anName = analyzersInThisFile[i].ToString()->ToLower();
-
                     if (analyzersInThisFile[i] == MZAnalyzerType::Quadrupole)
                         anName = "Quadrupole";
                     else if (analyzersInThisFile[i] == MZAnalyzerType::IonTrap2D)
@@ -284,7 +222,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                         anName = "Sector";
                 }
 
-                //cvParam for analyzerComponentType
                 ms::mzml::CVParamType *tempVar26 = new ms::mzml::CVParamType("MS", analyzerDictionary[analyzersInThisFile[i]], anName);
                 tempVar26->value("");
                 tempVar25->cvParam().push_back(*tempVar26);
@@ -328,22 +265,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             //add cvparam to processingmethodtype (tempVar31)
             tempVar31->cvParam().push_back(*tempVar32);
-            // mzML->getdataProcessingList()->getdataProcessing()[0]->processingMethod[0].cvParam[0] = tempVar32;
 
             tempVar29->dataProcessing()[0].processingMethod().push_back(*tempVar31);
 
             ms::mzml::RunType *tempVar33 = new ms::mzml::RunType(idTitle, analyzersInThisFileDict[analyzersInThisFile[0]]);
 
-            //---------------------------------------------
-            //Can now create instance of mzMLType
-            //arguments needed for constructor:  
-            //cvList_type   -> *tempVar
-            //fileDescription_type   -> tempVar5
-            //softwareList_type   -> *tempVar16
-            //instrumentConfigurationList_type   -> *tempVar19
-            //dataProcessingList_type   -> *tempVar29
-            //run_type   -> *tempVar33
-            //version_type   -> "1.1.0"
             ms::mzml::mzMLType *mzML_type = new ms::mzml::mzMLType(*tempVar, tempVar5, *tempVar16, *tempVar19, *tempVar29, *tempVar33, "1.1.0");
 
             ms::mzml::ChromatogramListType *tempVar34 = new ms::mzml::ChromatogramListType(1, "mzLibProcessing");
@@ -370,23 +296,13 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 intensities[i - 1] = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->getSumOfAllY();
             }
 
-
-
-            //Chromatofram X axis (time)
-            //original
-            // ms::mzml::BinaryDataArrayType *tempVar38 = new ms::mzml::BinaryDataArrayType();
-            // tempVar38->setbinary(MzSpectrum::Get64Bitarray(times));
-            //TODO:  original C# is binary.Length...does this mean the length of a string? if so C++ version should be binary().encode().length(), encode() to get string
-            // double binsize = static_cast<double>(mzML->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0].binary().encode().length()) / 3;
             std::vector<unsigned char> bin_times_vector = MzSpectrum::Get64Bitarray(times);
             unsigned char bin_times[bin_times_vector.size()]; 
             std::copy(bin_times_vector.begin(), bin_times_vector.end(), bin_times);
             xml_schema::base64_binary bindata((void*)bin_times, (sizeof(bin_times)/sizeof(*bin_times))); 
 	    
-            //TODO uses .ToString(CultureInfo::InvariantCulture).  is that the same as std::to_string(double)?
             ms::mzml::BinaryDataArrayType *tempVar38 = new ms::mzml::BinaryDataArrayType(bindata, (size_t)(4 * (double)ceil((static_cast<double>(bindata.encode().length()) / 3))));
             mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray().push_back(*tempVar38);
-
 
             ms::mzml::CVParamType *tempVar39 = new ms::mzml::CVParamType("MS","MS:1000523","64-bit float");
             tempVar39->value("");
@@ -432,21 +348,14 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             ms::mzml::SpectrumListType *tempVar46 = new ms::mzml::SpectrumListType((myMsDataFile->getNumSpectra()), "mzLibProcessing");
             mzML_type->run().spectrumList(*tempVar46);
-            // mzML->run().spectrumList().spectrum();
-
 
             // Loop over all spectra
             for (int i = 1; i <= myMsDataFile->getNumSpectra(); i++)
             {
-                //id, index, defaultarraylength
                 ms::mzml::SpectrumType *tempVar47 = new ms::mzml::SpectrumType(myMsDataFile->GetOneBasedScan(i)->getNativeId(), i - 1, myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->getYArray().size());
-                // tempVar47->setdefaultArrayLength(myMsDataFile->GetOneBasedScan(i)->MassSpectrum.YArray->Length);
-                // tempVar47->setindex((i - 1).ToString(CultureInfo::InvariantCulture));
                 tempVar47->id(myMsDataFile->GetOneBasedScan(i)->getNativeId());
 
-
                 //push back 9 cvparams for tempVar47
-
                 ms::mzml::ScanListType *tempVar48 = new ms::mzml::ScanListType(0);
                 tempVar47->scanList(*tempVar48);
 
@@ -575,19 +484,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                         delete tempVar58;
                         delete tempVar57;
                     }
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()->precursor()[0].activation() = new ms::mzml::ParamGroupType();
-                    // .activation->cvParam = std::vector<ms::mzml::CVParamType*>(1);
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()->precursor()[0].activation().cvParam()[0] = new ms::mzml::CVParamType();
-
-                    // DissociationType dissociationType = scanWithPrecursor->getDissociationType().value();
-
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()->precursor()[0].activation().cvParam()[0].accession() = DissociationTypeAccessions[dissociationType];
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()->precursor()[0].activation().cvParam()[0].name() = DissociationTypeNames[dissociationType];
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()->precursor()[0].activation().cvParam()[0].cvRef() = "MS";
-                    // //original
-                    // // mzML->run().spectrumList()->spectrum()[i - 1].precursor()[0].activation().cvParam()[0]->value() = "";
-                    // mzML->run().spectrumList()->spectrum()[i - 1].precursorList()[0].activation().cvParam()[0]->value() = "";
-
                     delete tempVar54;
                     delete tempVar53;
                     delete tempVar51;
@@ -626,8 +522,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     polarityAccession = PolarityAccessions_iterator->second;
                 }
                 // Spectrum title
-                //string title = System.IO.Path.GetFileNameWithoutExtension(outputFile);
-
                 if ((myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->getSize()) > 0)
                 {
                     // Lowest observed mz
@@ -688,7 +582,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 }
 
                 // Retention time
-
                 ms::mzml::ScanListType *spectrumScanList = new ms::mzml::ScanListType(1);
                 mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList() = *spectrumScanList;
 
@@ -796,11 +689,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList(*spectrumBinDataList);
                 }
 
-                // M/Z Data
-                //original
-                // ms::mzml::BinaryDataArrayType *tempVar78 = new ms::mzml::BinaryDataArrayType();
-                // tempVar78->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum().Get64BitXarray());
-
                 std::vector<unsigned char> XArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitXarray();
 				unsigned char XArray[XArrayVec.size()];
 				std::copy(XArrayVec.begin(), XArrayVec.end(), XArray);
@@ -808,8 +696,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                 ms::mzml::BinaryDataArrayType *tempVar78 = new ms::mzml::BinaryDataArrayType(binary_64bitXArray, (size_t)(4 * (double)ceil((static_cast<double>(binary_64bitXArray.encode().length()) / 3))));
 
-                //original
-                // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[0] = tempVar78;
                 mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar78);
 
                 ms::mzml::CVParamType *tempVar79 = new ms::mzml::CVParamType("MS", "MS:1000514", "m/z array");
@@ -829,14 +715,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar81->value("");
 
                 mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[0].cvParam().push_back(*tempVar81);
-
-                // Intensity Data
-                //original
-//                 ms::mzml::BinaryDataArrayType *tempVar82 = new ms::mzml::BinaryDataArrayType();
-//                 tempVar82->setbinary(myMsDataFile->GetOneBasedScan(i)->getMassSpectrum().Get64BitYarray());
-//                 mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[1] = tempVar82;
-// //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-//                 mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[1]->encodedLength() = (4 * ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[1].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
 
                 std::vector<unsigned char> YArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitYarray();
 				unsigned char YArray[YArrayVec.size()];
@@ -869,21 +747,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 if (!myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty())
                 {
                     // mass
-                    // ms::mzml::BinaryDataArrayType *tempVar86 = new ms::mzml::BinaryDataArrayType();
-                    // tempVar86->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataMass());
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[2] = tempVar86;
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[2]->arrayLength() = std::to_string(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[2]->encodedLength() = (4 * ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[2].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
-                    //push back 3 cvparams
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1].binaryDataArrayList()->binaryDataArray()[2].cvParam() = std::vector<ms::mzml::CVParamType*>(3);
-
-
                     std::vector<unsigned char> noiseDataMassVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataMass();
                     unsigned char noiseDataMass[noiseDataMassVec.size()]; 
                     std::copy(noiseDataMassVec.begin(), noiseDataMassVec.end(), noiseDataMass);
                     xml_schema::base64_binary binary_noiseDataMass((void*)noiseDataMass, (sizeof(noiseDataMass)/sizeof(*noiseDataMass)));  
-
 
                     ms::mzml::BinaryDataArrayType *tempVar86 = new ms::mzml::BinaryDataArrayType(binary_noiseDataMass, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataMass.encode().length()) / 3))));
 
@@ -913,26 +780,15 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].userParam().push_back(*tempVar90);
 
                     // noise
-                    // ms::mzml::BinaryDataArrayType *tempVar91 = new ms::mzml::BinaryDataArrayType();
-                    // tempVar91->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise());
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3] = tempVar91;
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->arrayLength = std::to_string(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->encodedLength = (4 * ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
-                    //push back 3 cvparams
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[3]->cvParam = std::vector<ms::mzml::CVParamType*>(3);
-
                     std::vector<unsigned char> noiseDataNoiseVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise();
                     unsigned char noiseDataNoise[noiseDataNoiseVec.size()]; 
                     std::copy(noiseDataNoiseVec.begin(), noiseDataNoiseVec.end(), noiseDataNoise);
                     xml_schema::base64_binary binary_noiseDataNoise((void*)noiseDataNoise, (sizeof(noiseDataNoise)/sizeof(*noiseDataNoise)));  
 
-
                     ms::mzml::BinaryDataArrayType *tempVar91 = new ms::mzml::BinaryDataArrayType(binary_noiseDataNoise, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataNoise.encode().length()) / 3))));
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar91);
 
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].arrayLength() = mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].binary().encode().length() / 8;
-
 
                     ms::mzml::CVParamType *tempVar92 = new ms::mzml::CVParamType("MS", "MS:1000786", "non-standard data array");
                     tempVar92->value("SignalToNoise");
@@ -955,20 +811,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].userParam().push_back(*tempVar95);
 
                     // baseline
-                    // ms::mzml::BinaryDataArrayType *tempVar96 = new ms::mzml::BinaryDataArrayType();
-                    // tempVar96->setbinary(myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline());
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray().push_back(*tempVar96);
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[4]->arrayLength() = std::to_string(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4].binary->Length / 8);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[4]->encodedLength() = (4 * ceil((static_cast<double>(mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList.binaryDataArray[4].binary->Length) / 3))).ToString(CultureInfo::InvariantCulture);
-                    //push back 4 cvparams
-                    // mzML_type->run().spectrumList()->spectrum()[i - 1]->binaryDataArrayList().binaryDataArray()[4]->cvParam() = std::vector<ms::mzml::CVParamType*>(3);
-
                     std::vector<unsigned char> noiseDataBaselineVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline();
                     unsigned char noiseDataBaseline[noiseDataBaselineVec.size()]; 
                     std::copy(noiseDataBaselineVec.begin(), noiseDataBaselineVec.end(), noiseDataBaseline);
                     xml_schema::base64_binary binary_noiseDataBaseline((void*)noiseDataBaseline, (sizeof(noiseDataBaseline)/sizeof(*noiseDataBaseline))); 
-
 
                     ms::mzml::BinaryDataArrayType *tempVar96 = new ms::mzml::BinaryDataArrayType(binary_noiseDataBaseline, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataBaseline.encode().length()) / 3))));
                     mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar96);
@@ -1034,12 +880,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             if (!writeIndexed)
             {
-
-#ifdef ORIG
-                TextWriter writer = StreamWriter(outputFile);
-                mzmlSerializer->Serialize(writer, mzML);
-#endif
-
                 xml_schema::namespace_infomap map;
                 map[""].name = "http://psi.hupo.org/ms/mzml";
                 map[""].schema = "/home/nrbiddle/mzlib-c/MzML/XSD/mzML1.1.0.xsd";
@@ -1059,17 +899,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
             }
             else if (writeIndexed)
             {
-
-                //indexedmzml constructor arguments:  mzML_type&, const indexList_type&, const indexListOffset_type&, const fileChecksum_type&
-                // ms::mzml::indexedmzML *indexedMzml = new ms::mzml::indexedmzML();
-
-                // auto inMemoryTextWriter = new MemoryStream();
                 auto inMemoryTextWriter = std::ostringstream();
 
                 //compute total offset
-                // indexedMzml->mzML(mzML_type);
 
-                // indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
                 xml_schema::namespace_infomap map;
                 map[""].name = "http://psi.hupo.org/ms/mzml";
                 map[""].schema = "/home/nrbiddle/mzlib-c/MzML/XSD/mzML1.1.0.xsd";
@@ -1084,22 +917,18 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     std::cerr << e << std::endl;
                 }   
 
-                // std::string allmzMLData = StringHelper::replace(Encoding::UTF8->GetString(inMemoryTextWriter->ToArray()), "\r\n", "\n");
                 std::string allmzMLData = StringHelper::replace(inMemoryTextWriter.str(), "\r\n", "\n");
 
                 std::optional<long long> indexListOffset = std::make_optional(allmzMLData.length());
 
                 //new stream with correct formatting
-
                 //push back two indexes
                 ms::mzml::IndexListType *tempVar101 = new ms::mzml::IndexListType(2);
 
                 //starts as spectrum be defualt
-                // auto indexname = new ms::mzml::IndexTypeName();
                 auto indexname = ms::mzml::name(ms::mzml::name::value::spectrum);
 
                 //spectra naming
-
                 ms::mzml::IndexType *tempVar102 = new ms::mzml::IndexType(indexname);
                 tempVar101->index().push_back(*tempVar102);
 
@@ -1124,7 +953,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 //compute checksum
                 std::string chksum = "Dummy";
 
-                //indexedmzml constructor arguments:  mzML_type&, const indexList_type&, const indexListOffset_type&, const fileChecksum_type&
                 ms::mzml::indexedmzML *indexedMzml = new ms::mzml::indexedmzML(*mzML_type, *tempVar101, indexListOffset.value(), chksum);
 
                 int i = 0;
@@ -1139,10 +967,6 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     if (index != -1)
                     {
                         a = index;
-                        // ms::mzml::OffsetType *tempVar104 = new ms::mzml::OffsetType();
-                        // tempVar104->idRef(mzML_type->run().spectrumList().get().spectrum()[i]->id);
-                        // tempVar104->setValue(a + offsetFromBeforeScanTag);
-                        // indexedMzml->indexList()->index()[0]->offset()[i] = tempVar104;
 
                         ms::mzml::OffsetType *tempVar104 = new ms::mzml::OffsetType(a + offsetFromBeforeScanTag, mzML_type->run().spectrumList().get().spectrum()[i].id());
                         indexedMzml->indexList().index()[0].offset().push_back(*tempVar104);
@@ -1156,13 +980,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 if (index != -1)
                 {
                     a = index;
-                    // ms::mzml::OffsetType *tempVar105 = new ms::mzml::OffsetType();
-                    // tempVar105->idRef(mzML_type->run()->getchromatogramList()->getchromatogram()[0]->id);
-                    // tempVar105->setValue(a + offsetFromBeforeChromaTag);
-                    // indexedMzml->indexList()->index()[1]->offset()[0] = tempVar105;
+
                     ms::mzml::OffsetType *tempVar105 = new ms::mzml::OffsetType(a + offsetFromBeforeChromaTag, mzML_type->run().chromatogramList()->chromatogram()[0].id());
-                    //or is push_back appropriate here?
-                    // indexedMzml->indexList().index()[1].offset()[0] = *tempVar105;
+
                     indexedMzml->indexList().index()[1].offset().push_back(*tempVar105);
 
                     delete tempVar105;
@@ -1170,19 +990,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 //offset
                 int offsetFromNullIndexList = 32;
 
-                //indexlistoffset?
                 indexedMzml->indexListOffset(indexListOffset.value() - offsetFromNullIndexList);
 
-                // //compute checksum
-                // std::string chksum = "Dummy";
-
-                // //indexedmzml constructor arguments:  mzML_type&, const indexList_type&, const indexListOffset_type&, const fileChecksum_type&
-                // ms::mzml::indexedmzML *indexedMzml = new ms::mzml::indexedmzML(mzML_type, tempVar101, indexListOffset - offsetFromNullIndexList, chksum);
-
                 indexedMzml->fileChecksum(chksum);
-                // indexedSerializer->Serialize(inMemoryTextWriter, indexedMzml);
 
-                //necessary to clear ostringstream?
                 inMemoryTextWriter.str("");
                 inMemoryTextWriter.clear();
 
@@ -1200,36 +1011,20 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     std::cerr << e << std::endl;
                 }   
 
-                //original, ToArray() returns byte array?
-                // std::string indexedMzmlwithBlankChecksumStream = Encoding::UTF8->GetString(inMemoryTextWriter->ToArray());
                 std::string indexedMzmlwithBlankChecksumStream = inMemoryTextWriter.str();
 
                 std::string indexedMzmlwithBlankChecksumString = indexedMzmlwithBlankChecksumStream.substr(0, (int)indexedMzmlwithBlankChecksumStream.find("<fileChecksum>", (a - 1)));
 
-                // inMemoryTextWriter->Close();
-                //clear() rather than close because this is a stringstream is OK?
                 inMemoryTextWriter.str("");
                 inMemoryTextWriter.clear();
 
-                //original
-                // inMemoryTextWriter = new MemoryStream(Encoding::UTF8->GetBytes(indexedMzmlwithBlankChecksumString));
                 inMemoryTextWriter << indexedMzmlwithBlankChecksumString;
 
-                //original hash computation for checksum
-                // chksum = BitConverter::ToString(System::Security::Cryptography::SHA1::Create()->ComputeHash(inMemoryTextWriter));
-                //new checksum method returns int, just convert to string with to_string?
                 chksum = std::to_string(StringHelper::GetHashCode(inMemoryTextWriter.str()));
-                // inMemoryTextWriter->Close();
 
                 chksum = StringHelper::replace(chksum, "-", "");
                 chksum = StringHelper::toLower(chksum);
                 indexedMzml->fileChecksum(chksum);
-
-                //finally write the indexedmzml
-                // TextWriter writer = StreamWriter(outputFile);
-                // writer.NewLine = "\n";
-                // indexedSerializer->Serialize(writer, indexedMzml);
-                // writer.Close();
 
                 // Serialize to a file.
                 try{
