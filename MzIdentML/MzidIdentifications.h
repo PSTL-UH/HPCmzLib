@@ -42,18 +42,18 @@ namespace MzIdentML
     {
 
     private:
-        mzIdentML110::MzIdentMLType *dd110;
-        mzIdentML111::MzIdentMLType *dd111;
-        mzIdentML120::MzIdentMLType *dd120;
+        std::unique_ptr<mzIdentML110::MzIdentMLType> dd110;
+        std::unique_ptr<mzIdentML111::MzIdentMLType> dd111;
+        std::unique_ptr<mzIdentML120::MzIdentMLType> dd120;
 
         MzidIdentType _type;
         
     public:
         virtual ~MzidIdentifications()
         {
-            delete dd110;
-            delete dd111;
-            delete dd120;
+            dd110.reset();
+            dd111.reset();
+            dd120.reset();
         }
 
         MzidIdentifications(const std::string &mzidFile);

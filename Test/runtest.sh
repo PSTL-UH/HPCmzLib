@@ -45,6 +45,12 @@ echo "  TestSpectra"
 make TestSpectra
 ./TestSpectra
 
+echo " "
+echo "  TestMzML"
+make TestMzML
+./TestMzML
+
+
 #echo " "
 #echo "  TestProteinProperties"
 #make TestProteinProperties

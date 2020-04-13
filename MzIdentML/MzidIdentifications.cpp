@@ -1,4 +1,6 @@
-﻿#include "MzidIdentifications.h"
+﻿#include <iostream>
+#include <fstream>
+#include "MzidIdentifications.h"
 #include "mzIdentML110.h"
 #include "mzIdentML111.h"
 #include "mzIdentML120.h"
@@ -16,34 +18,36 @@ namespace MzIdentML
     {
         try
         {
-            //Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-            //XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::MzIdentMLType));
+#ifdef ORIG
+            Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
+            XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::MzIdentMLType));
             // Read the XML file into the variable
-            //dd110 = dynamic_cast<mzIdentML110::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
+            dd110 = dynamic_cast<mzIdentML110::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
+            delete _indexedSerializer;
+#endif
             
-            //delete _indexedSerializer;
+            std::ifstream fs = std::ifstream(mzidFile);
+            dd110 =  mzIdentML110::MzIdentML (fs, xml_schema::flags::dont_validate );
+            fs.close();
+
             _type = MzidIdentType::v110;
         }
         catch (...)
         {
             try
             {
-                //Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-                //XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::MzIdentMLType));
-                // Read the XML file into the variable
-                //dd111 = dynamic_cast<mzIdentML111::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
-                
-                //delete _indexedSerializer;
+                std::ifstream fs = std::ifstream(mzidFile);
+                dd111 =  mzIdentML111::MzIdentML (fs, xml_schema::flags::dont_validate );
+                fs.close();
+
                 _type = MzidIdentType::v111;
             }
             catch (...)
             {
-                //Stream stream = FileStream(mzidFile, FileMode::Open, FileAccess::Read, FileShare::Read);
-                //XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::MzIdentMLType));
-                // Read the XML file into the variable
-                //dd120 = dynamic_cast<mzIdentML120::MzIdentMLType*>(_indexedSerializer->Deserialize(stream));
-                
-                //delete _indexedSerializer;
+                std::ifstream fs = std::ifstream(mzidFile);
+                dd120 =  mzIdentML120::MzIdentML (fs, xml_schema::flags::dont_validate );
+                fs.close();
+
                 _type = MzidIdentType::v120;
             }            
         }
