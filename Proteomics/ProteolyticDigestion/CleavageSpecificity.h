@@ -40,6 +40,25 @@ namespace Proteomics
                 }
                 return  CleavageSpecificity::Unknown;
             }
+
+            static std::string GetCleavageSpecificityAsString(CleavageSpecificity cleavage) {
+                if (cleavage == CleavageSpecificity::None){
+                    return "None";
+                }
+                else if (cleavage == CleavageSpecificity::Semi){
+                    return "Semi";
+                }
+                else if (cleavage == CleavageSpecificity::Full){
+                    return "Full";
+                }
+                else if (cleavage == CleavageSpecificity::SingleN){
+                    return "SingleN";
+                }
+                else if (cleavage == CleavageSpecificity::SingleC){
+                    return "SingleC";
+                }
+                return "Unknown";
+            }
         };
     }
 }

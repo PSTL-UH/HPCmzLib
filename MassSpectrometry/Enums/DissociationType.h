@@ -1,5 +1,7 @@
 ﻿#pragma once
-
+#include <string>
+#include <cctype>
+#include <algorithm>
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
 //
@@ -41,5 +43,77 @@ namespace MassSpectrometry {
         // The values above are identical to thermo names
 
         //ISCID = 11
+    };
+
+    class GetDissocationType{
+    public:
+        static DissociationType GetDissocationTypeFromString(std::string &dissociation) {
+            std::transform(dissociation.begin(), dissociation.end(), dissociation.begin(), [] (unsigned char c) {return toupper(c); } );
+            if (dissociation.find("CID") != std::string::npos){
+                return DissociationType::CID;
+            }
+            else if (dissociation.find("IRMPD") != std::string::npos){
+                return DissociationType::IRMPD;
+            }
+            else if (dissociation.find("ECD") != std::string::npos){
+                return DissociationType::ECD;
+            }
+            else if (dissociation.find("PQD") != std::string::npos){
+                return DissociationType::PQD;
+            }
+            else if (dissociation.find("ETD") != std::string::npos){
+                return DissociationType::ETD;
+            }
+            else if (dissociation.find("HCD") != std::string::npos){
+                return DissociationType::HCD;
+            }
+            else if (dissociation.find("AnyActivationType") != std::string::npos){
+                return DissociationType::AnyActivationType;
+            }
+            else if (dissociation.find("EThcD") != std::string::npos){
+                return DissociationType::EThcD;
+            }
+            else if (dissociation.find("Custom") != std::string::npos){
+                return DissociationType::Custom;
+            }
+            else if (dissociation.find("ISCID") != std::string::npos){
+                return DissociationType::ISCID;
+            }
+            return DissociationType::Unknown;
+        }
+
+        static std::string GetDissocationTypeAsString(DissociationType dissociation) {
+            if (dissociation == DissociationType::CID){
+                return "CID";
+            }
+            else if (dissociation == DissociationType::IRMPD){
+                return "IRMPD";
+            }
+            else if (dissociation == DissociationType::ECD){
+                return "ECD";
+            }
+            else if (dissociation == DissociationType::PQD){
+                return "PQD";
+            }
+            else if (dissociation == DissociationType::ETD){
+                return "ETD";
+            }
+            else if (dissociation == DissociationType::HCD){
+                return "HCD";
+            }
+            else if (dissociation == DissociationType::AnyActivationType){
+                return "AnyActivationType";
+            }
+            else if (dissociation == DissociationType::EThcD){
+                return "EThcD";
+            }
+            else if (dissociation == DissociationType::Custom){
+                return "Custom";
+            }
+            else if (dissociation == DissociationType::ISCID){
+                return "ISCID";
+            }
+            return "Unknown";
+        }
     };
 }

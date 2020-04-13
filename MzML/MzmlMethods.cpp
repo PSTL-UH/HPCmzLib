@@ -1187,7 +1187,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 inMemoryTextWriter.clear();
 
                 xml_schema::namespace_infomap indexed_map;
-                map[""].name = "http://psi.hupo.org/ms/mzml";
+                indexed_map[""].name = "http://psi.hupo.org/ms/mzml";
                 indexed_map[""].schema = "/home/nrbiddle/mzlib-c/MzML/XSD/mzML1.1.1_idx.xsd";
 
                 // Serialize to a file.

@@ -1,5 +1,6 @@
 #pragma once
 #include "toml.h"
+#include <iostream>
 
 class Toml {
 
