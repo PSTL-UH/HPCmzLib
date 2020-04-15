@@ -27,8 +27,8 @@
 #include "../Proteomics/Proteomics.h"
 using namespace Proteomics;
 
-#include "Generated/UsefulProteomicsDatabases.Generated.obo.h"
-using namespace UsefulProteomicsDatabases::Generated;
+#include "PSI-MOD.obo/PSI-MOD.obo.h"
+using namespace UsefulProteomicsDatabases;
 
 namespace UsefulProteomicsDatabases
 {
@@ -69,10 +69,9 @@ namespace UsefulProteomicsDatabases
 
         static std::vector<Modification*> LoadUnimod(const std::string &unimodLocation);
 
-        static Generated::obo* LoadPsiMod(const std::string &psimodLocation);
+        static obo* LoadPsiMod(const std::string &psimodLocation);
         
         static std::vector<Modification*> LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> formalChargesDictionary);
-    };
 
     //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
     //public static IEnumerable<Modification> LoadUnimod(string unimodLocation);
@@ -97,4 +96,6 @@ namespace UsefulProteomicsDatabases
 
     //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
     //private static void DownloadUniprot(string uniprotLocation);
+    };
+
 }

@@ -30,7 +30,7 @@ OBJ =   DecoyType.o            \
 
 all:    
 	cd PSI-MOD.obo ; make ; cd ..
-	cd unimod_2 ; make ; cd..
+	cd unimod_2 ; make ; cd ..
 	make $(MZLIB_LIB) 
 
 
@@ -45,4 +45,4 @@ $(OBJ):	$(HEADER)
 clean:  
 	rm -rf *.o *~
 	cd PSI-MOD.obo ; make clean ; cd ..
-        cd unimod_2 ; make clean ; cd..
+	cd unimod_2 ; make clean ; cd ..
