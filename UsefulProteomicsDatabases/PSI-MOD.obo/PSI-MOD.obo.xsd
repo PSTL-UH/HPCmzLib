@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="obo" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="def">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="defstr" type="xs:string" minOccurs="0" />
+        <xs:element name="dbxref" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="acc" type="xs:string" minOccurs="0" />
+              <xs:element name="dbname" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="obo" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="def" />
+        <xs:element name="source">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="source_type" type="xs:string" minOccurs="0" />
+              <xs:element name="source_path" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="header">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="format-version" type="xs:string" minOccurs="0" />
+              <xs:element name="date" type="xs:string" minOccurs="0" />
+              <xs:element name="saved-by" type="xs:string" minOccurs="0" />
+              <xs:element name="auto-generated-by" type="xs:string" minOccurs="0" />
+              <xs:element name="default-namespace" type="xs:string" minOccurs="0" />
+              <xs:element name="subsetdef" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="0" />
+                    <xs:element name="name" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="synonymtypedef" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="name" type="xs:string" minOccurs="0" msdata:Ordinal="0" />
+                    <xs:element name="description" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+                  </xs:sequence>
+                  <xs:attribute name="defaultscope" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="remark" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:simpleContent msdata:ColumnName="remark_Text" msdata:Ordinal="0">
+                    <xs:extension base="xs:string">
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="term">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="id" type="xs:string" minOccurs="0" />
+              <xs:element name="name" type="xs:string" minOccurs="0" />
+              <xs:element name="is_obsolete" type="xs:string" minOccurs="0" />
+              <xs:element name="comment" type="xs:string" minOccurs="0" />
+              <xs:element name="subset" type="xs:string" minOccurs="0" />
+              <xs:element name="namespace" type="xs:string" minOccurs="0" />
+              <xs:element name="is_root" type="xs:string" minOccurs="0" />
+              <xs:element ref="def" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="synonym" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="synonym_text" type="xs:string" minOccurs="0" msdata:Ordinal="0" />
+                    <xs:element name="synonym_type" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+                  </xs:sequence>
+                  <xs:attribute name="scope" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="xref_analog" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="acc" type="xs:string" minOccurs="0" />
+                    <xs:element name="dbname" type="xs:string" minOccurs="0" />
+                    <xs:element name="name" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="is_a" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:simpleContent msdata:ColumnName="is_a_Text" msdata:Ordinal="0">
+                    <xs:extension base="xs:string">
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="relationship" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="type" type="xs:string" minOccurs="0" />
+                    <xs:element name="to" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="typedef">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="id" type="xs:string" minOccurs="0" />
+              <xs:element name="name" type="xs:string" minOccurs="0" />
+              <xs:element name="comment" type="xs:string" minOccurs="0" />
+              <xs:element name="is_transitive" type="xs:string" minOccurs="0" />
+              <xs:element name="namespace" type="xs:string" minOccurs="0" />
+              <xs:element ref="def" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

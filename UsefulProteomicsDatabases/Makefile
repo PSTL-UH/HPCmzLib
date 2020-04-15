@@ -29,9 +29,10 @@ OBJ =   DecoyType.o            \
 .SUFFIXES: .o.cpp
 
 all:    
+	cd PSI-MOD.obo ; make ; cd ..
+	cd unimod_2 ; make ; cd..
 	make $(MZLIB_LIB) 
 
-#	cd Generated ; make ; cd ..
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
@@ -43,3 +44,5 @@ $(OBJ):	$(HEADER)
 
 clean:  
 	rm -rf *.o *~
+	cd PSI-MOD.obo ; make clean ; cd ..
+        cd unimod_2 ; make clean ; cd..
