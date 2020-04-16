@@ -16,3 +16,10 @@ Test/TestProteinProperties
 Test/TestProteinDigestion
 Test/elements.dat
 lib/
+Makefile.defs
+Test/TestMzML
+TestFlashLFQ/TestFlashLFQ
+TestFlashLFQ/elements.dat
+autom4te.cache/
+config.log
+config.status
