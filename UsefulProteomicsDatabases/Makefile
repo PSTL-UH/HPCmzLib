@@ -22,11 +22,11 @@ OBJ =   DecoyType.o            \
 	PeriodicTableLoader.o  \
 	FastaHeaderFieldRegex.o \
 	ProteinDbLoader.o      \
-	ProteinDbWriter.o      
+	ProteinDbWriter.o      \
+	UnimodLoader.o	
 
 #	Loaders.o              \
 #	PtmListLoader.o        \
-#	UnimodLoader.o	
 
 .SUFFIXES: .o.cpp
 
