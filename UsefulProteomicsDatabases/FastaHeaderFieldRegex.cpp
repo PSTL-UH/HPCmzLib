@@ -4,12 +4,14 @@
 namespace UsefulProteomicsDatabases
 {
 
-    FastaHeaderFieldRegex::FastaHeaderFieldRegex(const std::string &fieldName, const std::string &regularExpression, int match, int group)
+    FastaHeaderFieldRegex::FastaHeaderFieldRegex(const std::string &fieldName,
+                                                 const std::string &regularExpression,
+                                                 int match, int group)
     {
-        FieldName = fieldName;
-        Regex = new Regex(regularExpression);
-        Match = match;
-        Group = group;
+        privateFieldName = fieldName;
+        privateRegex = new std::regex(regularExpression);
+        privateMatch = match;
+        privateGroup = group;
     }
 
     std::string FastaHeaderFieldRegex::getFieldName() const
@@ -17,7 +19,7 @@ namespace UsefulProteomicsDatabases
         return privateFieldName;
     }
 
-    Regex *FastaHeaderFieldRegex::getRegex() const
+    std::regex *FastaHeaderFieldRegex::getRegex() const
     {
         return privateRegex;
     }

@@ -11,6 +11,7 @@ include ../Makefile.defs
 HEADER =  DecoyType.h          \
 	Loaders.h              \
 	PeriodicTableLoader.h  \
+	FastaHeaderFieldRegex.h \
 	ProteinDbLoader.h      \
 	ProteinDbWriter.h      \
 	PtmListLoader.h        \
@@ -18,11 +19,12 @@ HEADER =  DecoyType.h          \
 
 
 OBJ =   DecoyType.o            \
-	PeriodicTableLoader.o  
+	PeriodicTableLoader.o  \
+	FastaHeaderFieldRegex.o \
+	ProteinDbLoader.o      \
+	ProteinDbWriter.o      
 
 #	Loaders.o              \
-#	ProteinDbLoader.o      \
-#	ProteinDbWriter.o      \
 #	PtmListLoader.o        \
 #	UnimodLoader.o	
 

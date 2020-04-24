@@ -10,15 +10,42 @@
 #include "stringhelper.h"
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace UsefulProteomicsDatabases { class FastaHeaderFieldRegex; }
-namespace Proteomics { class Modification; }
-namespace Proteomics { class Protein; }
+#include "FastaHeaderFieldRegex.h"
+#include "../Proteomics/Proteomics.h"
 
 using namespace Proteomics;
 
 namespace UsefulProteomicsDatabases
 {
+
+    // Having a std::tuple as the key of a std::unordered_map is not directly allowed
+    // in C++.
+    // See https://stackoverflow.com/questions/11408934/using-a-stdtuple-as-key-for-stdunordered-map
+    // for how to handle this.
+
+    typedef std::tuple<std::string, std::string, bool, bool> ProteinDbTuple;
+
+    struct ProteinDbTuple_hash: public std::unary_function<ProteinDbTuple, std::size_t>{
+        std::size_t operator() (const ProteinDbTuple& k ) const
+        {
+            size_t h1= std::hash<std::string>{}(std::get<0>(k));
+            size_t h2= std::hash<std::string>{}(std::get<1>(k));
+            size_t h3= std::hash<bool>{}(std::get<2>(k));
+            size_t h4= std::hash<bool>{}(std::get<3>(k));
+            return h1 ^ (h2 << 1) ^ (h3 << 2 ) ^ (h4 << 3);
+        }
+    };
+
+    struct ProteinDbTuple_equal: public std::binary_function<ProteinDbTuple, ProteinDbTuple, bool>{
+        bool operator() (const ProteinDbTuple& lhs, const ProteinDbTuple& rhs) const
+        {
+            return std::get<0>(lhs) == std::get<0>(rhs) &&
+                std::get<1>(lhs) == std::get<1>(rhs) && 
+                std::get<2>(lhs) == std::get<2>(rhs) && 
+                std::get<3>(lhs) == std::get<3>(rhs) ;
+        }
+    };
+
     class ProteinDbLoader final
     {
     public:
@@ -47,27 +74,45 @@ namespace UsefulProteomicsDatabases
         static std::vector<Modification*> protein_xml_modlist_general;
 
         /// <summary>
-        /// Load a mzLibProteinDb or UniProt XML file. Protein modifications may be specified before the protein entries (mzLibProteinDb format).
+        /// Load a mzLibProteinDb or UniProt XML file. Protein modifications may be specified before
+        /// the protein entries (mzLibProteinDb format).
         /// If so, this modification list can be acquired with GetPtmListFromProteinXml after using this method.
         /// They may also be read in separately from a ptmlist text file, and then input as allKnownModifications.
-        /// If protein modifications are specified both in the mzLibProteinDb XML file and in allKnownModifications, they are collapsed into a HashSet of Modifications before generating Protein entries.
+        /// If protein modifications are specified both in the mzLibProteinDb XML file and in
+        /// allKnownModifications, they are collapsed into a HashSet of Modifications before generating
+        /// Protein entries.
         /// </summary>
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")] public static List<Protein> LoadProteinXML(string proteinDbLocation, bool generateTargets, DecoyType decoyType, IEnumerable<Modification> allKnownModifications, bool isContaminant, IEnumerable<string> modTypesToExclude, out Dictionary<string, Modification> unknownModifications, int maxThreads = -1, int maxHeterozygousVariants = 4, int minAlleleDepth = 1)
-        static std::vector<Protein*> LoadProteinXML(const std::string &proteinDbLocation, bool generateTargets, DecoyType decoyType, std::vector<Modification*> &allKnownModifications, bool isContaminant, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, int maxThreads = -1, int maxHeterozygousVariants = 4, int minAlleleDepth = 1);
+        static std::vector<Protein*> LoadProteinXML(const std::string &proteinDbLocation,
+                                          bool generateTargets, DecoyType decoyType,
+                                          std::vector<Modification*> &allKnownModifications,
+                                          bool isContaminant,
+                                          std::vector<std::string> &modTypesToExclude,
+                                          std::unordered_map<std::string, Modification*> &unknownModifications,
+                                          int maxThreads = -1,
+                                          int maxHeterozygousVariants = 4,
+                                          int minAlleleDepth = 1);
 
         /// <summary>
         /// Get the modification entries specified in a mzLibProteinDb XML file (.xml or .xml.gz).
         /// </summary>
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")] public static List<Modification> GetPtmListFromProteinXml(string proteinDbLocation)
         static std::vector<Modification*> GetPtmListFromProteinXml(const std::string &proteinDbLocation);
 
         /// <summary>
-        /// Load a protein fasta database, using regular expressions to get various aspects of the headers. The first regex capture group is used as each field.
+        /// Load a protein fasta database, using regular expressions to get various aspects of the headers.
+        /// The first regex capture group is used as each field.
         /// </summary>
-        static std::vector<Protein*> LoadProteinFasta(const std::string &proteinDbLocation, bool generateTargets, DecoyType decoyType, bool isContaminant, FastaHeaderFieldRegex *accessionRegex, FastaHeaderFieldRegex *fullNameRegex, FastaHeaderFieldRegex *nameRegex, FastaHeaderFieldRegex *geneNameRegex, FastaHeaderFieldRegex *organismRegex, std::vector<std::string> &errors, int maxThreads = -1);
+        static std::vector<Protein*> LoadProteinFasta(const std::string &proteinDbLocation,
+                                                      bool generateTargets,
+                                                      DecoyType decoyType,
+                                                      bool isContaminant,
+                                                      FastaHeaderFieldRegex *accessionRegex,
+                                                      FastaHeaderFieldRegex *fullNameRegex,
+                                                      FastaHeaderFieldRegex *nameRegex,
+                                                      FastaHeaderFieldRegex *geneNameRegex,
+                                                      FastaHeaderFieldRegex *organismRegex,
+                                                      std::vector<std::string> &errors,
+                                                      int maxThreads = -1);
 
         /// <summary>
         /// Merge proteins that have the same accession, sequence, and contaminant designation.

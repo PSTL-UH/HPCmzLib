@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <string>
-
+#include <regex>
 
 namespace UsefulProteomicsDatabases
 {
@@ -9,16 +9,17 @@ namespace UsefulProteomicsDatabases
     {
     private:
         std::string privateFieldName;
-        Regex *privateRegex;
+        std::regex *privateRegex;
         int privateMatch = 0;
         int privateGroup = 0;
 
     public:
-        FastaHeaderFieldRegex(const std::string &fieldName, const std::string &regularExpression, int match, int group);
+        FastaHeaderFieldRegex(const std::string &fieldName, const std::string &regularExpression,
+                              int match, int group);
 
         std::string getFieldName() const;
 
-        Regex *getRegex() const;
+        std::regex *getRegex() const;
 
         int getMatch() const;
 

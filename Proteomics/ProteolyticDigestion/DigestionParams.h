@@ -38,7 +38,12 @@ namespace Proteomics
         public:
             DigestionParams();
 
-            DigestionParams(const std::string &protease = "trypsin", int maxMissedCleavages = 2, int minPeptideLength = 7, int maxPeptideLength = std::numeric_limits<int>::max(), int maxModificationIsoforms = 1024, Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior initiatorMethionineBehavior = InitiatorMethionineBehavior::Variable, int maxModsForPeptides = 2, CleavageSpecificity searchModeType = CleavageSpecificity::Full, FragmentationTerminus fragmentationTerminus = FragmentationTerminus::Both);
+            DigestionParams(const std::string &protease = "trypsin", int maxMissedCleavages = 2,
+                            int minPeptideLength = 7, int maxPeptideLength = std::numeric_limits<int>::max(),
+                            int maxModificationIsoforms = 1024,
+                            Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior initiatorMethionineBehavior = InitiatorMethionineBehavior::Variable,
+                            int maxModsForPeptides = 2, CleavageSpecificity searchModeType = CleavageSpecificity::Full,
+                            FragmentationTerminus fragmentationTerminus = FragmentationTerminus::Both);
 
                 int getMaxMissedCleavages() const;
                 void setMaxMissedCleavages(int value);
