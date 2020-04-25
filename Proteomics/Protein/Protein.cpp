@@ -236,7 +236,7 @@ namespace Proteomics
         return StringHelper::formatSimple("mz|{0}|{1} {2} OS={3} GN={4}", privateAccession, privateName,
                                    privateFullName, privateOrganism, geneName);
 #endif
-        std::string s = "mz|" + privateAccession + "|" + privateName + " " + privateFullName + " OS= " +
+        std::string s = "mz|" + privateAccession + "|" + privateName + " " + privateFullName + " OS=" +
             privateOrganism + " GN=" +  geneName;
         return s;
     }

@@ -528,11 +528,8 @@ namespace UsefulProteomicsDatabases
         std::string result;
         if (regex != nullptr)
         {
-            //auto matches = regex->getRegex()->Matches(line);
-            std::smatch matches;
-            std::regex_match(line, matches, *(regex->getRegex()) );
-
 #ifdef ORIG
+            auto matches = regex->getRegex()->Matches(line);
             if (matches->Count > regex->getMatch()                           &&
                 matches[regex->getMatch()].Groups->Count > regex->getGroup())
             {
@@ -540,11 +537,27 @@ namespace UsefulProteomicsDatabases
             }
 
 #endif
-            if (matches.size() > regex->getMatch()                           &&
-                matches[regex->getMatch()].length() > regex->getGroup())
-            {
-                result = matches[regex->getMatch()].str();
+            int matchno=0;
+            std::sregex_iterator it(line.begin(), line.end(), *(regex->getRegex()) );
+            std::sregex_iterator reg_end;
+
+            int match = regex->getMatch();
+            int group = regex->getGroup();
+            
+            int i=0;
+            for ( ; it!= reg_end; ++it, ++matchno ) {
+                std::smatch res;
+                std::string sgroup = it->str();
+                if ( std::regex_search(sgroup, res, *(regex->getRegex()) ) )  {
+                    for ( auto groupno=0; groupno<res.size() ; groupno++ ) {
+                        if ( matchno == match && groupno == group ) {
+                            result =  res[groupno];
+                            break;
+                        }
+                    }
+                }
             }
+            
         }
         return result;
     }

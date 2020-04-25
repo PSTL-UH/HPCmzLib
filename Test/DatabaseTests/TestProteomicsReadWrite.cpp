@@ -31,54 +31,54 @@ int main ( int argc, char **argv )
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
 #ifdef LATER
-    std::cout << ++i << ". " << std::endl;
+    std::cout << ++i << ". ReadXmlNulls" << std::endl;
     Test::TestProteomicsReadWrite::ReadXmlNulls();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_readUniProtXML_writeProteinXml" << std::endl;    
     Test::TestProteomicsReadWrite::Test_readUniProtXML_writeProteinXml();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_read_Ensembl_pepAllFasta" << std::endl;    
     Test::TestProteomicsReadWrite::Test_read_Ensembl_pepAllFasta();
 #endif
     
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". FastaTest" << std::endl;    
     Test::TestProteomicsReadWrite::FastaTest();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_read_write_read_fasta" << std::endl;    
     Test::TestProteomicsReadWrite::Test_read_write_read_fasta();
 
 #ifdef LATER
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_read_xml_write_read_fasta" << std::endl;    
     Test::TestProteomicsReadWrite::Test_read_xml_write_read_fasta();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_accession_regex_weird" << std::endl;    
     Test::TestProteomicsReadWrite::Test_accession_regex_weird();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_write_with_custom_mods" << std::endl;    
     Test::TestProteomicsReadWrite::Test_write_with_custom_mods();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". AnotherTest" << std::endl;    
     Test::TestProteomicsReadWrite::AnotherTest();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestEmptyProteins" << std::endl;    
     Test::TestProteomicsReadWrite::TestEmptyProteins();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestFullProteinReadWrite" << std::endl;    
     Test::TestProteomicsReadWrite::TestFullProteinReadWrite();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestReadWriteSeqVars" << std::endl;    
     Test::TestProteomicsReadWrite::TestReadWriteSeqVars();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestReadWriteSeqVars2" << std::endl;    
     Test::TestProteomicsReadWrite::TestReadWriteSeqVars2();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestModificationGeneralToString" << std::endl;    
     Test::TestProteomicsReadWrite::TestModificationGeneralToString();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". TestModificationGeneral_Equals" << std::endl;    
     Test::TestProteomicsReadWrite::TestModificationGeneral_Equals();
 
-    std::cout << ++i << ". " << std::endl;    
+    std::cout << ++i << ". Test_CustumPrunedDatabaseWriteAndRead" << std::endl;    
     Test::TestProteomicsReadWrite::Test_CustumPrunedDatabaseWriteAndRead();
 #endif
     return 0;
@@ -98,7 +98,15 @@ namespace Test
     {
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("X", motif);
-        auto nice = std::vector<Modification*> {new Modification("fayk", "", "mt", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "")};
+        auto nice = std::vector<Modification*> {new Modification(
+                "fayk", "", "mt", "", motif,
+                "Anywhere.", nullptr, std::make_optional(10),
+                std::unordered_map<std::string, std::vector<std::string>>(),
+                std::unordered_map<std::string, std::vector<std::string>>(),
+                std::vector<std::string>(),
+                std::unordered_map<DissociationType,
+                std::vector<double>>(),
+                std::unordered_map<DissociationType, std::vector<double>>(), "")};
 
         auto psiModDeserialized = Loaders::LoadPsiMod(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "PSI-MOD.obo2.xml"));
         std::unordered_map<std::string, int> formalChargesDictionary = Loaders::GetFormalChargesDictionary(psiModDeserialized);

@@ -6,18 +6,11 @@
 #include <tuple>
 #include "stringhelper.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
-//namespace Proteomics { class SequenceVariation; }
 #include "SequenceVariation.h"
-//namespace Proteomics { class DisulfideBond; }
 #include "DisulfideBond.h"
-//namespace Proteomics { class SpliceSite; }
 #include "SpliceSite.h"
-//namespace Proteomics { class ProteolysisProduct; }
 #include "ProteolysisProduct.h"
-//namespace Proteomics { class DatabaseReference; }
 #include "DatabaseReference.h"
 
 //#include "VariantApplication.h"
