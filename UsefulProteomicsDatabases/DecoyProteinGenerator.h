@@ -9,8 +9,8 @@
 #include "stringhelper.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { class Protein; }
-namespace Proteomics { class SequenceVariation; }
+#include "../Proteomics/Protein/Protein.h"
+#include "../Proteomics/Protein/SequenceVariation.h"
 
 using namespace Proteomics;
 
@@ -27,7 +27,8 @@ namespace UsefulProteomicsDatabases
         /// <param name="randomSeed">Used when decoy type is shuffle for shuffling the peptides</param>
         /// <returns></returns>
     public:
-        static std::vector<Protein*> GenerateDecoys(std::vector<Protein*> &proteins, DecoyType decoyType, int maxThreads = -1);
+        static std::vector<Protein*> GenerateDecoys(std::vector<Protein*> &proteins, DecoyType decoyType,
+                                                    int maxThreads = -1);
 
         /// <summary>
         /// Generates a reverse decoy sequence

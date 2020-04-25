@@ -9,6 +9,7 @@
 include ../Makefile.defs
 
 HEADER =  DecoyType.h          \
+	DecoyProteinGenerator.h	\
 	Loaders.h              \
 	PeriodicTableLoader.h  \
 	FastaHeaderFieldRegex.h \
@@ -19,6 +20,7 @@ HEADER =  DecoyType.h          \
 
 
 OBJ =   DecoyType.o            \
+	DecoyProteinGenerator.o \
 	PeriodicTableLoader.o  \
 	FastaHeaderFieldRegex.o \
 	ProteinDbLoader.o      \
@@ -30,7 +32,8 @@ OBJ =   DecoyType.o            \
 
 .SUFFIXES: .o.cpp
 
-all:    
+all:  
+
 	cd PSI-MOD.obo ; make ; cd ..
 	cd unimod_2 ; make ; cd ..
 	make $(MZLIB_LIB) 
