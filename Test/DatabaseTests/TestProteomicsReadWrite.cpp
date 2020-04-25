@@ -36,10 +36,10 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". Test_readUniProtXML_writeProteinXml" << std::endl;    
     Test::TestProteomicsReadWrite::Test_readUniProtXML_writeProteinXml();
+#endif
 
     std::cout << ++i << ". Test_read_Ensembl_pepAllFasta" << std::endl;    
     Test::TestProteomicsReadWrite::Test_read_Ensembl_pepAllFasta();
-#endif
     
     std::cout << ++i << ". FastaTest" << std::endl;    
     Test::TestProteomicsReadWrite::FastaTest();
@@ -186,32 +186,65 @@ namespace Test
             });
         }));
     }
-
+#endif
+   
     void TestProteomicsReadWrite::Test_read_Ensembl_pepAllFasta()
     {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("X", motif);
-        auto nice = std::vector<Modification*> {new Modification("fayk", "", "mt", "", motif, "Anywhere.", nullptr, std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "")};
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
+        ModificationMotif* motif;
+        ModificationMotif::TryGetMotif("X", &motif);
+        Modification* mod = new Modification("fayk", "", "mt", "", motif, "Anywhere.", nullptr,
+                                    std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(),
+                                    std::unordered_map<std::string, std::vector<std::string>>(),
+                                    std::vector<std::string>(), std::unordered_map<DissociationType,
+                                    std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        std::vector<Modification*> nice = {mod};
 
-        std::vector<string> a;
-        std::vector<Protein*> ok = ProteinDbLoader::LoadProteinFasta(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(test_ensembl.pep.all.fasta)"), true, DecoyType::None, false, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblFullNameRegex, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblGeneNameRegex, nullptr, a);
-        ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), ok, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_test_ensembl.pep.all.xml)"));
+        std::vector<std::string> a;
+        std::vector<Protein*> ok = ProteinDbLoader::LoadProteinFasta( testdir + "/test_ensembl.pep.all.fasta", true,
+                                                                      DecoyType::None, false,
+                                                                      ProteinDbLoader::EnsemblAccessionRegex,
+                                                                      ProteinDbLoader::EnsemblFullNameRegex,
+                                                                      ProteinDbLoader::EnsemblAccessionRegex,
+                                                                      ProteinDbLoader::EnsemblGeneNameRegex, nullptr, a);
+
+#ifdef LATER
+        ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), ok,
+                                          testdir + "/rewrite_test_ensembl.pep.all.xml" );
         Dictionary<std::string, Modification*> un;
-        std::vector<Protein*> ok2 = ProteinDbLoader::LoadProteinXML(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_test_ensembl.pep.all.xml)"), true, DecoyType::None, nice, false, std::vector<std::string>(), un);
-
+        std::vector<Protein*> ok2 = ProteinDbLoader::LoadProteinXML(testdir + "/rewrite_test_ensembl.pep.all.xml", true,
+            DecoyType::None, nice, false, std::vector<std::string>(), un);
+        
         Assert::AreEqual(ok.size(), ok2.size());
         Assert::True(Enumerable::Range(0, ok.size()).All([&] (std::any i)
         {
             return ok[i]->getBaseSequence() == ok2[i]->getBaseSequence();
         }));
-        Assert::AreEqual("ENSP00000381386", ok[0]->getAccession());
-        Assert::AreEqual("ENSP00000215773", ok[1]->getAccession());
-        Assert::AreEqual("ENSG00000099977", ok[0]->getGeneNames().front().Item2);
-        Assert::AreEqual("ENSG00000099977", ok[1]->getGeneNames().front().Item2);
-        Assert::AreEqual("pep:known chromosome:GRCh37:22:24313554:24316773:-1 gene:ENSG00000099977 transcript:ENST00000398344 gene_biotype:protein_coding transcript_biotype:protein_coding", ok[0]->getFullName());
-        Assert::AreEqual("pep:known chromosome:GRCh37:22:24313554:24322019:-1 gene:ENSG00000099977 transcript:ENST00000350608 gene_biotype:protein_coding transcript_biotype:protein_coding", ok[1]->getFullName());
-        Assert::AreEqual(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(test_ensembl.pep.all.fasta)"), ok[0]->getDatabaseFilePath());
+#endif
 
+        std::string s = "ENSP00000381386";
+        Assert::AreEqual(s, ok[0]->getAccession());
+
+        s = "ENSP00000215773";
+        Assert::AreEqual(s, ok[1]->getAccession());
+
+        s = "ENSG00000099977";
+        Assert::AreEqual(s, std::get<1>(ok[0]->getGeneNames().front()));
+
+        s = "ENSG00000099977";
+        Assert::AreEqual(s, std::get<1>(ok[1]->getGeneNames().front()));
+
+        s = "pep:known chromosome:GRCh37:22:24313554:24316773:-1 gene:ENSG00000099977 transcript:ENST00000398344 gene_biotype:protein_coding transcript_biotype:protein_coding";
+        Assert::AreEqual(s, ok[0]->getFullName());
+
+        s = "pep:known chromosome:GRCh37:22:24313554:24322019:-1 gene:ENSG00000099977 transcript:ENST00000350608 gene_biotype:protein_coding transcript_biotype:protein_coding";
+        Assert::AreEqual(s, ok[1]->getFullName());
+
+        s = testdir + "/test_ensembl.pep.all.fasta";            
+        Assert::AreEqual(s, ok[0]->getDatabaseFilePath());
+
+#ifdef LATER
         Assert::AreEqual("ENSP00000381386", ok2[0]->getAccession());
         Assert::AreEqual("ENSP00000215773", ok2[1]->getAccession());
         Assert::AreEqual("ENSG00000099977", ok2[0]->getGeneNames().front().Item2);
@@ -219,37 +252,32 @@ namespace Test
         Assert::AreEqual("pep:known chromosome:GRCh37:22:24313554:24316773:-1 gene:ENSG00000099977 transcript:ENST00000398344 gene_biotype:protein_coding transcript_biotype:protein_coding", ok2[0]->getFullName());
         Assert::AreEqual("pep:known chromosome:GRCh37:22:24313554:24322019:-1 gene:ENSG00000099977 transcript:ENST00000350608 gene_biotype:protein_coding transcript_biotype:protein_coding", ok2[1]->getFullName());
         Assert::AreEqual(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_test_ensembl.pep.all.xml)"), ok2[0]->getDatabaseFilePath());
-
-        Assert::True(ok.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedBeginPosition == nullptr || prod::OneBasedBeginPosition > 0 && prod::OneBasedBeginPosition <= p->Length;
-            });
-        }));
-        Assert::True(ok.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedEndPosition == nullptr || prod::OneBasedEndPosition > 0 && prod::OneBasedEndPosition <= p->Length;
-            });
-        }));
-        Assert::True(ok2.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedBeginPosition == nullptr || prod::OneBasedBeginPosition > 0 && prod::OneBasedBeginPosition <= p->Length;
-            });
-        }));
-        Assert::True(ok2.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedEndPosition == nullptr || prod::OneBasedEndPosition > 0 && prod::OneBasedEndPosition <= p->Length;
-            });
-        }));
-    }
 #endif
+        for ( auto p: ok ) {
+            for ( auto prod : p->getProteolysisProducts() ) {
+                Assert::IsTrue (!prod->getOneBasedBeginPosition().has_value() ||
+                                prod->getOneBasedBeginPosition().value() > 0 &&
+                                prod->getOneBasedBeginPosition().value() <= p->getLength());
+                Assert::IsTrue (!prod->getOneBasedEndPosition().has_value() ||
+                                prod->getOneBasedEndPosition().value() > 0 &&
+                                prod->getOneBasedEndPosition().value() <= p->getLength());
+            }
+        }
+
+#ifdef LATER
+        for ( auto p: ok2 ) {
+            for ( auto prod: p->getProteolysisProducts() ) {
+                Assert::IsTrue (!prod->getOneBasedBeginPosition().has_value() ||
+                                prod->getOneBasedBeginPosition().value() > 0 &&
+                                prod->getOneBasedBeginPosition().value() <= p->getLength());
+                Assert::IsTrue (!prod->getOneBasedEndPosition().has_value() ||
+                                prod->getOneBasedEndPosition().value() > 0 &&
+                                prod->getOneBasedEndPosition().value() <= p->getLength());
+            }
+        }
+#endif
+        
+    }
     
     void TestProteomicsReadWrite::FastaTest()
     {
