@@ -10,44 +10,86 @@
 #include "../../UsefulProteomicsDatabases/DecoyType.h"
 #include "../../UsefulProteomicsDatabases/PtmListLoader.h"
 
-using namespace NUnit::Framework;
 using namespace Proteomics;
 using namespace UsefulProteomicsDatabases;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+int main ( int argc, char **argv )
+{
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::SetUpModifications();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::MergeACoupleProteins();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::XmlTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::DisulfideXmlTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::XmlTest_2entry();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::XmlGzTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::XmlFunkySequenceTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::XmlModifiedStartTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::FastaTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::BadFastaTest();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::Load_fasta_handle_tooHigh_indices();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::Read_xml_mod_collision();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::Read_xml_exclude_mods(const std::string &excludeString, bool isExcluded);
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::CompareOxidationWithAndWithoutCf();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::TestReverseDecoyXML();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::TestSlideDecoyXML();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::TestReverseDecoyFasta();
+
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteinReader::TestSlideDecoyFasta();
+
+    std::cout << ++i << ". " << std::endl;
+
+
+    std::cout << ++i << ". " << std::endl;
+
+    
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestProteinReader::privateStopwatch;
-std::vector<Modification*> TestProteinReader::UniProtPtms;
-
-    Stopwatch *TestProteinReader::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestProteinReader::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
     void TestProteinReader::SetUpModifications()
     {
         auto psiModDeserialized = Loaders::LoadPsiMod(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "PSI-MOD.obo2.xml"));
         std::unordered_map<std::string, int> formalChargesDictionary = Loaders::GetFormalChargesDictionary(psiModDeserialized);
         UniProtPtms = Loaders::LoadUniprot(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "ptmlist2.txt"), formalChargesDictionary).ToList();
-    }
-
-    void TestProteinReader::Setuppp()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestProteinReader::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
     }
 
     void TestProteinReader::MergeACoupleProteins()

@@ -10,95 +10,50 @@
 #include "stringhelper.h"
 #include "tangible_filesystem.h"
 
+#include "../../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
-using namespace NUnit::Framework;
+
+#include "../../Proteomics/Proteomics.h"
 using namespace Proteomics;
+
+#include "../../UsefulProteomicsDatabases/UsefulProteomicsDatabases.h"
 using namespace UsefulProteomicsDatabases;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 namespace Test
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] internal class TestProteomicsReadWrite
     class TestProteomicsReadWrite
     {
-    private:
-        static Stopwatch *privateStopwatch;
-
-        static Stopwatch *getStopwatch();
-        static void setStopwatch(Stopwatch *value);
-
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public static void Setuppp()
-        static void Setuppp();
+        static void ReadXmlNulls();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TearDown] public static void TearDown()
-        static void TearDown();
+        static void Test_readUniProtXML_writeProteinXml();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void ReadXmlNulls()
-        void ReadXmlNulls();
+        static void Test_read_Ensembl_pepAllFasta();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_readUniProtXML_writeProteinXml()
-        void Test_readUniProtXML_writeProteinXml();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_read_Ensembl_pepAllFasta()
-        void Test_read_Ensembl_pepAllFasta();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void FastaTest()
         static void FastaTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_read_write_read_fasta()
-        void Test_read_write_read_fasta();
+        static void Test_read_write_read_fasta();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_read_xml_write_read_fasta()
-        void Test_read_xml_write_read_fasta();
+        static void Test_read_xml_write_read_fasta();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_accession_regex_weird()
-        void Test_accession_regex_weird();
+        static void Test_accession_regex_weird();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void Test_write_with_custom_mods()
-        void Test_write_with_custom_mods();
+        static void Test_write_with_custom_mods();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void AnotherTest()
-        void AnotherTest();
+        static void AnotherTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestEmptyProteins()
-        void TestEmptyProteins();
+        static void TestEmptyProteins();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestFullProteinReadWrite()
-        void TestFullProteinReadWrite();
+        static void TestFullProteinReadWrite();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestReadWriteSeqVars()
-        void TestReadWriteSeqVars();
+        static void TestReadWriteSeqVars();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestReadWriteSeqVars2()
-        void TestReadWriteSeqVars2();
+        static void TestReadWriteSeqVars2();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestModificationGeneralToString()
-        void TestModificationGeneralToString();
+        static void TestModificationGeneralToString();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestModificationGeneral_Equals()
-        void TestModificationGeneral_Equals();
+        static void TestModificationGeneral_Equals();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void Test_CustumPrunedDatabaseWriteAndRead()
         static void Test_CustumPrunedDatabaseWriteAndRead();
     };
 }

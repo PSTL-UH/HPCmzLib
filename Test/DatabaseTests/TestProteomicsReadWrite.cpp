@@ -14,39 +14,80 @@
 #include "../../Proteomics/Protein/ProteolysisProduct.h"
 #include "../../UsefulProteomicsDatabases/PtmListLoader.h"
 
+#include "Assert.h"
+#include <experimental/filesystem>
+
 using namespace MassSpectrometry;
-using namespace NUnit::Framework;
 using namespace Proteomics;
 using namespace UsefulProteomicsDatabases;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
+
+
+int main ( int argc, char **argv )
+{
+    int i=0;
+    std::cout << i << ". PeriodicTableLoader" << std::endl;
+    const std::string elfile="elements.dat";
+    const std::string &elr=elfile;
+    UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
+
+#ifdef LATER
+    std::cout << ++i << ". " << std::endl;
+    Test::TestProteomicsReadWrite::ReadXmlNulls();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_readUniProtXML_writeProteinXml();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_read_Ensembl_pepAllFasta();
+#endif
+    
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::FastaTest();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_read_write_read_fasta();
+
+#ifdef LATER
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_read_xml_write_read_fasta();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_accession_regex_weird();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_write_with_custom_mods();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::AnotherTest();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestEmptyProteins();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestFullProteinReadWrite();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestReadWriteSeqVars();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestReadWriteSeqVars2();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestModificationGeneralToString();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::TestModificationGeneral_Equals();
+
+    std::cout << ++i << ". " << std::endl;    
+    Test::TestProteomicsReadWrite::Test_CustumPrunedDatabaseWriteAndRead();
+#endif
+    return 0;
+}
 
 namespace Test
 {
-
-System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
-
-    Stopwatch *TestProteomicsReadWrite::getStopwatch()
-    {
-        return privateStopwatch;
-    }
-
-    void TestProteomicsReadWrite::setStopwatch(Stopwatch *value)
-    {
-        privateStopwatch = value;
-    }
-
-    void TestProteomicsReadWrite::Setuppp()
-    {
-        Stopwatch tempVar();
-        setStopwatch(&tempVar);
-        getStopwatch()->Start();
-    }
-
-    void TestProteomicsReadWrite::TearDown()
-    {
-        std::cout << StringHelper::formatSimple("Analysis time: {0}h {1}m {2}s", getStopwatch()->Elapsed.Hours, getStopwatch()->Elapsed.Minutes, getStopwatch()->Elapsed.Seconds) << std::endl;
-    }
-
+    
+#ifdef LATER
     void TestProteomicsReadWrite::ReadXmlNulls()
     {
         Dictionary<std::string, Modification*> un;
@@ -200,72 +241,117 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
             });
         }));
     }
-
+#endif
+    
     void TestProteomicsReadWrite::FastaTest()
     {
-        std::vector<string> a;
-        std::vector<Protein*> prots = ProteinDbLoader::LoadProteinFasta(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(fasta.fasta)"), true, DecoyType::Reverse, false, ProteinDbLoader::UniprotAccessionRegex, ProteinDbLoader::UniprotFullNameRegex, ProteinDbLoader::UniprotNameRegex, ProteinDbLoader::UniprotGeneNameRegex, ProteinDbLoader::UniprotOrganismRegex, a);
-        ProteinDbWriter::WriteFastaDatabase(prots, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_fasta.fasta)"), "|");
-        std::vector<string> un;
-        std::vector<Protein*> prots2 = ProteinDbLoader::LoadProteinFasta(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_fasta.fasta)"), true, DecoyType::None, false, ProteinDbLoader::UniprotAccessionRegex, ProteinDbLoader::UniprotFullNameRegex, ProteinDbLoader::UniprotNameRegex, ProteinDbLoader::UniprotGeneNameRegex, ProteinDbLoader::UniprotOrganismRegex, un);
+        std::vector<std::string> a;
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
+        std::vector<Protein*> prots = ProteinDbLoader::LoadProteinFasta(testdir + "/fasta.fasta", true,
+            DecoyType::Reverse, false, ProteinDbLoader::UniprotAccessionRegex,
+            ProteinDbLoader::UniprotFullNameRegex, ProteinDbLoader::UniprotNameRegex,
+            ProteinDbLoader::UniprotGeneNameRegex, ProteinDbLoader::UniprotOrganismRegex, a);
+        ProteinDbWriter::WriteFastaDatabase(prots, testdir +"/rewrite_fasta.fasta", "|");
 
-        Assert::AreEqual("P62805", prots.front().Accession);
-        Assert::AreEqual("H4_HUMAN", prots.front()->Name);
-        Assert::AreEqual("Histone H4", prots.front()->FullName);
-        Assert::AreEqual("HIST1H4A", prots.front().GeneNames::First().Item2);
-        Assert::AreEqual("Homo sapiens", prots.front().Organism);
+        std::vector<std::string> un;
+        std::vector<Protein*> prots2 = ProteinDbLoader::LoadProteinFasta(testdir + "/rewrite_fasta.fasta", true,
+            DecoyType::None, false, ProteinDbLoader::UniprotAccessionRegex,
+            ProteinDbLoader::UniprotFullNameRegex, ProteinDbLoader::UniprotNameRegex,
+            ProteinDbLoader::UniprotGeneNameRegex, ProteinDbLoader::UniprotOrganismRegex, un);
 
-        Assert::AreEqual("P62805", prots2.front().Accession);
-        Assert::AreEqual("H4_HUMAN", prots2.front()->Name);
-        Assert::AreEqual("Histone H4", prots2.front()->FullName);
-        Assert::AreEqual("HIST1H4A", prots2.front().GeneNames::First().Item2);
-        Assert::AreEqual("Homo sapiens", prots2.front().Organism);
+        std::string s = "P62805";
+        Assert::AreEqual(s, prots.front()->getAccession() );
+        Assert::AreEqual(s, prots2.front()->getAccession());
+        
+        s = "H4_HUMAN";
+        Assert::AreEqual(s, prots.front()->getName());
+        Assert::AreEqual(s, prots2.front()->getName());
+
+        s = "Histone H4";
+        Assert::AreEqual(s,  prots.front()->getFullName());
+        Assert::AreEqual(s, prots2.front()->getFullName());
+
+        s = "HIST1H4A";
+        Assert::AreEqual(s, std::get<1>(prots.front()->getGeneNames().front()));
+        Assert::AreEqual(s, std::get<1>(prots2.front()->getGeneNames().front()));
+
+        s = "Homo sapiens";
+        Assert::AreEqual(s, prots.front()->getOrganism());
+        Assert::AreEqual(s, prots2.front()->getOrganism());
     }
 
     void TestProteomicsReadWrite::Test_read_write_read_fasta()
     {
-        std::vector<string> a;
-        std::vector<Protein*> ok = ProteinDbLoader::LoadProteinFasta(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(test_ensembl.pep.all.fasta)"), true, DecoyType::None, false, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblFullNameRegex, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblGeneNameRegex, nullptr, a);
-        ProteinDbWriter::WriteFastaDatabase(ok, FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_test_ensembl.pep.all.fasta)"), " ");
-        std::vector<string> b;
-        std::vector<Protein*> ok2 = ProteinDbLoader::LoadProteinFasta(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "DatabaseTests", R"(rewrite_test_ensembl.pep.all.fasta)"), true, DecoyType::None, false, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblFullNameRegex, ProteinDbLoader::EnsemblAccessionRegex, ProteinDbLoader::EnsemblGeneNameRegex, nullptr, b);
+        std::vector<std::string> a;
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
+        std::vector<Protein*> ok = ProteinDbLoader::LoadProteinFasta(testdir + "/test_ensembl.pep.all.fasta", true,
+            DecoyType::None, false, ProteinDbLoader::EnsemblAccessionRegex,
+            ProteinDbLoader::EnsemblFullNameRegex, ProteinDbLoader::EnsemblAccessionRegex,
+            ProteinDbLoader::EnsemblGeneNameRegex, nullptr, a);
+        ProteinDbWriter::WriteFastaDatabase(ok, testdir + "/rewrite_test_ensembl.pep.all.fasta", " ");
+        std::vector<std::string> b;
+        std::vector<Protein*> ok2 = ProteinDbLoader::LoadProteinFasta(testdir + "/rewrite_test_ensembl.pep.all.fasta",
+            true, DecoyType::None, false, ProteinDbLoader::EnsemblAccessionRegex,
+            ProteinDbLoader::EnsemblFullNameRegex, ProteinDbLoader::EnsemblAccessionRegex,
+            ProteinDbLoader::EnsemblGeneNameRegex, nullptr, b);
 
         Assert::AreEqual(ok.size(), ok2.size());
-        Assert::True(Enumerable::Range(0, ok.size()).All([&] (std::any i)
+#ifdef ORIG
+        Assert::IsTrue(Enumerable::Range(0, ok.size()).All([&] (std::any i)
         {
             return ok[i]->getBaseSequence() == ok2[i]->getBaseSequence();
         }));
+#endif
+        for ( auto i=0; i< ok.size(); i++ ) {
+            Assert::IsTrue(ok[i]->getBaseSequence() == ok2[i]->getBaseSequence());
+        }
+        
+#ifdef ORIG
+        Assert::IsTrue(ok.All([&] (std::any p)
+        {
+            p::ProteolysisProducts::All([&] (std::any prod)
+            {
+                return prod->OneBasedBeginPosition == nullptr ||
+                    prod::OneBasedBeginPosition > 0 && prod::OneBasedBeginPosition <= p->Length;
+            });
+        }));
 
-        Assert::True(ok.All([&] (std::any p)
+        Assert::IsTrue(ok.All([&] (std::any p)
         {
             p::ProteolysisProducts::All([&] (std::any prod)
             {
-                return prod->OneBasedBeginPosition == nullptr || prod::OneBasedBeginPosition > 0 && prod::OneBasedBeginPosition <= p->Length;
+                return prod->OneBasedEndPosition == nullptr ||
+                    prod::OneBasedEndPosition > 0 && prod::OneBasedEndPosition <= p->Length;
             });
         }));
-        Assert::True(ok.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedEndPosition == nullptr || prod::OneBasedEndPosition > 0 && prod::OneBasedEndPosition <= p->Length;
-            });
-        }));
-        Assert::True(ok2.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedBeginPosition == nullptr || prod::OneBasedBeginPosition > 0 && prod::OneBasedBeginPosition <= p->Length;
-            });
-        }));
-        Assert::True(ok2.All([&] (std::any p)
-        {
-            p::ProteolysisProducts::All([&] (std::any prod)
-            {
-                return prod->OneBasedEndPosition == nullptr || prod::OneBasedEndPosition > 0 && prod::OneBasedEndPosition <= p->Length;
-            });
-        }));
+
+#endif
+        for ( auto p: ok ) {
+            for ( auto prod: p->getProteolysisProducts() ) {
+                Assert::IsTrue (!prod->getOneBasedBeginPosition().has_value() ||
+                                prod->getOneBasedBeginPosition().value() > 0 &&
+                                prod->getOneBasedBeginPosition().value() <= p->getLength());
+                Assert::IsTrue (!prod->getOneBasedEndPosition().has_value() ||
+                                prod->getOneBasedEndPosition().value() > 0 &&
+                                prod->getOneBasedEndPosition().value() <= p->getLength());
+            }
+        }
+        
+        for ( auto p: ok2 ) {
+            for ( auto prod: p->getProteolysisProducts() ) {
+                Assert::IsTrue (!prod->getOneBasedBeginPosition().has_value() ||
+                                prod->getOneBasedBeginPosition().value() > 0 &&
+                                prod->getOneBasedBeginPosition().value() <= p->getLength());
+                Assert::IsTrue (!prod->getOneBasedEndPosition().has_value() ||
+                                prod->getOneBasedEndPosition().value() > 0 &&
+                                prod->getOneBasedEndPosition().value() <= p->getLength());
+            }
+        }
     }
 
+#ifdef LATER
     void TestProteomicsReadWrite::Test_read_xml_write_read_fasta()
     {
         ModificationMotif motif;
@@ -340,11 +426,10 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
         Assert::AreEqual(ok.size(), ok2.size());
         Assert::True(Enumerable::Range(0, ok.size()).All([&] (std::any i)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete bad' statement was not added since bad was passed to a method or constructor. Handle memory management manually.
             return ok[i]->getBaseSequence() == ok2[i]->getBaseSequence();
         }));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete bad' statement was not added since bad was passed to a method or constructor. Handle memory management manually.
+        delete bad;
     }
 
     void TestProteomicsReadWrite::Test_write_with_custom_mods()
@@ -393,13 +478,12 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
         Assert::AreEqual(ok.size(), ok2.size());
         Assert::True(Enumerable::Range(0, ok.size()).All([&] (std::any i)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete m' statement was not added since m was passed to a method or constructor. Handle memory management manually.
             return ok[i]->getBaseSequence() == ok2[i]->getBaseSequence();
         }));
         Assert::AreEqual(2, ok[0]->getOneBasedPossibleLocalizedModifications().size());
         Assert::AreEqual(3, ok2[0]->getOneBasedPossibleLocalizedModifications().size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete m' statement was not added since m was passed to a method or constructor. Handle memory management manually.
+        delete m;
     }
 
     void TestProteomicsReadWrite::AnotherTest()
@@ -415,8 +499,8 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
 
         ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), {ParentProtein, proteinWithChain}, FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(fdsfsd.xml)"));
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete proteinWithChain' statement was not added since proteinWithChain was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete ParentProtein' statement was not added since ParentProtein was passed to a method or constructor. Handle memory management manually.
+        delete proteinWithChain;
+        delete ParentProtein;
     }
 
     void TestProteomicsReadWrite::TestEmptyProteins()
@@ -538,7 +622,7 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
         Assert::AreEqual(p1->getSequenceVariations().back().OriginalSequence, ok[0]->getSequenceVariations().back().OriginalSequence);
         Assert::AreEqual(p1->getSequenceVariations().back().VariantSequence, ok[0]->getSequenceVariations().back().VariantSequence);
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete p1' statement was not added since p1 was passed to a method or constructor. Handle memory management manually.
+        delete p1;
         delete mod3;
         delete mod2;
         delete mod;
@@ -587,7 +671,7 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
         std::vector<(Modification, string)> errors;
         auto a = PtmListLoader::ReadModsFromFile(FileSystem::combine(TestContext::CurrentContext->TestDirectory, "ModificationTests", "CommonBiological.txt"), errors).ToList();
         std::vector<char> myChar = {'"'};
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+
         std::string output = a.front().ToString();
         Assert::AreEqual(output.TrimStart(myChar)->TrimEnd(myChar), "ID   4-carboxyglutamate on E\r\nMT   Biological\r\nTG   E\r\nPP   Anywhere.\r\nCF   CO2\r\nMM   43.989829\r\n");
     }
@@ -629,8 +713,10 @@ System::Diagnostics::Stopwatch *TestProteomicsReadWrite::privateStopwatch;
         Assert::AreEqual(3, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size()());
 
         delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete meOnR' statement was not added since meOnR was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete meOnK' statement was not added since meOnK was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete acOnK' statement was not added since acOnK was passed to a method or constructor. Handle memory management manually.
+        delete meOnR;
+        delete meOnK;
+        delete acOnK;
     }
+
+#endif
 }

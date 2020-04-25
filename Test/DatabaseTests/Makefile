@@ -28,7 +28,19 @@ cxxtests: $(CEXECS)
 ###################################################################################################
 ### CXXTESTS                                                                                      ###
 ###################################################################################################
-TestDatabaseLoaders : TestDatabaseLoaders .o 
+TestProteomicsReadWrite : TestProteomicsReadWrite.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+
+TestProteinReader : TestProteinReader.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+
+TestVariantProtein : TestVariantProtein.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+
+TestDatabaseLoaders : TestDatabaseLoaders.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 #
 
