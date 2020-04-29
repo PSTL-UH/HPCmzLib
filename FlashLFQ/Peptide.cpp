@@ -45,7 +45,6 @@ namespace FlashLFQ
         }
         else
         {
-            intensity = intensities_iterator->second;
             return 0;
         }
     }
@@ -73,7 +72,6 @@ namespace FlashLFQ
         }
         else
         {
-            detectionType = detectionTypes_iterator->second;
             return DetectionType::NotDetected;
         }
     }

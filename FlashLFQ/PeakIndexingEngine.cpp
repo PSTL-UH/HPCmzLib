@@ -196,7 +196,7 @@ namespace FlashLFQ
 
         _ms1Scans.emplace(fileInfo, scanInfo);
 
-        if (_indexedPeaks.empty() || _indexedPeaks.empty())
+        if ( _indexedPeaks.empty() )
         {
             if (!silent)
             {

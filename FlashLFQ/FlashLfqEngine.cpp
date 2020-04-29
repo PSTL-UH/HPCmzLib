@@ -374,7 +374,7 @@ namespace FlashLFQ
             }
         }
 
-        if (!ms2IdsForThisFile.empty())
+        if (ms2IdsForThisFile.empty())
         {
             return;
         }
@@ -443,7 +443,7 @@ namespace FlashLFQ
             msmsFeature->CalculateIntensityForThisFeature(Integrate);
             CutPeak(msmsFeature, identification->ms2RetentionTimeInMinutes);
             
-            if (!msmsFeature->IsotopicEnvelopes.empty())
+            if (msmsFeature->IsotopicEnvelopes.empty())
             {
                 continue;
             }
@@ -461,7 +461,7 @@ namespace FlashLFQ
                 }
             }
     
-            if (!precursorXic.empty())
+            if (precursorXic.empty())
             {
                 msmsFeature->IsotopicEnvelopes.clear();
                 continue;
@@ -525,7 +525,7 @@ namespace FlashLFQ
     {
         auto acceptorFileIdentifiedPeaks = _results->Peaks[idAcceptorFile];
 
-        if (!acceptorFileIdentifiedPeaks.empty())
+        if (acceptorFileIdentifiedPeaks.empty())
         {
             return;
         }
@@ -627,7 +627,7 @@ namespace FlashLFQ
 
                 
             }
-            if (!donorPeaksToMatch.empty())
+            if (donorPeaksToMatch.empty())
             {
                 continue;
             }
@@ -798,9 +798,9 @@ namespace FlashLFQ
                     }
                 }
                 
-                if (!allEnvs.empty())
+                if (allEnvs.empty())
                 {
-                    delete acceptorPeak;
+                    //delete acceptorPeak;
                     continue;
                 }
                 
@@ -1024,12 +1024,13 @@ namespace FlashLFQ
         });
 #endif
         for ( auto p = _results->Peaks[spectraFile].begin() ; p != _results->Peaks[spectraFile].end(); p++ ) {
-            if ( (*p)  == nullptr || ( (*p)->IsMbrPeak && !(*p)->IsotopicEnvelopes.empty()) ) {
+            if ( (*p)  == nullptr                                   ||
+                 ((*p)->IsMbrPeak && (*p)->IsotopicEnvelopes.empty()) ) {
                 _results->Peaks[spectraFile].erase(p);
             }
-
+        }
         // merge duplicate peaks and handle MBR/MSMS peakfinding conflicts
-            std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>peaksGroupedByApex;
+        std::unordered_map<IndexedMassSpectralPeak*, ChromatographicPeak*>peaksGroupedByApex;
         std::vector<ChromatographicPeak*>peaks;
 #ifdef ORIG
         //for (ChromatographicPeak *tryPeak : _results::Peaks[spectraFile].OrderBy([&] (std::any p)
@@ -1041,19 +1042,19 @@ namespace FlashLFQ
         std::sort(tempvec.begin(), tempvec.end(), [&] ( auto l, auto r ) {
                 return l->IsMbrPeak < r->IsMbrPeak;
             });
-
+        
         for ( ChromatographicPeak *tryPeak : tempvec )
         {
             tryPeak->CalculateIntensityForThisFeature(Integrate);
             tryPeak->ResolveIdentifications();
-
+            
             if (tryPeak->getApex() == nullptr)
             {
                 if (tryPeak->IsMbrPeak)
                 {
                     continue;
                 }
-
+                
                 peaks.push_back(tryPeak);
                 continue;
             }
@@ -1205,8 +1206,8 @@ namespace FlashLFQ
         }
 
         _results->Peaks[spectraFile] = peaks;
-        }
     }
+    
 
     std::vector<IsotopicEnvelope*> FlashLfqEngine::GetIsotopicEnvelopes(std::vector<IndexedMassSpectralPeak*> &peaks,
                                                                         Identification *identification,

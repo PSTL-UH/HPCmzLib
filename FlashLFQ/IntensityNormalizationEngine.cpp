@@ -109,7 +109,7 @@ namespace FlashLFQ
                             }
                         }
 
-                        if (!foldChanges.empty())
+                        if (foldChanges.empty())
                         {
                             // TODO: throw an exception?
                             return;
@@ -510,7 +510,7 @@ namespace FlashLFQ
                     }
                 }
 
-                if (!foldChanges.empty())
+                if (foldChanges.empty())
                 {
                     // TODO: throw an exception?
                     return;

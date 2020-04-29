@@ -265,7 +265,9 @@ namespace FlashLFQ
                     return l->BaseSequence < r->BaseSequence;
             });
         auto ip = std::unique ( sortedidents.begin(), sortedidents.end() );
-        int size = std::distance (ip, sortedidents.begin());
+        //int size = std::distance (ip, sortedidents.begin());
+        sortedidents.erase(ip, sortedidents.end());
+        int size = sortedidents.size();
         this->setNumIdentificationsByBaseSeq (size);
         
 #ifdef ORIG
@@ -281,7 +283,9 @@ namespace FlashLFQ
                     return l->ModifiedSequence < r->ModifiedSequence;
             });
         auto ip2 = std::unique ( sortedidents.begin(), sortedidents.end() );
-        size = std::distance (ip2, sortedidents.begin());
+        //size = std::distance (ip2, sortedidents.begin());
+        sortedidents.erase(ip2, sortedidents.end());
+        size = sortedidents.size();
         this->setNumIdentificationsByFullSeq(size);
     }
 
