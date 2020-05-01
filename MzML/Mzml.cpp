@@ -544,21 +544,15 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
                 int CHUNK = 16384;
                 long max_size = bytes_size;
-
+                
                 int ret;
                 unsigned have;
                 z_stream strm;
 
                 unsigned char out[CHUNK];
 
-                //set avail_in to bytes_size
-                strm.avail_in = CHUNK;
-
                 //reset bytes_size to 0
                 bytes_size = 0;
-
-                //set avail_nextin to bytes ptr
-                strm.next_in = unsigned_bytes;
 
                 /* allocate inflate state */
                 strm.zalloc = Z_NULL;
@@ -571,19 +565,25 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                     std::cout << "Error initializing inflate" << std::endl;
                 }
 
+                //set avail_nextin to bytes ptr
+                strm.next_in = unsigned_bytes;
+                strm.avail_in = max_size;
+
                 /* run inflate() on input until output buffer not full */
                 do {
                     strm.avail_out = CHUNK;
                     strm.next_out = out;
                     ret = inflate(&strm, Z_NO_FLUSH);
-                    assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+                    if (ret == Z_STREAM_ERROR) {
+                        std::cout << "Z_STREAM_ERROR\n";
+                    }
                     switch (ret) {
-                    case Z_NEED_DICT:
-                        ret = Z_DATA_ERROR;     /* and fall through */
-                    case Z_DATA_ERROR:
-                    case Z_MEM_ERROR:
-                        (void)inflateEnd(&strm);
-                        std::cout << "Z memory error" << std::endl;
+                        case Z_NEED_DICT:
+                            ret = Z_DATA_ERROR;     /* and fall through */
+                        case Z_DATA_ERROR:
+                        case Z_MEM_ERROR:
+                            (void)inflateEnd(&strm);
+                            std::cout << "Z memory error" << std::endl;
                     }
 
                     have = CHUNK - strm.avail_out;
