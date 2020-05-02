@@ -324,8 +324,6 @@ namespace Proteomics
                                                                                                   variableModificationPattern,
                                                                                                   index + 1))
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        //yield return new_variable_modification_pattern;
                         v.push_back(new_variable_modification_pattern);
                     }
                 }
@@ -339,8 +337,6 @@ namespace Proteomics
                                                                                                       variableModificationPattern,
                                                                                                       index + 1))
                         {
-                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                            //yield return new_variable_modification_pattern;
                             v.push_back(new_variable_modification_pattern);                        }
                     }
                 }
@@ -350,8 +346,6 @@ namespace Proteomics
                 if (unmodifiedResiduesDesired > 0)
                 {
                     variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = 0;
-                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    //yield return variableModificationPattern;
                     v.push_back(variableModificationPattern);
                 }
                 else
@@ -359,8 +353,6 @@ namespace Proteomics
                     for (int i = 1; i <= (int)(std::get<1>(possibleVariableModifications[index]).size()); i++)
                     {
                         variableModificationPattern[std::get<0>(possibleVariableModifications[index])] = i;
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        //yield return variableModificationPattern;
                         v.push_back(variableModificationPattern);
                     }
                 }

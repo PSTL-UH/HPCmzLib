@@ -237,9 +237,6 @@ namespace MassSpectrometry
         std::vector<IsotopicEnvelope*> v;
         if (getIsolationRange() == nullptr)
         {
-            // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
-            // C# 'yield' keyword:
-            // yield break;
             return v;
         }
 
@@ -254,8 +251,6 @@ namespace MassSpectrometry
                             isolationRange->Contains(cc::mz);
                         });
          })) {
-            // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# '
-            // 'yield' keyword:
             yield return haha;
         }
 #endif
@@ -267,8 +262,6 @@ namespace MassSpectrometry
                     };
                 });
             if ( found ) {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                //yield return haha;
                 v.push_back(haha);
             }
         }
@@ -276,7 +269,8 @@ namespace MassSpectrometry
         return v;
     }
 
-    void MsDataScan::TransformMzs(std::function<double(MzPeak*)> convertorForSpectrum, std::function<double(MzPeak*)> convertorForPrecursor)
+    void MsDataScan::TransformMzs(std::function<double(MzPeak*)> convertorForSpectrum,
+                                  std::function<double(MzPeak*)> convertorForPrecursor)
     {
         getMassSpectrum()->ReplaceXbyApplyingFunction(convertorForSpectrum);
         MzPeak tempVar(getSelectedIonMZ().value(), getSelectedIonIntensity().value());
@@ -343,9 +337,6 @@ namespace MassSpectrometry
         std::vector<double> v;
         for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
-            // C# 'yield' keyword:
-            //yield return noiseData[0][i];
             v.push_back(noiseData[0][i]);
         }
         return v;
@@ -356,9 +347,6 @@ namespace MassSpectrometry
         std::vector<double> v;
         for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
-            // C# 'yield' keyword:
-            //yield return noiseData[1][i];
              v.push_back(noiseData[1][i]);
         }
         return v;
@@ -369,9 +357,6 @@ namespace MassSpectrometry
         std::vector<double> v;
         for (long unsigned int i = 0; i < noiseData.size() / 3; i++)
         {
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the
-            // C# 'yield' keyword:
-            //yield return noiseData[2][i];
              v.push_back(noiseData[2][i]);
         }
         return v;

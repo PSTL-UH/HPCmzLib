@@ -202,9 +202,9 @@ namespace MassSpectrometry
                     if (WindowMaxNormalizationToValue.has_value())
                     {
                         double normalizedIntensity = handyLittleListofMzPeaksThatIsOnlyNeededTemporarily[i]->getIntensity() / maxIntensity * WindowMaxNormalizationToValue.value();
-                        MzPeak tempVar2(handyLittleListofMzPeaksThatIsOnlyNeededTemporarily[i]->getMz(),
-                                        normalizedIntensity);
-                        mzIntensites_reduced.push_back(&tempVar2);
+                        auto  tempVar2 = new MzPeak(handyLittleListofMzPeaksThatIsOnlyNeededTemporarily[i]->getMz(),
+                                                    normalizedIntensity);
+                        mzIntensites_reduced.push_back(tempVar2);
                     }
                     else
                     {
@@ -392,9 +392,6 @@ namespace MassSpectrometry
             auto scan = GetOneBasedScan(i);
             if (scan->getMsnOrder() == 1)
             {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent
-                // to the C# 'yield' keyword:
-                //yield return scan;
                 v.push_back (scan);
             }
         }
@@ -412,8 +409,6 @@ namespace MassSpectrometry
         for (int oneBasedSpectrumNumber = FirstSpectrumNumber; oneBasedSpectrumNumber <= LastSpectrumNumber;
              oneBasedSpectrumNumber++)
         {
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            //yield return GetOneBasedScan(oneBasedSpectrumNumber);
             v.push_back(GetOneBasedScan(oneBasedSpectrumNumber));
         }
         return v;
@@ -434,12 +429,8 @@ namespace MassSpectrometry
             }
             if (rt > lastRT)
             {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                //yield break;
                 return v;
             }
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-            //yield return scan;
             v.push_back(scan);
             oneBasedSpectrumNumber++;
         }
@@ -542,32 +533,22 @@ namespace MassSpectrometry
             }
 #ifdef ORIG
             for (auto ok : currentListOfGroups.Where([&] (std::any b) {
-                        // C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since
-                        // tempVar was passed to a method or constructor. Handle memory management manually.
                         return b::MaxScanIndex < scanIndex;
                     }))
                 currentListOfGroups.RemoveAll([&] (std::any b) {
-                        //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since
-                        // tempVar was passed to a method or constructor. Handle memory management manually.
                         return b::MaxScanIndex < scanIndex;
                     });
         
 #endif
             std::vector<MassSpectrometry::DeconvolutionFeatureWithMassesAndScans*>::const_iterator ok;
             for ( ok = currentListOfGroups.begin(); ok != currentListOfGroups.end(); ++ok )  {     
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                //yield return ok;
                 auto okk = *ok;
                 if (okk->getMaxScanIndex() < scanIndex ) {
-                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    //yield return ok;
                     v.push_back (okk);
                     currentListOfGroups.erase (ok);
                 }   
             }
             for (auto ok : currentListOfGroups) {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                //yield return ok;
                 v.push_back(ok);
             }
         }

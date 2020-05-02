@@ -153,9 +153,6 @@ namespace MassSpectrometry {
             
 #ifdef ORIG
 //        } while (peaksLeft.Any([&] (std::any b) {
-//                    //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement
-//                    // was not added since lastPeak was passed to a method or constructor.
-//                    // Handle memory management manually.
 //                    return b > 0;
 //                }));
 #endif
@@ -170,8 +167,8 @@ namespace MassSpectrometry {
         
         finalizedPeaks.push_back(lastPeak);
     
-    //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement was not added
-    // since lastPeak was passed to a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete lastPeak' statement was not added
+        // since lastPeak was passed to a method or constructor. Handle memory management manually.
 #ifdef ORIG
         return new GeneratedMzSpectrum(finalizedPeaks.Select([&] (std::any b) {
                     b::Mz;

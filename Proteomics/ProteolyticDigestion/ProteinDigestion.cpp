@@ -121,23 +121,29 @@ namespace Proteomics
                     {
                         if (peptideLength <= getMaxPeptideLength()) //if an acceptable length (bigger than min, smaller than max), add it
                         {
-                            ProteolyticPeptide tempVar(protein, oneBasedIndicesToCleaveAfter[i] + 1, oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1], getMaximumMissedCleavages(), CleavageSpecificity::Full, "full");
-                            peptides.push_back(&tempVar);
+                            auto tempVar = new ProteolyticPeptide (protein, oneBasedIndicesToCleaveAfter[i] + 1,
+                                                                   oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1],
+                                                                   getMaximumMissedCleavages(),
+                                                                   CleavageSpecificity::Full, "full");
+                            peptides.push_back(tempVar);
                         }
                         else if (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N) 
                         {
                             //make something with the maximum length and fixed N
                             int tempIndex = oneBasedIndicesToCleaveAfter[i] + 1;
-                            ProteolyticPeptide tempVar2(protein, tempIndex, tempIndex + getMaxPeptideLength(),
-                                                        getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
-                            peptides.push_back(&tempVar2);
+                            auto tempVar2 = new ProteolyticPeptide (protein, tempIndex,
+                                                                    tempIndex + getMaxPeptideLength(),
+                                                                    getMaximumMissedCleavages(),
+                                                                    CleavageSpecificity::Semi, "semi");
+                            peptides.push_back(tempVar2);
                         }
                         else //It has to be FragmentationTerminus.C //make something with the maximum length and fixed C
                         {
                             int tempIndex = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1];
-                            ProteolyticPeptide tempVar3(protein, tempIndex - getMaxPeptideLength(), tempIndex,
-                                                        getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
-                            peptides.push_back(&tempVar3);
+                            auto tempVar3 = new ProteolyticPeptide(protein, tempIndex - getMaxPeptideLength(), tempIndex,
+                                                                   getMaximumMissedCleavages(),
+                                                                   CleavageSpecificity::Semi, "semi");
+                            peptides.push_back(tempVar3);
                         }
                     }
                 }
@@ -152,13 +158,18 @@ namespace Proteomics
                     {
                         if (peptideLength <= getMaxPeptideLength())
                         {
-                            ProteolyticPeptide tempVar4(protein, 2, oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1], getMaximumMissedCleavages(), CleavageSpecificity::Full, "full:M cleaved");
-                            peptides.push_back(&tempVar4);
+                            auto tempVar4 = new ProteolyticPeptide(protein, 2,
+                                                                   oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1],
+                                                                   getMaximumMissedCleavages(),
+                                                                   CleavageSpecificity::Full, "full:M cleaved");
+                            peptides.push_back(tempVar4);
                         }
                         else if (getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N)
                         {
-                            ProteolyticPeptide tempVar5(protein, 2, 2 + getMaxPeptideLength(), getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
-                            peptides.push_back(&tempVar5);
+                            auto tempVar5 = new ProteolyticPeptide (protein, 2, 2 + getMaxPeptideLength(),
+                                                                    getMaximumMissedCleavages(),
+                                                                    CleavageSpecificity::Semi, "semi");
+                            peptides.push_back(tempVar5);
                         }
                         else //It has to be FragmentationTerminus.C //make something with the maximum length and fixed C
                         {
@@ -167,8 +178,10 @@ namespace Proteomics
                             {
                                 //only if cleave, because then not made earlier during retain
                                 int tempIndex = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1];
-                                ProteolyticPeptide tempVar6(protein, tempIndex - getMaxPeptideLength(), tempIndex, getMaximumMissedCleavages(), CleavageSpecificity::Semi, "semi");
-                                peptides.push_back(&tempVar6);
+                                auto tempVar6 = new ProteolyticPeptide(protein, tempIndex - getMaxPeptideLength(),
+                                                                       tempIndex, getMaximumMissedCleavages(),
+                                                                       CleavageSpecificity::Semi, "semi");
+                                peptides.push_back(tempVar6);
                             }
                         }
                     }
@@ -190,8 +203,9 @@ namespace Proteomics
                 {
                     if (peptideLength <= getMaxPeptideLength()) //if okay length, add it up to the terminus
                     {
-                        ProteolyticPeptide tempVar7(protein, startIndex + 1, endIndex, i - 1, CleavageSpecificity::Full, "full");
-                        peptides.push_back(&tempVar7);
+                        auto  tempVar7 = new ProteolyticPeptide(protein, startIndex + 1, endIndex, i - 1,
+                                                                CleavageSpecificity::Full, "full");
+                        peptides.push_back(tempVar7);
                     }
                     else //update so that not the end of terminus
                     {
@@ -203,8 +217,9 @@ namespace Proteomics
                         {
                             startIndex = endIndex - getMaxPeptideLength();
                         }
-                        ProteolyticPeptide tempVar8(protein, startIndex + 1, endIndex, i - 1, CleavageSpecificity::Semi, "semi");
-                        peptides.push_back(&tempVar8);
+                        auto  tempVar8 = new ProteolyticPeptide(protein, startIndex + 1, endIndex, i - 1,
+                                                                CleavageSpecificity::Semi, "semi");
+                        peptides.push_back(tempVar8);
                     }
                 }
             }

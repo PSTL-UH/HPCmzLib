@@ -235,14 +235,10 @@ namespace Proteomics {
                 if (indices[i] == -1 && includeMethionineCut) {
                     int newLength = len - 1;
                     if (newLength >= minLength && newLength <= maxLength) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                        yield return new DigestionPointAndLength(1, newLength);
                         dpal.push_back(new DigestionPointAndLength(1, newLength));
                         if (semiDigestion) {
                             for (int j = 1; j < newLength; j++) {
                                 if (j >= minLength && j <= maxLength) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                                    yield return new DigestionPointAndLength(1, j);
                                     dpal.push_back(new DigestionPointAndLength(1, j));
                                 }
                             }
@@ -254,20 +250,14 @@ namespace Proteomics {
                     continue;
                 }
 
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                yield return new DigestionPointAndLength(indices[i] + 1, len);
                 dpal.push_back(new DigestionPointAndLength(indices[i] + 1, len));
 
                 if (semiDigestion) {
                     for (int j = 1; j < len; j++) {
                         if (len - j >= minLength && len - j <= maxLength) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                          yield return new DigestionPointAndLength();
                             dpal.push_back(new DigestionPointAndLength(indices[i] + 1 + j, len - j));
                         }
                         if (j >= minLength && j <= maxLength) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                            yield return new DigestionPointAndLength(indices[i] + 1, j);
                             dpal.push_back(new DigestionPointAndLength(indices[i] + 1, j));
                         }
                     }
@@ -662,15 +652,10 @@ namespace Proteomics {
                 }
 
                 if (isChemicalFormula) {
-                    // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to
-                    // the C# 'yield' keyword:
-                    // yield return new ChemicalFormulaFragment(type, i, formula, this);
                     ChemicalFormulaFragment *cff = new ChemicalFormulaFragment(type, i, formula, this);
                     v.push_back (cff);
                 }
                 else {
-                    // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                    // yield return new Fragment(type, i, monoMass, this);
                     Proteomics::AminoAcidPolymer::Fragment *f = new Proteomics::AminoAcidPolymer::Fragment(type, i, monoMass, this);
                     v.push_back ( f);
                 }
@@ -843,8 +828,8 @@ namespace Proteomics {
                 // ModificationCollection tempVar({currentMod, modification});
                 v.push_back(currentMod);
                 v.push_back(modification);
-                ModificationCollection tempVar(v);
-                setNTerminusModification(&tempVar);
+                auto  tempVar = new ModificationCollection(v);
+                setNTerminusModification(tempVar);
             }
             else  {
                 setNTerminusModification(modification);
@@ -862,9 +847,9 @@ namespace Proteomics {
                 // ModificationCollection tempVar2({currentMod, modification});
                 v.push_back(currentMod);
                 v.push_back(modification);
-                ModificationCollection tempVar2(v);
+                auto  tempVar2 = new ModificationCollection(v);
 
-                setCTerminusModification(&tempVar2);
+                setCTerminusModification(tempVar2);
             }
             else {
                 setCTerminusModification(modification);            }
@@ -898,9 +883,9 @@ namespace Proteomics {
                 // ModificationCollection tempVar({currentMod, modification});
                 v.push_back(currentMod);
                 v.push_back(modification);
-                ModificationCollection tempVar(v);
+                auto  tempVar = new ModificationCollection(v);
             
-                setNTerminusModification(&tempVar);
+                setNTerminusModification(tempVar);
             }
             else {
                 setNTerminusModification(modification);
@@ -921,9 +906,9 @@ namespace Proteomics {
                     // ModificationCollection tempVar2({currentMod, modification});
                     v.push_back(currentMod);
                     v.push_back(modification);
-                    ModificationCollection tempVar2(v);
+                    auto  tempVar2 = new ModificationCollection(v);
                     
-                    ReplaceMod(i + 1, &tempVar2);
+                    ReplaceMod(i + 1, tempVar2);
                 }
                 else { 
                     ReplaceMod(i + 1, modification);
@@ -943,9 +928,9 @@ namespace Proteomics {
                 // ModificationCollection tempVar3({currentMod, modification});
                 v.push_back(currentMod);
                 v.push_back(modification);
-                ModificationCollection tempVar3(v);
+                auto  tempVar3 = new ModificationCollection(v);
                 
-                setCTerminusModification(&tempVar3);
+                setCTerminusModification(tempVar3);
             }
             else {
                 setCTerminusModification(modification);
@@ -965,8 +950,8 @@ namespace Proteomics {
         v.push_back(currentMod);
         v.push_back(modification);
         
-        ModificationCollection tempVar(v);
-        ReplaceMod(location, currentMod == nullptr ? modification : &tempVar);
+        auto  tempVar = new ModificationCollection(v);
+        ReplaceMod(location, currentMod == nullptr ? modification : tempVar);
     }
 
     void AminoAcidPolymer::ClearModifications(Terminus terminus) {

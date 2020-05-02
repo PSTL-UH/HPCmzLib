@@ -520,8 +520,9 @@ namespace Proteomics
 //                    kv->Value;
 //                }));
 #endif
-                SequenceVariation tempVar(begin, end, v->getOriginalSequence(), v->getVariantSequence(), v->getDescription()->getDescription(), v->getOneBasedModifications());
-                variations.push_back(&tempVar);
+                auto  tempVar = new SequenceVariation(begin, end, v->getOriginalSequence(), v->getVariantSequence(),
+                                                      v->getDescription()->getDescription(), v->getOneBasedModifications());
+                variations.push_back(tempVar);
             }
         }
         return variations;
@@ -558,14 +559,17 @@ namespace Proteomics
                 {
                     if (StringHelper::endsWith(variant->getVariantSequence(), "*"))
                     {
-                        ProteolysisProduct tempVar(p->getOneBasedBeginPosition(), std::make_optional(variantAppliedProteinSequence.length()), p->getType());
-                        products.push_back(&tempVar);
+                        auto tempVar = new ProteolysisProduct(p->getOneBasedBeginPosition(),
+                                                              std::make_optional(variantAppliedProteinSequence.length()),
+                                                              p->getType());
+                        products.push_back(tempVar);
                     }
                     else if (p->getOneBasedEndPosition().value() + sequenceLengthChange <= (int)variantAppliedProteinSequence.length())
                     {
-                        ProteolysisProduct tempVar2(p->getOneBasedBeginPosition(), p->getOneBasedEndPosition().value() + sequenceLengthChange,
-                                                    p->getType());
-                        products.push_back(&tempVar2);
+                        auto  tempVar2 = new ProteolysisProduct(p->getOneBasedBeginPosition(),
+                                                                p->getOneBasedEndPosition().value() + sequenceLengthChange,
+                                                                p->getType());
+                        products.push_back(tempVar2);
                     }
                     else
                     {
@@ -578,9 +582,10 @@ namespace Proteomics
                          p->getOneBasedEndPosition().value() + sequenceLengthChange <= (int)variantAppliedProteinSequence.length() &&
                          !StringHelper::endsWith(variant->getVariantSequence(), "*"))
                 {
-                    ProteolysisProduct tempVar3(p->getOneBasedBeginPosition().value() + sequenceLengthChange,
-                                                p->getOneBasedEndPosition().value() + sequenceLengthChange, p->getType());
-                    products.push_back(&tempVar3);
+                    auto  tempVar3 = new ProteolysisProduct(p->getOneBasedBeginPosition().value() + sequenceLengthChange,
+                                                            p->getOneBasedEndPosition().value() + sequenceLengthChange,
+                                                            p->getType());
+                    products.push_back(tempVar3);
                 }
                 else // sequence variant conflicts with proteolysis cleavage site (cleavage site was lost)
                 {

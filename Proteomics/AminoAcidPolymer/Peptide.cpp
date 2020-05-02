@@ -79,9 +79,6 @@ namespace Proteomics {
             
             // Base condition, no more isotopologues to make, so just return
             if (isotopologues.size() < 1) {
-                // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C#
-                // 'yield' keyword:
-                //  yield break;
                 return res;
             }
             
@@ -103,17 +100,11 @@ namespace Proteomics {
                 if (isotopologues.size() > 1) {
                     // Call the same rotuine on the newly generate peptide that has one less isotopologue
                     for (auto subpeptide : peptide->GenerateAllModificationCombinations()) {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to
-                        // the C# 'yield' keyword:
-                        // yield return subpeptide;
                         res.push_back(subpeptide);
                     }
                 }
                 else {
                     // Return this peptide
-                    // C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to
-                    // the C# 'yield' keyword:
-                    // yield return peptide;
                     res.push_back(peptide);
                 }
                 

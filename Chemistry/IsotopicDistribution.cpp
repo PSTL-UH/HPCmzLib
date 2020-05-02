@@ -46,7 +46,7 @@ namespace Chemistry {
         // Get all the unique elements that might have isotopes
         for (auto elementAndCount : formula->getElements()) {
             int count = elementAndCount.second;
-            std::vector<Composition*> isotopeComposition;
+            auto  isotopeComposition = new std::vector<Composition*>();
 
             // for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),
             // elementAndCount.first->getIsotopes().end(),[ ] (const Isotope* &l, const Isotope* &r) {
@@ -61,9 +61,9 @@ namespace Chemistry {
                 c->Power = isotope->getAtomicMass();
                 c->Probability = isotope->getRelativeAbundance();
 
-                isotopeComposition.push_back(c);
+                isotopeComposition->push_back(c);
             }
-            elementalComposition.push_back(isotopeComposition);
+            elementalComposition.push_back(*isotopeComposition);
         }
 
         for (auto compositions : elementalComposition) {
