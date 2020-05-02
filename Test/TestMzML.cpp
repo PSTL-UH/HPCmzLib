@@ -562,6 +562,7 @@ namespace Test
         remove(filePath.c_str());        
     }
 
+#ifdef LATER
 
     void TestMzML::Mzid111Test()
     {
@@ -740,7 +741,6 @@ namespace Test
 
     }
 
-#ifdef LATER
     void TestMzML::Mzid120Test()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
