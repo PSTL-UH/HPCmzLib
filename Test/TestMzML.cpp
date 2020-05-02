@@ -8,76 +8,14 @@
 #include "FakeMsDataFile.h"
 #include "../MassSpectrometry/FilteringParams.h"
 
-#ifdef ORIG
-#include "../MzIdentML/mzIdentML111.Generated.MzIdentMLType111.h"
-#include "../MzIdentML/mzIdentML111.Generated.DataCollectionType.h"
-#include "../MzIdentML/mzIdentML111.Generated.AnalysisDataType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SpectrumIdentificationListType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SpectrumIdentificationResultType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SpectrumIdentificationItemType.h"
-#include "../MzIdentML/mzIdentML111.Generated.CVParamType.h"
-#include "../MzIdentML/mzIdentML111.Generated.IonTypeType.h"
-#include "../MzIdentML/mzIdentML111.Generated.FragmentArrayType.h"
-#include "../MzIdentML/mzIdentML111.Generated.PeptideEvidenceRefType.h"
-#include "../MzIdentML/mzIdentML111.Generated.InputsType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SpectraDataType.h"
-#include "../MzIdentML/mzIdentML111.Generated.FileFormatType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SequenceCollectionType.h"
-#include "../MzIdentML/mzIdentML111.Generated.PeptideEvidenceType.h"
-#include "../MzIdentML/mzIdentML111.Generated.PeptideType.h"
-#include "../MzIdentML/mzIdentML111.Generated.ModificationType.h"
-#include "../MzIdentML/mzIdentML111.Generated.DBSequenceType.h"
+
 #include "../Proteomics/Modifications/Modification.h"
-#include "../MzIdentML/mzIdentML111.Generated.AnalysisProtocolCollectionType.h"
-#include "../MzIdentML/mzIdentML111.Generated.SpectrumIdentificationProtocolType.h"
 #include "../MzIdentML/MzidIdentifications.h"
-#include "../MzIdentML/mzIdentML120.Generated.MzIdentMLType120.h"
-#include "../MzIdentML/mzIdentML120.Generated.DataCollectionType.h"
-#include "../MzIdentML/mzIdentML120.Generated.AnalysisDataType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SpectrumIdentificationListType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SpectrumIdentificationResultType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SpectrumIdentificationItemType.h"
-#include "../MzIdentML/mzIdentML120.Generated.CVParamType.h"
-#include "../MzIdentML/mzIdentML120.Generated.IonTypeType.h"
-#include "../MzIdentML/mzIdentML120.Generated.FragmentArrayType.h"
-#include "../MzIdentML/mzIdentML120.Generated.PeptideEvidenceRefType.h"
-#include "../MzIdentML/mzIdentML120.Generated.InputsType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SpectraDataType.h"
-#include "../MzIdentML/mzIdentML120.Generated.FileFormatType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SequenceCollectionType.h"
-#include "../MzIdentML/mzIdentML120.Generated.PeptideEvidenceType.h"
-#include "../MzIdentML/mzIdentML120.Generated.PeptideType.h"
-#include "../MzIdentML/mzIdentML120.Generated.ModificationType.h"
-#include "../MzIdentML/mzIdentML120.Generated.DBSequenceType.h"
-#include "../MzIdentML/mzIdentML120.Generated.AnalysisProtocolCollectionType.h"
-#include "../MzIdentML/mzIdentML120.Generated.SpectrumIdentificationProtocolType.h"
-#endif
+#include "../MzIdentML/mzIdentML110.h"
+#include "../MzIdentML/mzIdentML111.h"
 
 #include "../UsefulProteomicsDatabases/Loaders.h"
 #include "../Chemistry/ChemicalFormula.h"
-
-#ifdef ORIG
-#include "../MzIdentML/mzIdentML110.Generated.MzIdentMLType110.h"
-#include "../MzIdentML/mzIdentML110.Generated.DataCollectionType.h"
-#include "../MzIdentML/mzIdentML110.Generated.AnalysisDataType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SpectrumIdentificationListType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SpectrumIdentificationResultType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SpectrumIdentificationItemType.h"
-#include "../MzIdentML/mzIdentML110.Generated.CVParamType.h"
-#include "../MzIdentML/mzIdentML110.Generated.IonTypeType.h"
-#include "../MzIdentML/mzIdentML110.Generated.FragmentArrayType.h"
-#include "../MzIdentML/mzIdentML110.Generated.PeptideEvidenceRefType.h"
-#include "../MzIdentML/mzIdentML110.Generated.InputsType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SpectraDataType.h"
-#include "../MzIdentML/mzIdentML110.Generated.FileFormatType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SequenceCollectionType.h"
-#include "../MzIdentML/mzIdentML110.Generated.PeptideEvidenceType.h"
-#include "../MzIdentML/mzIdentML110.Generated.PeptideType.h"
-#include "../MzIdentML/mzIdentML110.Generated.ModificationType.h"
-#include "../MzIdentML/mzIdentML110.Generated.DBSequenceType.h"
-#include "../MzIdentML/mzIdentML110.Generated.AnalysisProtocolCollectionType.h"
-#include "../MzIdentML/mzIdentML110.Generated.SpectrumIdentificationProtocolType.h"
-#endif
 
 #include "../Chemistry/IsotopicDistribution.h"
 
@@ -93,11 +31,10 @@
 using namespace Chemistry;
 using namespace IO::MzML;
 using namespace MassSpectrometry;
-// using namespace MzIdentML;
+
+//using namespace MzIdentML;
 using namespace MzLibUtil;
-// using namespace NUnit::Framework;
 using namespace Proteomics::AminoAcidPolymer;
-// namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 int main ( int argc, char **argv )
 {
@@ -626,59 +563,72 @@ namespace Test
     }
 
 
-#ifdef LATER
     void TestMzML::Mzid111Test()
     {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::Generated::MzIdentMLType111));
-        auto _mzid = new mzIdentML111::Generated::MzIdentMLType111();
-        mzIdentML111::Generated::DataCollectionType tempVar();
-        _mzid->setDataCollection(&tempVar);
-        mzIdentML111::Generated::AnalysisDataType tempVar2();
-        _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML111::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML111::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML111::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML111::Generated::SpectrumIdentificationResultType*>(1));
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML111::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML111::Generated::SpectrumIdentificationResultType();
+
+        //XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::Generated::MzIdentMLType111));
+        auto _mzid = new mzIdentML111::MzIdentMLType();
+        //mzIdentML111::DataCollectionType tempVar();
+        _mzid->DataCollection() = * new mzIdentML111::DataCollectionType();
+
+        //mzIdentML111::AnalysisDataType tempVar2();
+        _mzid->DataCollection().AnalysisData() = *new mzIdentML111::AnalysisDataType();
+        //_mzid->DataCollection().AnalysisData().SpectrumIdentificationList(std::vector<mzIdentML111::SpectrumIdentificationListType*>(1));
+        _mzid->DataCollection().AnalysisData().SpectrumIdentificationList() = ;
+
+        mzIdentML111::SpectrumIdentificationListType *tempVar3 = new mzIdentML111::SpectrumIdentificationListType();
+        //tempVar3->SpectrumIdentificationResult(std::vector<mzIdentML111::SpectrumIdentificationResultType*>(1));
+        tempVar3->SpectrumIdentificationResult() = mzIdentML111::SpectrumIdentificationListType::SpectrumIdentificationResult_sequence(1);
+        _mzid->DataCollection().AnalysisData().SpectrumIdentificationList()[0] = tempVar3;
+
+        mzIdentML111::SpectrumIdentificationResultType *tempVar4 = new mzIdentML111::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML111::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML111::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML111::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML111::Generated::SpectrumIdentificationItemType();
+
+        mzIdentML111::SpectrumIdentificationItemType *tempVar5 = new mzIdentML111::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML111::Generated::CVParamType *tempVar6 = new mzIdentML111::Generated::CVParamType();
+
+        mzIdentML111::CVParamType *tempVar6 = new mzIdentML111::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
-        tempVar5->setcvParam(std::vector<mzIdentML111::Generated::CVParamType*> {tempVar6});
+        tempVar5->setcvParam(std::vector<mzIdentML111::CVParamType*> {tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML111::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML111::Generated::IonTypeType*>(1);
-        mzIdentML111::Generated::IonTypeType *tempVar7 = new mzIdentML111::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML111::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML111::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML111::IonTypeType*>(1);
+
+        mzIdentML111::IonTypeType *tempVar7 = new mzIdentML111::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML111::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML111::Generated::FragmentArrayType *tempVar8 = new mzIdentML111::Generated::FragmentArrayType();
+
+        mzIdentML111::FragmentArrayType *tempVar8 = new mzIdentML111::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML111::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML111::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML111::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML111::PeptideEvidenceRefType*>(1);
+
+        mzIdentML111::PeptideEvidenceRefType *tempVar9 = new mzIdentML111::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
-        mzIdentML111::Generated::InputsType tempVar10();
+        mzIdentML111::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML111::Generated::SpectraDataType*>(1));
-        mzIdentML111::Generated::SpectraDataType *tempVar11 = new mzIdentML111::Generated::SpectraDataType();
-        mzIdentML111::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML111::SpectraDataType*>(1));
+
+        mzIdentML111::SpectraDataType *tempVar11 = new mzIdentML111::SpectraDataType();
+
+        mzIdentML111::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML111::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML111::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML111::Generated::SequenceCollectionType tempVar13();
+
+        mzIdentML111::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML111::Generated::PeptideEvidenceType*>(1));
-        mzIdentML111::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML111::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML111::PeptideEvidenceType*>(1));
+
+        mzIdentML111::PeptideEvidenceType *tempVar14 = new mzIdentML111::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setisDecoy(false);
@@ -688,46 +638,55 @@ namespace Test
         tempVar14->setpeptide_ref("P_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML111::Generated::PeptideType*>(1));
-        mzIdentML111::Generated::PeptideType *tempVar15 = new mzIdentML111::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML111::PeptideType*>(1));
+
+        mzIdentML111::PeptideType *tempVar15 = new mzIdentML111::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML111::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML111::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML111::Generated::DBSequenceType*>(1));
-        mzIdentML111::Generated::DBSequenceType *tempVar16 = new mzIdentML111::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML111::DBSequenceType*>(1));
+
+        mzIdentML111::DBSequenceType *tempVar16 = new mzIdentML111::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML111::Generated::ModificationType *tempVar17 = new mzIdentML111::Generated::ModificationType();
+
+        mzIdentML111::ModificationType *tempVar17 = new mzIdentML111::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML111::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML111::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML111::Generated::CVParamType *tempVar18 = new mzIdentML111::Generated::CVParamType();
+
+        mzIdentML111::CVParamType *tempVar18 = new mzIdentML111::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML111::Generated::AnalysisProtocolCollectionType tempVar19();
+
+        mzIdentML111::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML111::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML111::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML111::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML111::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML111::SpectrumIdentificationProtocolType*>(1));
+
+        mzIdentML111::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML111::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML111::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML111::Generated::CVParamType *tempVar21 = new mzIdentML111::Generated::CVParamType();
+
+        mzIdentML111::CVParamType *tempVar21 = new mzIdentML111::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML111::Generated::CVParamType*>(1);
-        mzIdentML111::Generated::CVParamType *tempVar22 = new mzIdentML111::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML111::CVParamType*>(1);
+
+        mzIdentML111::CVParamType *tempVar22 = new mzIdentML111::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;
+
         TextWriter *writer = new StreamWriter("myIdentifications.mzid");
         _indexedSerializer->Serialize(writer, _mzid);
         writer->Close();
@@ -759,7 +718,6 @@ namespace Test
         Assert::AreEqual(2, identifications->NumPSMsFromScan(0));
 
         delete identifications;
-//C# TO C++ CONVERTER TODO TASK: A 'delete writer' statement was not added since writer was passed to a method or constructor. Handle memory management manually.
         delete tempVar22;
         delete tempVar21;
         delete tempVar20;
@@ -776,62 +734,65 @@ namespace Test
         delete tempVar5;
         delete tempVar4;
         delete tempVar3;
-//C# TO C++ CONVERTER TODO TASK: A 'delete _mzid' statement was not added since _mzid was passed to a method or constructor. Handle memory management manually.
+        delete _mzid;
         delete _indexedSerializer;
+        delete writer;
+
     }
 
+#ifdef LATER
     void TestMzML::Mzid120Test()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::Generated::MzIdentMLType120));
-        auto _mzid = new mzIdentML120::Generated::MzIdentMLType120();
-        mzIdentML120::Generated::DataCollectionType tempVar();
+        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::MzIdentMLType120));
+        auto _mzid = new mzIdentML120::MzIdentMLType120();
+        mzIdentML120::DataCollectionType tempVar();
         _mzid->setDataCollection(&tempVar);
-        mzIdentML120::Generated::AnalysisDataType tempVar2();
+        mzIdentML120::AnalysisDataType tempVar2();
         _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML120::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML120::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML120::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML120::Generated::SpectrumIdentificationResultType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML120::SpectrumIdentificationListType*>(1));
+        mzIdentML120::SpectrumIdentificationListType *tempVar3 = new mzIdentML120::SpectrumIdentificationListType();
+        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML120::SpectrumIdentificationResultType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML120::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML120::Generated::SpectrumIdentificationResultType();
+        mzIdentML120::SpectrumIdentificationResultType *tempVar4 = new mzIdentML120::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML120::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML120::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML120::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML120::Generated::SpectrumIdentificationItemType();
+        mzIdentML120::SpectrumIdentificationItemType *tempVar5 = new mzIdentML120::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML120::Generated::CVParamType *tempVar6 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar6 = new mzIdentML120::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
         tempVar5->setcvParam({tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML120::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML120::Generated::IonTypeType*>(1);
-        mzIdentML120::Generated::IonTypeType *tempVar7 = new mzIdentML120::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML120::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML120::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML120::IonTypeType*>(1);
+        mzIdentML120::IonTypeType *tempVar7 = new mzIdentML120::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML120::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML120::Generated::FragmentArrayType *tempVar8 = new mzIdentML120::Generated::FragmentArrayType();
+        mzIdentML120::FragmentArrayType *tempVar8 = new mzIdentML120::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML120::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML120::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML120::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML120::PeptideEvidenceRefType*>(1);
+        mzIdentML120::PeptideEvidenceRefType *tempVar9 = new mzIdentML120::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
-        mzIdentML120::Generated::InputsType tempVar10();
+        mzIdentML120::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML120::Generated::SpectraDataType*>(1));
-        mzIdentML120::Generated::SpectraDataType *tempVar11 = new mzIdentML120::Generated::SpectraDataType();
-        mzIdentML120::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML120::SpectraDataType*>(1));
+        mzIdentML120::SpectraDataType *tempVar11 = new mzIdentML120::SpectraDataType();
+        mzIdentML120::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML120::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML120::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML120::Generated::SequenceCollectionType tempVar13();
+        mzIdentML120::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML120::Generated::PeptideEvidenceType*>(1));
-        mzIdentML120::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML120::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML120::PeptideEvidenceType*>(1));
+        mzIdentML120::PeptideEvidenceType *tempVar14 = new mzIdentML120::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setisDecoy(false);
@@ -841,43 +802,43 @@ namespace Test
         tempVar14->setpeptide_ref("P_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML120::Generated::PeptideType*>(1));
-        mzIdentML120::Generated::PeptideType *tempVar15 = new mzIdentML120::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML120::PeptideType*>(1));
+        mzIdentML120::PeptideType *tempVar15 = new mzIdentML120::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML120::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML120::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML120::Generated::DBSequenceType*>(1));
-        mzIdentML120::Generated::DBSequenceType *tempVar16 = new mzIdentML120::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML120::DBSequenceType*>(1));
+        mzIdentML120::DBSequenceType *tempVar16 = new mzIdentML120::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML120::Generated::ModificationType *tempVar17 = new mzIdentML120::Generated::ModificationType();
+        mzIdentML120::ModificationType *tempVar17 = new mzIdentML120::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML120::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML120::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML120::Generated::CVParamType *tempVar18 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar18 = new mzIdentML120::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML120::Generated::AnalysisProtocolCollectionType tempVar19();
+        mzIdentML120::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML120::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML120::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML120::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML120::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML120::SpectrumIdentificationProtocolType*>(1));
+        mzIdentML120::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML120::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML120::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML120::Generated::CVParamType *tempVar21 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar21 = new mzIdentML120::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML120::Generated::CVParamType*>(1);
-        mzIdentML120::Generated::CVParamType *tempVar22 = new mzIdentML120::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML120::CVParamType*>(1);
+        mzIdentML120::CVParamType *tempVar22 = new mzIdentML120::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;
@@ -1046,57 +1007,57 @@ namespace Test
     void TestMzML::MzidTest()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::Generated::MzIdentMLType110));
-        auto _mzid = new mzIdentML110::Generated::MzIdentMLType110();
-        mzIdentML110::Generated::DataCollectionType tempVar();
+        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::MzIdentMLType110));
+        auto _mzid = new mzIdentML110::MzIdentMLType110();
+        mzIdentML110::DataCollectionType tempVar();
         _mzid->setDataCollection(&tempVar);
-        mzIdentML110::Generated::AnalysisDataType tempVar2();
+        mzIdentML110::AnalysisDataType tempVar2();
         _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML110::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML110::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML110::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML110::Generated::SpectrumIdentificationResultType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML110::SpectrumIdentificationListType*>(1));
+        mzIdentML110::SpectrumIdentificationListType *tempVar3 = new mzIdentML110::SpectrumIdentificationListType();
+        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML110::SpectrumIdentificationResultType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML110::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML110::Generated::SpectrumIdentificationResultType();
+        mzIdentML110::SpectrumIdentificationResultType *tempVar4 = new mzIdentML110::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML110::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML110::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML110::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML110::Generated::SpectrumIdentificationItemType();
+        mzIdentML110::SpectrumIdentificationItemType *tempVar5 = new mzIdentML110::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML110::Generated::CVParamType *tempVar6 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar6 = new mzIdentML110::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
         tempVar5->setcvParam({tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML110::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML110::Generated::IonTypeType*>(1);
-        mzIdentML110::Generated::IonTypeType *tempVar7 = new mzIdentML110::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML110::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML110::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML110::IonTypeType*>(1);
+        mzIdentML110::IonTypeType *tempVar7 = new mzIdentML110::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML110::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML110::Generated::FragmentArrayType *tempVar8 = new mzIdentML110::Generated::FragmentArrayType();
+        mzIdentML110::FragmentArrayType *tempVar8 = new mzIdentML110::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML110::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML110::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML110::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML110::PeptideEvidenceRefType*>(1);
+        mzIdentML110::PeptideEvidenceRefType *tempVar9 = new mzIdentML110::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->passThreshold = true;
 
-        mzIdentML110::Generated::InputsType tempVar10();
+        mzIdentML110::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML110::Generated::SpectraDataType*>(1));
-        mzIdentML110::Generated::SpectraDataType *tempVar11 = new mzIdentML110::Generated::SpectraDataType();
-        mzIdentML110::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML110::SpectraDataType*>(1));
+        mzIdentML110::SpectraDataType *tempVar11 = new mzIdentML110::SpectraDataType();
+        mzIdentML110::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML110::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML110::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML110::Generated::SequenceCollectionType tempVar13();
+        mzIdentML110::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML110::Generated::PeptideEvidenceType*>(1));
-        mzIdentML110::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML110::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML110::PeptideEvidenceType*>(1));
+        mzIdentML110::PeptideEvidenceType *tempVar14 = new mzIdentML110::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setstart(2);
@@ -1106,43 +1067,43 @@ namespace Test
         tempVar14->setdBSequence_ref("DB_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML110::Generated::PeptideType*>(1));
-        mzIdentML110::Generated::PeptideType *tempVar15 = new mzIdentML110::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML110::PeptideType*>(1));
+        mzIdentML110::PeptideType *tempVar15 = new mzIdentML110::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML110::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML110::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML110::Generated::DBSequenceType*>(1));
-        mzIdentML110::Generated::DBSequenceType *tempVar16 = new mzIdentML110::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML110::DBSequenceType*>(1));
+        mzIdentML110::DBSequenceType *tempVar16 = new mzIdentML110::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML110::Generated::ModificationType *tempVar17 = new mzIdentML110::Generated::ModificationType();
+        mzIdentML110::ModificationType *tempVar17 = new mzIdentML110::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML110::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML110::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML110::Generated::CVParamType *tempVar18 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar18 = new mzIdentML110::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML110::Generated::AnalysisProtocolCollectionType tempVar19();
+        mzIdentML110::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML110::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML110::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML110::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML110::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML110::SpectrumIdentificationProtocolType*>(1));
+        mzIdentML110::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML110::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML110::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML110::Generated::CVParamType *tempVar21 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar21 = new mzIdentML110::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML110::Generated::CVParamType*>(1);
-        mzIdentML110::Generated::CVParamType *tempVar22 = new mzIdentML110::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML110::CVParamType*>(1);
+        mzIdentML110::CVParamType *tempVar22 = new mzIdentML110::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;
@@ -1201,55 +1162,55 @@ namespace Test
     void TestMzML::Mzid110Test()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::Generated::MzIdentMLType110));
-        auto _mzid = new mzIdentML110::Generated::MzIdentMLType110();
-        mzIdentML110::Generated::DataCollectionType tempVar();
+        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML110::MzIdentMLType110));
+        auto _mzid = new mzIdentML110::MzIdentMLType110();
+        mzIdentML110::DataCollectionType tempVar();
         _mzid->setDataCollection(&tempVar);
-        mzIdentML110::Generated::AnalysisDataType tempVar2();
+        mzIdentML110::AnalysisDataType tempVar2();
         _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML110::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML110::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML110::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML110::Generated::SpectrumIdentificationResultType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML110::SpectrumIdentificationListType*>(1));
+        mzIdentML110::SpectrumIdentificationListType *tempVar3 = new mzIdentML110::SpectrumIdentificationListType();
+        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML110::SpectrumIdentificationResultType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML110::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML110::Generated::SpectrumIdentificationResultType();
+        mzIdentML110::SpectrumIdentificationResultType *tempVar4 = new mzIdentML110::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML110::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML110::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML110::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML110::Generated::SpectrumIdentificationItemType();
+        mzIdentML110::SpectrumIdentificationItemType *tempVar5 = new mzIdentML110::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML110::Generated::CVParamType *tempVar6 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar6 = new mzIdentML110::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
         tempVar5->setcvParam({tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML110::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML110::Generated::IonTypeType*>(1);
-        mzIdentML110::Generated::IonTypeType *tempVar7 = new mzIdentML110::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML110::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML110::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML110::IonTypeType*>(1);
+        mzIdentML110::IonTypeType *tempVar7 = new mzIdentML110::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML110::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML110::Generated::FragmentArrayType *tempVar8 = new mzIdentML110::Generated::FragmentArrayType();
+        mzIdentML110::FragmentArrayType *tempVar8 = new mzIdentML110::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML110::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML110::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML110::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML110::PeptideEvidenceRefType*>(1);
+        mzIdentML110::PeptideEvidenceRefType *tempVar9 = new mzIdentML110::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
-        mzIdentML110::Generated::InputsType tempVar10();
+        mzIdentML110::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML110::Generated::SpectraDataType*>(1));
-        mzIdentML110::Generated::SpectraDataType *tempVar11 = new mzIdentML110::Generated::SpectraDataType();
-        mzIdentML110::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML110::SpectraDataType*>(1));
+        mzIdentML110::SpectraDataType *tempVar11 = new mzIdentML110::SpectraDataType();
+        mzIdentML110::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML110::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML110::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML110::Generated::SequenceCollectionType tempVar13();
+        mzIdentML110::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML110::Generated::PeptideEvidenceType*>(1));
-        mzIdentML110::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML110::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML110::PeptideEvidenceType*>(1));
+        mzIdentML110::PeptideEvidenceType *tempVar14 = new mzIdentML110::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setisDecoy(false);
@@ -1259,43 +1220,43 @@ namespace Test
         tempVar14->setpeptide_ref("P_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML110::Generated::PeptideType*>(1));
-        mzIdentML110::Generated::PeptideType *tempVar15 = new mzIdentML110::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML110::PeptideType*>(1));
+        mzIdentML110::PeptideType *tempVar15 = new mzIdentML110::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML110::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML110::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML110::Generated::DBSequenceType*>(1));
-        mzIdentML110::Generated::DBSequenceType *tempVar16 = new mzIdentML110::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML110::DBSequenceType*>(1));
+        mzIdentML110::DBSequenceType *tempVar16 = new mzIdentML110::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML110::Generated::ModificationType *tempVar17 = new mzIdentML110::Generated::ModificationType();
+        mzIdentML110::ModificationType *tempVar17 = new mzIdentML110::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML110::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML110::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML110::Generated::CVParamType *tempVar18 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar18 = new mzIdentML110::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML110::Generated::AnalysisProtocolCollectionType tempVar19();
+        mzIdentML110::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML110::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML110::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML110::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML110::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML110::SpectrumIdentificationProtocolType*>(1));
+        mzIdentML110::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML110::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML110::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML110::Generated::CVParamType *tempVar21 = new mzIdentML110::Generated::CVParamType();
+        mzIdentML110::CVParamType *tempVar21 = new mzIdentML110::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML110::Generated::CVParamType*>(1);
-        mzIdentML110::Generated::CVParamType *tempVar22 = new mzIdentML110::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML110::CVParamType*>(1);
+        mzIdentML110::CVParamType *tempVar22 = new mzIdentML110::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;
@@ -1354,55 +1315,55 @@ namespace Test
     void TestMzML::Mzid111Test_()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::Generated::MzIdentMLType111));
-        auto _mzid = new mzIdentML111::Generated::MzIdentMLType111();
-        mzIdentML111::Generated::DataCollectionType tempVar();
+        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML111::MzIdentMLType111));
+        auto _mzid = new mzIdentML111::MzIdentMLType111();
+        mzIdentML111::DataCollectionType tempVar();
         _mzid->setDataCollection(&tempVar);
-        mzIdentML111::Generated::AnalysisDataType tempVar2();
+        mzIdentML111::AnalysisDataType tempVar2();
         _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML111::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML111::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML111::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML111::Generated::SpectrumIdentificationResultType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML111::SpectrumIdentificationListType*>(1));
+        mzIdentML111::SpectrumIdentificationListType *tempVar3 = new mzIdentML111::SpectrumIdentificationListType();
+        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML111::SpectrumIdentificationResultType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML111::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML111::Generated::SpectrumIdentificationResultType();
+        mzIdentML111::SpectrumIdentificationResultType *tempVar4 = new mzIdentML111::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML111::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML111::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML111::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML111::Generated::SpectrumIdentificationItemType();
+        mzIdentML111::SpectrumIdentificationItemType *tempVar5 = new mzIdentML111::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML111::Generated::CVParamType *tempVar6 = new mzIdentML111::Generated::CVParamType();
+        mzIdentML111::CVParamType *tempVar6 = new mzIdentML111::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
-        tempVar5->setcvParam(std::vector<mzIdentML111::Generated::CVParamType*> {tempVar6});
+        tempVar5->setcvParam(std::vector<mzIdentML111::CVParamType*> {tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML111::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML111::Generated::IonTypeType*>(1);
-        mzIdentML111::Generated::IonTypeType *tempVar7 = new mzIdentML111::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML111::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML111::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML111::IonTypeType*>(1);
+        mzIdentML111::IonTypeType *tempVar7 = new mzIdentML111::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML111::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML111::Generated::FragmentArrayType *tempVar8 = new mzIdentML111::Generated::FragmentArrayType();
+        mzIdentML111::FragmentArrayType *tempVar8 = new mzIdentML111::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML111::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML111::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML111::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML111::PeptideEvidenceRefType*>(1);
+        mzIdentML111::PeptideEvidenceRefType *tempVar9 = new mzIdentML111::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
-        mzIdentML111::Generated::InputsType tempVar10();
+        mzIdentML111::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML111::Generated::SpectraDataType*>(1));
-        mzIdentML111::Generated::SpectraDataType *tempVar11 = new mzIdentML111::Generated::SpectraDataType();
-        mzIdentML111::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML111::SpectraDataType*>(1));
+        mzIdentML111::SpectraDataType *tempVar11 = new mzIdentML111::SpectraDataType();
+        mzIdentML111::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML111::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML111::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML111::Generated::SequenceCollectionType tempVar13();
+        mzIdentML111::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML111::Generated::PeptideEvidenceType*>(1));
-        mzIdentML111::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML111::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML111::PeptideEvidenceType*>(1));
+        mzIdentML111::PeptideEvidenceType *tempVar14 = new mzIdentML111::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setisDecoy(false);
@@ -1412,43 +1373,43 @@ namespace Test
         tempVar14->setpeptide_ref("P_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML111::Generated::PeptideType*>(1));
-        mzIdentML111::Generated::PeptideType *tempVar15 = new mzIdentML111::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML111::PeptideType*>(1));
+        mzIdentML111::PeptideType *tempVar15 = new mzIdentML111::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML111::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML111::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML111::Generated::DBSequenceType*>(1));
-        mzIdentML111::Generated::DBSequenceType *tempVar16 = new mzIdentML111::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML111::DBSequenceType*>(1));
+        mzIdentML111::DBSequenceType *tempVar16 = new mzIdentML111::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML111::Generated::ModificationType *tempVar17 = new mzIdentML111::Generated::ModificationType();
+        mzIdentML111::ModificationType *tempVar17 = new mzIdentML111::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML111::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML111::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML111::Generated::CVParamType *tempVar18 = new mzIdentML111::Generated::CVParamType();
+        mzIdentML111::CVParamType *tempVar18 = new mzIdentML111::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML111::Generated::AnalysisProtocolCollectionType tempVar19();
+        mzIdentML111::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML111::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML111::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML111::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML111::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML111::SpectrumIdentificationProtocolType*>(1));
+        mzIdentML111::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML111::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML111::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML111::Generated::CVParamType *tempVar21 = new mzIdentML111::Generated::CVParamType();
+        mzIdentML111::CVParamType *tempVar21 = new mzIdentML111::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML111::Generated::CVParamType*>(1);
-        mzIdentML111::Generated::CVParamType *tempVar22 = new mzIdentML111::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML111::CVParamType*>(1);
+        mzIdentML111::CVParamType *tempVar22 = new mzIdentML111::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;
@@ -1507,55 +1468,55 @@ namespace Test
     void TestMzML::Mzid120Test_()
     {
 //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::Generated::MzIdentMLType120));
-        auto _mzid = new mzIdentML120::Generated::MzIdentMLType120();
-        mzIdentML120::Generated::DataCollectionType tempVar();
+        XmlSerializer *_indexedSerializer = new XmlSerializer(typeof(mzIdentML120::MzIdentMLType120));
+        auto _mzid = new mzIdentML120::MzIdentMLType120();
+        mzIdentML120::DataCollectionType tempVar();
         _mzid->setDataCollection(&tempVar);
-        mzIdentML120::Generated::AnalysisDataType tempVar2();
+        mzIdentML120::AnalysisDataType tempVar2();
         _mzid->getDataCollection()->setAnalysisData(&tempVar2);
-        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML120::Generated::SpectrumIdentificationListType*>(1));
-        mzIdentML120::Generated::SpectrumIdentificationListType *tempVar3 = new mzIdentML120::Generated::SpectrumIdentificationListType();
-        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML120::Generated::SpectrumIdentificationResultType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->setSpectrumIdentificationList(std::vector<mzIdentML120::SpectrumIdentificationListType*>(1));
+        mzIdentML120::SpectrumIdentificationListType *tempVar3 = new mzIdentML120::SpectrumIdentificationListType();
+        tempVar3->setSpectrumIdentificationResult(std::vector<mzIdentML120::SpectrumIdentificationResultType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0] = tempVar3;
-        mzIdentML120::Generated::SpectrumIdentificationResultType *tempVar4 = new mzIdentML120::Generated::SpectrumIdentificationResultType();
+        mzIdentML120::SpectrumIdentificationResultType *tempVar4 = new mzIdentML120::SpectrumIdentificationResultType();
         tempVar4->setspectrumID("spectrum 2");
-        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML120::Generated::SpectrumIdentificationItemType*>(50));
+        tempVar4->setSpectrumIdentificationItem(std::vector<mzIdentML120::SpectrumIdentificationItemType*>(50));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0] = tempVar4;
-        mzIdentML120::Generated::SpectrumIdentificationItemType *tempVar5 = new mzIdentML120::Generated::SpectrumIdentificationItemType();
+        mzIdentML120::SpectrumIdentificationItemType *tempVar5 = new mzIdentML120::SpectrumIdentificationItemType();
         tempVar5->setexperimentalMassToCharge(1134.2609130203 + 0.000001 * 1134.2609130203 + 0.000001);
         tempVar5->setcalculatedMassToCharge(1134.26091302033);
         tempVar5->setcalculatedMassToChargeSpecified(true);
         tempVar5->setchargeState(3);
-        mzIdentML120::Generated::CVParamType *tempVar6 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar6 = new mzIdentML120::CVParamType();
         tempVar6->setaccession("MS:1002354");
         tempVar6->setvalue("0.05");
         tempVar5->setcvParam({tempVar6});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0] = tempVar5;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML120::Generated::SpectrumIdentificationItemType();
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML120::Generated::IonTypeType*>(1);
-        mzIdentML120::Generated::IonTypeType *tempVar7 = new mzIdentML120::Generated::IonTypeType();
-        tempVar7->setFragmentArray(std::vector<mzIdentML120::Generated::FragmentArrayType*>(1));
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[1] = new mzIdentML120::SpectrumIdentificationItemType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->Fragmentation = std::vector<mzIdentML120::IonTypeType*>(1);
+        mzIdentML120::IonTypeType *tempVar7 = new mzIdentML120::IonTypeType();
+        tempVar7->setFragmentArray(std::vector<mzIdentML120::FragmentArrayType*>(1));
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0] = tempVar7;
-        mzIdentML120::Generated::FragmentArrayType *tempVar8 = new mzIdentML120::Generated::FragmentArrayType();
+        mzIdentML120::FragmentArrayType *tempVar8 = new mzIdentML120::FragmentArrayType();
         tempVar8->setvalues({200, 300, 400});
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].Fragmentation[0].FragmentArray[0] = tempVar8;
-        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML120::Generated::PeptideEvidenceRefType*>(1);
-        mzIdentML120::Generated::PeptideEvidenceRefType *tempVar9 = new mzIdentML120::Generated::PeptideEvidenceRefType();
+        _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0]->PeptideEvidenceRef = std::vector<mzIdentML120::PeptideEvidenceRefType*>(1);
+        mzIdentML120::PeptideEvidenceRefType *tempVar9 = new mzIdentML120::PeptideEvidenceRefType();
         tempVar9->setpeptideEvidence_ref("PE_1");
         _mzid->getDataCollection()->getAnalysisData()->getSpectrumIdentificationList()[0]->SpectrumIdentificationResult[0].SpectrumIdentificationItem[0].PeptideEvidenceRef[0] = tempVar9;
-        mzIdentML120::Generated::InputsType tempVar10();
+        mzIdentML120::InputsType tempVar10();
         _mzid->getDataCollection()->setInputs(&tempVar10);
-        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML120::Generated::SpectraDataType*>(1));
-        mzIdentML120::Generated::SpectraDataType *tempVar11 = new mzIdentML120::Generated::SpectraDataType();
-        mzIdentML120::Generated::FileFormatType tempVar12();
+        _mzid->getDataCollection()->getInputs()->setSpectraData(std::vector<mzIdentML120::SpectraDataType*>(1));
+        mzIdentML120::SpectraDataType *tempVar11 = new mzIdentML120::SpectraDataType();
+        mzIdentML120::FileFormatType tempVar12();
         tempVar11->setFileFormat(&tempVar12);
         _mzid->getDataCollection()->getInputs()->getSpectraData()[0] = tempVar11;
-        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML120::Generated::CVParamType();
+        _mzid->getDataCollection()->getInputs()->getSpectraData()[0]->FileFormat->cvParam = new mzIdentML120::CVParamType();
         .FileFormat::cvParam->name = "mzML format";
-        mzIdentML120::Generated::SequenceCollectionType tempVar13();
+        mzIdentML120::SequenceCollectionType tempVar13();
         _mzid->setSequenceCollection(&tempVar13);
-        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML120::Generated::PeptideEvidenceType*>(1));
-        mzIdentML120::Generated::PeptideEvidenceType *tempVar14 = new mzIdentML120::Generated::PeptideEvidenceType();
+        _mzid->getSequenceCollection()->setPeptideEvidence(std::vector<mzIdentML120::PeptideEvidenceType*>(1));
+        mzIdentML120::PeptideEvidenceType *tempVar14 = new mzIdentML120::PeptideEvidenceType();
         tempVar14->setendSpecified(true);
         tempVar14->setstartSpecified(true);
         tempVar14->setisDecoy(false);
@@ -1565,43 +1526,43 @@ namespace Test
         tempVar14->setpeptide_ref("P_1");
         tempVar14->setid("PE_1");
         _mzid->getSequenceCollection()->getPeptideEvidence()[0] = tempVar14;
-        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML120::Generated::PeptideType*>(1));
-        mzIdentML120::Generated::PeptideType *tempVar15 = new mzIdentML120::Generated::PeptideType();
+        _mzid->getSequenceCollection()->setPeptide(std::vector<mzIdentML120::PeptideType*>(1));
+        mzIdentML120::PeptideType *tempVar15 = new mzIdentML120::PeptideType();
         tempVar15->setid("P_1");
         tempVar15->setPeptideSequence("GPEAPPPALPAGAPPPCTAVTSDHLNSLLGNILR");
-        tempVar15->setModification(std::vector<mzIdentML120::Generated::ModificationType*>(1));
+        tempVar15->setModification(std::vector<mzIdentML120::ModificationType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0] = tempVar15;
-        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML120::Generated::DBSequenceType*>(1));
-        mzIdentML120::Generated::DBSequenceType *tempVar16 = new mzIdentML120::Generated::DBSequenceType();
+        _mzid->getSequenceCollection()->setDBSequence(std::vector<mzIdentML120::DBSequenceType*>(1));
+        mzIdentML120::DBSequenceType *tempVar16 = new mzIdentML120::DBSequenceType();
         tempVar16->setid("DB_1");
         tempVar16->setname("Protein name");
         tempVar16->setaccession("ACCESSION");
         _mzid->getSequenceCollection()->getDBSequence()[0] = tempVar16;
-        mzIdentML120::Generated::ModificationType *tempVar17 = new mzIdentML120::Generated::ModificationType();
+        mzIdentML120::ModificationType *tempVar17 = new mzIdentML120::ModificationType();
         tempVar17->setlocationSpecified(true);
         tempVar17->setlocation(17);
         tempVar17->setmonoisotopicMassDeltaSpecified(true);
         tempVar17->setmonoisotopicMassDelta(57.02146373);
-        tempVar17->setcvParam(std::vector<mzIdentML120::Generated::CVParamType*>(1));
+        tempVar17->setcvParam(std::vector<mzIdentML120::CVParamType*>(1));
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0] = tempVar17;
-        mzIdentML120::Generated::CVParamType *tempVar18 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar18 = new mzIdentML120::CVParamType();
         tempVar18->setaccession("MS:1001460");
         tempVar18->setname("unknown modification");
         tempVar18->setvalue("Carbamidomethyl");
         tempVar18->setcvRef("PSI-MS");
         _mzid->getSequenceCollection()->getPeptide()[0]->Modification[0].cvParam[0] = tempVar18;
-        mzIdentML120::Generated::AnalysisProtocolCollectionType tempVar19();
+        mzIdentML120::AnalysisProtocolCollectionType tempVar19();
         _mzid->setAnalysisProtocolCollection(&tempVar19);
-        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML120::Generated::SpectrumIdentificationProtocolType*>(1));
-        mzIdentML120::Generated::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML120::Generated::SpectrumIdentificationProtocolType();
-        tempVar20->setParentTolerance(std::vector<mzIdentML120::Generated::CVParamType*>(1));
+        _mzid->getAnalysisProtocolCollection()->setSpectrumIdentificationProtocol(std::vector<mzIdentML120::SpectrumIdentificationProtocolType*>(1));
+        mzIdentML120::SpectrumIdentificationProtocolType *tempVar20 = new mzIdentML120::SpectrumIdentificationProtocolType();
+        tempVar20->setParentTolerance(std::vector<mzIdentML120::CVParamType*>(1));
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0] = tempVar20;
-        mzIdentML120::Generated::CVParamType *tempVar21 = new mzIdentML120::Generated::CVParamType();
+        mzIdentML120::CVParamType *tempVar21 = new mzIdentML120::CVParamType();
         tempVar21->setunitName("dalton");
         tempVar21->setvalue("0.1");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->ParentTolerance[0] = tempVar21;
-        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML120::Generated::CVParamType*>(1);
-        mzIdentML120::Generated::CVParamType *tempVar22 = new mzIdentML120::Generated::CVParamType();
+        _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance = std::vector<mzIdentML120::CVParamType*>(1);
+        mzIdentML120::CVParamType *tempVar22 = new mzIdentML120::CVParamType();
         tempVar22->setunitName("dalton");
         tempVar22->setvalue("0.01");
         _mzid->getAnalysisProtocolCollection()->getSpectrumIdentificationProtocol()[0]->FragmentTolerance[0] = tempVar22;

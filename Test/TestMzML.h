@@ -20,9 +20,9 @@ using namespace IO::MzML;
 using namespace MassSpectrometry;
 #include "../MassSpectrometry/MassSpectrometry.h"
 
-#ifdef ORIG
-using namespace MzIdentML;
-#endif
+
+//using namespace MzIdentML;
+
 
 #include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
@@ -35,26 +35,9 @@ using namespace Proteomics::AminoAcidPolymer;
 
 namespace Test
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] public sealed class TestMzML
     class TestMzML final
     {
-#ifdef ORIG
-    private:
-        static Stopwatch *privateStopwatch;
-
-        static Stopwatch *getStopwatch();
-        static void setStopwatch(Stopwatch *value);
-#endif
-
     public:
-
-#ifdef ORIG
-        static void Setuppp();
-
-        static void TearDown();
-#endif
-
         static void AnotherMzMLtest();
 
 #ifdef THROWS_EXCEPTION
@@ -69,15 +52,9 @@ namespace Test
 
         static void DifferentAnalyzersTest();
 
-#ifdef LATER
         static void Mzid111Test();
 
         static void Mzid120Test();
-#endif
-
-#ifdef ORIG
-        void Setup();
-#endif
 
         static void LoadMzmlTest();
 
@@ -85,7 +62,6 @@ namespace Test
 
         static void WriteMzmlTest();
 
-#ifdef LATER
         static void MzidTest();
 
         static void Mzid110Test();
@@ -93,7 +69,6 @@ namespace Test
         static void Mzid111Test_();
 
         static void Mzid120Test_();
-#endif
 
         static void MzmlFindPrecursorReferenceScan();
 

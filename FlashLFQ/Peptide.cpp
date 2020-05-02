@@ -148,7 +148,28 @@ namespace FlashLFQ
         }
         for (auto file : rawFiles)
         {
-            str->append(std::to_string(*(reinterpret_cast<int *>(GetDetectionType(file)))) + "\t");
+            auto t = GetDetectionType(file);
+            std::string tmpstring;
+            if (t == DetectionType::MSMS ) {
+                tmpstring = "MSMS";
+            }
+            else if (t == DetectionType::MBR) {
+                tmpstring = "MBR";
+            }
+            else if (t == DetectionType::NotDetected) {
+                tmpstring = "NotDetected";
+            }
+            else if (t == DetectionType::MSMSAmbiguousPeakfinding) {
+                tmpstring = "MSMSAmbiguousPeakfinding";
+            }
+            else if (t == DetectionType::MSMSIdentifiedButNotQuantified) {
+                tmpstring = "MSMSIdentifiedButNotQuantified";
+            }
+            else if (t == DetectionType::Imputed ) {
+                tmpstring = "Imputed";
+            }
+                   
+            str->append(tmpstring + "\t");
         }
 
         std::string s = str->toString();

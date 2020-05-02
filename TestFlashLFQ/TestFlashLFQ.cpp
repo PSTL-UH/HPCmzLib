@@ -83,7 +83,7 @@ namespace Test
             Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(raw) > 0);
         }
         else {
-            std::cout << "Not running raw file tests.\n";
+            std::cout << "NOTE: Not running raw file tests.\n";
         }
 
         // check mzml results
@@ -99,7 +99,7 @@ namespace Test
         //Assert::IsTrue(int1 == int2);
 
         // test peak output
-        results->WriteResults( testdir+"peaks.tsv", testdir+"modSeq.tsv", testdir+"protein.tsv");
+        results->WriteResults( testdir+"/peaks.tsv", testdir+"/modSeq.tsv", testdir+"/protein.tsv");
 
         delete engine;
         delete id4;

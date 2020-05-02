@@ -34,8 +34,7 @@ namespace FlashLFQ
     }
 
     bool PeakIndexingEngine::IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent,
-                                                    std::unordered_map<SpectraFileInfo*,
-                                                    std::vector<Ms1ScanInfo*>> &_ms1Scans)
+                                                    std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>> &_ms1Scans)
     {
         if (!silent)
         {
@@ -154,7 +153,7 @@ namespace FlashLFQ
 #endif
         double max_val =0.0;
         for ( auto p : msDataScans ) {
-            if ( p != nullptr && p->getMassSpectrum()->getLastX().has_value() ) {
+            if ( p != nullptr &&  p->getMassSpectrum()->getLastX().has_value() ) {
                 if ( max_val < p->getMassSpectrum()->getLastX().value() ) {
                     max_val = p->getMassSpectrum()->getLastX().value();
                 }
@@ -173,8 +172,9 @@ namespace FlashLFQ
                 continue;
             }
 
-            Ms1ScanInfo tempVar(msDataScans[i]->getOneBasedScanNumber(), scanIndex, msDataScans[i]->getRetentionTime());
-            scanInfo.push_back(&tempVar);
+            auto  tempVar = new Ms1ScanInfo(msDataScans[i]->getOneBasedScanNumber(), scanIndex,
+                                            msDataScans[i]->getRetentionTime());
+            scanInfo.push_back(tempVar);
 
             for (int j = 0; j < (int)msDataScans[i]->getMassSpectrum()->getXArray().size(); j++)
             {
@@ -185,10 +185,10 @@ namespace FlashLFQ
                     _indexedPeaks[roundedMz] = std::vector<IndexedMassSpectralPeak*>();
                 }
 
-                IndexedMassSpectralPeak tempVar2(msDataScans[i]->getMassSpectrum()->getXArray()[j],
-                                                 msDataScans[i]->getMassSpectrum()->getYArray()[j],
-                                                 scanIndex, msDataScans[i]->getRetentionTime());
-                _indexedPeaks[roundedMz].push_back(&tempVar2);
+                auto  tempVar2 = new IndexedMassSpectralPeak(msDataScans[i]->getMassSpectrum()->getXArray()[j],
+                                                             msDataScans[i]->getMassSpectrum()->getYArray()[j],
+                                                             scanIndex, msDataScans[i]->getRetentionTime());
+                _indexedPeaks[roundedMz].push_back(tempVar2);
             }
 
             scanIndex++;

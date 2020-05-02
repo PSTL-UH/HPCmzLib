@@ -261,7 +261,12 @@ namespace FlashLFQ
 
             double unmodifiedMonoisotopicMass = p->getMonoisotopicMass();
             //double highestAbundance = abundances.Max();
-            double highestAbundance = *std::max(abundances.begin(), abundances.end());
+            double highestAbundance = abundances[0];
+            for ( auto q : abundances ) {
+                if ( q > highestAbundance ) {
+                    highestAbundance = q;
+                }
+            }
 
             for (int i = 0; i < (int) masses.size(); i++)
             {
@@ -290,7 +295,7 @@ namespace FlashLFQ
             p::precursorChargeState;
         });
 #endif
-        int minChargeState = (*_allIdentifications.begin())->precursorChargeState;
+        int minChargeState = _allIdentifications[0]->precursorChargeState;
         for ( auto t : _allIdentifications ) {
             if ( t->precursorChargeState < minChargeState ) {
                 minChargeState =  t->precursorChargeState;
@@ -304,14 +309,14 @@ namespace FlashLFQ
         _chargeStates = Enumerable::Range(minChargeState, (maxChargeState - minChargeState) + 1);
 
 #endif
-        int maxChargeState = (*_allIdentifications.begin())->precursorChargeState;
+        int maxChargeState = _allIdentifications[0]->precursorChargeState;
         for ( auto t: _allIdentifications ) {
             if ( t->precursorChargeState > maxChargeState ) {
                 maxChargeState = t->precursorChargeState;
             }
         }
 
-        for (int p = minChargeState; p< ((maxChargeState - minChargeState) + 1); p++ ) {
+        for (int p = minChargeState; p< (maxChargeState + 1); p++ ) {
             _chargeStates.push_back(p);
         }
         
@@ -471,21 +476,24 @@ namespace FlashLFQ
                     p::IndexedPeak::ZeroBasedMs1ScanIndex;
                 });
 #endif
-            int min = (*std::min(precursorXic.begin(), precursorXic.end(),
-                                 [&] ( auto l,  auto r) {
-                                     return (*l)->IndexedPeak->ZeroBasedMs1ScanIndex <
-                                     (*r)->IndexedPeak->ZeroBasedMs1ScanIndex;
-                                 }))->IndexedPeak->ZeroBasedMs1ScanIndex;
+            int min = precursorXic[0]->IndexedPeak->ZeroBasedMs1ScanIndex;
+            for ( auto p: precursorXic ) {
+                if ( p->IndexedPeak->ZeroBasedMs1ScanIndex < min ) {
+                    min = p->IndexedPeak->ZeroBasedMs1ScanIndex;
+                }
+            }
+                    
 #ifdef ORIG            
             int max = precursorXic.Max([&] (std::any p) {
                 p::IndexedPeak::ZeroBasedMs1ScanIndex;
                 });
 #endif
-            int max = (*std::max(precursorXic.begin(), precursorXic.end(),
-                                 [&] ( auto l,  auto r) {
-                                     return (*l)->IndexedPeak->ZeroBasedMs1ScanIndex <
-                                     (*r)->IndexedPeak->ZeroBasedMs1ScanIndex;
-                                 }))->IndexedPeak->ZeroBasedMs1ScanIndex;
+            int max = precursorXic[0]->IndexedPeak->ZeroBasedMs1ScanIndex;
+            for ( auto p: precursorXic) {
+                if ( p->IndexedPeak->ZeroBasedMs1ScanIndex > max ) {
+                    max = p->IndexedPeak->ZeroBasedMs1ScanIndex;
+                }
+            }
 #ifdef ORIG
             msmsFeature->IsotopicEnvelopes.RemoveAll([&] (std::any p)   {
                     delete ppmTolerance;
@@ -809,10 +817,12 @@ namespace FlashLFQ
                         p::Intensity;
                     });
 #endif
-                double maxIntensity = (*std::max(allEnvs.begin(), allEnvs.end(),
-                                                 [&] ( auto l, auto r ) {
-                                                     return (*l)->getIntensity() < (*r)->getIntensity();
-                                                 }) )->getIntensity();
+                double maxIntensity = allEnvs[0]->getIntensity();
+                for ( auto p: allEnvs ) {
+                    if ( p->getIntensity() > maxIntensity ) {
+                        maxIntensity =  p->getIntensity();
+                    }
+                }
                 
 #ifdef ORIG
                 bestEnv = allEnvs.First([&] (std::any p) {
@@ -840,14 +850,20 @@ namespace FlashLFQ
                         p::IndexedPeak::RetentionTime;
                     });
 #endif
-                double maxRt = (*std::max(envs2.begin(), envs2.end(),
-                                                 [&] ( auto l, auto r ) {
-                                              return (*l)->IndexedPeak->RetentionTime < (*r)->IndexedPeak->RetentionTime;
-                                                 }) )->IndexedPeak->RetentionTime;
-                double minRt = (*std::min(envs2.begin(), envs2.end(),
-                                                 [&] ( auto l, auto r ) {
-                                              return (*l)->IndexedPeak->RetentionTime < (*r)->IndexedPeak->RetentionTime;
-                                                 }) )->IndexedPeak->RetentionTime;
+                double maxRt = envs2[0]->IndexedPeak->RetentionTime;
+                for ( auto p: envs2 ) {
+                    if ( p->IndexedPeak->RetentionTime > maxRt ) {
+                        maxRt = p->IndexedPeak->RetentionTime;
+                    }
+                }
+
+                double minRt = envs2[0]->IndexedPeak->RetentionTime;
+                for ( auto p: envs2 ) {
+                    if ( p->IndexedPeak->RetentionTime < minRt ) {
+                        minRt = p->IndexedPeak->RetentionTime;
+                    }
+                }
+
 
                 acceptorPeak->IsotopicEnvelopes.insert(acceptorPeak->IsotopicEnvelopes.end(), envs2.begin(), envs2.end());
 #ifdef ORIG
@@ -988,8 +1004,8 @@ namespace FlashLFQ
             if (donorFileBestMsmsPeaks_iterator != donorFileBestMsmsPeaks.end())
             {
                 donorFilePeak = donorFileBestMsmsPeaks_iterator->second;
-                RetentionTimeCalibDataPoint tempVar(donorFilePeak, acceptorFilePeak);
-                rtCalibrationCurve.push_back(&tempVar);
+                auto  tempVar = new RetentionTimeCalibDataPoint(donorFilePeak, acceptorFilePeak);
+                rtCalibrationCurve.push_back(tempVar);
             }
             else
             {
@@ -1093,7 +1109,6 @@ namespace FlashLFQ
             }
             else
             {
-                storedPeak = peaksGroupedByApex_iterator->second;
                 peaksGroupedByApex.emplace(apexPeak, tryPeak);
             }
         }
@@ -1322,8 +1337,8 @@ namespace FlashLFQ
                 {
                     //IsotopicEnvelope tempVar(peak, chargeState, experimentalIsotopeAbundances.Sum());
                     auto thissum = std::accumulate(experimentalIsotopeAbundances.begin(), experimentalIsotopeAbundances.end(), 0);
-                    IsotopicEnvelope tempVar(peak, chargeState, thissum);
-                    isotopicEnvelopes.push_back(&tempVar);
+                    auto  tempVar = new IsotopicEnvelope(peak, chargeState, thissum);
+                    isotopicEnvelopes.push_back(tempVar);
                 }
                 //else
                 //{

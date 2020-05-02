@@ -196,7 +196,9 @@ namespace FlashLFQ
                     return l->ChargeState < r->ChargeState;
                 });
              auto ip = std::unique ( sortedenvelopes.begin(), sortedenvelopes.end() );
-             int size = std::distance (ip, sortedenvelopes.begin());
+             //int size = std::distance (ip, sortedenvelopes.begin());
+             sortedenvelopes.erase(ip, sortedenvelopes.end() );
+             int size = sortedenvelopes.size();
              setNumChargeStatesObserved ( size);
         }
         else
@@ -226,15 +228,32 @@ namespace FlashLFQ
 #ifdef ORIG
             this->setIdentifications(this->getIdentifications().Union(otherFeature->getIdentifications())->Distinct().ToList());
 #endif
-            std::vector<Identification*> v;
-            std::vector<Identification*>::iterator vit;
-            vit = std::set_union(this->getIdentifications().begin(),
-                                 this->getIdentifications().end(),
-                                 otherFeature->getIdentifications().begin(),
-                                 otherFeature->getIdentifications().end(),
-                                 v.begin() );
-            v.erase( vit, v.end() );
-            this->setIdentifications(v);
+            auto v = new std::vector<Identification*>();
+            for ( auto p: this->getIdentifications() ) {
+                bool found = false;
+                for ( auto q: *v ) {
+                    if ( p == q ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found ) {
+                    v->push_back(p);
+                }
+            }
+            for ( auto p: otherFeature->getIdentifications() ) {
+                bool found = false;
+                for ( auto q: *v ) {
+                    if ( p == q ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found ) {
+                    v->push_back(p);
+                }
+            }
+            this->setIdentifications(*v);
             
             ResolveIdentifications();
 #ifdef ORIG

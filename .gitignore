@@ -23,3 +23,7 @@ TestFlashLFQ/elements.dat
 autom4te.cache/
 config.log
 config.status
+Test/DatabaseTests/TestProteomicsReadWrite
+Test/DatabaseTests/elements.dat
+Test/DatabaseTests/rewrite_fasta.fasta
+Test/DatabaseTests/rewrite_test_ensembl.pep.all.fasta

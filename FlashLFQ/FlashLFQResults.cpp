@@ -180,8 +180,8 @@ namespace FlashLFQ
                 if (PeptideModifiedSequences.find(sequence) == PeptideModifiedSequences.end())
                 {
                     bool useForProteinQuant = sequenceWithPeaks.front()->getIdentifications()[0]->UseForProteinQuant;
-                    Peptide tempVar(sequence, useForProteinQuant);
-                    PeptideModifiedSequences.emplace(sequence, &tempVar);
+                    auto  tempVar = new Peptide(sequence, useForProteinQuant);
+                    PeptideModifiedSequences.emplace(sequence, tempVar);
                 }
 
                 PeptideModifiedSequences[sequence]->SetIntensity(std::get<0>(file), intensity);
@@ -212,8 +212,8 @@ namespace FlashLFQ
                     if (PeptideModifiedSequences.find(sequence) == PeptideModifiedSequences.end())
                     {
                         bool useForProteinQuant = id->UseForProteinQuant;
-                        Peptide tempVar2(sequence, useForProteinQuant);
-                        PeptideModifiedSequences.emplace(sequence, &tempVar2);
+                        auto  tempVar2 = new Peptide(sequence, useForProteinQuant);
+                        PeptideModifiedSequences.emplace(sequence, tempVar2);
                     }
 
                     double alreadyRecordedIntensity = PeptideModifiedSequences[sequence]->GetIntensity(std::get<0>(file));

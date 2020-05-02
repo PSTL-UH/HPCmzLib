@@ -22,7 +22,6 @@ namespace FlashLFQ
         }
         else
         {
-            intensity = intensities_iterator->second;
             return 0;
         }
     }
@@ -73,7 +72,6 @@ namespace FlashLFQ
             }
             else
             {
-                intensity = intensities_iterator->second;
                 str->append(std::to_string(0) + "\t");
             }
         }
