@@ -41,6 +41,8 @@ using namespace Proteomics::Fragmentation;
 
 #include "../Fragmentation/Product.h"
 
+#include "cereal/cereal.hpp"
+
 namespace Proteomics
 {
     namespace ProteolyticDigestion
@@ -149,6 +151,7 @@ namespace Proteomics
             /// </summary>
             void SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*> &idToMod, std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein);
 
+
         private:
             void GetDigestionParamsAfterDeserialization();
 
@@ -159,6 +162,39 @@ namespace Proteomics
             void DetermineFullSequence();
 
             void UpdateCleavageSpecificity();
+
+        public:
+            template <class Archive>
+            void save( Archive & ar ) const
+            {
+                ar( cereal::make_nvp("privateFullSequence", privateFullSequence) );
+                ar( cereal::make_nvp("sequenceWithChemicalFormulas", _sequenceWithChemicalFormulas) );
+                if (_hasChemicalFormulas.has_value())
+                    ar( cereal::make_nvp("hasChemicalFormulas", _hasChemicalFormulas) );
+                if (_monoisotopicMass.has_value())
+                    ar( cereal::make_nvp("monoisotopicMass", _monoisotopicMass) );
+                ar( cereal::make_nvp("WaterMonoisotopicMass", WaterMonoisotopicMass) );
+                ar( cereal::make_nvp("DigestionParamString", DigestionParamString) );
+                ar( cereal::make_nvp("ProteinAccession", ProteinAccession) );
+            }
+
+            template <class Archive>
+            static void load_and_construct( Archive & ar, cereal::construct<PeptideWithSetModifications> & construct )
+            {
+                std::string fullSequence;
+                std::unordered_map<std::string, Modification*> allModsOneIsNterminus;
+                ar( cereal::make_nvp("privateFullSequence", fullSequence) );
+
+                // if (_hasChemicalFormulas.has_value())
+                //     ar( cereal::make_nvp("hasChemicalFormulas", _hasChemicalFormulas) );
+                // if (_monoisotopicMass.has_value())
+                //     ar( cereal::make_nvp("monoisotopicMass", _monoisotopicMass) );
+                // ar( cereal::make_nvp("WaterMonoisotopicMass", WaterMonoisotopicMass) );
+                // ar( cereal::make_nvp("DigestionParamString", DigestionParamString) );
+                // ar( cereal::make_nvp("ProteinAccession", ProteinAccession) );
+
+                construct( fullSequence, allModsOneIsNterminus); // calls MyType( x )
+            }
         };
     }
 }
