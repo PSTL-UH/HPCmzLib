@@ -22,17 +22,15 @@
 using namespace NUnit::Framework;
 using namespace UsefulProteomicsDatabases;
 
-namespace TestThermo {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+namespace TestThermo
+{
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [SetUpFixture] public class MySetUpClass
-    class MySetUpClass {
-//        #region Public Methods
-
+    class MySetUpClass
+    {
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in native C++:
+//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
 //ORIGINAL LINE: [OneTimeSetUp] public void Setup()
         void Setup();
-
-//        #endregion Public Methods
     };
 }

@@ -4,10 +4,12 @@
 using namespace NUnit::Framework;
 using namespace UsefulProteomicsDatabases;
 
-namespace TestThermo {
+namespace TestThermo
+{
 
-    void MySetUpClass::Setup() {
-        auto elementLocation = FileSystem::combine(TestContext::CurrentContext->TestDirectory, L"lal.dat");
+    void MySetUpClass::Setup()
+    {
+        auto elementLocation = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "lal.dat");
         Loaders::LoadElements(elementLocation);
     }
 }
