@@ -77,7 +77,7 @@ namespace FlashLFQ
                        double ppmTolerance = 10.0, double isotopeTolerancePpm = 5.0,
                        double matchBetweenRunsPpmTolerance = 5.0, bool integrate = false,
                        int numIsotopesRequired = 2, bool idSpecificChargeState = false,
-                       bool requireMonoisotopicMass = true, bool silent = false,
+                       bool requireMonoisotopicMass = true, bool silent = true,
                        std::string optionalPeriodicTablePath = "", double maxMbrWindow = 2.5,
                        int maxThreads = -1);
 

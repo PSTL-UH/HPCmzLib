@@ -101,7 +101,7 @@ namespace FlashLFQ
         {
             if (!silent)
             {
-                std::cout << "Cannot open RAW with .NETStandard code - are you on Linux? " <<
+                std::cout << "Cannot open RAW with .NETStandard code " <<
                     fileInfo->FullFilePathWithExtension << std::endl;
             }
             return false;
