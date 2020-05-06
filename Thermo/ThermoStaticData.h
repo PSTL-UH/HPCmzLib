@@ -1,15 +1,20 @@
 ﻿#pragma once
 
-#include "../MassSpectrometry/IMsStaticDataFile.h"
-#include "ThermoFile.h"
+#include "ThermoDataFile.h"
 #include <string>
 #include <vector>
+#include <any>
+#include <typeinfo>
 #include <optional>
+#include "exceptionhelper.h"
+#include "stringhelper.h"
+#include "tangible_filesystem.h"
 
 //C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace IO { namespace Thermo { class IThermoScan; } }
+namespace MassSpectrometry { class MsDataScan; }
 namespace MassSpectrometry { class SourceFile; }
 namespace IO { namespace Thermo { class ThermoGlobalParams; } }
+namespace MassSpectrometry { class IFilteringParams; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -33,24 +38,39 @@ using namespace MassSpectrometry;
 using namespace MSFileReaderLib;
 using namespace MzLibUtil;
 
-namespace IO {
-    namespace Thermo {
-        class ThermoStaticData : public ThermoFile, public IMsStaticDataFile<IThermoScan*> {
-    //        #region Private Constructors
+namespace IO
+{
+    namespace Thermo
+    {
+        class ThermoStaticData : public ThermoDataFile
+        {
+        private:
+            static Regex *const PolarityRegex;
+            static Regex *const mFindParentIonOnlyNonMsx;
+            static Regex *const mFindParentIonOnlyMsx;
+
+            ThermoStaticData(std::vector<MsDataScan*> &scans, IO::Thermo::ThermoGlobalParams *thermoGlobalParams, MassSpectrometry::SourceFile *sourceFile);
 
         private:
-            ThermoStaticData(std::vector<IThermoScan*> &scans, IO::Thermo::ThermoGlobalParams *p, MassSpectrometry::SourceFile *sourceFile);
-
-    //        #endregion Private Constructors
-
-    //        #region Public Methods
+            enum class ThermoMzAnalyzer
+            {
+                None = -1,
+                ITMS = 0,
+                TQMS = 1,
+                SQMS = 2,
+                TOFMS = 3,
+                FTMS = 4,
+                Sector = 5
+            };
 
         public:
-            static ThermoStaticData *LoadAllStaticData(const std::wstring &filePath, std::optional<int> &topNpeaks = std::nullopt, std::optional<double> &minRatio = std::nullopt, bool trimMs1Peaks = true, bool trimMsMsPeaks = true);
+            static ThermoStaticData *LoadAllStaticData(const std::string &filePath, IFilteringParams *filterParams = nullptr);
 
-            IThermoScan *GetOneBasedScan(int oneBasedScanNumber) override;
+            static MsDataScan *GetMsDataOneBasedScanFromThermoFile(IXRawfile5 *theConnection, int nScanNumber, IO::Thermo::ThermoGlobalParams *globalParams, IFilteringParams *filterParams = nullptr);
 
-    //        #endregion Public Methods
+            static IO::Thermo::ThermoGlobalParams *GetAllGlobalStuff(IXRawfile5 *_rawConnection, std::vector<ManagedThermoHelperLayer::PrecursorInfo*> &couldBePrecursor, const std::string &filePath);
+
+            static bool CheckForMsFileReader();
         };
     }
 }

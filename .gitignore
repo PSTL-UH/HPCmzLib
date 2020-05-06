@@ -27,3 +27,5 @@ Test/DatabaseTests/TestProteomicsReadWrite
 Test/DatabaseTests/elements.dat
 Test/DatabaseTests/rewrite_fasta.fasta
 Test/DatabaseTests/rewrite_test_ensembl.pep.all.fasta
+TestFlashLFQ/modSeq.tsv
+TestFlashLFQ/peaks.tsv

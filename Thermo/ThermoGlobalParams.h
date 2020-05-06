@@ -4,38 +4,29 @@
 #include <vector>
 
 
-namespace IO {
-    namespace Thermo {
-        class ThermoGlobalParams {
-    //        #region Public Fields
-
+namespace IO
+{
+    namespace Thermo
+    {
+        class ThermoGlobalParams
+        {
         public:
-            std::vector<std::wstring> const instrumentMethods;
-            const std::wstring pbstrInstModel;
-            const std::wstring pbstrInstName;
-            const std::wstring pbstrInstSoftwareVersion;
-            const int pnControllerNumber;
-            const int pnControllerType;
-            const int pnNumInstMethods;
-            const std::wstring filePath;
+            const std::vector<std::string> InstrumentMethods;
+            const std::string PbstrInstModel;
+            const std::string PbstrInstName;
+            const std::string PbstrInstSoftwareVersion;
+            const int PnControllerNumber;
+            const int PnControllerType;
+            const int PnNumInstMethods;
+            const std::string FilePath;
 
-            std::vector<ManagedThermoHelperLayer::PrecursorInfo*> const couldBePrecursor;
-            std::vector<int> const scanEvent;
-            std::vector<int> const msOrderByScan;
+            const std::vector<ManagedThermoHelperLayer::PrecursorInfo*> CouldBePrecursor;
+            const std::vector<int> ScanEvent;
+            const std::vector<int> MsOrderByScan;
 
-    //        #endregion Public Fields
-
-    //        #region Public Constructors
-
-            ThermoGlobalParams(int pnNumInstMethods, std::vector<std::wstring> &instrumentMethods, const std::wstring &pbstrInstSoftwareVersion, const std::wstring &pbstrInstName, const std::wstring &pbstrInstModel, int pnControllerType, int pnControllerNumber, std::vector<ManagedThermoHelperLayer::PrecursorInfo*> &couldBePrecursor, const std::wstring &filePath, std::vector<int> &msOrderByScan);
-
-    //        #endregion Public Constructors
-
-    //        #region Public Properties
+            ThermoGlobalParams(int pnNumInstMethods, std::vector<std::string> &instrumentMethods, const std::string &pbstrInstSoftwareVersion, const std::string &pbstrInstName, const std::string &pbstrInstModel, int pnControllerType, int pnControllerNumber, std::vector<ManagedThermoHelperLayer::PrecursorInfo*> &couldBePrecursor, const std::string &filePath, std::vector<int> &msOrderByScan);
 
             bool getMonoisotopicselectionEnabled() const;
-
-    //        #endregion Public Properties
         };
     }
 }
