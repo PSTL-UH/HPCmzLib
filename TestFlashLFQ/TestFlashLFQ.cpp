@@ -41,10 +41,10 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". TestFlashLfqAdvancedProteinQuant" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqAdvancedProteinQuant();    
 
-#ifdef LATER
     std::cout << ++i << ". TestFlashLfqMatchBetweenRuns " << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMatchBetweenRuns();
 
+#ifdef LATER
     std::cout << ++i << ". TestFlashLfqMatchBetweenRunsProteinQuant " << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMatchBetweenRunsProteinQuant();
 
@@ -361,7 +361,6 @@ namespace Test
                 for ( auto v: dist->getMasses() ) {
                     mz.push_back(Chemistry:: ClassExtensions::ToMz(v, 1));
                 }
-
                 std::vector<double> intensities;
                 double intensities_sum=0.0;
                 for ( auto v: dist->getIntensities() ) {
@@ -429,11 +428,12 @@ namespace Test
         delete pg;
         delete file2;
         delete file1;
-            }
+    }
 
-#ifdef LATER            
     void TestFlashLFQ::TestFlashLfqMatchBetweenRuns()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
         std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
         double intensity = 1e6;
@@ -441,23 +441,27 @@ namespace Test
         std::vector<double> file1Rt = {1.01, 1.02, 1.03, 1.04, 1.05};
         std::vector<double> file2Rt = {1.015, 1.030, 1.039, 1.050, 1.065};
 
-        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+        //Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
 
         // generate mzml files (5 peptides each)
-        for (int f = 0; f < filesToWrite.size(); f++) {
+        for (int f = 0; f < (int)filesToWrite.size(); f++) {
             // 1 MS1 scan per peptide
             std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
 
-            for (int p = 0; p < pepSequences.size(); p++) {
+            for (int p = 0; p < (int)pepSequences.size(); p++) {
                 Proteomics::AminoAcidPolymer::Peptide tempVar(pepSequences[p]);
                 ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
                 IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
-                std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
-                        v::ToMz(1);
-                    })->ToArray();
-                std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
-                        return v * intensity;
-                    })->ToArray();
+                std::vector<double> mz;
+                for ( auto v: dist->getMasses() ) {
+                    mz.push_back(Chemistry:: ClassExtensions::ToMz(v, 1));
+                }
+                std::vector<double> intensities;
+                double intensities_sum=0.0;
+                for ( auto v: dist->getIntensities() ) {
+                    intensities.push_back( v * intensity);
+                    intensities_sum += (v*intensity);
+                }
                 double rt;
                 if (f == 0) {
                     rt = file1Rt[p];
@@ -468,69 +472,97 @@ namespace Test
                 // add the scan
                 MzSpectrum tempVar2(mz, intensities, false);
                 MzRange tempVar3(400, 1600);
-                scans[p] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: rt, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(p + 1));
+                std::vector<std::vector<double>> noiseData;
+                std::string nativeId = "scan=" + std::to_string((p+1));
+                scans[p] = new MsDataScan( &tempVar2, p + 1, 1, true, Polarity::Positive, rt, &tempVar3,
+                                           "f", MZAnalyzerType::Orbitrap, 
+                                           intensities_sum, std::make_optional(1.0), noiseData,
+                                           nativeId);
             }
-
             // write the .mzML
             FakeMsDataFile tempVar4(scans);
-            IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[f] + ".mzML"), false);
+            MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, testdir+"/"+ filesToWrite[f] + ".mzML", false);
         }
 
         // set up spectra file info
-        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
-        SpectraFileInfo *file2 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[1] + ".mzML"), "a", 1, 0, 0);
+        SpectraFileInfo *file1 = new SpectraFileInfo(testdir+"/"+filesToWrite[0] + ".mzML", "a", 0, 0, 0);
+        SpectraFileInfo *file2 = new SpectraFileInfo(testdir+"/"+ filesToWrite[1] + ".mzML", "a", 1, 0, 0);
 
         // create some PSMs
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
+        std::vector<ProteinGroup*> v1 = {pg};
+        std::vector<ProteinGroup*> v2 = {pg};
+        std::vector<ProteinGroup*> v3 = {pg};
+        std::vector<ProteinGroup*> v4 = {pg};
+        std::vector<ProteinGroup*> v5 = {pg};
+        std::vector<ProteinGroup*> v6 = {pg};
+        std::vector<ProteinGroup*> v7 = {pg};
+        std::vector<ProteinGroup*> v8 = {pg};
+        std::vector<ProteinGroup*> v9 = {pg};
         Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
-        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->getMonoisotopicMass(), file1Rt[0] + 0.001, 1, v1);
         Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
-        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->getMonoisotopicMass(), file1Rt[1] + 0.001, 1, v2);
         Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
-        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->getMonoisotopicMass(), file1Rt[2] + 0.001, 1, v3);
         Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
-        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->getMonoisotopicMass(), file1Rt[3] + 0.001, 1, v4);
         Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
-        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->getMonoisotopicMass(), file1Rt[4] + 0.001, 1, v5);
 
         Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIDE");
-        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->getMonoisotopicMass(), file2Rt[0] + 0.001, 1, v6);
         Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIDEV");
-        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->getMonoisotopicMass(), file2Rt[1] + 0.001, 1, v7);
         // missing ID 8 - MBR feature
         Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIDEVVV");
-        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->getMonoisotopicMass(), file2Rt[3] + 0.001, 1, v8);
         Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIDEVVVV");
-        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->getMonoisotopicMass(), file2Rt[4] + 0.001, 1, v9);
 
         // create the FlashLFQ engine
-        FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
-
+        std::vector<Identification*> vI1 = {id1, id2, id3, id4, id5, id6, id7, id9, id10};
+        FlashLfqEngine *engine = new FlashLfqEngine(vI1, false, true);
         // run the engine
         auto results = engine->Run();
 
-        Assert::That(results->Peaks[file2]->Count == 5);
-        Assert::That(results->Peaks[file2].Where([&] (std::any p) {
-                    p::IsMbrPeak;
-                })->Count() == 1);
+        Assert::IsTrue(results->Peaks[file2].size() == 5);
+        int count=0;
+        for ( auto p: results->Peaks[file2] ) {
+            if (  p->IsMbrPeak ) {
+                count++;                
+            }
+        }
+        Assert::IsTrue(count == 1 );
+        ChromatographicPeak *peak;
+        for ( auto p: results->Peaks[file2] ) {
+            if ( p->IsMbrPeak ) {
+                peak = p;
+                break;
+            }
+        }
 
-        auto peak = results->Peaks[file2].Where([&] (std::any p) {
-                p::IsMbrPeak;
-            })->First();
-        auto otherFilePeak = results->Peaks[file1].Where([&] (std::any p) {
-                return p::Identifications::First()->BaseSequence == peak->Identifications.First()->BaseSequence;
-            })->First();
+        ChromatographicPeak* otherFilePeak;
+        for ( auto p: results->Peaks[file1] ) {
+            if (  p->getIdentifications().front()->BaseSequence == peak->getIdentifications().front()->BaseSequence ) {
+                otherFilePeak = p;
+                break;
+            }
+        }
 
-        Assert::That(peak->Intensity > 0);
-        Assert::That(peak->Intensity == otherFilePeak->Intensity);
+        Assert::IsTrue(peak->Intensity > 0);
+        Assert::IsTrue(peak->Intensity == otherFilePeak->Intensity);
 
-        Assert::That(results->Peaks[file1]->Count == 5);
-        Assert::That(results->Peaks[file1].Where([&] (std::any p) {
-                    p::IsMbrPeak;
-                })->Count() == 0);
-
-        Assert::That(results->ProteinGroups["MyProtein"].GetIntensity(file1) > 0);
-        Assert::That(results->ProteinGroups["MyProtein"].GetIntensity(file2) > 0);
+        Assert::IsTrue(results->Peaks[file1].size() == 5);
+        count=0;
+        for ( auto p: results->Peaks[file1] ) {
+            if (  p->IsMbrPeak ) {
+                count++;                
+            }
+        }
+        Assert::IsTrue( count == 0 );
+        Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file1) > 0);
+        Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file2) > 0);
 
         delete engine;
         delete pg;
@@ -541,15 +573,18 @@ namespace Test
         delete id5;
         delete id6;
         delete id7;
-        delete id8;
         delete id9;
         delete id10;
         delete file1;
         delete file2;
     }
 
+#ifdef LATER            
+
     void TestFlashLFQ::TestFlashLfqMatchBetweenRunsProteinQuant()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+                
         std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
         std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
         double intensity = 1e6;
@@ -557,7 +592,7 @@ namespace Test
         std::vector<double> file1Rt = {1.01, 1.02, 1.03, 1.04, 1.05};
         std::vector<double> file2Rt = {1.015, 1.030, 1.036, 1.050, 1.065};
 
-        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+        //Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
 
         // generate mzml files (5 peptides each)
         for (int f = 0; f < filesToWrite.size(); f++) {
@@ -601,25 +636,25 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
         auto myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
         Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
-        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->getMonoisotopicMass(), file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
-        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->getMonoisotopicMass(), file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
-        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->getMonoisotopicMass(), file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
         Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
-        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->getMonoisotopicMass(), file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
-        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->getMonoisotopicMass(), file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIDE");
-        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->getMonoisotopicMass(), file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIDEV");
-        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->getMonoisotopicMass(), file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         // missing ID 8 - MBR feature
         Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIDEVVV");
-        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->getMonoisotopicMass(), file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIDEVVVV");
-        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->getMonoisotopicMass(), file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // test with top3 protein quant engine
         FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
@@ -654,6 +689,8 @@ namespace Test
 
     void TestFlashLFQ::TestPeakSplittingLeft()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -694,7 +731,7 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.7 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.7 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
@@ -718,6 +755,8 @@ namespace Test
 
     void TestFlashLFQ::TestPeakSplittingRight()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -758,7 +797,7 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
@@ -782,6 +821,8 @@ namespace Test
 
     void TestFlashLFQ::TestPeakSplittingRightWithEmptyScan()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -827,7 +868,7 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
@@ -851,6 +892,8 @@ namespace Test
     
     void TestFlashLFQ::TestPeakSplittingLeftWithEmptyScan()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -896,7 +939,7 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
@@ -961,6 +1004,8 @@ namespace Test
 
     void TestFlashLFQ::TestMergePeaks()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -1004,9 +1049,9 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.1 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.1 + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar6(peptide);
-        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->MonoisotopicMass, 1.4 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->getMonoisotopicMass(), 1.4 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1, id2});
@@ -1027,6 +1072,8 @@ namespace Test
 
     void TestFlashLFQ::TestAmbiguous()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         // get the raw file paths
         SpectraFileInfo *mzml = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(sliced-mzml.mzml)"), "a", 0, 1, 0);
 
@@ -1061,6 +1108,8 @@ namespace Test
     
     void TestFlashLFQ::TestPeakMerging()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::string fileToWrite = "myMzml.mzML";
         std::string peptide = "PEPTIDE";
         double intensity = 1e6;
@@ -1106,9 +1155,9 @@ namespace Test
         auto pg = new ProteinGroup("MyProtein", "gene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
-        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->getMonoisotopicMass(), 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar6(peptide);
-        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->MonoisotopicMass, 1.9 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->getMonoisotopicMass(), 1.9 + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         // create the FlashLFQ engine
         FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1, id2});
@@ -1130,6 +1179,8 @@ namespace Test
 
     void TestFlashLFQ::TestMatchBetweenRunsWithNoIdsInCommon()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
+        
         std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
         std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
         double intensity = 1e6;
@@ -1183,25 +1234,25 @@ namespace Test
         auto myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
 
         Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
-        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->getMonoisotopicMass(), file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
-        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->getMonoisotopicMass(), file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
-        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->getMonoisotopicMass(), file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
         Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
-        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->getMonoisotopicMass(), file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
-        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->getMonoisotopicMass(), file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIED");
-        Identification *id6 = new Identification(file2, "PEPTIED", "PEPTIED", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id6 = new Identification(file2, "PEPTIED", "PEPTIED", (&tempVar10)->getMonoisotopicMass(), file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIEDV");
-        Identification *id7 = new Identification(file2, "PEPTIEDV", "PEPTIEDV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id7 = new Identification(file2, "PEPTIEDV", "PEPTIEDV", (&tempVar11)->getMonoisotopicMass(), file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         // missing ID 8 - MBR feature
         Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIEDVVV");
-        Identification *id9 = new Identification(file2, "PEPTIEDVVV", "PEPTIEDVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id9 = new Identification(file2, "PEPTIEDVVV", "PEPTIEDVVV", (&tempVar12)->getMonoisotopicMass(), file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
         Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIEDVVVV");
-        Identification *id10 = new Identification(file2, "PEPTIEDVVVV", "PEPTIEDVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Identification *id10 = new Identification(file2, "PEPTIEDVVVV", "PEPTIEDVVVV", (&tempVar13)->getMonoisotopicMass(), file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
         FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
         auto results = engine->Run();
