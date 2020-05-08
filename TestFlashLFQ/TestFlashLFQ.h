@@ -31,5 +31,17 @@ namespace Test
         static void TestFlashLfqNormalization();
         static void TestFlashLfqMergeResults();
         static void TestFlashLfqAdvancedProteinQuant();
+        static void TestFlashLfqMatchBetweenRuns();
+        static void TestFlashLfqMatchBetweenRunsProteinQuant();
+        static void TestPeakSplittingLeft();
+        static void TestPeakSplittingRight();
+        static void TestPeakSplittingRightWithEmptyScan();
+        static void TestPeakSplittingLeftWithEmptyScan();
+        static void TestToString();
+        static void TestNotFound();
+        static void TestMergePeaks();
+        static void TestAmbiguous();
+        static void TestPeakMerging();
+        static void TestMatchBetweenRunsWithNoIdsInCommon();        
     };
 }

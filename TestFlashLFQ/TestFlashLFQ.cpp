@@ -40,9 +40,48 @@ int main ( int argc, char **argv )
     
     std::cout << ++i << ". TestFlashLfqAdvancedProteinQuant" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqAdvancedProteinQuant();    
-    
+
+#ifdef LATER
+    std::cout << ++i << ". TestFlashLfqMatchBetweenRuns " << std::endl;        
+    Test::TestFlashLFQ::TestFlashLfqMatchBetweenRuns();
+
+    std::cout << ++i << ". TestFlashLfqMatchBetweenRunsProteinQuant " << std::endl;        
+    Test::TestFlashLFQ::TestFlashLfqMatchBetweenRunsProteinQuant();
+
+    std::cout << ++i << ". TestPeakSplittingLeft " << std::endl;        
+    Test::TestFlashLFQ::TestPeakSplittingLeft();
+
+    std::cout << ++i << ". TestPeakSplittingRight " << std::endl;        
+    Test::TestFlashLFQ::TestPeakSplittingRight();
+
+    std::cout << ++i << ". TestPeakSplittingRightWithEmptyScan " << std::endl;        
+    Test::TestFlashLFQ::TestPeakSplittingRightWithEmptyScan();
+
+    std::cout << ++i << ". TestToString TestPeakSplittingLeftWithEmptyScan " << std::endl;        
+    Test::TestFlashLFQ::TestPeakSplittingLeftWithEmptyScan();
+
+    std::cout << ++i << ".  TestToString " << std::endl;        
+    Test::TestFlashLFQ::TestToString();
+
+    std::cout << ++i << ". TestNotFound " << std::endl;        
+    Test::TestFlashLFQ::TestNotFound();
+
+    std::cout << ++i << ". TestMergePeaks " << std::endl;        
+    Test::TestFlashLFQ::TestMergePeaks();
+
+    std::cout << ++i << ". TestAmbiguous " << std::endl;        
+    Test::TestFlashLFQ::TestAmbiguous();
+
+    std::cout << ++i << ". TestPeakMerging " << std::endl;        
+    Test::TestFlashLFQ::TestPeakMerging();
+
+    std::cout << ++i << ". TestMatchBetweenRunsWithNoIdsInCommon " << std::endl;        
+    Test::TestFlashLFQ::TestMatchBetweenRunsWithNoIdsInCommon();
+#endif    
+
     return 0;
 }
+
 
 namespace Test
 {
@@ -392,636 +431,798 @@ namespace Test
         delete file1;
             }
 
-            
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestFlashLfqMatchBetweenRuns()
-//    public static void TestFlashLfqMatchBetweenRuns()
-    //        {
-    //            List<string> filesToWrite = new List<string> { "mzml_1", "mzml_2" };
-    //            List<string> pepSequences = new List<string> { "PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV" };
-    //            double intensity = 1e6;
-    //
-    //            double[] file1Rt = new double[] { 1.01, 1.02, 1.03, 1.04, 1.05 };
-    //            double[] file2Rt = new double[] { 1.015, 1.030, 1.039, 1.050, 1.065 };
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml files (5 peptides each)
-    //            for (int f = 0; f < filesToWrite.Count; f++)
-    //            {
-    //                // 1 MS1 scan per peptide
-    //                MsDataScan[] scans = new MsDataScan[5];
-    //
-    //                for (int p = 0; p < pepSequences.Count; p++)
-    //                {
-    //                    ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(pepSequences[p]).GetChemicalFormula();
-    //                    IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                    double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                    double[] intensities = dist.Intensities.Select(v => v * intensity).ToArray();
-    //                    double rt;
-    //                    if (f == 0)
-    //                    {
-    //                        rt = file1Rt[p];
-    //                    }
-    //                    else
-    //                    {
-    //                        rt = file2Rt[p];
-    //                    }
-    //
-    //                    // add the scan
-    //                    scans[p] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: rt, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (p + 1));
-    //                }
-    //
-    //                // write the .mzML
-    //                IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[f] + ".mzML"), false);
-    //            }
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
-    //            SpectraFileInfo file2 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[1] + ".mzML"), "a", 1, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //            Identification id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDE").MonoisotopicMass, file1Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEV").MonoisotopicMass, file1Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVV").MonoisotopicMass, file1Rt[2] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVV").MonoisotopicMass, file1Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVVV").MonoisotopicMass, file1Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            Identification id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDE").MonoisotopicMass, file2Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEV").MonoisotopicMass, file2Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            // missing ID 8 - MBR feature
-    //            Identification id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVV").MonoisotopicMass, file2Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVVV").MonoisotopicMass, file2Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1, id2, id3, id4, id5, id6, id7, id9, id10 }, matchBetweenRuns: true);
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //
-    //            Assert.That(results.Peaks[file2].Count == 5);
-    //            Assert.That(results.Peaks[file2].Where(p => p.IsMbrPeak).Count() == 1);
-    //
-    //            var peak = results.Peaks[file2].Where(p => p.IsMbrPeak).front();
-    //            var otherFilePeak = results.Peaks[file1].Where(p => p.Identifications.front().BaseSequence == peak.Identifications.First().BaseSequence).First();
-    //
-    //            Assert.That(peak.Intensity > 0);
-    //            Assert.That(peak.Intensity == otherFilePeak.Intensity);
-    //
-    //            Assert.That(results.Peaks[file1].Count == 5);
-    //            Assert.That(results.Peaks[file1].Where(p => p.IsMbrPeak).Count() == 0);
-    //
-    //            Assert.That(results.ProteinGroups["MyProtein"].GetIntensity(file1) > 0);
-    //            Assert.That(results.ProteinGroups["MyProtein"].GetIntensity(file2) > 0);
-    //        }
+#ifdef LATER            
+    void TestFlashLFQ::TestFlashLfqMatchBetweenRuns()
+    {
+        std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
+        std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
+        double intensity = 1e6;
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestFlashLfqMatchBetweenRunsProteinQuant()
-//    public static void TestFlashLfqMatchBetweenRunsProteinQuant()
-    //        {
-    //            List<string> filesToWrite = new List<string> { "mzml_1", "mzml_2" };
-    //            List<string> pepSequences = new List<string> { "PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV" };
-    //            double intensity = 1e6;
-    //
-    //            double[] file1Rt = new double[] { 1.01, 1.02, 1.03, 1.04, 1.05 };
-    //            double[] file2Rt = new double[] { 1.015, 1.030, 1.036, 1.050, 1.065 };
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml files (5 peptides each)
-    //            for (int f = 0; f < filesToWrite.Count; f++)
-    //            {
-    //                // 1 MS1 scan per peptide
-    //                MsDataScan[] scans = new MsDataScan[5];
-    //
-    //                for (int p = 0; p < pepSequences.Count; p++)
-    //                {
-    //                    ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(pepSequences[p]).GetChemicalFormula();
-    //                    IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                    double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                    double[] intensities = dist.Intensities.Select(v => v * intensity).ToArray();
-    //                    double rt;
-    //                    if (f == 0)
-    //                    {
-    //                        rt = file1Rt[p];
-    //                    }
-    //                    else
-    //                    {
-    //                        rt = file2Rt[p];
-    //                    }
-    //
-    //                    // add the scan
-    //                    scans[p] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: rt, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (p + 1));
-    //                }
-    //
-    //                // write the .mzML
-    //                IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[f] + ".mzML"), false);
-    //            }
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
-    //            SpectraFileInfo file2 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[1] + ".mzML"), "b", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //            var myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
-    //
-    //            Identification id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDE").MonoisotopicMass, file1Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEV").MonoisotopicMass, file1Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVV").MonoisotopicMass, file1Rt[2] + 0.001, 1, new List<ProteinGroup> { myMbrProteinGroup });
-    //            Identification id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVV").MonoisotopicMass, file1Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVVV").MonoisotopicMass, file1Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            Identification id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDE").MonoisotopicMass, file2Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEV").MonoisotopicMass, file2Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            // missing ID 8 - MBR feature
-    //            Identification id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVV").MonoisotopicMass, file2Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVVV").MonoisotopicMass, file2Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // test with top3 protein quant engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1, id2, id3, id4, id5, id6, id7, id9, id10 }, matchBetweenRuns: true);
-    //            var results = engine.Run();
-    //
-    //            Assert.That(results.ProteinGroups["MyMbrProtein"].GetIntensity(file1) > 0);
-    //            Assert.That(results.ProteinGroups["MyMbrProtein"].GetIntensity(file2) == 0);
-    //
-    //            // test with advanced protein quant engine
-    //            engine = new FlashLfqEngine(new List<Identification> { id1, id2, id3, id4, id5, id6, id7, id9, id10 }, matchBetweenRuns: true, advancedProteinQuant: true);
-    //            results = engine.Run();
-    //
-    //            Assert.That(results.ProteinGroups["MyMbrProtein"].GetIntensity(file1) > 0);
-    //            Assert.That(results.ProteinGroups["MyMbrProtein"].GetIntensity(file2) == 0);
-    //        }
+        std::vector<double> file1Rt = {1.01, 1.02, 1.03, 1.04, 1.05};
+        std::vector<double> file2Rt = {1.015, 1.030, 1.039, 1.050, 1.065};
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakSplittingLeft()
-//    public static void TestPeakSplittingLeft()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //
-    //            // 1 MS1 scan per peptide
-    //            MsDataScan[] scans = new MsDataScan[10];
-    //            double[] intensityMultipliers = { 1, 3, 1, 1, 3, 5, 10, 5, 3, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.7 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.6);
-    //            Assert.That(peak.SplitRT == 1.3);
-    //            Assert.That(!peak.IsotopicEnvelopes.Any(p => p.IndexedPeak.RetentionTime < 1.3));
-    //            Assert.That(peak.IsotopicEnvelopes.Count == 6);
-    //        }
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakSplittingRight()
-//    public static void TestPeakSplittingRight()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //
-    //            // 1 MS1 scan per peptide
-    //            MsDataScan[] scans = new MsDataScan[10];
-    //            double[] intensityMultipliers = { 1, 3, 5, 10, 5, 3, 1, 1, 3, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.3 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.3);
-    //            Assert.That(peak.SplitRT == 1.6);
-    //            Assert.That(!peak.IsotopicEnvelopes.Any(p => p.IndexedPeak.RetentionTime > 1.6));
-    //            Assert.That(peak.IsotopicEnvelopes.Count == 6);
-    //        }
+        // generate mzml files (5 peptides each)
+        for (int f = 0; f < filesToWrite.size(); f++) {
+            // 1 MS1 scan per peptide
+            std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakSplittingRightWithEmptyScan()
-//    public static void TestPeakSplittingRightWithEmptyScan()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //
-    //            // 1 MS1 scan per peptide
-    //            MsDataScan[] scans = new MsDataScan[10];
-    //            double[] intensityMultipliers = { 1, 3, 5, 10, 5, 3, 1, 1, 3, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                if (s == 7)
-    //                {
-    //                    mz = new[] { 401.0 };
-    //                    intensities = new[] { 1000.0 };
-    //                }
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.3 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.3);
-    //            Assert.That(peak.SplitRT == 1.6);
-    //            Assert.That(!peak.IsotopicEnvelopes.Any(p => p.IndexedPeak.RetentionTime > 1.6));
-    //            Assert.That(peak.IsotopicEnvelopes.Count == 6);
-    //        }
+            for (int p = 0; p < pepSequences.size(); p++) {
+                Proteomics::AminoAcidPolymer::Peptide tempVar(pepSequences[p]);
+                ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+                IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+                std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                        v::ToMz(1);
+                    })->ToArray();
+                std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                        return v * intensity;
+                    })->ToArray();
+                double rt;
+                if (f == 0) {
+                    rt = file1Rt[p];
+                }
+                else {
+                    rt = file2Rt[p];
+                }
+                // add the scan
+                MzSpectrum tempVar2(mz, intensities, false);
+                MzRange tempVar3(400, 1600);
+                scans[p] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: rt, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(p + 1));
+            }
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakSplittingLeftWithEmptyScan()
-//    public static void TestPeakSplittingLeftWithEmptyScan()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //
-    //            // 1 MS1 scan per peptide
-    //            MsDataScan[] scans = new MsDataScan[10];
-    //            double[] intensityMultipliers = { 1, 3, 1, 1, 3, 5, 10, 5, 3, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                if (s == 2)
-    //                {
-    //                    mz = new[] { 401.0 };
-    //                    intensities = new[] { 1000.0 };
-    //                }
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.3 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.6);
-    //            Assert.That(peak.SplitRT == 1.3);
-    //            Assert.That(!peak.IsotopicEnvelopes.Any(p => p.IndexedPeak.RetentionTime < 1.3));
-    //            Assert.That(peak.IsotopicEnvelopes.Count == 6);
-    //        }
+            // write the .mzML
+            FakeMsDataFile tempVar4(scans);
+            IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[f] + ".mzML"), false);
+        }
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestToString()
-//    public static void TestToString()
-    //        {
-    //            // many of these are just to check that the ToString methods don't cause crashes
-    //            var indexedPeak = new IndexedMassSpectralPeak(1.0, 2.0, 4, 5.0);
-    //            Assert.That(indexedPeak.ToString().Equals("1.000; 4"));
-    //
-    //            var spectraFile = new SpectraFileInfo("myFullPath", "", 0, 0, 0);
-    //            string spectraString = spectraFile.ToString();
-    //
-    //            var proteinGroup = new ProteinGroup("Accession", "Gene", "Organism");
-    //            string pgString = proteinGroup.ToString(new List<SpectraFileInfo> { spectraFile });
-    //
-    //            var identification = new Identification(spectraFile, "PEPTIDE", "PEPTIDE", 1.0, 2.0, 3, new List<ProteinGroup> { proteinGroup });
-    //            string idString = identification.ToString();
-    //
-    //            var chromPeak = new ChromatographicPeak(identification, false, spectraFile);
-    //            string chromPeakString = chromPeak.ToString();
-    //            chromPeak.CalculateIntensityForThisFeature(true);
-    //            string peakAfterCalculatingIntensity = chromPeak.ToString();
-    //        }
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
+        SpectraFileInfo *file2 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[1] + ".mzML"), "a", 1, 0, 0);
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestNotFound()
-//    public static void TestNotFound()
-    //        {
-    //            Peptide p = new Peptide("Seq", true);
-    //            var notFound = p.GetDetectionType(new SpectraFileInfo("", "", 0, 0, 0));
-    //            Assert.That(notFound == DetectionType.NotDetected);
-    //        }
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+        Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestMergePeaks()
-//    public static void TestMergePeaks()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //            MsDataScan[] scans = new MsDataScan[5];
-    //            double[] intensityMultipliers = { 1, 3, 1, 1, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                if (s == 2 || s == 3)
-    //                {
-    //                    mz = new[] { 401.0 };
-    //                    intensities = new[] { 1000.0 };
-    //                }
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.1 + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id2 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.4 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1, id2 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(results.Peaks.First().Value.Count == 1);
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.1);
-    //        }
+        Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIDE");
+        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIDEV");
+        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        // missing ID 8 - MBR feature
+        Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIDEVVV");
+        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIDEVVVV");
+        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestAmbiguous()
-//    public static void TestAmbiguous()
-    //        {
-    //            // get the raw file paths
-    //            SpectraFileInfo mzml = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagsliced-mzml.mzmlTangibleTempVerbatimCloseTag"), "a", 0, 1, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //            Identification id3 = new Identification(mzml, "EGFQVADGPLRY", "EGFQVADGPLRY", 1350.65681, 94.12193, 2, new List<ProteinGroup> { pg });
-    //            Identification id4 = new Identification(mzml, "EGFQVADGPLYR", "EGFQVADGPLYR", 1350.65681, 94.05811, 2, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id3, id4 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //
-    //            Assert.That(results.Peaks[mzml].Count == 1);
-    //            Assert.That(results.Peaks[mzml].First().Intensity > 0);
-    //            Assert.That(!results.Peaks[mzml].First().IsMbrPeak);
-    //            Assert.That(results.Peaks[mzml].First().NumIdentificationsByFullSeq == 2);
-    //            Assert.That(results.PeptideModifiedSequences["EGFQVADGPLYR"].GetIntensity(mzml) == 0);
-    //            Assert.That(results.PeptideModifiedSequences["EGFQVADGPLRY"].GetIntensity(mzml) == 0);
-    //            Assert.That(results.ProteinGroups["MyProtein"].GetIntensity(mzml) == 0);
-    //
-    //            // test peak output
-    //            results.WriteResults(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagpeaks.tsvTangibleTempVerbatimCloseTag"), Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagmodSeq.tsvTangibleTempVerbatimCloseTag"), Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagprotein.tsvTangibleTempVerbatimCloseTag"));
-    //        }
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestPeakMerging()
-//    public static void TestPeakMerging()
-    //        {
-    //            string fileToWrite = "myMzml.mzML";
-    //            string peptide = "PEPTIDE";
-    //            double intensity = 1e6;
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml file
-    //
-    //            // 1 MS1 scan per peptide
-    //            MsDataScan[] scans = new MsDataScan[10];
-    //            double[] intensityMultipliers = { 1, 3, 5, 10, 5, 3, 1, 1, 1, 1 };
-    //
-    //            for (int s = 0; s < scans.Length; s++)
-    //            {
-    //                ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(peptide).GetChemicalFormula();
-    //                IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                double[] intensities = dist.Intensities.Select(v => v * intensity * intensityMultipliers[s]).ToArray();
-    //
-    //                if (s == 7 || s == 8)
-    //                {
-    //                    mz = new[] { 401.0 };
-    //                    intensities = new[] { 1000.0 };
-    //                }
-    //
-    //                // add the scan
-    //                scans[s] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (s + 1));
-    //            }
-    //
-    //            // write the .mzML
-    //            IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), false);
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, fileToWrite), "", 0, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //
-    //            Identification id1 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.3 + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id2 = new Identification(file1, peptide, peptide, new Proteomics.AminoAcidPolymer.Peptide(peptide).MonoisotopicMass, 1.9 + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            // create the FlashLFQ engine
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1, id2 });
-    //
-    //            // run the engine
-    //            var results = engine.Run();
-    //            ChromatographicPeak peak = results.Peaks.First().Value.First();
-    //
-    //            Assert.That(peak.Apex.IndexedPeak.RetentionTime == 1.3);
-    //            Assert.That(peak.IsotopicEnvelopes.Count == 8);
-    //            Assert.That(results.Peaks.First().Value.Count == 1);
-    //        }
+        // run the engine
+        auto results = engine->Run();
 
-//C# TO C++ CONVERTER TODO TASK: Local functions are not converted by C# to C++ Converter:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public static void TestMatchBetweenRunsWithNoIdsInCommon()
-//    public static void TestMatchBetweenRunsWithNoIdsInCommon()
-    //        {
-    //            List<string> filesToWrite = new List<string> { "mzml_1", "mzml_2" };
-    //            List<string> pepSequences = new List<string> { "PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV" };
-    //            double intensity = 1e6;
-    //
-    //            double[] file1Rt = new double[] { 1.01, 1.02, 1.03, 1.04, 1.05 };
-    //            double[] file2Rt = new double[] { 1.015, 1.030, 1.036, 1.050, 1.065 };
-    //
-    //            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "TangibleTempVerbatimOpenTagelements.datTangibleTempVerbatimCloseTag"));
-    //
-    //            // generate mzml files (5 peptides each)
-    //            for (int f = 0; f < filesToWrite.Count; f++)
-    //            {
-    //                // 1 MS1 scan per peptide
-    //                MsDataScan[] scans = new MsDataScan[5];
-    //
-    //                for (int p = 0; p < pepSequences.Count; p++)
-    //                {
-    //                    ChemicalFormula cf = new Proteomics.AminoAcidPolymer.Peptide(pepSequences[p]).GetChemicalFormula();
-    //                    IsotopicDistribution dist = IsotopicDistribution.GetDistribution(cf, 0.125, 1e-8);
-    //                    double[] mz = dist.Masses.Select(v => v.ToMz(1)).ToArray();
-    //                    double[] intensities = dist.Intensities.Select(v => v * intensity).ToArray();
-    //                    double rt;
-    //                    if (f == 0)
-    //                    {
-    //                        rt = file1Rt[p];
-    //                    }
-    //                    else
-    //                    {
-    //                        rt = file2Rt[p];
-    //                    }
-    //
-    //                    // add the scan
-    //                    scans[p] = new MsDataScan(massSpectrum: new MzSpectrum(mz, intensities, false), oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity.Positive, retentionTime: rt, scanWindowRange: new MzRange(400, 1600), scanFilter: "f", mzAnalyzer: MZAnalyzerType.Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + (p + 1));
-    //                }
-    //
-    //                // write the .mzML
-    //                IO.MzML.MzmlMethods.CreateAndWriteMyMzmlWithCalibratedSpectra(new FakeMsDataFile(scans), Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[f] + ".mzML"), false);
-    //            }
-    //
-    //            // set up spectra file info
-    //            SpectraFileInfo file1 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
-    //            SpectraFileInfo file2 = new SpectraFileInfo(Path.Combine(TestContext.CurrentContext.TestDirectory, filesToWrite[1] + ".mzML"), "a", 1, 0, 0);
-    //
-    //            // create some PSMs
-    //            var pg = new ProteinGroup("MyProtein", "gene", "org");
-    //            var myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
-    //
-    //            Identification id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDE").MonoisotopicMass, file1Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEV").MonoisotopicMass, file1Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVV").MonoisotopicMass, file1Rt[2] + 0.001, 1, new List<ProteinGroup> { myMbrProteinGroup });
-    //            Identification id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVV").MonoisotopicMass, file1Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIDEVVVV").MonoisotopicMass, file1Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            Identification id6 = new Identification(file2, "PEPTIED", "PEPTIED", new Proteomics.AminoAcidPolymer.Peptide("PEPTIED").MonoisotopicMass, file2Rt[0] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id7 = new Identification(file2, "PEPTIEDV", "PEPTIEDV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIEDV").MonoisotopicMass, file2Rt[1] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            // missing ID 8 - MBR feature
-    //            Identification id9 = new Identification(file2, "PEPTIEDVVV", "PEPTIEDVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIEDVVV").MonoisotopicMass, file2Rt[3] + 0.001, 1, new List<ProteinGroup> { pg });
-    //            Identification id10 = new Identification(file2, "PEPTIEDVVVV", "PEPTIEDVVVV", new Proteomics.AminoAcidPolymer.Peptide("PEPTIEDVVVV").MonoisotopicMass, file2Rt[4] + 0.001, 1, new List<ProteinGroup> { pg });
-    //
-    //            FlashLfqEngine engine = new FlashLfqEngine(new List<Identification> { id1, id2, id3, id4, id5, id6, id7, id9, id10 }, matchBetweenRuns: true);
-    //            var results = engine.Run();
-    //
-    //            // no assertions - just don't crash
-    //        }
+        Assert::That(results->Peaks[file2]->Count == 5);
+        Assert::That(results->Peaks[file2].Where([&] (std::any p) {
+                    p::IsMbrPeak;
+                })->Count() == 1);
 
+        auto peak = results->Peaks[file2].Where([&] (std::any p) {
+                p::IsMbrPeak;
+            })->First();
+        auto otherFilePeak = results->Peaks[file1].Where([&] (std::any p) {
+                return p::Identifications::First()->BaseSequence == peak->Identifications.First()->BaseSequence;
+            })->First();
+
+        Assert::That(peak->Intensity > 0);
+        Assert::That(peak->Intensity == otherFilePeak->Intensity);
+
+        Assert::That(results->Peaks[file1]->Count == 5);
+        Assert::That(results->Peaks[file1].Where([&] (std::any p) {
+                    p::IsMbrPeak;
+                })->Count() == 0);
+
+        Assert::That(results->ProteinGroups["MyProtein"].GetIntensity(file1) > 0);
+        Assert::That(results->ProteinGroups["MyProtein"].GetIntensity(file2) > 0);
+
+        delete engine;
+        delete pg;
+        delete id1;
+        delete id2;
+        delete id3;
+        delete id4;
+        delete id5;
+        delete id6;
+        delete id7;
+        delete id8;
+        delete id9;
+        delete id10;
+        delete file1;
+        delete file2;
+    }
+
+    void TestFlashLFQ::TestFlashLfqMatchBetweenRunsProteinQuant()
+    {
+        std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
+        std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
+        double intensity = 1e6;
+
+        std::vector<double> file1Rt = {1.01, 1.02, 1.03, 1.04, 1.05};
+        std::vector<double> file2Rt = {1.015, 1.030, 1.036, 1.050, 1.065};
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml files (5 peptides each)
+        for (int f = 0; f < filesToWrite.size(); f++) {
+            // 1 MS1 scan per peptide
+            std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
+
+            for (int p = 0; p < pepSequences.size(); p++) {
+                Proteomics::AminoAcidPolymer::Peptide tempVar(pepSequences[p]);
+                ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+                IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+                std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                        v::ToMz(1);
+                    })->ToArray();
+                std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                        return v * intensity;
+                    })->ToArray();
+                double rt;
+                if (f == 0) {
+                    rt = file1Rt[p];
+                }
+                else {
+                    rt = file2Rt[p];
+                }
+
+                // add the scan
+                MzSpectrum tempVar2(mz, intensities, false);
+                MzRange tempVar3(400, 1600);
+                scans[p] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: rt, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(p + 1));
+            }
+
+            // write the .mzML
+            FakeMsDataFile tempVar4(scans);
+            IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[f] + ".mzML"), false);
+        }
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
+        SpectraFileInfo *file2 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[1] + ".mzML"), "b", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+        auto myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
+        Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
+        Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIDE");
+        Identification *id6 = new Identification(file2, "PEPTIDE", "PEPTIDE", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIDEV");
+        Identification *id7 = new Identification(file2, "PEPTIDEV", "PEPTIDEV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        // missing ID 8 - MBR feature
+        Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIDEVVV");
+        Identification *id9 = new Identification(file2, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIDEVVVV");
+        Identification *id10 = new Identification(file2, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // test with top3 protein quant engine
+        FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
+        auto results = engine->Run();
+
+        Assert::That(results->ProteinGroups["MyMbrProtein"].GetIntensity(file1) > 0);
+        Assert::That(results->ProteinGroups["MyMbrProtein"].GetIntensity(file2) == 0);
+
+        // test with advanced protein quant engine
+        engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true, advancedProteinQuant: true);
+        results = engine->Run();
+
+        Assert::That(results->ProteinGroups["MyMbrProtein"].GetIntensity(file1) > 0);
+        Assert::That(results->ProteinGroups["MyMbrProtein"].GetIntensity(file2) == 0);
+
+        delete engine;
+        delete pg;
+        delete id1;
+        delete id2;
+        delete id3;
+        delete id4;
+        delete id5;
+        delete id6;
+        delete id7;
+        delete id8;
+        delete id9;
+        delete id10;
+        delete file1;
+        delete file2;
+        delete myMbrProteinGroup;
+    }
+
+    void TestFlashLFQ::TestPeakSplittingLeft()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+
+        // 1 MS1 scan per peptide
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(10);
+        std::vector<double> intensityMultipliers = {1, 3, 1, 1, 3, 5, 10, 5, 3, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.7 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.6);
+        Assert::That(peak->SplitRT == 1.3);
+        Assert::That(!peak->IsotopicEnvelopes.Any([&] (std::any p) {
+                    return p::IndexedPeak::RetentionTime < 1.3;
+                }));
+        Assert::That(peak->IsotopicEnvelopes->Count == 6);
+
+        delete engine;
+        delete id1;
+        delete pg;
+        delete file1;
+    }
+
+    void TestFlashLFQ::TestPeakSplittingRight()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+
+        // 1 MS1 scan per peptide
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(10);
+        std::vector<double> intensityMultipliers = {1, 3, 5, 10, 5, 3, 1, 1, 3, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.3);
+        Assert::That(peak->SplitRT == 1.6);
+        Assert::That(!peak->IsotopicEnvelopes.Any([&] (std::any p) {
+                    return p::IndexedPeak::RetentionTime > 1.6;
+                }));
+        Assert::That(peak->IsotopicEnvelopes->Count == 6);
+
+        delete engine;
+        delete id1;
+        delete pg1;
+        delete file1;
+    }
+
+    void TestFlashLFQ::TestPeakSplittingRightWithEmptyScan()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+
+        // 1 MS1 scan per peptide
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(10);
+        std::vector<double> intensityMultipliers = {1, 3, 5, 10, 5, 3, 1, 1, 3, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            if (s == 7) {
+                mz = {401.0};
+                intensities = {1000.0};
+            }
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.3);
+        Assert::That(peak->SplitRT == 1.6);
+        Assert::That(!peak->IsotopicEnvelopes.Any([&] (std::any p) {
+                    return p::IndexedPeak::RetentionTime > 1.6;
+                }));
+        Assert::That(peak->IsotopicEnvelopes->Count == 6);
+
+        delete engine;
+        delete id1;
+        delete pg;
+        delete file1;
+    }
+    
+    void TestFlashLFQ::TestPeakSplittingLeftWithEmptyScan()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+
+        // 1 MS1 scan per peptide
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(10);
+        std::vector<double> intensityMultipliers = {1, 3, 1, 1, 3, 5, 10, 5, 3, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            if (s == 2) {
+                mz = {401.0};
+                intensities = {1000.0};
+            }
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.6);
+        Assert::That(peak->SplitRT == 1.3);
+        Assert::That(!peak->IsotopicEnvelopes.Any([&] (std::any p) {
+                    return p::IndexedPeak::RetentionTime < 1.3;
+                }));
+        Assert::That(peak->IsotopicEnvelopes->Count == 6);
+
+        delete engine;
+        delete id1;
+        delete pg;
+        delete file1;
+    }
+
+    void TestFlashLFQ::TestToString()
+    {
+        // many of these are just to check that the ToString methods don't cause crashes
+        auto indexedPeak = new IndexedMassSpectralPeak(1.0, 2.0, 4, 5.0);
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        Assert::That(indexedPeak->ToString()->Equals("1.000; 4"));
+
+        auto spectraFile = new SpectraFileInfo("myFullPath", "", 0, 0, 0);
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        std::string spectraString = spectraFile->ToString();
+
+        auto proteinGroup = new ProteinGroup("Accession", "Gene", "Organism");
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+        std::string pgString = proteinGroup->ToString(std::vector<SpectraFileInfo*> {spectraFile});
+
+        auto identification = new Identification(spectraFile, "PEPTIDE", "PEPTIDE", 1.0, 2.0, 3, std::vector<ProteinGroup*> {proteinGroup});
+        std::string idString = identification->ToString();
+
+        auto chromPeak = new ChromatographicPeak(identification, false, spectraFile);
+        std::string chromPeakString = chromPeak->ToString();
+        chromPeak->CalculateIntensityForThisFeature(true);
+        std::string peakAfterCalculatingIntensity = chromPeak->ToString();
+
+        delete chromPeak;
+        delete identification;
+        delete proteinGroup;
+        delete spectraFile;
+        delete indexedPeak;
+        
+    }
+
+    void TestFlashLFQ::TestNotFound()
+    {
+        Peptide *p = new Peptide("Seq", true);
+        SpectraFileInfo tempVar("", "", 0, 0, 0);
+        auto notFound = p->GetDetectionType(&tempVar);
+        Assert::That(notFound == DetectionType::NotDetected);
+
+        delete p;        
+    }
+
+    void TestFlashLFQ::TestMergePeaks()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
+        std::vector<double> intensityMultipliers = {1, 3, 1, 1, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            if (s == 2 || s == 3) {
+                mz = {401.0};
+                intensities = {1000.0};
+            }
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.1 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar6(peptide);
+        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->MonoisotopicMass, 1.4 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1, id2});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(results->Peaks.First()->Value->Count == 1);
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.1);
+
+        delete engine;
+        delete id1;
+        delete id2;
+        delete pg;
+        delete file1;
+    }
+
+    void TestFlashLFQ::TestAmbiguous()
+    {
+        // get the raw file paths
+        SpectraFileInfo *mzml = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(sliced-mzml.mzml)"), "a", 0, 1, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+        Identification *id3 = new Identification(mzml, "EGFQVADGPLRY", "EGFQVADGPLRY", 1350.65681, 94.12193, 2, std::vector<ProteinGroup*> {pg});
+        Identification *id4 = new Identification(mzml, "EGFQVADGPLYR", "EGFQVADGPLYR", 1350.65681, 94.05811, 2, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id3, id4});
+
+        // run the engine
+        auto results = engine->Run();
+
+        Assert::That(results->Peaks[mzml]->Count == 1);
+        Assert::That(results->Peaks[mzml].First()->Intensity > 0);
+        Assert::That(!results->Peaks[mzml].First()->IsMbrPeak);
+        Assert::That(results->Peaks[mzml].First()->NumIdentificationsByFullSeq == 2);
+        Assert::That(results->PeptideModifiedSequences["EGFQVADGPLYR"].GetIntensity(mzml) == 0);
+        Assert::That(results->PeptideModifiedSequences["EGFQVADGPLRY"].GetIntensity(mzml) == 0);
+        Assert::That(results->ProteinGroups["MyProtein"].GetIntensity(mzml) == 0);
+
+        // test peak output
+        results->WriteResults(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(peaks.tsv)"), FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(modSeq.tsv)"), FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(protein.tsv)"));
+
+        delete engine;
+        delete id3;
+        delete id4;
+        delete pg;
+        delete mzml;
+    }
+    
+    void TestFlashLFQ::TestPeakMerging()
+    {
+        std::string fileToWrite = "myMzml.mzML";
+        std::string peptide = "PEPTIDE";
+        double intensity = 1e6;
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml file
+
+        // 1 MS1 scan per peptide
+        std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(10);
+        std::vector<double> intensityMultipliers = {1, 3, 5, 10, 5, 3, 1, 1, 1, 1};
+
+        for (int s = 0; s < scans.size(); s++) {
+            Proteomics::AminoAcidPolymer::Peptide tempVar(peptide);
+            ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+            IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+            std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                    v::ToMz(1);
+                })->ToArray();
+            std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                    return v * intensity * intensityMultipliers[s];
+                })->ToArray();
+
+            if (s == 7 || s == 8) {
+                mz = {401.0};
+                intensities = {1000.0};
+            }
+
+            // add the scan
+            MzSpectrum tempVar2(mz, intensities, false);
+            MzRange tempVar3(400, 1600);
+            scans[s] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: s + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: 1.0 + s / 10.0, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(s + 1));
+        }
+
+        // write the .mzML
+        FakeMsDataFile tempVar4(scans);
+        IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), false);
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, fileToWrite), "", 0, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5(peptide);
+        Identification *id1 = new Identification(file1, peptide, peptide, (&tempVar5)->MonoisotopicMass, 1.3 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar6(peptide);
+        Identification *id2 = new Identification(file1, peptide, peptide, (&tempVar6)->MonoisotopicMass, 1.9 + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        // create the FlashLFQ engine
+        FlashLfqEngine *engine = new FlashLfqEngine(std::vector<Identification*> {id1, id2});
+
+        // run the engine
+        auto results = engine->Run();
+        ChromatographicPeak *peak = results->Peaks.First()->Value->First();
+
+        Assert::That(peak->Apex.IndexedPeak->RetentionTime == 1.3);
+        Assert::That(peak->IsotopicEnvelopes->Count == 8);
+        Assert::That(results->Peaks.First()->Value->Count == 1);
+
+        delete engine;
+        delete id1;
+        delete id2;
+        delete pg;
+        delete file1;
+    }
+
+    void TestFlashLFQ::TestMatchBetweenRunsWithNoIdsInCommon()
+    {
+        std::vector<std::string> filesToWrite = {"mzml_1", "mzml_2"};
+        std::vector<std::string> pepSequences = {"PEPTIDE", "PEPTIDEV", "PEPTIDEVV", "PEPTIDEVVV", "PEPTIDEVVVV"};
+        double intensity = 1e6;
+
+        std::vector<double> file1Rt = {1.01, 1.02, 1.03, 1.04, 1.05};
+        std::vector<double> file2Rt = {1.015, 1.030, 1.036, 1.050, 1.065};
+
+        Loaders::LoadElements(FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(elements.dat)"));
+
+        // generate mzml files (5 peptides each)
+        for (int f = 0; f < filesToWrite.size(); f++) {
+            // 1 MS1 scan per peptide
+            std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
+
+            for (int p = 0; p < pepSequences.size(); p++) {
+                Proteomics::AminoAcidPolymer::Peptide tempVar(pepSequences[p]);
+                ChemicalFormula *cf = (&tempVar)->GetChemicalFormula();
+                IsotopicDistribution *dist = IsotopicDistribution::GetDistribution(cf, 0.125, 1e-8);
+                std::vector<double> mz = dist->Masses->Select([&] (std::any v) {
+                        v::ToMz(1);
+                    })->ToArray();
+                std::vector<double> intensities = dist->Intensities->Select([&] (std::any v) {
+                        return v * intensity;
+                    })->ToArray();
+                double rt;
+                if (f == 0) {
+                    rt = file1Rt[p];
+                }
+                else {
+                    rt = file2Rt[p];
+                }
+
+                // add the scan
+                MzSpectrum tempVar2(mz, intensities, false);
+                MzRange tempVar3(400, 1600);
+                scans[p] = new MsDataScan(massSpectrum: &tempVar2, oneBasedScanNumber: p + 1, msnOrder: 1, isCentroid: true, polarity: Polarity::Positive, retentionTime: rt, scanWindowRange: &tempVar3, scanFilter: "f", mzAnalyzer: MZAnalyzerType::Orbitrap, totalIonCurrent: intensities.Sum(), injectionTime: 1.0, noiseData: nullptr, nativeId: "scan=" + std::to_string(p + 1));
+            }
+
+            // write the .mzML
+            FakeMsDataFile tempVar4(scans);
+            IO::MzML::MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(&tempVar4, FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[f] + ".mzML"), false);
+        }
+
+        // set up spectra file info
+        SpectraFileInfo *file1 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[0] + ".mzML"), "a", 0, 0, 0);
+        SpectraFileInfo *file2 = new SpectraFileInfo(FileSystem::combine(TestContext::CurrentContext->TestDirectory, filesToWrite[1] + ".mzML"), "a", 1, 0, 0);
+
+        // create some PSMs
+        auto pg = new ProteinGroup("MyProtein", "gene", "org");
+        auto myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
+        auto myMbrProteinGroup = new ProteinGroup("MyMbrProtein", "MbrGene", "org");
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar5("PEPTIDE");
+        Identification *id1 = new Identification(file1, "PEPTIDE", "PEPTIDE", (&tempVar5)->MonoisotopicMass, file1Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar6("PEPTIDEV");
+        Identification *id2 = new Identification(file1, "PEPTIDEV", "PEPTIDEV", (&tempVar6)->MonoisotopicMass, file1Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar7("PEPTIDEVV");
+        Identification *id3 = new Identification(file1, "PEPTIDEVV", "PEPTIDEVV", (&tempVar7)->MonoisotopicMass, file1Rt[2] + 0.001, 1, std::vector<ProteinGroup*> {myMbrProteinGroup});
+        Proteomics::AminoAcidPolymer::Peptide tempVar8("PEPTIDEVVV");
+        Identification *id4 = new Identification(file1, "PEPTIDEVVV", "PEPTIDEVVV", (&tempVar8)->MonoisotopicMass, file1Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar9("PEPTIDEVVVV");
+        Identification *id5 = new Identification(file1, "PEPTIDEVVVV", "PEPTIDEVVVV", (&tempVar9)->MonoisotopicMass, file1Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        Proteomics::AminoAcidPolymer::Peptide tempVar10("PEPTIED");
+        Identification *id6 = new Identification(file2, "PEPTIED", "PEPTIED", (&tempVar10)->MonoisotopicMass, file2Rt[0] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar11("PEPTIEDV");
+        Identification *id7 = new Identification(file2, "PEPTIEDV", "PEPTIEDV", (&tempVar11)->MonoisotopicMass, file2Rt[1] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        // missing ID 8 - MBR feature
+        Proteomics::AminoAcidPolymer::Peptide tempVar12("PEPTIEDVVV");
+        Identification *id9 = new Identification(file2, "PEPTIEDVVV", "PEPTIEDVVV", (&tempVar12)->MonoisotopicMass, file2Rt[3] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+        Proteomics::AminoAcidPolymer::Peptide tempVar13("PEPTIEDVVVV");
+        Identification *id10 = new Identification(file2, "PEPTIEDVVVV", "PEPTIEDVVVV", (&tempVar13)->MonoisotopicMass, file2Rt[4] + 0.001, 1, std::vector<ProteinGroup*> {pg});
+
+        FlashLfqEngine *engine = new FlashLfqEngine({id1, id2, id3, id4, id5, id6, id7, id9, id10}, matchBetweenRuns: true);
+        auto results = engine->Run();
+
+        // no assertions - just don't crash
+
+        delete engine;
+        delete id1;
+        delete id2;
+        delete id3;
+        delete id4;
+        delete id5;
+        delete id6;
+        delete id7;
+        delete id8;
+        delete id9;
+        delete id10;
+        delete file1;
+        delete file2;
+        delete pg;
+        delete myMbrProteinGroup;    
+    }
+#endif
 }
