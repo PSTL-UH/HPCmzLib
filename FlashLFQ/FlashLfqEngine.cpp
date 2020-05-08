@@ -132,14 +132,11 @@ namespace FlashLFQ
 
     FlashLfqResults *FlashLfqEngine::Run()
     {
-        //_globalStopwatch->Start();
-        _ms1Scans = std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>>();
-
         _results = new FlashLfqResults(_spectraFileInfo);
 
         // build m/z index keys
         CalculateTheoreticalIsotopeDistributions();
-
+        
         // quantify each file
         for (auto spectraFile : _spectraFileInfo)
         {
@@ -231,8 +228,6 @@ namespace FlashLFQ
 
     void FlashLfqEngine::CalculateTheoreticalIsotopeDistributions()
     {
-        _baseSequenceToIsotopicDistribution = std::unordered_map<std::string, std::vector<std::tuple<double, double>>>();
-
         // calculate monoisotopic masses and isotopic envelope
         for (auto id : _allIdentifications)
         {
@@ -1056,7 +1051,7 @@ namespace FlashLFQ
 #endif
         auto tempvec = _results->Peaks[spectraFile];
         std::sort(tempvec.begin(), tempvec.end(), [&] ( auto l, auto r ) {
-                return l->IsMbrPeak < r->IsMbrPeak;
+                return l->IsMbrPeak > r->IsMbrPeak;
             });
         
         for ( ChromatographicPeak *tryPeak : tempvec )

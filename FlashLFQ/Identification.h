@@ -20,9 +20,6 @@ namespace FlashLFQ
         const double monoisotopicMass;
         SpectraFileInfo *const fileInfo;
         const int precursorChargeState;
-        //C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which
-        // allows modification of internal state:
-        //ORIGINAL LINE: public readonly HashSet<ProteinGroup> proteinGroups;
         std::unordered_set<ProteinGroup*> proteinGroups;
         ChemicalFormula *const OptionalChemicalFormula;
         const bool UseForProteinQuant;
@@ -42,5 +39,6 @@ namespace FlashLFQ
                        bool useForProteinQuant = true);
 
         std::string ToString();
+        bool Equals( Identification *other );
     };
 }

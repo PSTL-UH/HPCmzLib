@@ -3,6 +3,8 @@
 #include "ProteinGroup.h"
 #include "../Chemistry/ChemicalFormula.h"
 
+#include <iostream>
+
 using namespace Chemistry;
 
 namespace FlashLFQ
@@ -29,5 +31,16 @@ namespace FlashLFQ
     std::string Identification::ToString()
     {
         return ModifiedSequence;
+    }
+
+    bool Identification::Equals( Identification *other )
+    {
+        return this->BaseSequence == other->BaseSequence      &&
+            this->ModifiedSequence == other->ModifiedSequence &&
+            this->monoisotopicMass == other->monoisotopicMass &&
+            this->fileInfo->Equals(other->fileInfo);
+
+        //  this->ms2RetentionTimeInMinutes == other->ms2RetentionTimeInMinutes &&
+
     }
 }

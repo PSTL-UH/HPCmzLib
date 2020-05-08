@@ -201,7 +201,7 @@ public:
         {
             std::string output;
             
-            for ( auto s = source.begin(); s == source.end(); s++ ) {
+            for ( auto s = source.begin(); s != source.end(); s++ ) {
                 auto r = s + 1;
                 if ( r == source.end() ) {
                     output += (*s);

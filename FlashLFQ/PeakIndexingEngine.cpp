@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <typeinfo>
 #include <algorithm>
 #include <experimental/filesystem>
@@ -62,7 +63,7 @@ namespace FlashLFQ
                 // arguments:  const std::string &filePath, FilteringParams *filterParams, int maxThreads
                 msDataScans = Mzml::LoadAllStaticData(fileInfo->FullFilePathWithExtension)->GetAllScansList();
                 std::sort(msDataScans.begin(), msDataScans.end(), [&] (MsDataScan *l, MsDataScan *r)  {
-                        return l->getOneBasedScanNumber() > r->getOneBasedScanNumber();
+                        return l->getOneBasedScanNumber() < r->getOneBasedScanNumber();
                     });
             }
 #ifdef ORIG
@@ -88,7 +89,7 @@ namespace FlashLFQ
                 return false;
             }
             
-
+                
             for (int i = 0; i < (int)msDataScans.size(); i++)
             {
                 if (msDataScans[i]->getMsnOrder() > 1)
@@ -193,7 +194,7 @@ namespace FlashLFQ
 
             scanIndex++;
         }
-
+        
         _ms1Scans.emplace(fileInfo, scanInfo);
 
         if ( _indexedPeaks.empty() )

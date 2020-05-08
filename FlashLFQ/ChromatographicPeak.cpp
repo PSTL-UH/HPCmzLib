@@ -214,12 +214,6 @@ namespace FlashLFQ
     {
         if (otherFeature != this)
         {
-#ifdef ORIG
-            auto thisFeaturesPeaks = std::unordered_set<IndexedMassSpectralPeak*>(IsotopicEnvelopes.Select([&] (std::any p)
-            {
-                p::IndexedPeak;
-            }));
-#endif
             std::unordered_set<IndexedMassSpectralPeak*> thisFeaturesPeaks;
             for ( auto p : IsotopicEnvelopes ) {
                 thisFeaturesPeaks.insert(p->IndexedPeak);
@@ -232,7 +226,7 @@ namespace FlashLFQ
             for ( auto p: this->getIdentifications() ) {
                 bool found = false;
                 for ( auto q: *v ) {
-                    if ( p == q ) {
+                    if ( p->Equals(q) ) {
                         found = true;
                         break;
                     }
@@ -244,7 +238,7 @@ namespace FlashLFQ
             for ( auto p: otherFeature->getIdentifications() ) {
                 bool found = false;
                 for ( auto q: *v ) {
-                    if ( p == q ) {
+                    if ( p->Equals(q) ) {
                         found = true;
                         break;
                     }

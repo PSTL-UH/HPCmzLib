@@ -33,7 +33,7 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestFlashLfqNormalization" << std::endl;
     Test::TestFlashLFQ::TestFlashLfqNormalization();
-    
+
 #ifdef LATER
     std::cout << ++i << ". TestFlashLfqAdvancedProteinQuant" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqAdvancedProteinQuant();    
@@ -68,7 +68,8 @@ namespace Test
 
         // create the FlashLFQ engine
         std::vector<FlashLFQ::Identification*> iv = {id1, id2, id3, id4 };
-        FlashLfqEngine *engine = new FlashLfqEngine(iv, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, false, "", 2.5, -1);
+        FlashLfqEngine *engine = new FlashLfqEngine(iv, true, false, false, 10.0, 5.0, 5.0, false,
+                                                    2, false, true, true, "", 2.5, -1);
 
         // run the engine
         auto results = engine->Run();
@@ -130,7 +131,7 @@ namespace Test
 
         // create the FlashLFQ engine
         std::vector<FlashLFQ::Identification*> iv = {id1, id2};
-        FlashLfqEngine tempVar(iv, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, false, "", 2.5, -1);
+        FlashLfqEngine tempVar(iv, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, true, "", 2.5, -1);
         auto results = (&tempVar)->Run();
 
         // check that biorep normalization worked
@@ -149,7 +150,7 @@ namespace Test
         id2 = new Identification(mzml, "EGFQVADGPLYR", "EGFQVADGPLYR", 1350.65681, 94.12193, 2, v4 );
 
         std::vector<FlashLFQ::Identification*> iv2 = {id1, id2};
-        FlashLfqEngine tempVar2(iv2, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, false, "", 2.5, -1);
+        FlashLfqEngine tempVar2(iv2, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, true, "", 2.5, -1);
         results = (&tempVar2)->Run();
 
         int int3 = static_cast<int>(std::round(results->Peaks[mzml].front()->Intensity * std::pow(10, 0))) / std::pow(10, 0);
@@ -167,7 +168,7 @@ namespace Test
         id2 = new Identification(mzml, "EGFQVADGPLYR", "EGFQVADGPLYR", 1350.65681, 94.12193, 2, v6 );
         
         std::vector<FlashLFQ::Identification*> iv3 = {id1, id2 };
-        FlashLfqEngine tempVar3(iv3, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, false, "", 2.5, -1);
+        FlashLfqEngine tempVar3(iv3, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, true, "", 2.5, -1);
         results = (&tempVar3)->Run();
 
         int int5 = static_cast<int>(std::round(results->Peaks[mzml].front()->Intensity * std::pow(10, 0))) / std::pow(10, 0);
@@ -194,7 +195,7 @@ namespace Test
         auto id4 = new Identification(mzml2, "EGFQVADGPLYR", "EGFQVADGPLYR", 1350.65681, 94.12193, 2, v10 );
 
         std::vector<FlashLFQ::Identification*> iv4 = {id1, id2, id3, id4 };
-        FlashLfqEngine tempVar4(iv4, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, false, "", 2.5, -1);
+        FlashLfqEngine tempVar4(iv4, true, false, false, 10.0, 5.0, 5.0, false, 2, false, true, true, "", 2.5, -1);
         results = (&tempVar4)->Run();
 
         //int int7 = static_cast<int>(BankersRounding::round(results->PeptideModifiedSequences["EGFQVADGPLYR"]->GetIntensity(raw) + results->PeptideModifiedSequences["EGFQVADGPLYR"]->GetIntensity(raw2)));

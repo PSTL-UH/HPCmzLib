@@ -114,14 +114,15 @@ namespace FlashLFQ
                             found = true;
                             v.push_back(p);
                         }
-                        if ( !found ) {
-                            std::vector<ChromatographicPeak*> *t = new std::vector<ChromatographicPeak*>;
-                            t->push_back(p);
-                            groupedPeaks.push_back(*t);                            
-                        }
+                    }
+                    if ( !found ) {
+                        std::vector<ChromatographicPeak*> *t = new std::vector<ChromatographicPeak*>;
+                        t->push_back(p);
+                        groupedPeaks.push_back(*t);                            
                     }
                 }
             }
+            
             
             for (auto sequenceWithPeaks : groupedPeaks)
             {
