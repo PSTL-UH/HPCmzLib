@@ -148,6 +148,7 @@ namespace FlashLFQ
         for ( auto p: results->SpectraFiles ) {
             if ( p->Fraction != 0 ) {
                 all_are_zero = false;
+                break;
             }
         }
         if ( all_are_zero )
@@ -155,12 +156,6 @@ namespace FlashLFQ
             return;
         }
 
-#ifdef ORIG
-        auto peptides = results->PeptideModifiedSequences.Select([&] (std::any v)
-        {
-            v->Value;
-        }).ToList();
-#endif
         std::vector<Peptide*> peptides;
         for ( auto v: results->PeptideModifiedSequences ) {
             peptides.push_back(std::get<1>(v));
@@ -189,13 +184,7 @@ namespace FlashLFQ
             }            
         }
         std::sort ( conditions.begin(), conditions.end() );
-        
-#ifdef ORIG
-        auto filesForCond1Biorep1 = results->SpectraFiles.Where([&] (std::any p)
-        {
-            return p->Condition == conditions[0] && p->BiologicalReplicate == 0 && p->TechnicalReplicate == 0;
-        }).ToList();
-#endif
+
         std::vector<SpectraFileInfo*> filesForCond1Biorep1;
         for ( auto p: results->SpectraFiles ) {
             if ( p->Condition == conditions[0] && p->BiologicalReplicate == 0 &&
@@ -207,12 +196,6 @@ namespace FlashLFQ
         
         for (auto condition : conditions)
         {
-#ifdef ORIG
-            auto filesForThisCondition = results->SpectraFiles.Where([&] (std::any p)
-            {
-                p::Condition->Equals(condition);
-            }).ToList();
-#endif
             std::vector<SpectraFileInfo*> filesForThisCondition;
             for ( auto p: results->SpectraFiles ) {
                 if ( p->Condition == condition ) {
@@ -245,15 +228,7 @@ namespace FlashLFQ
             for (int b = 0; b < numB; b++)
             {
                 // condition 1 biorep 1 is the reference, don't normalize it
-                // if (b == 0 && conditions.find(condition) == 0)
-                bool cond_found = false;
-                for ( auto c: conditions ) {
-                    if ( c == condition ) {
-                        cond_found = true;
-                        break;
-                    }
-                }
-                if (b == 0 && !cond_found )
+                if (b == 0 && conditions[0] == condition )
                 {
                     continue;
                 }
@@ -338,9 +313,6 @@ namespace FlashLFQ
 
                 // add the data to the array to set up for the normalization function
                 int numP = seenInBothBioreps.size();
-                //C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper class
-                // reproduces the rectangular array initialization that is automatic in C#:
-                //ORIGINAL LINE: double[,,] myIntensityArray = new double[numP, 2, numF];
                 std::vector<std::vector<std::vector<double>>> myIntensityArray = RectangularVectors::RectangularDoubleVector(numP, 2, numF);
 
                 for (int p = 0; p < numP; p++)

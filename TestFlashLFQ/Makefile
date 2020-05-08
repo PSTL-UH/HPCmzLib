@@ -23,7 +23,10 @@ cxxtests: $(CEXECS)
 ### CXXTESTS                                                                                      ###
 ###################################################################################################
 TestFlashLFQ: TestFlashLFQ.o 
-	$(CXX) $^ -o $@ $(LDFLAGS)
+TestFlashLFQ: TestFlashLFQ.o
+	$(CXX) $(CXXFLAGS) -c ../Test/FakeMsDataFile.cpp
+	$(CXX) $^ -o $@ FakeMsDataFile.o $(LDFLAGS)
+
 ###################################################################################################
 
 
