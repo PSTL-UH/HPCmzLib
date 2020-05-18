@@ -3,6 +3,8 @@
 #include "../Proteomics/ProteolyticDigestion/ProteinDigestion.h"
 using namespace Proteomics::ProteolyticDigestion;
 
+#include <string>
+
 namespace UsefulProteomicsDatabases
 {
     enum class DecoyType
@@ -35,4 +37,21 @@ namespace UsefulProteomicsDatabases
         /// </summary>
         Random
     };
+
+    static std::string DecoyTypeToString( DecoyType &t ) {
+        std::string s;
+
+        if ( t == DecoyType::None ) 
+            s = "None";
+        else if ( t == DecoyType::Reverse ) 
+            s = "Reverse";
+        else if ( t == DecoyType::Slide ) 
+            s = "Slide";
+        else if ( t == DecoyType::Shuffle )
+            s = "Shuffle";
+        else if (t == DecoyType::Random )
+            s = "Random";
+
+        return s;
+    }
 }

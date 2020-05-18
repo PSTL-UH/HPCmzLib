@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <string>
+
 namespace Proteomics
 {
     namespace Fragmentation
@@ -41,5 +43,42 @@ namespace Proteomics
             D //this is a diagnostic ion
         };
 
+        static std::string ProductTypeToString(ProductType &t)
+        {
+            std::string s;
+
+            if ( t == ProductType::a )
+                s = "a";
+            else if ( t == ProductType::aStar )
+                s = "aStar";
+            else if ( t == ProductType::aDegree )
+                s = "aDegree";
+            else if ( t == ProductType::b )
+                s = "b";
+            else if ( t == ProductType::bStar )
+                s = "bStar";
+            else if ( t == ProductType::bDegree )
+                s = "bDegree";
+            else if ( t == ProductType::c )
+                s = "c";
+            else if ( t == ProductType::x )
+                s = "x";
+            else if ( t == ProductType::y )
+                s = "y";
+            else if ( t == ProductType::yStar )
+                s = "yStar";
+            else if ( t == ProductType::yDegree )
+                s = "yDegree";
+            else if ( t == ProductType::zPlusOne )
+                s = "zPlusOne";
+            else if ( t == ProductType::zDot )
+                s = "zDot";
+            else if ( t == ProductType::M )
+                s = "M";
+            else if ( t == ProductType::D )
+                s = "D";
+
+            return s;
+        }
     }
 }
