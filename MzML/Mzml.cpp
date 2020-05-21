@@ -25,16 +25,6 @@ using namespace xercesc_3_1;
 
 #include <stdio.h>
 
-void print_chars (char * c_ptr, int len )
-{
-    while ( len > 0 )
-    {
-        printf ( " %2.2x", (0xff&(int)*c_ptr++));
-        len--;
-    }
-    printf ( "\n" );
-}
-
 namespace IO
 {
     namespace MzML
@@ -119,9 +109,13 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             MassSpectrometry::SourceFile *sourceFile;
 
-            if (_mzMLConnection->fileDescription().sourceFileList() != nullptr && 
-                !_mzMLConnection->fileDescription().sourceFileList().get().sourceFile().empty() &&
-                !_mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0].cvParam().empty())
+            //two function calls
+            auto connection = _mzMLConnection->fileDescription().sourceFileList();
+
+            //reduced from 4 repetitive function calls using connection ptr
+            if (connection != nullptr && 
+                !connection.get().sourceFile().empty() &&
+                !connection->sourceFile()[0].cvParam().empty())
              {
                 auto simpler = _mzMLConnection->fileDescription().sourceFileList()->sourceFile()[0];
                 std::string nativeIdFormat = "";
@@ -252,9 +246,12 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
         {
             // Read in the instrument configuration types from connection (in mzml it's at the start)
             std::vector<ms::mzml::InstrumentConfigurationType> configs;
-            for (long unsigned int i = 0; i < _mzMLConnection->instrumentConfigurationList().instrumentConfiguration().size(); i++)
+
+            //removed repetitive runction calls in for loop using instrument _config 
+            auto instrument_config = _mzMLConnection->instrumentConfigurationList().instrumentConfiguration();
+            for (long unsigned int i = 0; i < instrument_config.size(); i++)
             {
-                configs.push_back(_mzMLConnection->instrumentConfigurationList().instrumentConfiguration()[i]);
+                configs.push_back(instrument_config[i]);
             }
 
             auto defaultInstrumentConfig = _mzMLConnection->run().defaultInstrumentConfigurationRef();
@@ -494,9 +491,12 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             DissociationType dissociationType = DissociationType::Unknown;
-            if (!_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam().empty())
+
+            //removed 16 repetitive function calls with current_spectrum
+            auto current_spectrum = _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1];
+            if (!current_spectrum.precursorList()->precursor()[0].activation().cvParam().empty())
             {
-                for (ms::mzml::CVParamType cv : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].activation().cvParam())
+                for (ms::mzml::CVParamType cv : current_spectrum.precursorList()->precursor()[0].activation().cvParam())
                 {
                     std::unordered_map<std::string, DissociationType>::const_iterator dissociationDictionary_iterator = dissociationDictionary.find(cv.accession());
                     if (dissociationDictionary_iterator != dissociationDictionary.end()){
@@ -505,9 +505,9 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
                 }
             }
             std::optional<double> monoisotopicMz;
-            if (!_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam().empty())
+            if (!current_spectrum.scanList()->scan()[0].userParam().empty())
             {
-                for (auto userParam : _mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].scanList()->scan()[0].userParam())
+                for (auto userParam : current_spectrum.scanList()->scan()[0].userParam())
                 {
 
                     std::string fullstring = userParam.name();
@@ -520,7 +520,7 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             }
 
             std::optional<int> precursorScanNumber;
-            if (_mzMLConnection->run().spectrumList().get().spectrum()[oneBasedIndex - 1].precursorList()->precursor()[0].spectrumRef() == nullptr)
+            if (current_spectrum.precursorList()->precursor()[0].spectrumRef() == nullptr)
             {
                 precursorScanNumber = std::nullopt;
             }
@@ -610,19 +610,24 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
             int length = bytes_size / size;
             std::vector<double> convertedArray(length);
 
-            for (int i = 0; i < length; i++)
+            //optimization switched if statement and for loops
+            BitConverter bc;
+            if (is32bit)
             {
-                if (is32bit)
+                for (int i = 0; i < length; i++)
                 {
-                    BitConverter bc;
                     convertedArray[i] = bc.toSingle(bytes, i*size);
                 }
-                else
+
+            }
+            else
+            {
+                for (int i = 0; i < length; i++)
                 {
-                    BitConverter bc;
                     convertedArray[i] = bc.toDouble(bytes, i*size);
                 }
             }
+
             free(out_stream);
             return convertedArray;
         }

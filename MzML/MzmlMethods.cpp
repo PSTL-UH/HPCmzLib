@@ -114,32 +114,39 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             ms::mzml::SourceFileListType tempVar8 = ms::mzml::SourceFileListType(1);
 
-            if (myMsDataFile->getSourceFile()->getNativeIdFormat() != "" && myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat() != "" && myMsDataFile->getSourceFile()->getFileChecksumType() != "")
-            {
-                std::string idName = isdigit(myMsDataFile->getSourceFile()->getFileName()[0]) ? "id:" + myMsDataFile->getSourceFile()->getFileName()[0] : myMsDataFile->getSourceFile()->getFileName();
+            //removed 13 repetitive calls
+            auto source_file = myMsDataFile->getSourceFile();
 
-                ms::mzml::SourceFileType *tempVar9 = new ms::mzml::SourceFileType(idName, myMsDataFile->getSourceFile()->getFileName(), myMsDataFile->getSourceFile()->getUri()->getFileName());
+            if (source_file->getNativeIdFormat() != "" && source_file->getMassSpectrometerFileFormat() != "" && source_file->getFileChecksumType() != "")
+            {
+                std::string idName = isdigit(source_file->getFileName()[0]) ? "id:" + source_file->getFileName()[0] : source_file->getFileName();
+
+                ms::mzml::SourceFileType *tempVar9 = new ms::mzml::SourceFileType(idName, source_file->getFileName(), source_file->getUri()->getFileName());
                 tempVar8.sourceFile().push_back(*tempVar9);
 
 
-                ms::mzml::CVParamType *tempVar10 = new ms::mzml::CVParamType("MS", nativeIdFormatAccessions[myMsDataFile->getSourceFile()->getNativeIdFormat()], myMsDataFile->getSourceFile()->getNativeIdFormat());
+                ms::mzml::CVParamType *tempVar10 = new ms::mzml::CVParamType("MS", nativeIdFormatAccessions[source_file->getNativeIdFormat()], source_file->getNativeIdFormat());
                 tempVar10->value("");
-                tempVar8.sourceFile()[0].cvParam().push_back(*tempVar10);
 
-                ms::mzml::CVParamType *tempVar11 = new ms::mzml::CVParamType("MS", MassSpectrometerFileFormatAccessions[myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat()], myMsDataFile->getSourceFile()->getMassSpectrometerFileFormat());
+                //removed 4 repetitive function calls
+                auto cv_param = &tempVar8.sourceFile()[0].cvParam();
+                cv_param->push_back(*tempVar10);
+
+                ms::mzml::CVParamType *tempVar11 = new ms::mzml::CVParamType("MS", MassSpectrometerFileFormatAccessions[source_file->getMassSpectrometerFileFormat()], source_file->getMassSpectrometerFileFormat());
                 tempVar11->value("");
-                tempVar8.sourceFile()[0].cvParam().push_back(*tempVar11);
+                cv_param->push_back(*tempVar11);
 
-                ms::mzml::CVParamType *tempVar12 = new ms::mzml::CVParamType("MS", FileChecksumAccessions[myMsDataFile->getSourceFile()->getFileChecksumType()], myMsDataFile->getSourceFile()->getFileChecksumType());
+                ms::mzml::CVParamType *tempVar12 = new ms::mzml::CVParamType("MS", FileChecksumAccessions[source_file->getFileChecksumType()], source_file->getFileChecksumType());
 
-                std::string tempVar13 = myMsDataFile->getSourceFile()->getCheckSum();
+                std::string tempVar13 = source_file->getCheckSum();
                 
                 tempVar12->value((!tempVar13.empty()) ? tempVar13 : "");
-                tempVar8.sourceFile()[0].cvParam().push_back(*tempVar12);
+                cv_param->push_back(*tempVar12);
             }
 	      
             ms::mzml::CVParamType *tempVar14 = new ms::mzml::CVParamType("MS", "MS:1000579", "MS1 spectrum");
             tempVar14->value("");
+
             tempVar5.fileContent().cvParam().push_back(*tempVar14);
 
             ms::mzml::CVParamType *tempVar15 = new ms::mzml::CVParamType("MS", "MS:1000580", "MSn spectrum");
@@ -306,19 +313,21 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             ms::mzml::CVParamType *tempVar39 = new ms::mzml::CVParamType("MS","MS:1000523","64-bit float");
             tempVar39->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0].cvParam().push_back(*tempVar39);
+
+            //removed 10 repetitive function calls
+            auto binary_data_array = &mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0];            
+            binary_data_array->cvParam().push_back(*tempVar39);
 
             ms::mzml::CVParamType *tempVar40 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
             tempVar40->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0].cvParam().push_back(*tempVar40);
+            binary_data_array->cvParam().push_back(*tempVar40);
 
             ms::mzml::CVParamType *tempVar41 = new ms::mzml::CVParamType("MS", "MS:1000595", "time array");
             tempVar41->unitCvRef("UO");
             tempVar41->unitAccession("UO:0000031");
             tempVar41->unitName("Minutes");
             tempVar41->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[0].cvParam().push_back(*tempVar40);
-
+            binary_data_array->cvParam().push_back(*tempVar40);
 
             //Chromatogram Y axis (total intensity)
             std::vector<unsigned char> bin_intensities_vector = MzSpectrum::Get64Bitarray(intensities);
@@ -332,19 +341,21 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
             ms::mzml::CVParamType *tempVar43 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
             tempVar43->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[1].cvParam().push_back(*tempVar43);
+
+            //removed 10 repetitive function calls
+            binary_data_array = &mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[1];
+            binary_data_array->cvParam().push_back(*tempVar43);
 
             ms::mzml::CVParamType *tempVar44 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
             tempVar44->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[1].cvParam().push_back(*tempVar44);
+            binary_data_array->cvParam().push_back(*tempVar44);
 
             ms::mzml::CVParamType *tempVar45 = new ms::mzml::CVParamType("MS", "MS:1000515", "intensity array");
             tempVar45->unitAccession("MS:1000131");
             tempVar45->unitName("number of counts");
             tempVar45->unitCvRef("MS");
             tempVar45->value("");
-            mzML_type->run().chromatogramList()->chromatogram()[0].binaryDataArrayList().binaryDataArray()[1].cvParam().push_back(*tempVar45);
-
+            binary_data_array->cvParam().push_back(*tempVar45);
 
             ms::mzml::SpectrumListType *tempVar46 = new ms::mzml::SpectrumListType((myMsDataFile->getNumSpectra()), "mzLibProcessing");
             mzML_type->run().spectrumList(*tempVar46);
@@ -363,6 +374,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 mzML_type->run().spectrumList().get().spectrum().push_back(*tempVar47);
 
                 ms::mzml::ScanListType *tempScanList = new ms::mzml::ScanListType(1);
+
                 mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList(*tempScanList);
 
                 if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() == 1)
@@ -420,7 +432,10 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar54->unitAccession("MS:1000040");
                     tempVar54->unitName("m/z");
                     
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam().push_back(*tempVar54);
+                    //removed 18 repetitive function calls
+                    auto selected_ion_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam();
+                    selected_ion_cv_param->push_back(*tempVar54);
+
 
                     // Charge State
                     if (scanWithPrecursor->getSelectedIonChargeStateGuess())
@@ -429,7 +444,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                         tempVar55->value(std::to_string(scanWithPrecursor->getSelectedIonChargeStateGuess().value()));
 
-                        mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam().push_back(*tempVar55);
+                        selected_ion_cv_param->push_back(*tempVar55);
 
                         delete tempVar55;
                     }
@@ -441,10 +456,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                         tempVar56->value(std::to_string(scanWithPrecursor->getSelectedIonIntensity().value()));
 
-                        mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].selectedIonList()->selectedIon()[0].cvParam().push_back(*tempVar56);
+                        selected_ion_cv_param->push_back(*tempVar56);
 
                         delete tempVar56;
                     }
+                    
                     if (scanWithPrecursor->getIsolationMz() != NULL)
                     {
                         MzRange *isolationRange = scanWithPrecursor->getIsolationRange();
@@ -460,8 +476,9 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                         tempVar57->unitAccession("MS:1000040");
                         tempVar57->unitName("m/z");
 
-                        mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].isolationWindow()->cvParam().push_back(*tempVar57);
-
+                        //removed 16 repetitive function calls
+                        auto isolation_window_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].isolationWindow()->cvParam();
+                        isolation_window_cv_param->push_back(*tempVar57);
                         ms::mzml::CVParamType *tempVar58 = new ms::mzml::CVParamType("MS", "MS:1000828", "isolation window lower offset");
 
                         tempVar58->value(std::to_string(isolationRange->getWidth() / 2));
@@ -469,7 +486,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                         tempVar58->unitAccession("MS:1000040");
                         tempVar58->unitName("m/z");
 
-                        mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].isolationWindow()->cvParam().push_back(*tempVar58);
+                        isolation_window_cv_param->push_back(*tempVar58);
 
                         ms::mzml::CVParamType *tempVar59 = new ms::mzml::CVParamType("MS", "MS:1000829", "isolation window upper offset");
 
@@ -478,7 +495,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                         tempVar59->unitAccession("MS:1000040");
                         tempVar59->unitName("m/z");
 
-                        mzML_type->run().spectrumList().get().spectrum()[i - 1].precursorList()->precursor()[0].isolationWindow()->cvParam().push_back(*tempVar59);
+                        isolation_window_cv_param->push_back(*tempVar59);
 
                         delete tempVar59;
                         delete tempVar58;
@@ -493,12 +510,14 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 ms::mzml::CVParamType *tempVar60 = new ms::mzml::CVParamType("MS", "MS:1000511", "ms level");
                 tempVar60->value(std::to_string(myMsDataFile->GetOneBasedScan(i)->getMsnOrder()));
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar60);
+                //removed 35 repetitive function calls
+                auto spectrum_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam();
+                spectrum_cv_param->push_back(*tempVar60);
 
                 ms::mzml::CVParamType *tempVar61 = new ms::mzml::CVParamType("MS", CentroidAccessions[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()], CentroidNames[myMsDataFile->GetOneBasedScan(i)->getIsCentroid()]);
                 tempVar61->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar61);
+                spectrum_cv_param->push_back(*tempVar61);
 
                 std::string polarityName;
                 std::string polarityAccession;
@@ -512,7 +531,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                     tempVar62->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar62);
+                    spectrum_cv_param->push_back(*tempVar62);
 
                     delete tempVar62;
                 }
@@ -532,7 +551,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar63->unitAccession("MS:1000040");
                     tempVar63->unitName("m/z");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar63);
+                    spectrum_cv_param->push_back(*tempVar63);
 
                     // Highest observed mz
                     ms::mzml::CVParamType *tempVar64 = new ms::mzml::CVParamType("MS", "MS:1000527", "highest observed m/z");
@@ -542,7 +561,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar64->unitName("m/z");
                     tempVar64->unitCvRef("MS");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar64);
+                    spectrum_cv_param->push_back(*tempVar64);
 
                     delete tempVar64;
                     delete tempVar63;
@@ -553,7 +572,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                 tempVar65->value(std::to_string(myMsDataFile->GetOneBasedScan(i)->getTotalIonCurrent()));
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar65);
+                spectrum_cv_param->push_back(*tempVar65);
 
                 if (myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->getSize() > 0)
                 {
@@ -565,7 +584,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar66->unitName("m/z");
                     tempVar66->unitAccession("MS:1000040");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar66);
+                    spectrum_cv_param->push_back(*tempVar66);
 
                     //base peak intensity
                     ms::mzml::CVParamType *tempVar67 = new ms::mzml::CVParamType("MS", "MS:1000505", "base peak intensity");
@@ -575,7 +594,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar67->unitName("number of detector counts");
                     tempVar67->unitAccession("MS:1000131");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].cvParam().push_back(*tempVar67);
+                    spectrum_cv_param->push_back(*tempVar67);
 
                     delete tempVar67;
                     delete tempVar66;
@@ -616,13 +635,15 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar71->unitAccession("UO:0000031");
                 tempVar71->unitName("minute");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList()->scan()[0].cvParam().push_back(*tempVar71);
+                //removed 14 repetitive function calls
+                auto spectrum_scan_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList()->scan()[0].cvParam();
+                spectrum_scan_cv_param->push_back(*tempVar71);
 
                 ms::mzml::CVParamType *tempVar72 = new ms::mzml::CVParamType("MS", "MS:1000512", "filter string");
 
                 tempVar72->value(myMsDataFile->GetOneBasedScan(i)->getScanFilter());
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList()->scan()[0].cvParam().push_back(*tempVar72);
+                spectrum_scan_cv_param->push_back(*tempVar72);
 
                 if (myMsDataFile->GetOneBasedScan(i)->getInjectionTime())
                 {
@@ -632,10 +653,11 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     tempVar73->unitAccession("UO:0000028");
                     tempVar73->unitCvRef("UO");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList()->scan()[0].cvParam().push_back(*tempVar73);
+                    spectrum_scan_cv_param->push_back(*tempVar73);
 
                     delete tempVar73;
                 }
+
                 if (myMsDataFile->GetOneBasedScan(i)->getMsnOrder() != 1)
                 {
                     auto scanWithPrecursor = myMsDataFile->GetOneBasedScan(i);
@@ -667,7 +689,7 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar76->unitName("m/z");
 
                 mzML_type->run().spectrumList().get().spectrum()[i - 1].scanList()->scan()[0].scanWindowList()->scanWindow()[0].cvParam().push_back(*tempVar76);
-
+                
                 ms::mzml::CVParamType *tempVar77 = new ms::mzml::CVParamType("MS", "MS:1000500", "scan window upper limit");
                 tempVar77->value(std::to_string(myMsDataFile->GetOneBasedScan(i)->getScanWindowRange()->getMaximum()));
                 tempVar77->unitCvRef("MS");
@@ -704,17 +726,19 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar79->unitCvRef("MS");
                 tempVar79->unitAccession("MS:1000040");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[0].cvParam().push_back(*tempVar79);
+                //removed 16 repetitive function calls
+                auto binary_data_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[0].cvParam();
+                binary_data_cv_param->push_back(*tempVar79);
 
                 ms::mzml::CVParamType *tempVar80 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
                 tempVar80->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[0].cvParam().push_back(*tempVar80);
+                binary_data_cv_param->push_back(*tempVar80);
 
                 ms::mzml::CVParamType *tempVar81 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
                 tempVar81->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[0].cvParam().push_back(*tempVar81);
+                binary_data_cv_param->push_back(*tempVar81);
 
                 std::vector<unsigned char> YArrayVec = myMsDataFile->GetOneBasedScan(i)->getMassSpectrum()->Get64BitYarray();
 				unsigned char YArray[YArrayVec.size()];
@@ -732,17 +756,19 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                 tempVar83->unitName("number of counts");
                 tempVar83->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[1].cvParam().push_back(*tempVar83);
+                //removed 16 repetitive function calls
+                binary_data_cv_param = &mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[1].cvParam();
+                binary_data_cv_param->push_back(*tempVar83);
 
                 ms::mzml::CVParamType *tempVar84 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
                 tempVar84->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[1].cvParam().push_back(*tempVar84);
+                binary_data_cv_param->push_back(*tempVar84);
 
                 ms::mzml::CVParamType *tempVar85 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
                 tempVar85->value("");
 
-                mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[1].cvParam().push_back(*tempVar85);
+                binary_data_cv_param->push_back(*tempVar85);
 
                 if (!myMsDataFile->GetOneBasedScan(i)->getNoiseData().empty())
                 {
@@ -754,30 +780,32 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
 
                     ms::mzml::BinaryDataArrayType *tempVar86 = new ms::mzml::BinaryDataArrayType(binary_noiseDataMass, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataMass.encode().length()) / 3))));
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar86);
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].arrayLength() = mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].binary().encode().length() / 8;
+                    //removed 140 repetitive function calls
+                    auto bin_data_array = mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray();
+                    bin_data_array.push_back(*tempVar86);
+                    bin_data_array[2].arrayLength() = bin_data_array[2].binary().encode().length() / 8;
 
                     ms::mzml::CVParamType *tempVar87 = new ms::mzml::CVParamType("MS", "MS:1000786", "non-standard data array");
                     tempVar87->value("mass");
                     tempVar87->unitCvRef("MS");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].cvParam().push_back(*tempVar87);
+                    bin_data_array[2].cvParam().push_back(*tempVar87);
 
                     ms::mzml::CVParamType *tempVar88 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
                     tempVar88->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].cvParam().push_back(*tempVar88);
+                    bin_data_array[2].cvParam().push_back(*tempVar88);
 
                     ms::mzml::CVParamType *tempVar89 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
                     tempVar89->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].cvParam().push_back(*tempVar89);
+                    bin_data_array[2].cvParam().push_back(*tempVar89);
 
                     //push back 1 user param
                     ms::mzml::UserParamType *tempVar90 = new ms::mzml::UserParamType("kelleherCustomType");
                     tempVar90->value("noise m/z");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[2].userParam().push_back(*tempVar90);
+                    bin_data_array[2].userParam().push_back(*tempVar90);
 
                     // noise
                     std::vector<unsigned char> noiseDataNoiseVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataNoise();
@@ -786,29 +814,29 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     xml_schema::base64_binary binary_noiseDataNoise((void*)noiseDataNoise, (sizeof(noiseDataNoise)/sizeof(*noiseDataNoise)));  
 
                     ms::mzml::BinaryDataArrayType *tempVar91 = new ms::mzml::BinaryDataArrayType(binary_noiseDataNoise, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataNoise.encode().length()) / 3))));
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar91);
+                    bin_data_array.push_back(*tempVar91);
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].arrayLength() = mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].binary().encode().length() / 8;
+                    bin_data_array[3].arrayLength() = bin_data_array[3].binary().encode().length() / 8;
 
                     ms::mzml::CVParamType *tempVar92 = new ms::mzml::CVParamType("MS", "MS:1000786", "non-standard data array");
                     tempVar92->value("SignalToNoise");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].cvParam().push_back(*tempVar92);
+                    bin_data_array[3].cvParam().push_back(*tempVar92);
 
                     ms::mzml::CVParamType *tempVar93 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
                     tempVar93->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].cvParam().push_back(*tempVar93);
+                    bin_data_array[3].cvParam().push_back(*tempVar93);
 
                     ms::mzml::CVParamType *tempVar94 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
                     tempVar94->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].cvParam().push_back(*tempVar94);
+                    bin_data_array[3].cvParam().push_back(*tempVar94);
 
                     //push back 1 user param
                     ms::mzml::UserParamType *tempVar95 = new ms::mzml::UserParamType("kelleherCustomType");
                     tempVar95->value("noise baseline");
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[3].userParam().push_back(*tempVar95);
+                    bin_data_array[3].userParam().push_back(*tempVar95);
 
                     // baseline
                     std::vector<unsigned char> noiseDataBaselineVec = myMsDataFile->GetOneBasedScan(i)->Get64BitNoiseDataBaseline();
@@ -817,29 +845,32 @@ std::unordered_map<Polarity, std::string> MzmlMethods::PolarityNames =
                     xml_schema::base64_binary binary_noiseDataBaseline((void*)noiseDataBaseline, (sizeof(noiseDataBaseline)/sizeof(*noiseDataBaseline))); 
 
                     ms::mzml::BinaryDataArrayType *tempVar96 = new ms::mzml::BinaryDataArrayType(binary_noiseDataBaseline, (size_t)(4 * (double)ceil((static_cast<double>(binary_noiseDataBaseline.encode().length()) / 3))));
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray().push_back(*tempVar96);
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].arrayLength() = mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].binary().encode().length() / 8;
+                    bin_data_array.push_back(*tempVar96);
+                    bin_data_array[4].arrayLength() = bin_data_array[4].binary().encode().length() / 8;
 
                     ms::mzml::CVParamType *tempVar97 = new ms::mzml::CVParamType("MS", "MS:1000786", "non-standard data array");
                     tempVar97->value("baseline");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].cvParam().push_back(*tempVar97);
+                    bin_data_array[4].cvParam().push_back(*tempVar97);
 
                     ms::mzml::CVParamType *tempVar98 = new ms::mzml::CVParamType("MS", "MS:1000523", "64-bit float");
                     tempVar98->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].cvParam().push_back(*tempVar98);
+                    bin_data_array[4].cvParam().push_back(*tempVar98);
 
                     ms::mzml::CVParamType *tempVar99 = new ms::mzml::CVParamType("MS", "MS:1000576", "no compression");
                     tempVar99->value("");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].cvParam().push_back(*tempVar99);
+                    bin_data_array[4].cvParam().push_back(*tempVar99);
 
                     //push back 1 user param
                     ms::mzml::UserParamType *tempVar100 = new ms::mzml::UserParamType("kelleherCustomType");
                     tempVar100->value("noise intensity");
 
-                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray()[4].userParam().push_back(*tempVar100);
+                    bin_data_array[4].userParam().push_back(*tempVar100);
+
+                    //set binary data array
+                    mzML_type->run().spectrumList().get().spectrum()[i - 1].binaryDataArrayList().get().binaryDataArray(bin_data_array);
 
                     delete tempVar100;
                     delete tempVar99;
