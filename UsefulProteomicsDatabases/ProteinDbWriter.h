@@ -18,7 +18,6 @@ namespace UsefulProteomicsDatabases
     // See https://stackoverflow.com/questions/11408934/using-a-stdtuple-as-key-for-stdunordered-map
     // for how to handle this.
     typedef std::tuple<int, Modification*> ModDbTuple;
-
     struct ModDbTuple_hash: public std::unary_function<ModDbTuple, std::size_t>{
         std::size_t operator() (const ModDbTuple& k ) const
         {
@@ -35,7 +34,7 @@ namespace UsefulProteomicsDatabases
                 std::get<1>(lhs) == std::get<1>(rhs); 
         }
     };
-
+    typedef std::unordered_set<ModDbTuple, ModDbTuple_hash, ModDbTuple_equal> ModDbTuple_set;
     
     class ProteinDbWriter
     {
@@ -47,10 +46,9 @@ namespace UsefulProteomicsDatabases
         /// <param name="outputFileName"></param>
         /// <returns>The new "modified residue" entries that are added due to being in the Mods dictionary</returns>
     public:
-        static std::unordered_map<std::string, int> WriteXmlDatabase(std::unordered_map<std::string,
-                                                           std::unordered_set<std::tuple<int, Modification*>>> &additionalModsToAddToProteins,
+        static std::unordered_map<std::string, int> WriteXmlDatabase(std::unordered_map<std::string,ModDbTuple_set> &additionalModsToAddToProteins,
                                                            std::vector<Protein*> &proteinList,
-                                                                     const std::string &outputFileName);
+                                                           const std::string &outputFileName);
 
         static void WriteFastaDatabase(std::vector<Protein*> &proteinList, const std::string &outputFileName,
                                        const std::string &delimeter);
@@ -58,7 +56,8 @@ namespace UsefulProteomicsDatabases
     private:
         static std::unordered_map<int, std::unordered_set<std::string>> GetModsForThisProtein(
             Protein *protein, SequenceVariation *seqvar,
-            std::unordered_map<std::string, std::unordered_set<ModDbTuple, ModDbTuple_hash, ModDbTuple_equal>> &additionalModsToAddToProteins,
+            //std::unordered_map<std::string, std::unordered_set<ModDbTuple, ModDbTuple_hash, ModDbTuple_equal>> &additionalModsToAddToProteins,
+            std::unordered_map<std::string, ModDbTuple_set> &additionalModsToAddToProteins,
             std::unordered_map<std::string, int> &newModResEntries);
     };
 }

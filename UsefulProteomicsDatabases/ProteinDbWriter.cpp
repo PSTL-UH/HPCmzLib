@@ -12,9 +12,7 @@ using namespace Proteomics;
 namespace UsefulProteomicsDatabases
 {
 
-    std::unordered_map<std::string, int> ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string,
-                                                                           std::unordered_set<std::tuple<int, Modification*>>>
-                                                                           &additionalModsToAddToProteins,
+    std::unordered_map<std::string, int> ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, ModDbTuple_set> &additionalModsToAddToProteins,
                                                                            std::vector<Protein*> &proteinList,
                                                                            const std::string &outputFileName)
     {
@@ -267,7 +265,8 @@ namespace UsefulProteomicsDatabases
             writer.WriteEndDocument();
         
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete xmlWriterSettings' statement was not added since xmlWriterSettings was passed to a method or constructor. Handle memory management manually.
+            //C# TO C++ CONVERTER TODO TASK: A 'delete xmlWriterSettings' statement was not added since
+            //xmlWriterSettings was passed to a method or constructor. Handle memory management manually.
         }
 #endif
         std::cout << "ProteinDbWriter:WriteProteinXML not supported right now. Use fasta files. "<< std::endl;

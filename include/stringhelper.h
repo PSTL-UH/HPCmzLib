@@ -197,6 +197,7 @@ public:
 		return output;
 	}
 
+
         static std::string join(const std::vector<std::string> &source, char delimiter)
         {
             std::string output;
