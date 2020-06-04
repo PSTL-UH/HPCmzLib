@@ -165,5 +165,12 @@ public:
 
         return (den == 0) ? 0 : num / den;
     }
+
+    static double NormalDistribution ( double low, double high, double inval ) {
+        // This function should return the probability for the standard normal cumulative distribution.
+        double res = 0.0;
+        std::cout << " Math::NormalDistribution: function is not correctly implemented. Please revisit if nevessary" << std::endl;
+        return res;        
+    }
     
 };

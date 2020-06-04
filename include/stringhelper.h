@@ -214,6 +214,23 @@ public:
             return output;
 	}
 
+        static std::string join(const std::unordered_set<std::string> &source, std::string delimiter)
+        {
+            std::string output;
+            
+            for ( auto s = source.begin(); s != source.end(); s++ ) {
+                auto r = s;
+                if ( ++r == source.end() ) {
+                    output += (*s);
+                }
+                else {
+                    output += (*s) + delimiter;
+                }
+            }
+            return output;
+	}
+
+        
         static std::string join(const std::vector<std::string> &source, std::string &delimiter)
         {
             std::string output;
