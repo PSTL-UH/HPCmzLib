@@ -8,23 +8,25 @@
 #
 include ../Makefile.defs
 
-HEADER =  DecoyType.h          \
+HEADER =  DecoyType.h           \
 	DecoyProteinGenerator.h	\
-	Loaders.h              \
-	PeriodicTableLoader.h  \
+	Loaders.h               \
+	PeriodicTableLoader.h   \
 	FastaHeaderFieldRegex.h \
-	ProteinDbLoader.h      \
-	ProteinDbWriter.h      \
-	PtmListLoader.h        \
+	ProteinDbLoader.h       \
+	ProteinDbWriter.h       \
+	PtmListLoader.h         \
+	XmlWriter.h		\
 	UnimodLoader.h
 
 
-OBJ =   DecoyType.o            \
+OBJ =   DecoyType.o             \
 	DecoyProteinGenerator.o \
-	PeriodicTableLoader.o  \
+	PeriodicTableLoader.o   \
 	FastaHeaderFieldRegex.o \
-	ProteinDbLoader.o      \
-	ProteinDbWriter.o      \
+	ProteinDbLoader.o       \
+	ProteinDbWriter.o       \
+	XmlWriter.o		\
 	UnimodLoader.o	
 
 #	Loaders.o              \

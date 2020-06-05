@@ -14,6 +14,7 @@
 #include <cctype>
 #include <algorithm>
 #include <tuple>
+#include <unordered_set>
 /***********************************************************************
 // crc32 checksum
 // adapted from free code by Mark Adler <madler@alumni.caltech.edu>
