@@ -1,17 +1,17 @@
 ﻿#include "TestProteomicsReadWrite.h"
 #include "../../Proteomics/Modifications/Modification.h"
-#include "../../UsefulProteomicsDatabases/DecoyType.h"
-#include "../../UsefulProteomicsDatabases/ProteinDbLoader.h"
 #include "../../Proteomics/Modifications/ModificationMotif.h"
-#include "../../UsefulProteomicsDatabases/Loaders.h"
 #include "../../Proteomics/Protein/Protein.h"
-#include "../../UsefulProteomicsDatabases/ProteinDbWriter.h"
-#include "../../UsefulProteomicsDatabases/FastaHeaderFieldRegex.h"
-#include "../../MassSpectrometry/Enums/DissociationType.h"
 #include "../../Proteomics/Protein/DatabaseReference.h"
 #include "../../Proteomics/Protein/DisulfideBond.h"
 #include "../../Proteomics/Protein/SequenceVariation.h"
 #include "../../Proteomics/Protein/ProteolysisProduct.h"
+#include "../../MassSpectrometry/Enums/DissociationType.h"
+#include "../../UsefulProteomicsDatabases/Loaders.h"
+#include "../../UsefulProteomicsDatabases/DecoyType.h"
+#include "../../UsefulProteomicsDatabases/ProteinDbLoader.h"
+#include "../../UsefulProteomicsDatabases/ProteinDbWriter.h"
+#include "../../UsefulProteomicsDatabases/FastaHeaderFieldRegex.h"
 #include "../../UsefulProteomicsDatabases/PtmListLoader.h"
 
 #include "Assert.h"
@@ -56,10 +56,12 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". Test_write_with_custom_mods" << std::endl;    
     Test::TestProteomicsReadWrite::Test_write_with_custom_mods();
-
+#endif
+    
     std::cout << ++i << ". AnotherTest" << std::endl;    
     Test::TestProteomicsReadWrite::AnotherTest();
 
+#ifdef LATER
     std::cout << ++i << ". TestEmptyProteins" << std::endl;    
     Test::TestProteomicsReadWrite::TestEmptyProteins();
 
@@ -521,24 +523,38 @@ namespace Test
 
         delete m;
     }
-
+#endif
+    
     void TestProteomicsReadWrite::AnotherTest()
     {
+        std::string testdir=std::experimental::filesystem::current_path().string();
         std::vector<Modification*> variableModifications;
         std::vector<Modification*> fixedModifications;
 
         // Generate data for files
-        Protein *ParentProtein = new Protein("MPEPTIDEKANTHE", "accession1", "organism", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification*>>(), nullptr, "name1", "fullname1", false, false, std::vector<DatabaseReference*>(), std::vector<SequenceVariation*>(), disulfideBonds: std::vector<DisulfideBond*>());
+        Protein *ParentProtein = new Protein("MPEPTIDEKANTHE", "accession1", "organism",
+                                             std::vector<std::tuple<std::string, std::string>>(),
+                                             std::unordered_map<int, std::vector<Modification*>>(),
+                                             std::vector<ProteolysisProduct*>(),
+                                             "name1", "fullname1" );
 
         std::vector<ProteolysisProduct*> pp = {new ProteolysisProduct(std::make_optional(4), std::make_optional(8), "chain")};
-        Protein *proteinWithChain = new Protein("MAACNNNCAA", "accession3", "organism", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification*>>(), pp, "name2", "fullname2", false, false, std::vector<DatabaseReference*>(), std::vector<SequenceVariation*>(), disulfideBonds: std::vector<DisulfideBond*>());
+        Protein *proteinWithChain = new Protein("MAACNNNCAA", "accession3", "organism",
+                                                std::vector<std::tuple<std::string, std::string>>(),
+                                                std::unordered_map<int, std::vector<Modification*>>(),
+                                                pp, "name2", "fullname2" );
 
-        ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), {ParentProtein, proteinWithChain}, FileSystem::combine(TestContext::CurrentContext->TestDirectory, R"(fdsfsd.xml)"));
+        std::unordered_map<std::string, ModDbTuple_set> tempvar;
+        std::vector<::Protein*> protvec = {ParentProtein, proteinWithChain}; 
+        ProteinDbWriter::WriteXmlDatabase( tempvar,
+                                          protvec,
+                                          testdir + "/fdsfsd.xml" );
 
         delete proteinWithChain;
         delete ParentProtein;
     }
 
+#ifdef ORIG
     void TestProteomicsReadWrite::TestEmptyProteins()
     {
         Protein *p1 = new Protein("SEQENCE", "p1");
