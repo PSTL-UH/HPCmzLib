@@ -198,6 +198,25 @@ public:
 		return output;
 	}
 
+	static std::vector<std::string> split(const std::string &source, const std::string delimiter)
+	{
+		std::vector<std::string> output;
+                size_t prev = 0, pos = 0;                
+
+                do
+                {
+                    pos = source.find(delimiter, prev);
+                    if (pos == std::string::npos) pos = source.length();
+                    std::string token = source.substr(prev, pos-prev);
+                    if (!token.empty()) output.push_back(token);
+                    prev = pos + delimiter.length();
+                }
+                while (pos < source.length() && prev < source.length());
+                
+		return output;
+	}
+
+        
 
         static std::string join(const std::vector<std::string> &source, char delimiter)
         {

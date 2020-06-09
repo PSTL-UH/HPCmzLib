@@ -27,10 +27,9 @@ OBJ =   DecoyType.o             \
 	ProteinDbLoader.o       \
 	ProteinDbWriter.o       \
 	XmlWriter.o		\
-	UnimodLoader.o		
-
-#	Loaders.o              \
-#	PtmListLoader.o        
+	UnimodLoader.o		\
+	Loaders.o              \
+	PtmListLoader.o        
 
 .SUFFIXES: .o.cpp
 

@@ -3,6 +3,10 @@
 #include "../Proteomics/Modifications/ModificationMotif.h"
 #include "../Chemistry/ChemicalFormula.h"
 #include "../MzLibUtil/MzLibException.h"
+#include "stringhelper.h"
+
+#include <fstream>
+#include <iostream>
 
 using namespace Chemistry;
 using namespace MassSpectrometry;
@@ -12,12 +16,11 @@ using namespace Proteomics;
 namespace UsefulProteomicsDatabases
 {
 
-std::unordered_map<std::string, char> PtmListLoader::AminoAcidCodes;
+    std::unordered_map<std::string, char> PtmListLoader::AminoAcidCodes;
 
     PtmListLoader::StaticConstructor::StaticConstructor()
     {
-        AminoAcidCodes = std::unordered_map<std::string, char>
-        {
+        std::unordered_map<std::string, char> AminoAcidCodes =  {
             {"Alanine", 'A'},
             {"Arginine", 'R'},
             {"Asparagine", 'N'},
@@ -44,89 +47,112 @@ std::unordered_map<std::string, char> PtmListLoader::AminoAcidCodes;
             {"Valine", 'V'}
         };
     }
-
-PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
-
-    std::vector<Modification*> PtmListLoader::ReadModsFromFile(const std::string &ptmListLocation, std::vector<(Modification, std::string)*> &filteredModificationsWithWarnings)
+    
+    PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
+    
+    std::vector<Modification*> PtmListLoader::ReadModsFromFile(const std::string &ptmListLocation,
+                                                     std::vector<std::tuple<Modification*, std::string>> &filteredModificationsWithWarnings)
     {
-        return ReadModsFromFile(ptmListLocation, std::unordered_map<std::string, int>(), filteredModificationsWithWarnings).OrderBy([&] (std::any b)
-        {
-            b::IdWithMotif;
-        });
+#ifdef ORIG
+        return ReadModsFromFile(ptmListLocation, std::unordered_map<std::string, int>(),
+                                filteredModificationsWithWarnings).OrderBy([&] (std::any b )     {
+                                        b::IdWithMotif;
+                                    });
+#endif
+        std::unordered_map<std::string, int> formalChargesDict;
+        std::vector<Modification*> ret = ReadModsFromFile(ptmListLocation, formalChargesDict, filteredModificationsWithWarnings);
+        std::sort(ret.begin(), ret.end(), [&] (auto *l, auto r ) {
+                return l->getIdWithMotif() < r->getIdWithMotif();
+            });
+        return ret;
     }
-
-    std::vector<Modification*> PtmListLoader::ReadModsFromFile(const std::string &ptmListLocation, std::unordered_map<std::string, int> &formalChargesDictionary, std::vector<(Modification, std::string)*> &filteredModificationsWithWarnings)
+    
+    std::vector<Modification*> PtmListLoader::ReadModsFromFile(
+        const std::string &ptmListLocation,
+        std::unordered_map<std::string, int> &formalChargesDictionary,
+        std::vector<std::tuple<Modification *, std::string>> &filteredModificationsWithWarnings)
     {
         std::vector<Modification*> acceptedModifications;
-        filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (StreamReader uniprot_mods = new StreamReader(ptmListLocation))
-        {
-            StreamReader uniprot_mods = StreamReader(ptmListLocation);
-            std::vector<std::string> modification_specification;
+        //filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
 
-            //This block will read one complete modification entry at a time until the EOF is reached.
-            while (uniprot_mods.Peek() != -1) //The Peek method returns an integer value in order to determine whether the end of the file, or another error has occurred.
+
+        //StreamReader uniprot_mods = StreamReader(ptmListLocation);
+        std::ifstream uniprot_mods(ptmListLocation);
+        std::vector<std::string> modification_specification;
+        
+        //This block will read one complete modification entry at a time until the EOF is reached.
+        //The Peek method returns an integer value in order to determine whether
+        //the end of the file, or another error has occurred.
+
+        // C++ version the peek method returns a character
+        while (uniprot_mods.peek() != EOF) 
+        {
+            //std::string line = uniprot_mods.ReadLine();
+            std::string line;
+            getline(uniprot_mods, line);
+            modification_specification.push_back(line);
+            if (StringHelper::startsWith(line, "//"))
             {
-                std::string line = uniprot_mods.ReadLine();
-                modification_specification.push_back(line);
-                if (StringHelper::startsWith(line, "//"))
+                for (auto mod : ReadMod(ptmListLocation, modification_specification, formalChargesDictionary))
                 {
-                    for (auto mod : ReadMod(ptmListLocation, modification_specification, formalChargesDictionary))
+                    // Filter out the modifications that don't meet validation
+                    if (mod->getValidModification())
                     {
-                        // Filter out the modifications that don't meet validation
-                        if (mod->getValidModification())
-                        {
-                            acceptedModifications.push_back(mod);
-                        }
-                        else
-                        {
-                            filteredModificationsWithWarnings.push_back((mod, mod->ModificationErrorsToString()));
-                        }
+                        acceptedModifications.push_back(mod);
                     }
-                    modification_specification = std::vector<std::string>();
+                    else
+                    {
+                        filteredModificationsWithWarnings.push_back(std::make_tuple(mod, mod->ModificationErrorsToString()));
+                    }
                 }
+                //modification_specification = std::vector<std::string>();
+                modification_specification.clear();
             }
         }
         return acceptedModifications;
     }
-
-    std::vector<Modification*> PtmListLoader::ReadModsFromString(const std::string &storedModifications, std::vector<(Modification, std::string)*> &filteredModificationsWithWarnings)
+    
+    std::vector<Modification*> PtmListLoader::ReadModsFromString(const std::string &storedModifications,
+                                          std::vector<std::tuple<Modification *, std::string>> &filteredModificationsWithWarnings)
     {
         std::vector<Modification*> acceptedModifications;
-        filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (StringReader uniprot_mods = new StringReader(storedModifications))
-        {
-            StringReader uniprot_mods = StringReader(storedModifications);
-            std::vector<std::string> modification_specification;
+        //filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
 
-            while (uniprot_mods.Peek() != -1)
+        //StringReader uniprot_mods = StringReader(storedModifications);
+        std::ifstream uniprot_mods(storedModifications);
+        std::vector<std::string> modification_specification;
+        
+        while (uniprot_mods.peek() != EOF)
+        {
+            //std::string line = uniprot_mods.ReadLine();
+            std::string line;
+            getline(uniprot_mods, line );
+            modification_specification.push_back(line);
+            if (StringHelper::startsWith(line, "//"))
             {
-                std::string line = uniprot_mods.ReadLine();
-                modification_specification.push_back(line);
-                if (StringHelper::startsWith(line, "//"))
+                std::unordered_map<std::string, int> tmpmap;
+                for (auto mod : ReadMod("", modification_specification, tmpmap))
                 {
-                    for (auto mod : ReadMod("", modification_specification, std::unordered_map<std::string, int>()))
+                    // Filter out the modifications that don't meet validation
+                    if (mod->getValidModification())
                     {
-                        // Filter out the modifications that don't meet validation
-                        if (mod->getValidModification())
-                        {
-                            acceptedModifications.push_back(mod);
-                        }
-                        else
-                        {
-                            filteredModificationsWithWarnings.push_back((mod, mod->ModificationErrorsToString()));
-                        }
+                        acceptedModifications.push_back(mod);
                     }
-                    modification_specification = std::vector<std::string>();
+                    else
+                    {
+                        filteredModificationsWithWarnings.push_back(std::make_tuple(mod, mod->ModificationErrorsToString()) );
+                    }
                 }
+                //modification_specification = std::vector<std::string>();
+                modification_specification.clear();
             }
         }
+        
         return acceptedModifications;
     }
-
-    std::vector<Modification*> PtmListLoader::ReadMod(const std::string &ptmListLocation, std::vector<std::string> &specification, std::unordered_map<std::string, int> &formalChargesDictionary)
+    
+    std::vector<Modification*> PtmListLoader::ReadMod(const std::string &ptmListLocation, std::vector<std::string> &specification,
+                                                      std::unordered_map<std::string, int> &formalChargesDictionary)
     {
         std::string _id = "";
         std::string _accession = "";
@@ -143,277 +169,328 @@ PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
         std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons;
         std::string _fileOrigin = ptmListLocation;
 
+        std::vector<Modification *> retvec;
+        
         for (auto line : specification)
         {
-            if (line.Length >= 2)
+            if (line.length() >= 2)
             {
                 std::string modKey = line.substr(0, 2);
                 std::string modValue = "";
-                if (line.Length > 5)
+                if (line.length() > 5)
                 {
                     try
                     {
-                        modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
+                        //modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
+                        char del = '#';
+                        modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(0, 5); //removes commented text
                     }
                     catch (...)
                     {
                         //do nothing leave as null
                     }
                 }
-
-//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
-//                switch (modKey)
-//ORIGINAL LINE: case "ID":
+                
                 if (modKey == "ID") // Mandatory
                 {
-                        _id = modValue;
-
+                    _id = modValue;
+                    
                 }
-//ORIGINAL LINE: case "AC":
                 else if (modKey == "AC") // Do not use! Only present in UniProt ptmlist
                 {
-                        _accession = modValue;
-                        _modificationType = "UniProt";
-
+                    _accession = modValue;
+                    _modificationType = "UniProt";
+                    
                 }
-//ORIGINAL LINE: case "FT":
                 else if (modKey == "FT") // Optional
                 {
-                        _featureType = modValue;
-
+                    _featureType = modValue;
+                    
                 }
-//ORIGINAL LINE: case "TG":
                 else if (modKey == "TG") // Which amino acid(s) or motifs is the modification on
                 {
-                        std::vector<std::string> possibleMotifs = StringHelper::trimEnd(modValue, ".")->Split({" or "}, StringSplitOptions::None);
-                        std::vector<ModificationMotif*> acceptableMotifs;
-                        for (auto singleTarget : possibleMotifs)
-                        {
-                            std::string theMotif;
-                            char possibleMotifChar;
-                            std::unordered_map<std::string, char>::const_iterator AminoAcidCodes_iterator = AminoAcidCodes.find(singleTarget);
-                            if (AminoAcidCodes_iterator != AminoAcidCodes.end())
-                            {
-                                possibleMotifChar = AminoAcidCodes_iterator->second;
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-                                theMotif = possibleMotifChar.ToString();
-                            }
-                            else
-                            {
-                                possibleMotifChar = AminoAcidCodes_iterator->second;
-                                theMotif = singleTarget;
-                            }
-                            ModificationMotif motif;
-                            if (ModificationMotif::TryGetMotif(theMotif, motif))
-                            {
-                                acceptableMotifs.push_back(motif);
-                            }
-                        }
-                        _target = acceptableMotifs.ToList();
+                    //std::vector<std::string> possibleMotifs = StringHelper::trimEnd(modValue, ".")->Split({" or "});
+                    std::string del = " or ";
+                    std::vector<std::string> possibleMotifs = StringHelper::split(StringHelper::trimEnd(modValue, "."), del);
 
+                    std::vector<ModificationMotif*> acceptableMotifs;
+                    for (auto singleTarget : possibleMotifs)
+                    {
+                        std::string theMotif;
+                        char possibleMotifChar;
+                        std::unordered_map<std::string, char>::const_iterator AminoAcidCodes_iterator = AminoAcidCodes.find(singleTarget);
+                        if (AminoAcidCodes_iterator != AminoAcidCodes.end())
+                        {
+                            possibleMotifChar = AminoAcidCodes_iterator->second;
+                            theMotif = possibleMotifChar;
+                        }
+                        else
+                        {
+                            //possibleMotifChar = AminoAcidCodes_iterator->second;
+                            theMotif = singleTarget;
+                        }
+                        ModificationMotif *motif;
+                        if (ModificationMotif::TryGetMotif(theMotif, &motif))
+                        {
+                            acceptableMotifs.push_back(motif);
+                        }
+                    }
+                    _target = acceptableMotifs;//.ToList();
+                    
                 }
-//ORIGINAL LINE: case "PP":
                 else if (modKey == "PP") // Terminus localization
                 {
-                        _locationRestriction = modValue;
-
+                    _locationRestriction = modValue;
+                    
                 }
-//ORIGINAL LINE: case "CF":
                 else if (modKey == "CF") // Correction formula
                 {
-                        _chemicalFormula = ChemicalFormula::ParseFormula(StringHelper::replace(modValue, " ", ""));
-
+                    _chemicalFormula = ChemicalFormula::ParseFormula(StringHelper::replace(modValue, " ", ""));
+                    
                 }
-//ORIGINAL LINE: case "MM":
                 else if (modKey == "MM") // Monoisotopic mass difference. Might not precisely correspond to formula!
                 {
-                        double thisMM;
-                        if (!double::TryParse(modValue, NumberStyles::Any, CultureInfo::InvariantCulture, thisMM))
-                        {
-                            throw MzLibException(line.substr(5) + " is not a valid monoisotopic mass");
-                        }
-                        _monoisotopicMass = thisMM;
-
-                }
-//ORIGINAL LINE: case "DR":
-                else if (modKey == "DR") // External database links!
-                {
-                        auto splitStringDR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "}, StringSplitOptions::None);
-                        try
-                        {
-                            IList<std::string> val;
-                            std::unordered_map<std::string, std::vector<std::string>>::const_iterator _databaseReference_iterator = _databaseReference.find(splitStringDR[0]);
-                            val = _databaseReference_iterator->second;
-                            val->Add(splitStringDR[1]);
-                        }
-                        catch (...)
-                        {
-                            if (_databaseReference.empty())
-                            {
-                                _databaseReference = std::unordered_map<std::string, std::vector<std::string>>();
-                                _databaseReference.emplace(splitStringDR[0], std::vector<std::vector<std::string>>(1) });
-                            }
-                            else
-                            {
-                                _databaseReference.emplace(splitStringDR[0], std::vector<std::vector<std::string>>(1) });
-                            }
-                        }
-
-                }
-//ORIGINAL LINE: case "TR":
-                else if (modKey == "TR") // External database links!
-                {
-                        auto splitStringTR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "}, StringSplitOptions::None);
-                        try
-                        {
-                            IList<std::string> val;
-                            std::unordered_map<std::string, std::vector<std::string>>::const_iterator _taxonomicRange_iterator = _taxonomicRange.find(splitStringTR[0]);
-                            val = _taxonomicRange_iterator->second;
-                            val->Add(splitStringTR[1]);
-                        }
-                        catch (...)
-                        {
-                            if (_taxonomicRange.empty())
-                            {
-                                _taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>();
-                                _taxonomicRange.emplace(splitStringTR[0], std::vector<std::vector<std::string>>(1) });
-                            }
-                            else
-                            {
-                                _taxonomicRange.emplace(splitStringTR[0], std::vector<std::vector<std::string>>(1) });
-                            }
-                        }
-
-                }
-//ORIGINAL LINE: case "KW":
-                else if (modKey == "KW") // ; Separated keywords
-                {
-                        _keywords = std::vector<std::string>(StringHelper::trimEnd(modValue, ".")->Split({"; "}, StringSplitOptions::None));
-
-                    // NOW CUSTOM FIELDS:
-
-                }
-//ORIGINAL LINE: case "NL":
-                else if (modKey == "NL") // Netural Losses. when field doesn't exist, single equal to 0. these must all be on one line;
-                {
-                        if (UsefulProteomicsDatabases::PtmListLoader::IsNullOrEmpty(_neutralLosses))
-                        {
-                            _neutralLosses = std::unordered_map<DissociationType, std::vector<double>>();
-                        }
-                        _neutralLosses = DiagnosticIonsAndNeutralLosses(modValue, _neutralLosses);
-
-                }
-//ORIGINAL LINE: case "DI":
-                else if (modKey == "DI") // Masses of diagnostic ions. Might just be "DI"!!! If field doesn't exist, create an empty list!
-                {
-                        if (UsefulProteomicsDatabases::PtmListLoader::IsNullOrEmpty(_diagnosticIons))
-                        {
-                            _diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>();
-                        }
-                        _diagnosticIons = DiagnosticIonsAndNeutralLosses(modValue, _diagnosticIons);
-
-                }
-//ORIGINAL LINE: case "MT":
-                else if (modKey == "MT") // Modification Type. If the field doesn't exist, set to the database name
-                {
-                        _modificationType = modValue;
-
-                }
-//ORIGINAL LINE: case "//":
-                else if (modKey == "//")
-                {
-                        if (_target.empty() || _target.empty()) //This happens for FT=CROSSLINK modifications. We ignore these for now.
-                        {
-                            _target = {nullptr};
-                        }
-                        for (auto motif : _target)
-                        {
-                            bool useChemFormulaForMM = !_monoisotopicMass && _chemicalFormula != nullptr;
-                            bool adjustWithFormalCharge = _monoisotopicMass && !_databaseReference.empty();
-                            if (useChemFormulaForMM)
-                            {
-                                _monoisotopicMass = std::make_optional(_chemicalFormula->getMonoisotopicMass());
-                            }
-                            if (adjustWithFormalCharge)
-                            {
-                                _monoisotopicMass = std::make_optional(AdjustMonoIsotopicMassForFormalCharge(_monoisotopicMass, _chemicalFormula, _databaseReference, formalChargesDictionary));
-                            }
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                            yield return new Modification(_id, _accession, _modificationType, _featureType, motif, _locationRestriction, _chemicalFormula, _monoisotopicMass, _databaseReference, _taxonomicRange, _keywords, _neutralLosses, _diagnosticIons, _fileOrigin);
-                        }
-
-                }
-                else
-                {
-                }
-            }
-        }
-    }
-
-    double PtmListLoader::AdjustMonoIsotopicMassForFormalCharge(std::optional<double> &_monoisotopicMass, ChemicalFormula *_chemicalFormula, std::unordered_map<std::string, std::vector<std::string>> &_databaseReference, std::unordered_map<std::string, int> &formalChargesDictionary)
-    {
-//C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
-        for (auto dbAndAccession : _databaseReference.SelectMany(b =>
-        {
-//C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
-            b->Value->Select(c =>
-            {
-                return b::Key + ";
-            };
-
-            case "CID":
-                return DissociationType::CID;
-
-            case "MPD":
-                return DissociationType::IRMPD;
-
-            case "ECD":
-                return DissociationType::ECD;
-
-            case "PQD":
-                return DissociationType::PQD;
-
-            case "ETD":
-                return DissociationType::ETD;
-
-            case "HCD":
-                return DissociationType::HCD;
-
-            case "EThcD":
-                return DissociationType::EThcD;
-
-            case "Custom":
-                return DissociationType::Custom;
-
-            default:
-                return nullptr;
-        }
-    }
-
-    std::unordered_map<DissociationType, std::vector<double>> PtmListLoader::DiagnosticIonsAndNeutralLosses(const std::string &oneEntry, std::unordered_map<DissociationType, std::vector<double>> &dAndNDictionary)
-    {
-        try
-        {
-            std::vector<std::string> nlOrDiEntries = oneEntry.Split({" or "}, StringSplitOptions::None);
-            for (auto nlOrDiEntry : nlOrDiEntries)
-            {
-                std::vector<std::string> entryKeyValue = nlOrDiEntry.Split({":"}, StringSplitOptions::RemoveEmptyEntries);
-                if (entryKeyValue.size() == 1) // assume there is no dissociation type listed and only formula or mass are supplied
-                {
-                    double mm;
-                    try
+                    double thisMM;
+                    //if (!double::TryParse(modValue, NumberStyles::Any, CultureInfo::InvariantCulture, thisMM))
+                    try                        
                     {
-                        mm = ChemicalFormula::ParseFormula(entryKeyValue[0])->getMonoisotopicMass(); // turn chemical formula into monoisotopic mass
+                        thisMM = std::stod(modValue);
                     }
                     catch (...)
                     {
-                        mm = std::stod(entryKeyValue[0], CultureInfo::InvariantCulture);
+                        throw MzLibException(line.substr(5) + " is not a valid monoisotopic mass");
                     }
+                    _monoisotopicMass = thisMM;
+                    
+                }
+                else if (modKey == "DR") // External database links!
+                {
+                    //auto splitStringDR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "});
+                    std::string del = "; ";
+                    auto splitStringDR = StringHelper::split(StringHelper::trimEnd(modValue, "."), del );
+                    try
+                    {
+                        std::vector<std::string> val;
+                        std::unordered_map<std::string, std::vector<std::string>>::const_iterator _databaseReference_iterator =
+                            _databaseReference.find(splitStringDR[0]);
+                        val = _databaseReference_iterator->second;
+                        val.push_back(splitStringDR[1]);
+                    }
+                    catch (...)
+                    {
+                        if (_databaseReference.empty())
+                        {
+                            //_databaseReference = std::unordered_map<std::string, std::vector<std::string>>();
+                            _databaseReference.clear();
+                            _databaseReference.emplace(splitStringDR[0], std::vector<std::string>(1) );
+                        }
+                        else
+                        {
+                            _databaseReference.emplace(splitStringDR[0], std::vector<std::string>(1) );
+                        }
+                    }
+                }
+                else if (modKey == "TR") // External database links!
+                {
+                    //auto splitStringTR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "});
+                    std::string del = "; ";
+                    auto splitStringTR = StringHelper::split(StringHelper::trimEnd(modValue, "."), del );
+                    try
+                    {
+                        std::vector<std::string> val;
+                        std::unordered_map<std::string, std::vector<std::string>>::const_iterator _taxonomicRange_iterator =
+                            _taxonomicRange.find(splitStringTR[0]);
+                        val = _taxonomicRange_iterator->second;
+                        val.push_back(splitStringTR[1]);
+                    }
+                    catch (...)
+                    {
+                        if (_taxonomicRange.empty())
+                        {
+                            //_taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>();
+                            _taxonomicRange.clear();
+                            _taxonomicRange.emplace(splitStringTR[0], std::vector<std::string>(1) );
+                        }
+                        else
+                        {
+                            _taxonomicRange.emplace(splitStringTR[0], std::vector<std::string>(1) );
+                        }
+                        
+                    }
+                }
+                else if (modKey == "KW") // ; Separated keywords
+                {
+                    std::string del = "; ";
+                    _keywords = StringHelper::split(StringHelper::trimEnd(modValue, "."), del);
+                    
+                    // NOW CUSTOM FIELDS:
+                    
+                }
+                else if (modKey == "NL") // Netural Losses. when field doesn't exist, single equal to 0. these must all be on one line;
+                {
+                    if (UsefulProteomicsDatabases::PtmListLoader::IsNullOrEmpty(_neutralLosses))
+                    {
+                        //_neutralLosses = std::unordered_map<DissociationType, std::vector<double>>();
+                        _neutralLosses.clear();
+                    }
+                    _neutralLosses = DiagnosticIonsAndNeutralLosses(modValue, _neutralLosses);
+                    
+                }
+                else if (modKey == "DI") // Masses of diagnostic ions. Might just be "DI"!!! If field doesn't exist, create an empty list!
+                {
+                    if (UsefulProteomicsDatabases::PtmListLoader::IsNullOrEmpty(_diagnosticIons))
+                    {
+                        //_diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>();
+                        _diagnosticIons.clear();
+                    }
+                    _diagnosticIons = DiagnosticIonsAndNeutralLosses(modValue, _diagnosticIons);
+                    
+                }
+                else if (modKey == "MT") // Modification Type. If the field doesn't exist, set to the database name
+                {
+                    _modificationType = modValue;
+                    
+                }
+                else if (modKey == "//")
+                {
+                    if (_target.empty() || _target.empty()) //This happens for FT=CROSSLINK modifications. We ignore these for now.
+                    {
+                        _target = {nullptr};
+                    }
+                    for (auto motif : _target)
+                    {
+                        bool useChemFormulaForMM = !_monoisotopicMass && _chemicalFormula != nullptr;
+                        bool adjustWithFormalCharge = _monoisotopicMass && !_databaseReference.empty();
+                        if (useChemFormulaForMM)
+                        {
+                            _monoisotopicMass = std::make_optional(_chemicalFormula->getMonoisotopicMass());
+                        }
+                        if (adjustWithFormalCharge)
+                        {
+                            _monoisotopicMass = std::make_optional(AdjustMonoIsotopicMassForFormalCharge(_monoisotopicMass,
+                                                                                                         _chemicalFormula,
+                                                                                                         _databaseReference,
+                                                                                                         formalChargesDictionary));
+                        }
+#ifdef ORIG
+                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                        yield return new Modification(_id, _accession, _modificationType, _featureType, motif,
+                                                      _locationRestriction, _chemicalFormula, _monoisotopicMass,
+                                                      _databaseReference, _taxonomicRange, _keywords, _neutralLosses,
+                                                      _diagnosticIons, _fileOrigin);
+#endif
+                        Modification *mod = new Modification(_id, _accession, _modificationType, _featureType, motif,
+                                                             _locationRestriction, _chemicalFormula, _monoisotopicMass,
+                                                             _databaseReference, _taxonomicRange, _keywords, _neutralLosses,
+                                                             _diagnosticIons, _fileOrigin);
+                        retvec.push_back(mod);
+                    }
+                    
+                }
+        }
+        }
+        return retvec;
+    }
+        
+    
+    double PtmListLoader::AdjustMonoIsotopicMassForFormalCharge(std::optional<double> &_monoisotopicMass,
+                                                                ChemicalFormula *_chemicalFormula,
+                                                                std::unordered_map<std::string, std::vector<std::string>> &_databaseReference,
+                                                                std::unordered_map<std::string, int> &formalChargesDictionary)
+    {
+        //C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
+        //foreach (var dbAndAccession in _databaseReference.SelectMany(b => b.Value.Select(c => b.Key + "; " + c)))
 
-                    List<double> val;
-                    std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator = dAndNDictionary.find(DissociationType::AnyActivationType); // check the dictionary to see if AnyActivationType is already listed in the keys,
+        std::vector<std::string> tmpvec;
+        for ( auto b : _databaseReference ) {
+            for ( auto c: std::get<1>(b) ) {
+                std::string s = std::get<0>(b) + ";" + c;
+                tmpvec.push_back(s);
+            }
+        }
+        
+        for ( auto dbAndAccession : tmpvec )
+        {
+            if (formalChargesDictionary.find(dbAndAccession) !=  formalChargesDictionary.end() )
+            {
+                if (_monoisotopicMass.has_value())
+                {
+                    _monoisotopicMass = std::make_optional(_monoisotopicMass.value() -
+                                                         formalChargesDictionary[dbAndAccession] * Constants::protonMass);
+                }
+                if (_chemicalFormula != nullptr)
+                {
+                    _chemicalFormula->Remove(PeriodicTable::GetElement("H"), formalChargesDictionary[dbAndAccession]);
+                }
+                break;
+            }
+        }
+        return _monoisotopicMass.value();
+    }
+
+    DissociationType  PtmListLoader::ModDissociationType(std::string modType)
+    {
+        if (modType ==  "CID")
+            return DissociationType::CID;
+        
+        else if (modType ==  "MPD")
+            return DissociationType::IRMPD;
+        
+        else if (modType ==  "ECD")
+            return DissociationType::ECD;
+        
+        else if (modType ==  "PQD")
+            return DissociationType::PQD;
+        
+        else if (modType ==  "ETD")
+            return DissociationType::ETD;
+                
+        else if (modType ==  "HCD")
+            return DissociationType::HCD;
+        
+        else if (modType ==  "EThcD")
+            return DissociationType::EThcD;
+        
+        else if (modType ==  "Custom") 
+            return DissociationType::Custom;
+        
+        return DissociationType::Unknown;
+    }
+    
+    std::unordered_map<DissociationType, std::vector<double>> PtmListLoader::DiagnosticIonsAndNeutralLosses(const std::string &oneEntry,
+                                                                                                            std::unordered_map<DissociationType,
+                                                                                                            std::vector<double>> &dAndNDictionary)
+    {
+        try
+        {
+            //std::vector<std::string> nlOrDiEntries = StringHelper::split(oneEntry.Split({" or "} );
+            std::string del = " or ";
+            std::vector<std::string> nlOrDiEntries = StringHelper::split(oneEntry, del);
+            for (auto nlOrDiEntry : nlOrDiEntries)
+            {
+                //std::vector<std::string> entryKeyValue = nlOrDiEntry.Split({":"}, StringSplitOptions::RemoveEmptyEntries);
+                std::string del2 = ":";
+                std::vector<std::string> entryKeyValue = StringHelper::split(nlOrDiEntry, del2);
+                if (entryKeyValue.size() == 1) 
+                {
+                    // assume there is no dissociation type listed and only formula or mass are supplied
+                    double mm;
+                    try
+                    {
+                        // turn chemical formula into monoisotopic mass
+                        mm = ChemicalFormula::ParseFormula(entryKeyValue[0])->getMonoisotopicMass(); 
+                    }
+                    catch (...)
+                    {
+                        mm = std::stod(entryKeyValue[0] );
+                    }
+                    
+                    std::vector<double> val;
+                    // check the dictionary to see if AnyActivationType is already listed in the keys,
+                    std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
+                        dAndNDictionary.find(DissociationType::AnyActivationType); 
                     val = dAndNDictionary_iterator->second;
-                    if (val != nullptr)
+                    if (!val.empty())
                     {
                         dAndNDictionary[DissociationType::AnyActivationType].push_back(mm);
                     }
@@ -422,33 +499,38 @@ PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
                         dAndNDictionary.emplace(DissociationType::AnyActivationType, std::vector<double> {mm});
                     }
                 }
-                else if (entryKeyValue.size() == 2) // an entry with two values is assumed to have a dissociation type and a neutral loss formula or mass
+                else if (entryKeyValue.size() == 2) 
                 {
+                    // an entry with two values is assumed to have a dissociation type and a neutral loss formula or mass
+                    
                     std::optional<DissociationType> dt = ModDissociationType(entryKeyValue[0]);
-                    if (dt)
+                    if (dt.has_value())
                     {
                         //try // see if dictionary already contains key AnyActivationType
                         //{
                         double mm;
                         try
                         {
-                            mm = ChemicalFormula::ParseFormula(entryKeyValue[1])->getMonoisotopicMass(); // turn chemical formula into monoisotopic mass
+                            // turn chemical formula into monoisotopic mass
+                            mm = ChemicalFormula::ParseFormula(entryKeyValue[1])->getMonoisotopicMass(); 
                         }
                         catch (...)
                         {
-                            mm = std::stod(entryKeyValue[1], CultureInfo::InvariantCulture);
+                            mm = std::stod(entryKeyValue[1]);
                         }
-
-                        List<double> val;
-                        std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator = dAndNDictionary.find(static_cast<DissociationType>(dt)); // check the dictionary to see if AnyActivationType is already listed in the keys,
+                        
+                        std::vector<double> val;
+                        // check the dictionary to see if AnyActivationType is already listed in the keys,
+                        std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
+                            dAndNDictionary.find(static_cast<DissociationType>(dt.value())); 
                         val = dAndNDictionary_iterator->second;
-                        if (val != nullptr)
+                        if (!val.empty() )
                         {
-                            dAndNDictionary[static_cast<DissociationType>(dt)].push_back(mm);
+                            dAndNDictionary[static_cast<DissociationType>(dt.value())].push_back(mm);
                         }
                         else
                         {
-                            dAndNDictionary.emplace(static_cast<DissociationType>(dt), std::vector<double> {mm});
+                            dAndNDictionary.emplace(static_cast<DissociationType>(dt.value()), std::vector<double> {mm});
                         }
                     }
                     else
@@ -466,7 +548,7 @@ PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
         {
             dAndNDictionary = std::unordered_map<DissociationType, std::vector<double>>(); // must have run into some junk
         }
-
+        
         return dAndNDictionary;
     }
 }

@@ -1,7 +1,5 @@
 ﻿#include "Loaders.h"
-#include "Generated/UsefulProteomicsDatabases.Generated.oboTerm.h"
 #include "UnimodLoader.h"
-#include "Generated/UsefulProteomicsDatabases.Generated.obo.h"
 #include "../Proteomics/Modifications/Modification.h"
 #include "PtmListLoader.h"
 
@@ -9,7 +7,7 @@
 #include <ctime>
 
 using namespace Proteomics;
-using namespace UsefulProteomicsDatabases::Generated;
+using namespace UsefulProteomicsDatabases;
 
 namespace UsefulProteomicsDatabases
 {
@@ -153,17 +151,17 @@ namespace UsefulProteomicsDatabases
                 c::dbname->Equals("FormalCharge");
             });
         });
-#endif
-        std::vector<oboTerm*> v;
+
+        std::vector<term*> v;
         // Edgar: will have to revisit this part on how to implement the equivalent of OfType in C++
         for ( auto b: psiModDeserialized->getItems() ) {
-            v.push_back(reinterpret_cast<oboTerm*>(b));
+            v.push_back(reinterpret_cast<term*>(b));
         }
-        std::vector<oboTerm*> modsWithFormalCharges;
-        for (oboTerm* b: v ) {
+        std::vector<term*> modsWithFormalCharges;
+        for (term* b: v ) {
             bool found = false;
-            if ( !b->getxref_analog().empty() ) {
-                for ( auto c: b->getxref_analog() ) {
+            if ( !b->xref_analog().empty() ) {
+                for ( auto c: b->xref_analog() ) {
                     if ( c->getdbname() == "FormalCharge" ) {
                         found = true;
                         break;
@@ -177,15 +175,15 @@ namespace UsefulProteomicsDatabases
         
         //Regex *digitsOnly = new Regex(R"([^\d])");
 
-        std::unordered_map<std::string, int> r;
         //C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
-#ifdef ORIG
         //return modsWithFormalCharges->ToDictionary(b =>
         //                                           TangibleLambdaToken712public
         // static void LoadElements(std::string elementLocation){
         //    if (!FileSystem::fileExists(elementLocation)){UpdateElements(elementLocation);
         //   } }
 #endif
+        std::cout << "Loaders::GetFormalChargesDictionary not implemented correctly. Please revisit later.\n";
+        std::unordered_map<std::string, int> r;
         return r;
     }
 
@@ -206,7 +204,7 @@ namespace UsefulProteomicsDatabases
         return UnimodLoader::ReadMods(unimodLocation);
     }
 
-    Generated::obo *Loaders::LoadPsiMod(const std::string &psimodLocation)
+    obo *Loaders::LoadPsiMod(const std::string &psimodLocation)
     {
 #ifdef ORIG
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
