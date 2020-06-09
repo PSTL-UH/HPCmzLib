@@ -24,7 +24,7 @@ OBJ =   Modification.o                \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB) 
+	$(MAKE) $(MZLIB_LIB) 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)

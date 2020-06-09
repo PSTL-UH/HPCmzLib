@@ -7,14 +7,9 @@
 #include <functional>
 #include <optional>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { class SourceFile; }
 #include "SourceFile.h"
-//namespace MassSpectrometry { class MsDataScan; }
 #include "MsDataScan.h"
-//namespace MassSpectrometry { class IFilteringParams; }
 #include "IFilteringParams.h"
-//namespace MassSpectrometry { class DeconvolutionFeatureWithMassesAndScans; }
 #include "DeconvolutionFeatureWithMassesAndScans.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
@@ -54,7 +49,7 @@ namespace MassSpectrometry
     public:
         MsDataFile(int numSpectra, MassSpectrometry::SourceFile *sourceFile);
 
-        MsDataFile(std::vector<MsDataScan*> &scans, MassSpectrometry::SourceFile *sourceFile);
+        MsDataFile(std::vector<MsDataScan*> scans, MassSpectrometry::SourceFile *sourceFile);
 
         MassSpectrometry::SourceFile *getSourceFile() const;
 
@@ -72,9 +67,13 @@ namespace MassSpectrometry
         /// <param name="intensities"></param>
         /// <param name="mArray"></param>
         /// <param name="filteringParams"></param>
-        static void WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams, double scanRangeMinMz, double scanRangeMaxMz, std::optional<double> WindowMaxNormalizationToValue = std::nullopt);
+        static void WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams,
+                                     double scanRangeMinMz, double scanRangeMaxMz,
+                                     std::optional<double> WindowMaxNormalizationToValue = std::nullopt);
 
-        static void XCorrPrePreprocessing(std::vector<double> &intensities, std::vector<double> &mArray, double scanRangeMinMz, double scanRangeMaxMz, double precursorMz, double precursorDiscardRange = 1.5, double discreteMassBin = 1.0005079, double percentMaxThreshold = 5);
+        static void XCorrPrePreprocessing(std::vector<double> &intensities, std::vector<double> &mArray, double scanRangeMinMz,
+                                          double scanRangeMaxMz, double precursorMz, double precursorDiscardRange = 1.5,
+                                          double discreteMassBin = 1.0005079, double percentMaxThreshold = 5);
 
         virtual std::vector<MsDataScan*> GetMS1Scans();
 
@@ -89,7 +88,11 @@ namespace MassSpectrometry
         // EG: removed this function from the C++ version.
         //IEnumerator<MsDataScan*> *GetEnumerator();
 
-        std::vector<DeconvolutionFeatureWithMassesAndScans*> Deconvolute(std::optional<int> &minScan, std::optional<int> &maxScan, int minAssumedChargeState, int maxAssumedChargeState, double deconvolutionTolerancePpm, double intensityRatioLimit, double aggregationTolerancePpm, std::function<bool(MsDataScan*)> scanFilterFunc, int maxThreads = -1);
+        std::vector<DeconvolutionFeatureWithMassesAndScans*> Deconvolute(std::optional<int> &minScan, std::optional<int> &maxScan,
+                                                                         int minAssumedChargeState, int maxAssumedChargeState,
+                                                                         double deconvolutionTolerancePpm, double intensityRatioLimit,
+                                                                         double aggregationTolerancePpm,
+                                                                         std::function<bool(MsDataScan*)> scanFilterFunc, int maxThreads = -1);
 
 #ifdef NOT_USED
     protected:

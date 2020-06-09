@@ -23,7 +23,7 @@ namespace MassSpectrometry
         privateSourceFile = sourceFile;
     }
     
-    MsDataFile::MsDataFile(std::vector<MsDataScan*> &scans, MassSpectrometry::SourceFile *sourceFile)
+    MsDataFile::MsDataFile(std::vector<MsDataScan*> scans, MassSpectrometry::SourceFile *sourceFile)
     {
         Scans = scans;
         privateSourceFile = sourceFile;

@@ -11,19 +11,19 @@ include ../Makefile.defs
 
 
 all:    
-	cd AminoAcidPolymer ; make ; cd ..
-	cd Modifications ; make ; cd ..
-	cd Protein ; make ; cd ..
-	cd ProteolyticDigestion ; make ; cd ..
-	cd Fragmentation ; make ; cd ..
+	cd AminoAcidPolymer ; $(MAKE) ; cd ..
+	cd Modifications ; $(MAKE) ; cd ..
+	cd Protein ; $(MAKE) ; cd ..
+	cd ProteolyticDigestion ; $(MAKE) ; cd ..
+	cd Fragmentation ; $(MAKE) ; cd ..
 
-#	cd RetentionTimePrediction ; make ; cd ..
+#	cd RetentionTimePrediction ; $(MAKE) ; cd ..
 
 clean:
-	cd AminoAcidPolymer ; make clean; cd ..
-	cd Fragmentation ; make clean; cd ..
-	cd Modifications ; make clean; cd ..
-	cd Protein ; make clean; cd ..
-	cd ProteolyticDigestion ; make clean; cd ..
+	cd AminoAcidPolymer ; $(MAKE) clean; cd ..
+	cd Fragmentation ; $(MAKE) clean; cd ..
+	cd Modifications ; $(MAKE) clean; cd ..
+	cd Protein ; $(MAKE) clean; cd ..
+	cd ProteolyticDigestion ; $(MAKE) clean; cd ..
 
-#	cd RetentionTimePrediction ; make clean; cd ..
+#	cd RetentionTimePrediction ; $(MAKE) clean; cd ..

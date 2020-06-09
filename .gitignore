@@ -27,7 +27,9 @@ Test/DatabaseTests/TestProteomicsReadWrite
 Test/DatabaseTests/elements.dat
 Test/DatabaseTests/rewrite_fasta.fasta
 Test/DatabaseTests/rewrite_test_ensembl.pep.all.fasta
+Test/DatabaseTests/fdsfsd.xml
 TestFlashLFQ/modSeq.tsv
 TestFlashLFQ/peaks.tsv
 TestFlashLFQ/mzml_1.mzML
 TestFlashLFQ/mzml_2.mzML
+

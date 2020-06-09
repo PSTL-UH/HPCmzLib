@@ -17,8 +17,8 @@ OBJ = 	Mzml.o                   \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB)
-	cd XSD; make ; cd ..
+	$(MAKE) $(MZLIB_LIB)
+	cd XSD; $(MAKE) ; cd ..
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
@@ -29,5 +29,5 @@ $(OBJ):	$(HEADER)
 	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c $<
 
 clean:  
-	cd XSD; make clean ; cd ..
+	cd XSD; $(MAKE) clean ; cd ..
 	rm -rf *.o *~

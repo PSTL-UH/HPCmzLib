@@ -27,18 +27,18 @@ OBJ =   DecoyType.o             \
 	ProteinDbLoader.o       \
 	ProteinDbWriter.o       \
 	XmlWriter.o		\
-	UnimodLoader.o	
+	UnimodLoader.o		
 
 #	Loaders.o              \
-#	PtmListLoader.o        \
+#	PtmListLoader.o        
 
 .SUFFIXES: .o.cpp
 
 all:  
 
-	cd PSI-MOD.obo ; make ; cd ..
-	cd unimod_2 ; make ; cd ..
-	make $(MZLIB_LIB) 
+	cd PSI-MOD.obo ; $(MAKE) ; cd ..
+	cd unimod_2 ; $(MAKE) ; cd ..
+	$(MAKE) $(MZLIB_LIB) 
 
 
 
@@ -51,5 +51,5 @@ $(OBJ):	$(HEADER)
 
 clean:  
 	rm -rf *.o *~
-	cd PSI-MOD.obo ; make clean ; cd ..
-	cd unimod_2 ; make clean ; cd ..
+	cd PSI-MOD.obo ; $(MAKE) clean ; cd ..
+	cd unimod_2 ; $(MAKE) clean ; cd ..

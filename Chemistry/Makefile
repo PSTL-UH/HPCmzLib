@@ -30,8 +30,8 @@ OBJ = 	Constants.o                      \
 .SUFFIXES: .o.cpp
 
 all:    
-	cd Interfaces ; make ; cd ..
-	make $(MZLIB_LIB) 
+	cd Interfaces ; $(MAKE) ; cd ..
+	$(MAKE) $(MZLIB_LIB) 
 
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
@@ -42,5 +42,5 @@ $(OBJ):	$(HEADER)
 	$(CXX) $(CXXFLAGS) -c $<
 
 clean:  
-	cd Interfaces ; make clean ; cd ..
+	cd Interfaces ; $(MAKE) clean ; cd ..
 	rm -rf *.o *~

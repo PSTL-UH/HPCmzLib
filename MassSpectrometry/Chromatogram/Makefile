@@ -20,7 +20,7 @@ OBJ = 	Chromatogram.o                   \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB)
+	$(MAKE) $(MZLIB_LIB)
 
 Chromatogram.o:  Chromatogram.cpp $(HEADER)
 	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c Chromatogram.cpp  

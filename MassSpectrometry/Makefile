@@ -37,10 +37,10 @@ OBJ = 	DeconvolutionFeature.o                   \
 .SUFFIXES: .o.cpp
 
 all:    
-	make $(MZLIB_LIB) 
-	cd Chromatogram ; make ; cd ..
-	cd Enums ; make ; cd ..
-	cd MzSpectra ; make ; cd ..
+	$(MAKE) $(MZLIB_LIB) 
+	cd Chromatogram ; $(MAKE) ; cd ..
+	cd Enums ; $(MAKE) ; cd ..
+	cd MzSpectra ; $(MAKE) ; cd ..
 
 GeneratedMzSpectrum.o: 	GeneratedMzSpectrum.cpp $(HEADER)
 	$(CXX) $(CXXFLAGS) $(CXXLOCALFLAGS) -c GeneratedMzSpectrum.cpp	
@@ -61,6 +61,6 @@ $(OBJ):	$(HEADER)
 
 clean:  
 	rm -rf *.o *~
-	cd Chromatogram ; make clean ; cd ..
-	cd Enums ; make clean ; cd ..
-	cd MzSpectra ; make clean ; cd ..
+	cd Chromatogram ; $(MAKE) clean ; cd ..
+	cd Enums ; $(MAKE) clean ; cd ..
+	cd MzSpectra ; $(MAKE) clean ; cd ..
