@@ -18,7 +18,8 @@ CEXECS = TestChemicalFormula	   	     \
 	TestSpectra                          \
 	TestProteinDigestion                 \
 	TestProteinProperties                \
-	TestPeptides						 \
+	TestPeptides			     \
+	TestPtmListLoader                    \
 	TestMzML
 
 #	FakeMsDataFile                       \
@@ -32,7 +33,6 @@ CEXECS = TestChemicalFormula	   	     \
 #	TestMsDataFile                       \
 #	TestPeptideWithSetMods               \
 #	TestProductMassesMightHaveDuplicates \
-#	TestPtmListLoader                    \
 #	TestRangeAndTolerances               \
 #	TestRetentionTimePrediction          \
 #	TestSeqCoverage                      \
@@ -83,6 +83,9 @@ TestProteinDigestion: TestProteinDigestion.o
 #
 TestSpectra: TestSpectra.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
+#
+TestPtmListLoader: TestPtmListLoader.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 TestPeptideWithSetMods: TestPeptideWithSetMods.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
@@ -100,4 +103,4 @@ clean:
 	rm -f TestChemicalFormula TestElementsAndIsotopes TestDigestionMotif
 	rm -f TestPeptides TestAminoAcids TestModifications TestFragments TestMetaMorpheus
 	rm -f TestProteinDigestion TestProteinProperties TestSpectra TestMzML
-	rm -f TestPeptideWithSetMods
+	rm -f TestPeptideWithSetMods TestPtmListLoader

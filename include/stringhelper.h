@@ -157,6 +157,19 @@ public:
 		return trimStart(trimEnd(source, trimChars), trimChars);
 	}
 
+        static std::string stripUnicode( std::string source )
+        {
+            std::string result(source.length(), ' ');
+            int j=0;
+            for ( char c : source ) {                
+                if ( c >= 0 && c <128 ) {
+                    result[j] = c;
+                    j++;
+                }
+            }
+            return result;
+        }
+        
 	static std::string replace(std::string source, const std::string &find, const std::string &replace)
 	{
 		size_t pos = 0;

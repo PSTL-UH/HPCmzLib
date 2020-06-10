@@ -51,7 +51,7 @@ namespace UsefulProteomicsDatabases
     PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
     
     std::vector<Modification*> PtmListLoader::ReadModsFromFile(const std::string &ptmListLocation,
-                                                     std::vector<std::tuple<Modification*, std::string>> &filteredModificationsWithWarnings)
+           std::vector<std::tuple<Modification*, std::string>> &filteredModificationsWithWarnings)
     {
 #ifdef ORIG
         return ReadModsFromFile(ptmListLocation, std::unordered_map<std::string, int>(),
@@ -60,7 +60,8 @@ namespace UsefulProteomicsDatabases
                                     });
 #endif
         std::unordered_map<std::string, int> formalChargesDict;
-        std::vector<Modification*> ret = ReadModsFromFile(ptmListLocation, formalChargesDict, filteredModificationsWithWarnings);
+        std::vector<Modification*> ret = ReadModsFromFile(ptmListLocation, formalChargesDict,
+                                                          filteredModificationsWithWarnings);
         std::sort(ret.begin(), ret.end(), [&] (auto *l, auto r ) {
                 return l->getIdWithMotif() < r->getIdWithMotif();
             });
@@ -151,7 +152,8 @@ namespace UsefulProteomicsDatabases
         return acceptedModifications;
     }
     
-    std::vector<Modification*> PtmListLoader::ReadMod(const std::string &ptmListLocation, std::vector<std::string> &specification,
+    std::vector<Modification*> PtmListLoader::ReadMod(const std::string &ptmListLocation,
+                                                      std::vector<std::string> &specification,
                                                       std::unordered_map<std::string, int> &formalChargesDictionary)
     {
         std::string _id = "";
@@ -171,8 +173,9 @@ namespace UsefulProteomicsDatabases
 
         std::vector<Modification *> retvec;
         
-        for (auto line : specification)
+        for (auto l : specification)
         {
+            std::string line = StringHelper::stripUnicode(l);
             if (line.length() >= 2)
             {
                 std::string modKey = line.substr(0, 2);
@@ -183,7 +186,7 @@ namespace UsefulProteomicsDatabases
                     {
                         //modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
                         char del = '#';
-                        modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(0, 5); //removes commented text
+                        modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(5); //removes commented text
                     }
                     catch (...)
                     {
@@ -212,7 +215,7 @@ namespace UsefulProteomicsDatabases
                     //std::vector<std::string> possibleMotifs = StringHelper::trimEnd(modValue, ".")->Split({" or "});
                     std::string del = " or ";
                     std::vector<std::string> possibleMotifs = StringHelper::split(StringHelper::trimEnd(modValue, "."), del);
-
+                    
                     std::vector<ModificationMotif*> acceptableMotifs;
                     for (auto singleTarget : possibleMotifs)
                     {
@@ -268,15 +271,15 @@ namespace UsefulProteomicsDatabases
                     //auto splitStringDR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "});
                     std::string del = "; ";
                     auto splitStringDR = StringHelper::split(StringHelper::trimEnd(modValue, "."), del );
-                    try
-                    {
-                        std::vector<std::string> val;
-                        std::unordered_map<std::string, std::vector<std::string>>::const_iterator _databaseReference_iterator =
-                            _databaseReference.find(splitStringDR[0]);
+                    std::vector<std::string> val;
+                    std::unordered_map<std::string, std::vector<std::string>>::const_iterator _databaseReference_iterator =
+                        _databaseReference.find(splitStringDR[0]);
+
+                    if ( _databaseReference_iterator !=  _databaseReference.end() ) {
                         val = _databaseReference_iterator->second;
                         val.push_back(splitStringDR[1]);
                     }
-                    catch (...)
+                    else 
                     {
                         if (_databaseReference.empty())
                         {
@@ -295,15 +298,14 @@ namespace UsefulProteomicsDatabases
                     //auto splitStringTR = StringHelper::trimEnd(modValue, ".")->Split(std::vector<std::string> {"; "});
                     std::string del = "; ";
                     auto splitStringTR = StringHelper::split(StringHelper::trimEnd(modValue, "."), del );
-                    try
-                    {
-                        std::vector<std::string> val;
-                        std::unordered_map<std::string, std::vector<std::string>>::const_iterator _taxonomicRange_iterator =
-                            _taxonomicRange.find(splitStringTR[0]);
+                    std::vector<std::string> val;
+                    std::unordered_map<std::string, std::vector<std::string>>::const_iterator _taxonomicRange_iterator =
+                        _taxonomicRange.find(splitStringTR[0]);
+                    if ( _taxonomicRange_iterator !=  _taxonomicRange.end() ) {
                         val = _taxonomicRange_iterator->second;
                         val.push_back(splitStringTR[1]);
                     }
-                    catch (...)
+                    else
                     {
                         if (_taxonomicRange.empty())
                         {
@@ -379,24 +381,24 @@ namespace UsefulProteomicsDatabases
                                                       _databaseReference, _taxonomicRange, _keywords, _neutralLosses,
                                                       _diagnosticIons, _fileOrigin);
 #endif
-                        Modification *mod = new Modification(_id, _accession, _modificationType, _featureType, motif,
-                                                             _locationRestriction, _chemicalFormula, _monoisotopicMass,
-                                                             _databaseReference, _taxonomicRange, _keywords, _neutralLosses,
+                        Modification *mod = new Modification(_id, _accession, _modificationType, _featureType,
+                                                             motif, _locationRestriction, _chemicalFormula,
+                                                             _monoisotopicMass,  _databaseReference,
+                                                             _taxonomicRange, _keywords, _neutralLosses,
                                                              _diagnosticIons, _fileOrigin);
                         retvec.push_back(mod);
-                    }
-                    
+                    }                    
                 }
-        }
+            }
         }
         return retvec;
     }
         
     
     double PtmListLoader::AdjustMonoIsotopicMassForFormalCharge(std::optional<double> &_monoisotopicMass,
-                                                                ChemicalFormula *_chemicalFormula,
-                                                                std::unordered_map<std::string, std::vector<std::string>> &_databaseReference,
-                                                                std::unordered_map<std::string, int> &formalChargesDictionary)
+                                                                       ChemicalFormula *_chemicalFormula,
+                           std::unordered_map<std::string, std::vector<std::string>> &_databaseReference,
+                                           std::unordered_map<std::string, int> &formalChargesDictionary)
     {
         //C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
         //foreach (var dbAndAccession in _databaseReference.SelectMany(b => b.Value.Select(c => b.Key + "; " + c)))
@@ -458,8 +460,8 @@ namespace UsefulProteomicsDatabases
     }
     
     std::unordered_map<DissociationType, std::vector<double>> PtmListLoader::DiagnosticIonsAndNeutralLosses(const std::string &oneEntry,
-                                                                                                            std::unordered_map<DissociationType,
-                                                                                                            std::vector<double>> &dAndNDictionary)
+                                                                                                    std::unordered_map<DissociationType,
+                                                                                                  std::vector<double>> &dAndNDictionary)
     {
         try
         {
@@ -489,9 +491,8 @@ namespace UsefulProteomicsDatabases
                     // check the dictionary to see if AnyActivationType is already listed in the keys,
                     std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
                         dAndNDictionary.find(DissociationType::AnyActivationType); 
-                    val = dAndNDictionary_iterator->second;
-                    if (!val.empty())
-                    {
+                    if ( dAndNDictionary_iterator != dAndNDictionary.end() ) {
+                        val = dAndNDictionary_iterator->second;
                         dAndNDictionary[DissociationType::AnyActivationType].push_back(mm);
                     }
                     else
@@ -523,9 +524,8 @@ namespace UsefulProteomicsDatabases
                         // check the dictionary to see if AnyActivationType is already listed in the keys,
                         std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
                             dAndNDictionary.find(static_cast<DissociationType>(dt.value())); 
-                        val = dAndNDictionary_iterator->second;
-                        if (!val.empty() )
-                        {
+                        if (  dAndNDictionary_iterator !=  dAndNDictionary.end() ) {
+                            //val = dAndNDictionary_iterator->second;
                             dAndNDictionary[static_cast<DissociationType>(dt.value())].push_back(mm);
                         }
                         else
