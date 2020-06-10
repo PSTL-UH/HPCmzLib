@@ -21,7 +21,7 @@
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
-using namespace xercesc_3_1;
+//using namespace xercesc_3_1;
 
 #include <stdio.h>
 
