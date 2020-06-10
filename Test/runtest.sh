@@ -31,6 +31,11 @@ make TestPeptides
 ./TestPeptides
 
 echo " "
+echo "  TestPeptideWithSetMods  "
+make TestPeptideWithSetMods
+./TestPeptideWithSetMods
+
+echo " "
 echo "  TestFragments  "
 make TestFragments
 ./TestFragments
@@ -50,6 +55,11 @@ echo "  TestMzML"
 make TestMzML
 ./TestMzML
 
+echo " "
+echo "  TestPtmListLoader"
+make TestPtmListLoader
+./TestPtmListLoader
+
 
 #echo " "
 #echo "  TestProteinProperties"
@@ -60,3 +70,6 @@ make TestMzML
 #echo "  TestProteinDigestion"
 #make TestProteinDigestion
 #./TestProteinDigestion
+
+cd DatabaseTests ; ./runtest.sh ; cd ..
+cd TestFlashLFQ ; ./runtest.sh ; cd ..

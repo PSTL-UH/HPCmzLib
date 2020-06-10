@@ -98,6 +98,8 @@ TestMzML: TestMzML.o
 
 
 clean:
+	cd DatabaseTests ; make clean ; cd ..
+	cd TestFlashLFQ ; make clean ; cd ..
 	rm -rf *.o *~
 
 	rm -f TestChemicalFormula TestElementsAndIsotopes TestDigestionMotif

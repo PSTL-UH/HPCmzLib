@@ -6,7 +6,7 @@
 #
 # $HEADER$
 #
-include ../Makefile.defs
+include ../../Makefile.defs
 
 CEXECS = TestFlashLFQ
 
@@ -24,7 +24,7 @@ cxxtests: $(CEXECS)
 ###################################################################################################
 TestFlashLFQ: TestFlashLFQ.o 
 TestFlashLFQ: TestFlashLFQ.o
-	$(CXX) $(CXXFLAGS) -c ../Test/FakeMsDataFile.cpp
+	$(CXX) $(CXXFLAGS) -c ../FakeMsDataFile.cpp
 	$(CXX) $^ -o $@ FakeMsDataFile.o $(LDFLAGS)
 
 ###################################################################################################
