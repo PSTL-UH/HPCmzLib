@@ -351,7 +351,7 @@ namespace Test
 			val.push_back(i.second);
 		}
 
-		Assert::sequenceEqual(keys, std::vector<int> {8, 9});
+		Assert::SequenceEqual(keys, std::vector<int> {8, 9});
 
 		delete pep;
 		delete cTermMod;

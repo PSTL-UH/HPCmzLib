@@ -120,7 +120,7 @@ namespace UsefulProteomicsDatabases
         //filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
 
         //StringReader uniprot_mods = StringReader(storedModifications);
-        std::ifstream uniprot_mods(storedModifications);
+        std::stringstream uniprot_mods(storedModifications);
         std::vector<std::string> modification_specification;
         
         while (uniprot_mods.peek() != EOF)
@@ -281,15 +281,16 @@ namespace UsefulProteomicsDatabases
                     }
                     else 
                     {
+                        val.push_back(splitStringDR[1]);
                         if (_databaseReference.empty())
                         {
                             //_databaseReference = std::unordered_map<std::string, std::vector<std::string>>();
                             _databaseReference.clear();
-                            _databaseReference.emplace(splitStringDR[0], std::vector<std::string>(1) );
+                            _databaseReference.emplace(splitStringDR[0], val );
                         }
                         else
                         {
-                            _databaseReference.emplace(splitStringDR[0], std::vector<std::string>(1) );
+                            _databaseReference.emplace(splitStringDR[0], val );
                         }
                     }
                 }

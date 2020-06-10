@@ -503,7 +503,8 @@ namespace Proteomics
 
         sb->append("#This modification can be found in file " + this->getFileOrigin());
 
+        std::string s = sb->toString();
         delete sb;
-        return sb->toString();
+        return s;
     }
 }
