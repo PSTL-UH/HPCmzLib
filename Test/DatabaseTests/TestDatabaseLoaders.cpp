@@ -213,9 +213,9 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
     void TestDatabaseLoaders::FilesLoading()
     {
         std::string testdir=std::experimental::filesystem::current_path().string();
-        Loaders::LoadElements(testdir + "/elements2.dat");
+        Loaders::LoadElements(testdir + "/elements.dat");
 
-        auto unimodMods = Loaders::LoadUnimod(testdir + "/unimod_tables2.xml");//.ToList();
+        auto unimodMods = Loaders::LoadUnimod(testdir + "/unimod_tables.xml");//.ToList();
         // UniMod PTM list may be updated at some point, causing the unit test to fail
         Assert::AreEqual(2677, (int)unimodMods.size()); 
 
@@ -248,7 +248,7 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         Assert::AreEqual(2, neutralLossCount);
 #ifdef ORIG
         //PsiMod tested later
-        auto psiModDeserialized = Loaders::LoadPsiMod(testdir + "/PSI-MOD.obo2.xml");
+        auto psiModDeserialized = Loaders::LoadPsiMod(testdir + "/PSI-MOD.obo.xml");
 
         // N6,N6,N6-trimethyllysine
         auto trimethylLysine = psiModDeserialized->getItems().OfType<UsefulProteomicsDatabases::Generated::oboTerm*>().First([&] (std::any b)
@@ -271,7 +271,7 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
 
         std::unordered_map<std::string, int> formalChargesDictionary = Loaders::GetFormalChargesDictionary(psiModDeserialized);
 
-        auto uniprotPtms = Loaders::LoadUniprot(testdir + "/ptmlist2.txt",
+        auto uniprotPtms = Loaders::LoadUniprot(testdir + "/ptmlist.txt",
                                                 formalChargesDictionary).ToList();
         // UniProt PTM list may be updated at some point, causing the unit test to fail
         Assert::AreEqual(340, (int)uniprotPtms.size()); 
