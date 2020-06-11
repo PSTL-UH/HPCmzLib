@@ -238,7 +238,7 @@ namespace Proteomics
         this->setDiagnosticIons(_diagnosticIons);
         this->setFileOrigin(_fileOrigin);
 
-        if (!this->getMonoisotopicMass() && this->getChemicalFormula() != nullptr)
+        if (!this->getMonoisotopicMass().has_value() && this->getChemicalFormula() != nullptr)
         {
             this->setMonoisotopicMass(std::make_optional(this->getChemicalFormula()->getMonoisotopicMass()));
         }

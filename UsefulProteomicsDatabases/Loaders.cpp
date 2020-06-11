@@ -27,10 +27,13 @@ namespace UsefulProteomicsDatabases
 #endif
         if (!FileSystem::fileExists(uniprotLocation))
         {
-            std::cout << "Uniprot database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(uniprotLocation + ".temp", uniprotLocation);
+            std::cout << "Uniprot database does not exist please provide the file as " <<
+                uniprotLocation << std::endl;
+            //FileSystem::renamePath(uniprotLocation + ".temp", uniprotLocation);
             return;
         }
+
+#ifdef ORIG
         bool ye = FilesAreEqual_Hash(uniprotLocation + ".temp", uniprotLocation);
         if (ye)
         {
@@ -48,6 +51,7 @@ namespace UsefulProteomicsDatabases
             FileSystem::renamePath(uniprotLocation, uniprotLocation + s);
             FileSystem::renamePath(uniprotLocation + ".temp", uniprotLocation);
         }
+#endif
     }
 
     void Loaders::UpdateUnimod(const std::string &unimodLocation)
@@ -58,10 +62,12 @@ namespace UsefulProteomicsDatabases
 #endif
         if (!FileSystem::fileExists(unimodLocation))
         {
-            std::cout << "Unimod database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(unimodLocation + ".temp", unimodLocation);
+            std::cout << "Unimod database does not exist, please provide the file as " <<
+                unimodLocation << std::endl;
+            //FileSystem::renamePath(unimodLocation + ".temp", unimodLocation);
             return;
         }
+#ifdef ORIG
         bool ye = FilesAreEqual_Hash(unimodLocation + ".temp", unimodLocation);
         if (ye)
         {
@@ -79,6 +85,7 @@ namespace UsefulProteomicsDatabases
             FileSystem::renamePath(unimodLocation, unimodLocation + s);
             FileSystem::renamePath(unimodLocation + ".temp", unimodLocation);
         }
+#endif
     }
 
     void Loaders::UpdatePsiMod(const std::string &psimodLocation)
@@ -89,10 +96,12 @@ namespace UsefulProteomicsDatabases
 #endif
         if (!FileSystem::fileExists(psimodLocation))
         {
-            std::cout << "PSI-MOD database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(psimodLocation + ".temp", psimodLocation);
+            std::cout << "PSI-MOD database does not exist, please provide file as " <<
+                psimodLocation << std::endl;
+            //FileSystem::renamePath(psimodLocation + ".temp", psimodLocation);
             return;
         }
+#ifdef ORIG
         if (FilesAreEqual_Hash(psimodLocation + ".temp", psimodLocation))
         {
             std::cout << "PSI-MOD database is up to date, doing nothing" << std::endl;
@@ -109,6 +118,7 @@ namespace UsefulProteomicsDatabases
             FileSystem::renamePath(psimodLocation, psimodLocation + s);
             FileSystem::renamePath(psimodLocation + ".temp", psimodLocation);
         }
+#endif
     }
 
     void Loaders::UpdateElements(const std::string &elementLocation)
@@ -119,10 +129,12 @@ namespace UsefulProteomicsDatabases
 #endif
         if (!FileSystem::fileExists(elementLocation))
         {
-            std::cout << "Element database did not exist, writing to disk" << std::endl;
-            FileSystem::renamePath(elementLocation + ".temp", elementLocation);
+            std::cout << "Element database does not exist, please provide file as " <<
+                elementLocation << std::endl;
+            //FileSystem::renamePath(elementLocation + ".temp", elementLocation);
             return;
         }
+#ifdef ORIG        
         if (FilesAreEqual_Hash(elementLocation + ".temp", elementLocation))
         {
             std::cout << "Element database is up to date, doing nothing" << std::endl;
@@ -139,6 +151,7 @@ namespace UsefulProteomicsDatabases
             FileSystem::renamePath(elementLocation, elementLocation + s);
             FileSystem::renamePath(elementLocation + ".temp", elementLocation);
         }
+#endif
     }
 
     std::unordered_map<std::string, int> Loaders::GetFormalChargesDictionary(obo *psiModDeserialized)
@@ -221,7 +234,8 @@ namespace UsefulProteomicsDatabases
         return nullptr;
     }
 
-    std::vector<Modification*> Loaders::LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> formalChargesDictionary)
+    std::vector<Modification*> Loaders::LoadUniprot(const std::string &uniprotLocation,
+                                                    std::unordered_map<std::string, int> formalChargesDictionary)
     {
         if (!FileSystem::fileExists(uniprotLocation))
         {

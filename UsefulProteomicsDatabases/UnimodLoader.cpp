@@ -53,7 +53,7 @@ namespace UsefulProteomicsDatabases
             {"ProteinNterm", "N-terminal."},
             {"ProteinCterm", "C-terminal."}
         };
-
+        int ii=0;
         for (auto mod : deserialized->modifications().get().mod())
         {
             auto id = mod.title();
@@ -61,16 +61,15 @@ namespace UsefulProteomicsDatabases
             ChemicalFormula *cf = new ChemicalFormula();
             for (auto el : mod.delta().element())
             {
-                try
-                {
-                    auto elem = PeriodicTable::GetElement(el.symbol());
+                auto elem = PeriodicTable::GetElement(el.symbol());
+                if (elem != nullptr ) {
                     cf->Add(elem, el.number());
                 }
-                catch (...)
+                else 
                 {
                     auto tempCF = ChemicalFormula::ParseFormula(DictOfElements[el.symbol()]);
                     tempCF->Multiply(el.number() );
-                    cf->Add(tempCF);
+                    cf->Add(tempCF);                        
                 }
             }
 
@@ -92,11 +91,7 @@ namespace UsefulProteomicsDatabases
                     pos = positionConversion_iterator->second;
                     //do nothing, the new string value should be there
                 }
-                else
-                {
-                    //pos = positionConversion_iterator->second;
-                    pos = nullptr;
-                }
+
                 std::string s = std::to_string(ac.get());
                 std::vector<std::string> svec = {s};
                 std::unordered_map<std::string, std::vector<std::string>> dblinks;
@@ -152,18 +147,18 @@ namespace UsefulProteomicsDatabases
                         {
                             for (auto el : nl.element())
                             {
-                                try
-                                {
-                                    auto elem = PeriodicTable::GetElement(el.symbol());
+                                auto elem = PeriodicTable::GetElement(el.symbol());
+                                if ( elem != nullptr ) {
                                     cfnl->Add(elem, el.number() );
                                 }
-                                catch (...)
+                                else
                                 {
                                     auto tempCF = ChemicalFormula::ParseFormula(DictOfElements[el.symbol()]);
                                     tempCF->Multiply( el.number() );
                                     cfnl->Add(tempCF);
                                 }
                             }
+
                             if (neutralLosses.empty())
                             {
                                 neutralLosses = std::unordered_map<MassSpectrometry::DissociationType, std::vector<double>>
