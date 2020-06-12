@@ -48,10 +48,10 @@ namespace UsefulProteomicsDatabases
         std::unordered_map<std::string, std::string> positionConversion =
         {
             {"Anywhere", "Anywhere."},
-            {"AnyNterm", "Peptide N-terminal."},
-            {"AnyCterm", "Peptide C-terminal."},
-            {"ProteinNterm", "N-terminal."},
-            {"ProteinCterm", "C-terminal."}
+            {"Any N-term", "Peptide N-terminal."},
+            {"Any C-term", "Peptide C-terminal."},
+            {"Protein N-term", "N-terminal."},
+            {"Protein C-term", "C-terminal."}
         };
         int ii=0;
         for (auto mod : deserialized->modifications().get().mod())

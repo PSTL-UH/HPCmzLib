@@ -219,7 +219,7 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         auto unimodMods = Loaders::LoadUnimod(testdir + "/unimod_tables.xml");//.ToList();
         // UniMod PTM list may be updated at some point, causing the unit test to fail
         Assert::AreEqual(2677, (int)unimodMods.size()); 
-
+        
 #ifdef ORIG
         std::vector<Modification*> myList = unimodMods.Where([&] (std::any m)
         {
@@ -339,7 +339,6 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         auto thisMod = myOtherList.front();
         Assert::IsTrue(thisMod->getMonoisotopicMass().value() > 42);
         Assert::IsTrue(thisMod->getMonoisotopicMass().value() < 43);
-
     }
 
 #ifdef LATER

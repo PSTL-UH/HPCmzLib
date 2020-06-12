@@ -55,13 +55,13 @@ public:
 
 	StringBuilder *appendLine()
 	{
-		privateString += "\r\n";
+		privateString += "\n";
 		return this;
 	}
 
 	StringBuilder *appendLine(const std::string &toAppend)
 	{
-		privateString += toAppend + "\r\n";
+		privateString += toAppend + "\n";
 		return this;
 	}
 

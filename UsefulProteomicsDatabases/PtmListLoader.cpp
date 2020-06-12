@@ -181,16 +181,9 @@ namespace UsefulProteomicsDatabases
                 std::string modValue = "";
                 if (line.length() > 5)
                 {
-                    try
-                    {
-                        //modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
-                        char del = '#';
-                        modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(5); //removes commented text
-                    }
-                    catch (...)
-                    {
-                        //do nothing leave as null
-                    }
+                    //modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
+                    char del = '#';
+                    modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(5); //removes commented text
                 }
                 
                 if (modKey == "ID") // Mandatory
@@ -228,7 +221,6 @@ namespace UsefulProteomicsDatabases
                         }
                         else
                         {
-                            //possibleMotifChar = AminoAcidCodes_iterator->second;
                             theMotif = singleTarget;
                         }
                         ModificationMotif *motif;
@@ -308,17 +300,7 @@ namespace UsefulProteomicsDatabases
                     else
                     {
                         val.push_back(splitStringTR[1]);
-                        if (_taxonomicRange.empty())
-                        {
-                            //_taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>();
-                            //_taxonomicRange.clear();
-                            _taxonomicRange.emplace(splitStringTR[0], val );
-                        }
-                        else
-                        {
-                            _taxonomicRange.emplace(splitStringTR[0], val );
-                        }
-                        
+                        _taxonomicRange.emplace(splitStringTR[0], val );                        
                     }
                 }
                 else if (modKey == "KW") // ; Separated keywords
