@@ -28,25 +28,18 @@ namespace UsefulProteomicsDatabases
     private:
         static std::unordered_map<std::string, char> AminoAcidCodes;
 
-    private:
-        class StaticConstructor
-        {
-        public:
-            StaticConstructor();
-        };
-
-    private:
-        static PtmListLoader::StaticConstructor staticConstructor;
-
+    public:
+        static void InitAminoAcidCodes();
 
         /// <summary>
         /// Read a list of modifications from a text file.
         /// </summary>
         /// <param name="ptmListLocation"></param>
         /// <returns></returns>
-    public:
+
+
         static std::vector<Modification*> ReadModsFromFile(const std::string &ptmListLocation,
-                                                           std::vector<std::tuple<Modification *, std::string>> &filteredModificationsWithWarnings);
+               std::vector<std::tuple<Modification *, std::string>> &filteredModsWithWarnings);
 
         /// <summary>
         /// Reads a list of modifications from a text file.
@@ -54,8 +47,8 @@ namespace UsefulProteomicsDatabases
         /// <param name="ptmListLocation"></param>
         /// <returns></returns>
         static std::vector<Modification*> ReadModsFromFile(const std::string &ptmListLocation,
-                                                           std::unordered_map<std::string, int> &formalChargesDictionary,
-                                                           std::vector<std::tuple<Modification*, std::string>> &filteredModificationsWithWarnings);
+                                std::unordered_map<std::string, int> &formalChargesDictionary,
+                std::vector<std::tuple<Modification*, std::string>> &filteredModsWithWarnings);
 
         /// <summary>
         /// Reads a list of modifications from a string representation of a ptmlist text file.

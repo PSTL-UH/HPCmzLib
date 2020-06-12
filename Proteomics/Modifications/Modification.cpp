@@ -454,19 +454,20 @@ namespace Proteomics
 #ifdef ORIG
 //                sb->appendLine("KW   " + std::string::Join(" or ", this->getKeywords().ToList()->OrderBy([&] (std::any b)
 //                {
-//                    delete sb;
 //                    return b;
 //                })));
 #endif
-                sb->appendLine("KW    or " );
-                for ( auto k: this->getKeywords() ) {
-                    sb->appendLine( k);
-                }
+                StringBuilder *myLine = new StringBuilder();
+                myLine->append("KW   ");
+                std::string del = " or ";
+                myLine->append(StringHelper::join(this->getKeywords(), del));
+                sb->appendLine(myLine->toString() );
             }
         }
 
-       //        delete sb;
-        return sb->toString();
+        std::string s = sb->toString();
+        delete sb;
+        return s;
     }
 
     std::string Modification::ModificationErrorsToString()

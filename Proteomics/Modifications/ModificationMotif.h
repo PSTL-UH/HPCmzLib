@@ -9,11 +9,7 @@ namespace Proteomics {
     class ModificationMotif {
 
     private:
-//        static Regex *const ModificationMotifRegex;
-
         const std::string motifString;
-
-
         ModificationMotif(const std::string &motif);
 
 

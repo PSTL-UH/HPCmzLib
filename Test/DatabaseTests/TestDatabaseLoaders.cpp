@@ -5,7 +5,6 @@
 #include "../../UsefulProteomicsDatabases/ProteinDbLoader.h"
 #include "../../UsefulProteomicsDatabases/Loaders.h"
 #include "../../Chemistry/PeriodicTable.h"
-//#include "../../UsefulProteomicsDatabases/Generated/UsefulProteomicsDatabases.Generated.oboTerm.h"
 #include "../../Proteomics/Modifications/ModificationMotif.h"
 #include "../../Proteomics/Protein/Protein.h"
 #include "../../MzLibUtil/MzLibException.h"
@@ -24,6 +23,8 @@ using namespace UsefulProteomicsDatabases;
 
 #include "Assert.h"
 #include <experimental/filesystem>
+#include <fstream>
+#include <iostream>
 
 int main ( int argc, char **argv )
 {
@@ -225,6 +226,7 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
             m::OriginalId->Equals("HexNAc(2)");
         }).ToList();
 #endif
+
         std::vector<Modification*> myList;
         for ( auto m: unimodMods ) {
             if ( m->getOriginalId() == "HexNAc(2)" ) {
@@ -246,10 +248,10 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         }
 
         Assert::AreEqual(2, neutralLossCount);
-#ifdef ORIG
-        //PsiMod tested later
+
         auto psiModDeserialized = Loaders::LoadPsiMod(testdir + "/PSI-MOD.obo.xml");
 
+#ifdef ORIG
         // N6,N6,N6-trimethyllysine
         auto trimethylLysine = psiModDeserialized->getItems().OfType<UsefulProteomicsDatabases::Generated::oboTerm*>().First([&] (std::any b)
         {
@@ -259,7 +261,22 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         {
             b::dbname->Equals("FormalCharge");
         }).name);
-
+#endif
+        for ( auto  b : psiModDeserialized->term() ){
+            if ( b.id().get() == "MOD:00083" ) {
+                for ( auto c: b.xref_analog() ) {
+                    if ( c.dbname().get() == "FormalCharge" ) {
+                        std::string s = "1+";
+                        std::string s2 = c.name().get();
+                        Assert::AreEqual (s, s2 );
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        
+#ifdef ORIG
         // Phosphoserine
         Assert::IsFalse(psiModDeserialized->getItems().OfType<UsefulProteomicsDatabases::Generated::oboTerm*>().First([&] (std::any b)
         {
@@ -269,29 +286,46 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
             b::dbname->Equals("FormalCharge");
         }));
 
+#endif        
+        for ( auto  b : psiModDeserialized->term() ){
+            if ( b.id().get() == "MOD:00046" ) {
+                bool found = false;
+                for ( auto c: b.xref_analog() ) {
+                    if ( c.dbname().get() == "FormalCharge" ) {
+                        found = true;
+                        break;
+                    }
+                }
+                Assert::IsFalse(found);
+                break;
+            }
+        }
+
+
         std::unordered_map<std::string, int> formalChargesDictionary = Loaders::GetFormalChargesDictionary(psiModDeserialized);
 
-        auto uniprotPtms = Loaders::LoadUniprot(testdir + "/ptmlist.txt",
-                                                formalChargesDictionary).ToList();
+        auto uniprotPtms = Loaders::LoadUniprot(testdir + "/ptmlist.txt", formalChargesDictionary);//.ToList();
         // UniProt PTM list may be updated at some point, causing the unit test to fail
-        Assert::AreEqual(340, (int)uniprotPtms.size()); 
+        Assert::AreEqual(346, (int)uniprotPtms.size()); 
 
-        StreamWriter w = StreamWriter(testdir + "/test.txt");
+        std::ofstream w;
+        w.open(testdir + "/test.txt");
         for (auto nice : uniprotPtms)
         {
-            w.WriteLine(nice.ToString());
-            w.WriteLine("//");
+            w << nice->ToString() << std::endl;
+            w << "//" << std::endl;
         }
         for (auto nice : unimodMods)
         {
-            w.WriteLine(nice.ToString());
-            w.WriteLine("//");
+            w << nice->ToString() << std::endl;
+            w << "//" << std::endl;
         }
-
+        w.close();
+        
         std::vector<std::tuple<Modification*, std::string>> errors;
-        auto sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/test.txt", errors).ToList();
+        auto sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/test.txt", errors);
 
-        Assert::AreEqual(2982, sampleModList.size()());
+        Assert::AreEqual(3023, (int)sampleModList.size());
 
         std::vector<Modification*> myOtherList;
         for (auto mod : sampleModList)
@@ -303,9 +337,9 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         }
 
         auto thisMod = myOtherList.front();
-        Assert::IsTrue(thisMod->MonoisotopicMass > 42);
-        Assert::IsTrue(thisMod->MonoisotopicMass < 43);
-#endif
+        Assert::IsTrue(thisMod->getMonoisotopicMass().value() > 42);
+        Assert::IsTrue(thisMod->getMonoisotopicMass().value() < 43);
+
     }
 
 #ifdef LATER

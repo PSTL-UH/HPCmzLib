@@ -112,7 +112,6 @@ namespace UsefulProteomicsDatabases
                                                  std::unordered_map<DissociationType, std::vector<double>>(),
                                                  std::unordered_map<DissociationType, std::vector<double>>(), "");
                     retvec.push_back(tmp);
-                    
                 }
                 else
                 {
@@ -196,8 +195,6 @@ namespace UsefulProteomicsDatabases
                     retvec.push_back(tmp2);
                 }
             }
-
-            delete cf;
         }
 
         //delete unimodSerializer;

@@ -13,11 +13,7 @@
 #include "stringhelper.h"
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class ModificationMotif; }
 #include "ModificationMotif.h"
-
-//namespace Chemistry { class ChemicalFormula; }
 #include "../../Chemistry/Chemistry.h"
 using namespace Chemistry;
 

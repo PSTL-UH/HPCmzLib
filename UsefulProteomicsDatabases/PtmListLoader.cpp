@@ -16,39 +16,33 @@ using namespace Proteomics;
 namespace UsefulProteomicsDatabases
 {
 
-    std::unordered_map<std::string, char> PtmListLoader::AminoAcidCodes;
+    std::unordered_map<std::string, char>   PtmListLoader::AminoAcidCodes =  {
+        {"Alanine", 'A'},
+        {"Arginine", 'R'},
+        {"Asparagine", 'N'},
+        {"Aspartate", 'D'},
+        {"Aspartic Acid", 'D'},
+        {"Cysteine", 'C'},
+        {"Glutamate", 'E'},
+        {"Glutamic Acid", 'E'},
+        {"Glutamine", 'Q'},
+        {"Glycine", 'G'},
+        {"Histidine", 'H'},
+        {"Isoleucine", 'I'},
+        {"Leucine", 'L'},
+        {"Lysine", 'K'},
+        {"Methionine", 'M'},
+        {"Phenylalanine", 'F'},
+        {"Proline", 'P'},
+        {"Pyrrolysine", 'O'},
+        {"Selenocysteine", 'U'},
+        {"Serine", 'S'},
+        {"Threonine", 'T'},
+        {"Tryptophan", 'W'},
+        {"Tyrosine", 'Y'},
+        {"Valine", 'V'}
+    };
 
-    PtmListLoader::StaticConstructor::StaticConstructor()
-    {
-        std::unordered_map<std::string, char> AminoAcidCodes =  {
-            {"Alanine", 'A'},
-            {"Arginine", 'R'},
-            {"Asparagine", 'N'},
-            {"Aspartate", 'D'},
-            {"Aspartic Acid", 'D'},
-            {"Cysteine", 'C'},
-            {"Glutamate", 'E'},
-            {"Glutamic Acid", 'E'},
-            {"Glutamine", 'Q'},
-            {"Glycine", 'G'},
-            {"Histidine", 'H'},
-            {"Isoleucine", 'I'},
-            {"Leucine", 'L'},
-            {"Lysine", 'K'},
-            {"Methionine", 'M'},
-            {"Phenylalanine", 'F'},
-            {"Proline", 'P'},
-            {"Pyrrolysine", 'O'},
-            {"Selenocysteine", 'U'},
-            {"Serine", 'S'},
-            {"Threonine", 'T'},
-            {"Tryptophan", 'W'},
-            {"Tyrosine", 'Y'},
-            {"Valine", 'V'}
-        };
-    }
-    
-    PtmListLoader::StaticConstructor PtmListLoader::staticConstructor;
     
     std::vector<Modification*> PtmListLoader::ReadModsFromFile(const std::string &ptmListLocation,
            std::vector<std::tuple<Modification*, std::string>> &filteredModificationsWithWarnings)
@@ -75,7 +69,9 @@ namespace UsefulProteomicsDatabases
     {
         std::vector<Modification*> acceptedModifications;
         //filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
-
+        //if ( AminoAcidCodes.size() == 0 ) {
+        //    InitAminoAcidCodes();
+        // }
 
         //StreamReader uniprot_mods = StreamReader(ptmListLocation);
         std::ifstream uniprot_mods(ptmListLocation);
@@ -118,7 +114,10 @@ namespace UsefulProteomicsDatabases
     {
         std::vector<Modification*> acceptedModifications;
         //filteredModificationsWithWarnings = std::vector<(Modification filteredMod, std::string warningString)*>();
-
+        //if ( AminoAcidCodes.size() == 0 ) {
+        //    InitAminoAcidCodes();
+        //}
+        
         //StringReader uniprot_mods = StringReader(storedModifications);
         std::stringstream uniprot_mods(storedModifications);
         std::vector<std::string> modification_specification;
@@ -308,15 +307,16 @@ namespace UsefulProteomicsDatabases
                     }
                     else
                     {
+                        val.push_back(splitStringTR[1]);
                         if (_taxonomicRange.empty())
                         {
                             //_taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>();
-                            _taxonomicRange.clear();
-                            _taxonomicRange.emplace(splitStringTR[0], std::vector<std::string>(1) );
+                            //_taxonomicRange.clear();
+                            _taxonomicRange.emplace(splitStringTR[0], val );
                         }
                         else
                         {
-                            _taxonomicRange.emplace(splitStringTR[0], std::vector<std::string>(1) );
+                            _taxonomicRange.emplace(splitStringTR[0], val );
                         }
                         
                     }

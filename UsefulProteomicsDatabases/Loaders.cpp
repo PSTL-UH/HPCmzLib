@@ -5,6 +5,9 @@
 
 #include <cstdio>
 #include <ctime>
+#include <fstream>
+#include <iostream>
+#include <regex>
 
 using namespace Proteomics;
 using namespace UsefulProteomicsDatabases;
@@ -154,7 +157,8 @@ namespace UsefulProteomicsDatabases
 #endif
     }
 
-    std::unordered_map<std::string, int> Loaders::GetFormalChargesDictionary(obo *psiModDeserialized)
+    std::unordered_map<std::string, int> Loaders::GetFormalChargesDictionary(
+        std::unique_ptr<obo> &psiModDeserialized)
     {
 #ifdef ORIG
         auto modsWithFormalCharges = psiModDeserialized->getItems().OfType<UsefulProteomicsDatabases::Generated::oboTerm*>().Where([&] (std::any b)
@@ -164,29 +168,7 @@ namespace UsefulProteomicsDatabases
                 c::dbname->Equals("FormalCharge");
             });
         });
-
-        std::vector<term*> v;
-        // Edgar: will have to revisit this part on how to implement the equivalent of OfType in C++
-        for ( auto b: psiModDeserialized->getItems() ) {
-            v.push_back(reinterpret_cast<term*>(b));
-        }
-        std::vector<term*> modsWithFormalCharges;
-        for (term* b: v ) {
-            bool found = false;
-            if ( !b->xref_analog().empty() ) {
-                for ( auto c: b->xref_analog() ) {
-                    if ( c->getdbname() == "FormalCharge" ) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if ( found ) {
-                modsWithFormalCharges.push_back(b);
-            }
-        }
-        
-        //Regex *digitsOnly = new Regex(R"([^\d])");
+        Regex *digitsOnly = new Regex(R"([^\d])");
 
         //C# TO C++ CONVERTER TODO TASK: The following lambda expression could not be converted:
         //return modsWithFormalCharges->ToDictionary(b =>
@@ -195,9 +177,40 @@ namespace UsefulProteomicsDatabases
         //    if (!FileSystem::fileExists(elementLocation)){UpdateElements(elementLocation);
         //   } }
 #endif
-        std::cout << "Loaders::GetFormalChargesDictionary not implemented correctly. Please revisit later.\n";
-        std::unordered_map<std::string, int> r;
-        return r;
+        
+        std::unordered_map<std::string, int> modsWithFormalCharges;
+        std::regex digitsOnly(R"([^\d])");
+
+        std::vector<term> v;
+        // Edgar: will have to revisit this part on how to implement the equivalent of OfType in C++
+        for ( auto b: psiModDeserialized->term() ) {
+            if  (!b.xref_analog().empty() ) {
+                bool found = false;
+                std::string valstring ;
+                for ( auto c: b.xref_analog() ) {
+                    if ( c.dbname().get() == "FormalCharge") {
+                        found = true;
+                        valstring = c.name().get();
+                        break;
+                    }
+                }
+                if ( found )  {
+                    std::string key = "PSI-MOD; " + b.id().get();
+                    std::string vals = std::regex_replace(valstring, digitsOnly, "" );
+                    try
+                    {
+                        int val = std::stoi (vals);
+                        modsWithFormalCharges.emplace(key, val);
+                    }
+                    catch (...)
+                    {
+                        std::cout << " error extracting int from " << vals << std::endl;
+                    }
+                }                
+            }
+        }
+
+        return  modsWithFormalCharges;
     }
 
     void Loaders::LoadElements(std::string elementLocation){
@@ -217,7 +230,7 @@ namespace UsefulProteomicsDatabases
         return UnimodLoader::ReadMods(unimodLocation);
     }
 
-    obo *Loaders::LoadPsiMod(const std::string &psimodLocation)
+    std::unique_ptr<obo> Loaders::LoadPsiMod(const std::string &psimodLocation)
     {
 #ifdef ORIG
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
@@ -231,7 +244,10 @@ namespace UsefulProteomicsDatabases
         FileStream tempVar(psimodLocation, FileMode::Open, FileAccess::Read, FileShare::Read);        
         return dynamic_cast<Generated::obo*>(psimodSerializer->Deserialize(&tempVar));
 #endif
-        return nullptr;
+        std::ifstream input(psimodLocation);
+        auto obores = obo_ (input, xml_schema::flags::dont_validate); 
+        
+        return obores;
     }
 
     std::vector<Modification*> Loaders::LoadUniprot(const std::string &uniprotLocation,

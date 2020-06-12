@@ -63,13 +63,13 @@ namespace UsefulProteomicsDatabases
 
         static void UpdateElements(const std::string &elementLocation);
 
-        static std::unordered_map<std::string, int> GetFormalChargesDictionary(obo *psiModDeserialized);
+        static std::unordered_map<std::string, int> GetFormalChargesDictionary(std::unique_ptr<obo> &psiModDeserialized);
 
         static void LoadElements(std::string elementLocation);
 
         static std::vector<Modification*> LoadUnimod(const std::string &unimodLocation);
 
-        static obo* LoadPsiMod(const std::string &psimodLocation);
+        static std::unique_ptr<obo> LoadPsiMod(const std::string &psimodLocation);
         
         static std::vector<Modification*> LoadUniprot(const std::string &uniprotLocation, std::unordered_map<std::string, int> formalChargesDictionary);
 
