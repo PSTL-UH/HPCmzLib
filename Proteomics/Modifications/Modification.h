@@ -98,11 +98,16 @@ namespace Proteomics
                      std::unordered_map<std::string,std::vector<std::string>> _taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>(),
                      std::vector<std::string> _keywords = std::vector<std::string>(),
                      std::unordered_map<DissociationType,std::vector<double>> _neutralLosses = std::unordered_map<DissociationType, std::vector<double>>(),
-                     std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>(), const std::string &_fileOrigin = "");
+                     std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>(),
+                     const std::string &_fileOrigin = "");
 
+        ~Modification()
+        {
+            delete privateChemicalFormula;
+        }
+        
         static std::string ModLocationOnPeptideOrProtein(const std::string &_locationRestriction);
 
-        //bool Equals(std::any o) override;
         bool Equals (Modification* o);
 
         int GetHashCode();

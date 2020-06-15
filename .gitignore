@@ -30,6 +30,7 @@ Test/TestFlashLFQ/peaks.tsv
 Test/TestFlashLFQ/mzml_1.mzML
 Test/TestFlashLFQ/mzml_2.mzML
 Test/DatabaseTests/TestProteomicsReadWrite
+Test/DatabaseTests/TestDatabaseLoaders
 Test/DatabaseTests/elements.dat
 Test/DatabaseTests/rewrite_fasta.fasta
 Test/DatabaseTests/rewrite_test_ensembl.pep.all.fasta
