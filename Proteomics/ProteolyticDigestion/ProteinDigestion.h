@@ -3,16 +3,12 @@
 #include "InitiatorMethionineBehavior.h"
 #include <vector>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { namespace ProteolyticDigestion { class Protease; } }
 #include "Protease.h"
 namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
 
-//namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
 namespace Proteomics { class Protein; }
 
-//namespace Proteomics { namespace ProteolyticDigestion { class PeptideWithSetModifications; } }
 #include "PeptideWithSetModifications.h"
 
 #include "../Fragmentation/Fragmentation.h"

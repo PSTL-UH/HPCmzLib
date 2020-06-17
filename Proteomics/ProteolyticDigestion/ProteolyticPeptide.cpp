@@ -117,20 +117,20 @@ namespace Proteomics
             int peptideLength = getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1;
             int maximumVariableModificationIsoforms = digestionParams->getMaxModificationIsoforms();
             int maxModsForPeptide = digestionParams->getMaxModsForPeptide();
-            auto twoBasedPossibleVariableAndLocalizeableModifications = std::unordered_map<int, std::vector<Modification*>>(peptideLength + 4);
+            std::unordered_map<int, std::vector<Modification*>> twoBasedPossibleVariableAndLocalizeableModifications(peptideLength + 4);
             
-            auto pepNTermVariableMods = std::vector<Modification*>();
-            twoBasedPossibleVariableAndLocalizeableModifications.emplace(1, pepNTermVariableMods);
+            auto pepNTermVariableMods = new std::vector<Modification*>();
+            twoBasedPossibleVariableAndLocalizeableModifications.emplace(1, *pepNTermVariableMods);
             
-            auto pepCTermVariableMods = std::vector<Modification*>();
-            twoBasedPossibleVariableAndLocalizeableModifications.emplace(peptideLength + 2, pepCTermVariableMods);
+            auto pepCTermVariableMods = new std::vector<Modification*>();
+            twoBasedPossibleVariableAndLocalizeableModifications.emplace(peptideLength + 2, *pepCTermVariableMods);
             
             for (auto variableModification : variableModifications)
             {
                 // Check if can be a n-term mod
                 if (CanBeNTerminalMod(variableModification, peptideLength))
                 {
-                    pepNTermVariableMods.push_back(variableModification);
+                    pepNTermVariableMods->push_back(variableModification);
                 }
                 
                 for (int r = 0; r < peptideLength; r++)
@@ -156,7 +156,7 @@ namespace Proteomics
                 // Check if can be a c-term mod
                 if (CanBeCTerminalMod(variableModification, peptideLength))
                 {
-                    pepCTermVariableMods.push_back(variableModification);
+                    pepCTermVariableMods->push_back(variableModification);
                 }
             }
             
@@ -179,7 +179,7 @@ namespace Proteomics
                         // Check if can be a n-term mod
                         if (locInPeptide == 1 && CanBeNTerminalMod(variableModification, peptideLength) && !getProtein()->getIsDecoy())
                         {
-                            pepNTermVariableMods.push_back(variableModification);
+                            pepNTermVariableMods->push_back(variableModification);
                         }
                         
                         int r = locInPeptide - 1;
@@ -205,7 +205,7 @@ namespace Proteomics
                         // Check if can be a c-term mod
                         if (locInPeptide == peptideLength && CanBeCTerminalMod(variableModification, peptideLength) && !getProtein()->getIsDecoy())
                         {
-                            pepCTermVariableMods.push_back(variableModification);
+                            pepCTermVariableMods->push_back(variableModification);
                         }
                     }
                 }
@@ -254,29 +254,31 @@ namespace Proteomics
         {
             return ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(), 1, peptideLength,
                                                      getOneBasedStartResidueInProtein()) &&
-                (variableModification->getLocationRestriction() == "N-terminal." || variableModification->getLocationRestriction() == "Peptide N-terminal.");
+                (variableModification->getLocationRestriction() == "N-terminal." ||
+                 variableModification->getLocationRestriction() == "Peptide N-terminal.");
         }
 
         bool ProteolyticPeptide::CanBeCTerminalMod(Modification *variableModification, int peptideLength)
         {
             return ModificationLocalization::ModFits(variableModification, getProtein()->getBaseSequence(), peptideLength,
                                                      peptideLength, getOneBasedStartResidueInProtein() + peptideLength - 1) &&
-                (variableModification->getLocationRestriction() == "C-terminal." || variableModification->getLocationRestriction() == "Peptide C-terminal.");
+                (variableModification->getLocationRestriction() == "C-terminal." ||
+                 variableModification->getLocationRestriction() == "Peptide C-terminal.");
         }
 
 
-        std::vector<std::unordered_map<int, Modification*>> ProteolyticPeptide::GetVariableModificationPatterns(std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications, int maxModsForPeptide, int peptideLength)
+        std::vector<std::unordered_map<int, Modification*>> ProteolyticPeptide::GetVariableModificationPatterns(
+            std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications,
+            int maxModsForPeptide, int peptideLength)
         {
             std::vector<std::unordered_map<int, Modification*>> v;
             if (possibleVariableModifications.empty())
             {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                //yield return nullptr;
                 return v;
             }
             else
             {
-                std::unordered_map<int, std::vector<Modification*>> possible_variable_modifications = std::unordered_map<int, std::vector<Modification*>>(possibleVariableModifications);
+                std::unordered_map<int, std::vector<Modification*>> possible_variable_modifications = possibleVariableModifications;
 
                 std::vector<int> base_variable_modification_pattern(peptideLength + 4);
                 int totalAvailableMods=0;
@@ -285,7 +287,9 @@ namespace Proteomics
                         totalAvailableMods += b.second.size();
                     }
                 }
-                for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide); variable_modifications++)
+
+                for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide);
+                     variable_modifications++)
                 {
                     std::vector<std::tuple<int, std::vector<Modification*>>> possible_variable_modifications_vec;
                     for( auto it : possible_variable_modifications ) {
@@ -295,8 +299,6 @@ namespace Proteomics
                                                                    possible_variable_modifications.size() - variable_modifications,
                                                                    base_variable_modification_pattern, 0))
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-                        //yield return GetNewVariableModificationPattern(variable_modification_pattern, possible_variable_modifications);
                         std::unordered_map<int, Modification*> vo = GetNewVariableModificationPattern(variable_modification_pattern,
                                                                                                       possible_variable_modifications_vec);
                         v.push_back (vo);                    
@@ -313,7 +315,6 @@ namespace Proteomics
             int index)
         {
             std::vector<std::vector<int>> v;
-            
             if (index < (int)possibleVariableModifications.size() - 1)
             {
                 if (unmodifiedResiduesDesired > 0)
@@ -376,15 +377,13 @@ namespace Proteomics
             return modification_pattern;
         }
 
-        std::unordered_map<int, Modification*> ProteolyticPeptide::GetFixedModsOneIsNterminus(int peptideLength, std::vector<Modification*> &allKnownFixedModifications)
+        std::unordered_map<int, Modification*> ProteolyticPeptide::GetFixedModsOneIsNterminus(
+            int peptideLength,
+            std::vector<Modification*> &allKnownFixedModifications)
         {
             auto fixedModsOneIsNterminus = std::unordered_map<int, Modification*>(peptideLength + 3);
             for (auto mod : allKnownFixedModifications)
             {
-                //C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was
-                // converted to C++ 'if-else' logic:
-                // switch (mod.LocationRestriction)
-                //ORIGINAL LINE: case "N-terminal.":
                 if (mod->getLocationRestriction() == "N-terminal." || mod->getLocationRestriction() == "Peptide N-terminal.")
                 {
                         if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), 1,
@@ -394,7 +393,6 @@ namespace Proteomics
                         }
 
                 }
-                //ORIGINAL LINE: case "Anywhere.":
                 else if (mod->getLocationRestriction() == "Anywhere.")
                 {
                         for (int i = 2; i <= peptideLength + 1; i++)
@@ -407,7 +405,6 @@ namespace Proteomics
                         }
 
                 }
-                //ORIGINAL LINE: case "C-terminal.":
                 else if (mod->getLocationRestriction() == "C-terminal." || mod->getLocationRestriction() == "Peptide C-terminal.")
                 {
                         if (ModificationLocalization::ModFits(mod, getProtein()->getBaseSequence(), peptideLength,

@@ -100,7 +100,13 @@ namespace Proteomics
                 }).Sum();
 #endif
                 for ( auto b: getBaseSequence() ) {
-                    monoMass += Residue::ResidueMonoisotopicMass[b];
+                    if ( Residue::ResidueMonoisotopicMass.size() == 0 ) {
+                        // this should trigger the static constructor
+                        monoMass += Residue::GetResidue(b)->getMonoisotopicMass();
+                    }
+                    else {
+                        monoMass += Residue::ResidueMonoisotopicMass[b];
+                    }
                 }
                 _monoisotopicMass = std::make_optional(monoMass);
             }
@@ -468,7 +474,10 @@ namespace Proteomics
             return StringHelper::GetHashCode(getFullSequence()) + getDigestionParams()->getProtease()->GetHashCode();
         }
 
-        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*> &idToMod, std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein)
+        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string,
+                                                                      Modification*> &idToMod,
+                                                                      std::unordered_map<std::string,
+                                                                      Proteomics::Protein*> &accessionToProtein)
         {
             std::string baseSequence;
             GetModsAfterDeserialization(idToMod, baseSequence);
@@ -484,7 +493,8 @@ namespace Proteomics
             }
         }
 
-        void PeptideWithSetModifications::GetModsAfterDeserialization(std::unordered_map<std::string, Modification*> &idToMod, std::string &baseSequence)
+        void PeptideWithSetModifications::GetModsAfterDeserialization(std::unordered_map<std::string, Modification*> &idToMod,
+                                                                      std::string &baseSequence)
         {
             _allModsOneIsNterminus = std::unordered_map<int, Modification*>();
             StringBuilder *baseSequenceSb = new StringBuilder();
@@ -537,13 +547,15 @@ namespace Proteomics
                             std::unordered_map<std::string, Modification*>::const_iterator idToMod_iterator = idToMod.find(modId);
                             if (idToMod_iterator == idToMod.end())
                             {
-                                mod = idToMod_iterator->second;
-
+                                //mod = idToMod_iterator->second;
                                 delete currentModification;
                                 delete baseSequenceSb;
                                 throw MzLibUtil::MzLibException("Could not find modification while reading string: " + getFullSequence());
                             }
-
+                            else  {
+                                mod = idToMod_iterator->second;
+                            }
+                            
                             if ( (mod->getLocationRestriction().find("C-terminal.") != std::string::npos) &&
                                  (r == ((int)getFullSequence().length() - 1))    ) 
                             {

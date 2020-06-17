@@ -31,7 +31,7 @@ namespace Proteomics
 #ifdef ORIG
             std::string path = FileSystem::combine(dataDirectory, "ProteolyticDigestion", "proteases.tsv");
 #endif
-            std::string path = FileSystem::combine(dataDirectory, "proteases.tsv");
+            std::string path = dataDirectory  + "/proteases.tsv";
             setDictionary(LoadProteaseDictionary(path));                
         }
 
@@ -51,6 +51,9 @@ namespace Proteomics
         // Edgar: new for the C++ version.
         void ProteaseDictionary::insert ( std::string name, Protease* value)
         {
+            if (privateDictionary.size() == 0 ) {
+                ProteaseDictionary::StaticConstructor();
+            }
             privateDictionary.emplace(name, value);
         }
 
