@@ -339,6 +339,7 @@ Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein().getOneBasedPossibleL
         auto thisMod = myOtherList.front();
         Assert::IsTrue(thisMod->getMonoisotopicMass().value() > 42);
         Assert::IsTrue(thisMod->getMonoisotopicMass().value() < 43);
+        std::experimental::filesystem::remove("test.txt");
     }
 
 #ifdef LATER

@@ -183,7 +183,14 @@ namespace UsefulProteomicsDatabases
                 {
                     //modValue = line.Split('#')[0].Trim()->substr(5); //removes commented text
                     char del = '#';
-                    modValue = StringHelper::trim(StringHelper::split(line, del)[0]).substr(5); //removes commented text
+                    auto v = StringHelper::split(line, del);
+                    std::string s= StringHelper::trim(v[0]);
+                    if ( s.length() >= 5 ) {
+                        modValue = s.substr(5); //removes commented text
+                    }
+                    else {
+                        modValue = s;
+                    }
                 }
                 
                 if (modKey == "ID") // Mandatory
