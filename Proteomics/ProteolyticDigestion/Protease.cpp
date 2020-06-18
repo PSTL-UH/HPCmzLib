@@ -283,7 +283,8 @@ namespace Proteomics
             return OkayMinLength(peptideLength, minPeptidesLength) && OkayMaxLength(peptideLength, maxPeptidesLength);
         }
 
-        std::vector<ProteolyticPeptide*> Protease::FullDigestion(Protein *protein, InitiatorMethionineBehavior initiatorMethionineBehavior, int maximumMissedCleavages, int minPeptidesLength, int maxPeptidesLength)
+        std::vector<ProteolyticPeptide*> Protease::FullDigestion(Protein *protein, InitiatorMethionineBehavior initiatorMethionineBehavior,
+                                                                 int maximumMissedCleavages, int minPeptidesLength, int maxPeptidesLength)
         {
             std::vector<ProteolyticPeptide*> v;
             std::vector<int> oneBasedIndicesToCleaveAfter = GetDigestionSiteIndices(protein->getBaseSequence());
@@ -659,7 +660,7 @@ namespace Proteomics
 #ifdef ORIG
             return !minPeptidesLength || peptideLength >= minPeptidesLength;
 #endif
-            return minPeptidesLength.value() > 0 || peptideLength.value() >= minPeptidesLength.value();
+            return !minPeptidesLength.has_value() || peptideLength.value() >= minPeptidesLength.value();
         }
 
         bool Protease::OkayMaxLength(std::optional<int> peptideLength, std::optional<int> maxPeptidesLength)
@@ -667,7 +668,7 @@ namespace Proteomics
 #ifdef ORIG
             return !maxPeptidesLength || peptideLength <= maxPeptidesLength;
 #endif
-            return maxPeptidesLength.value() > 0 || peptideLength.value() <= maxPeptidesLength.value();
+            return !maxPeptidesLength.has_value()  || peptideLength.value() <= maxPeptidesLength.value();
         }
     }
 }

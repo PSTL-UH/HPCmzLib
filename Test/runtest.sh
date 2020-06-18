@@ -66,10 +66,10 @@ make TestPtmListLoader
 #make TestProteinProperties
 #./TestProteinProperties
 
-#echo " "
-#echo "  TestProteinDigestion"
-#make TestProteinDigestion
-#./TestProteinDigestion
+echo " "
+echo "  TestProteinDigestion"
+make TestProteinDigestion
+./TestProteinDigestion
 
 cd DatabaseTests ; ./runtest.sh ; cd ..
 cd TestFlashLFQ ; ./runtest.sh ; cd ..

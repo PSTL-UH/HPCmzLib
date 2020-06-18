@@ -108,9 +108,11 @@ namespace Proteomics
         std::vector<PeptideWithSetModifications*> ProteinDigestion::SpeedySemiSpecificDigestion(Protein *protein)
         {
             std::vector<ProteolyticPeptide*> peptides;
-            std::vector<int> oneBasedIndicesToCleaveAfter = getProtease()->GetDigestionSiteIndices(protein->getBaseSequence()); //get peptide bonds to cleave SPECIFICALLY (termini included)
+            std::vector<int> oneBasedIndicesToCleaveAfter = getProtease()->GetDigestionSiteIndices(protein->getBaseSequence());
+            //get peptide bonds to cleave SPECIFICALLY (termini included)
 
-            //it's possible not to go through this loop (maxMissedCleavages+1>number of indexes), and that's okay. It will get digested in the next loops (finish C/N termini)
+            //it's possible not to go through this loop (maxMissedCleavages+1>number of indexes), and that's okay.
+            //It will get digested in the next loops (finish C/N termini)
             for (int i = 0; i < (int)oneBasedIndicesToCleaveAfter.size() - getMaximumMissedCleavages() - 1; i++)
             {
                 bool retain = getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein->getBaseSequence()[0]);
@@ -279,7 +281,6 @@ namespace Proteomics
                                                                            getInitiatorMethionineBehavior(),
                                                                            getMinPeptideLength(),
                                                                            getMaxPeptideLength());
-
 #ifdef ORIG            
             return unmodifiedPeptides.SelectMany([&] (std::any peptide)
             {

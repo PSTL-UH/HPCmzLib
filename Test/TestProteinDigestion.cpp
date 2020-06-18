@@ -1,11 +1,7 @@
 ﻿#include "TestProteinDigestion.h"
-#include "../Proteomics/Protein/Protein.h"
-#include "../Proteomics/Modifications/Modification.h"
+#include "../Proteomics/Proteomics.h"
 #include "../MassSpectrometry/Enums/DissociationType.h"
-#include "../Proteomics/Protein/ProteolysisProduct.h"
-#include "../Proteomics/Modifications/ModificationMotif.h"
-#include "../Chemistry/ChemicalFormula.h"
-#include "../Chemistry/PeriodicTable.h"
+#include "../Chemistry/Chemistry.h"
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 #include "Assert.h"
@@ -25,10 +21,11 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestGoodPeptide" << std::endl;        
     Test::TestProteinDigestion::TestGoodPeptide();
-
+    
     std::cout << ++i << ". TestNoCleavage" << std::endl;        
     Test::TestProteinDigestion::TestNoCleavage();
 
+#ifdef LATER
     std::cout << ++i << ". TestBadPeptide" << std::endl;        
     Test::TestProteinDigestion::TestBadPeptide();
 
@@ -52,7 +49,8 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestReadPeptideFromString" << std::endl;        
     Test::TestProteinDigestion::TestReadPeptideFromString();
-
+#endif
+    
     return 0;
 }
 
@@ -64,54 +62,60 @@ namespace Test
         auto prot = new Protein("MNNNKQQQQ", "");
         auto motifList = DigestionMotif::ParseDigestionMotifsFromString("K|");
         auto protease = new Protease("CustomizedProtease", CleavageSpecificity::Full, "", "", motifList);
-        ProteaseDictionary::insert((protease->getName(), protease);
+        ProteaseDictionary::insert(protease->getName(), protease);
         DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, std::numeric_limits<int>::max(), 
 							       1024, InitiatorMethionineBehavior::Retain, 2, 
 							       CleavageSpecificity::Full,
 							       FragmentationTerminus::Both);
         std::vector<Modification*> variableModifications;
-        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), variableModifications).ToList();
+        std::vector<Modification*> vMods;
+        auto ye = prot->Digest(digestionParams, vMods, variableModifications);//.ToList();
 
-        Assert::AreEqual(2, ye.size());
+        Assert::AreEqual(2, (int)ye.size());
 
         auto pep1 = ye[0];
-        Assert::IsTrue(pep1.MonoisotopicMass > 0);
+        Assert::IsTrue(pep1->getMonoisotopicMass() > 0);
 
-        auto test = pep1.Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        auto test = pep1->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
 
-        for (auto huh : pep1.Fragment(DissociationType::HCD, FragmentationTerminus::Both))
+        for (auto huh : pep1->Fragment(DissociationType::HCD, FragmentationTerminus::Both))
         {
             Assert::IsTrue(huh->NeutralMass > 0);
         }
         auto pep2 = ye[1];
-        Assert::IsTrue(pep2.MonoisotopicMass > 0);
-        for (auto huh : pep2.Fragment(DissociationType::HCD, FragmentationTerminus::Both))
+        Assert::IsTrue(pep2->getMonoisotopicMass() > 0);
+        for (auto huh : pep2->Fragment(DissociationType::HCD, FragmentationTerminus::Both))
         {
             Assert::IsTrue(huh->NeutralMass > 0);
         }
 
 	delete digestionParams;
-	delete protease;
+	//delete protease;
         delete prot;
     }
 
     void TestProteinDigestion::TestNoCleavage()
     {
         std::vector<Modification*> fixedModifications;
-        auto prot = new Protein("MNNNKQQQQ", nullptr, nullptr, nullptr, std::unordered_map<int, std::vector<Modification*>>(), 
-				std::vector<ProteolysisProduct*> {new ProteolysisProduct(std::make_optional(5), 
-											 std::make_optional(6), "lala")});
+        std::vector<ProteolysisProduct*> vP ={ new ProteolysisProduct(std::make_optional(5),std::make_optional(6), "lala")};
+        std::string accession="", organism="";
+        std::vector<std::tuple<std::string, std::string>> geneNames;
+        auto prot = new Protein("MNNNKQQQQ", accession, organism, geneNames,
+                                std::unordered_map<int, std::vector<Modification*>>(), vP);
+        
         DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 5, std::numeric_limits<int>::max(), 
 							       1024, InitiatorMethionineBehavior::Variable, 2, 
 							       CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto ye = prot->Digest(digestionParams, fixedModifications, std::vector<Modification*>()).ToList();
-        Assert::AreEqual(3, ye.size());
-
+        std::vector<Modification*> vM;
+        auto ye = prot->Digest(digestionParams, fixedModifications, vM);//.ToList();
+        Assert::AreEqual(3, (int)ye.size());
+        
 	delete digestionParams;
         delete prot;
     }
 
-    void TestProteinDigestion::TestBadPeptide()
+#ifdef LATER
+        void TestProteinDigestion::TestBadPeptide()
     {
         auto prot = new Protein("MNNNKQQXQ", "");
         auto motifList = DigestionMotif::ParseDigestionMotifsFromString("K|");
@@ -120,9 +124,9 @@ namespace Test
         DigestionParams *digestionParams = new DigestionParams(protease->getName(), 0, 1, std::numeric_limits<int>::max(), 
 							       1024, InitiatorMethionineBehavior::Retain, 2, 
 							       CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>()).ToList();
+        auto ye = prot->Digest(digestionParams, std::vector<Modification*>(), std::vector<Modification*>());//.ToList();
 
-        Assert::AreEqual(2, ye.size());
+        Assert::AreEqual(2, (int)ye.size());
         auto pep1 = ye[0];
         Assert::IsTrue(pep1.MonoisotopicMass > 0);
         for (auto huh : pep1.Fragment(DissociationType::HCD, FragmentationTerminus::Both))
@@ -132,7 +136,7 @@ namespace Test
 
         auto pep2 = ye[1];
         Assert::IsNaN(pep2.MonoisotopicMass);
-        auto cool = pep2.Fragment(DissociationType::HCD, FragmentationTerminus::Both)->ToArray();
+        auto cool = pep2.Fragment(DissociationType::HCD, FragmentationTerminus::Both);//->ToArray();
         Assert::IsTrue(cool[0].NeutralMass > 0);
         Assert::IsTrue(cool[1].NeutralMass > 0);
         Assert::IsTrue(cool[3].NeutralMass > 0);
@@ -159,12 +163,16 @@ namespace Test
 
         Modification tempVar("ProtNmod", "", "", "", motif, "N-terminal.", ChemicalFormula::ParseFormula("H"), std::make_optional(PeriodicTable::GetElement(1)->getPrincipalIsotope()->getAtomicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         variableModifications.push_back(&tempVar);
+
         Modification tempVar2("pepNmod", "", "", "", motif, "Peptide N-terminal.", ChemicalFormula::ParseFormula("H"), std::make_optional(PeriodicTable::GetElement(1)->getPrincipalIsotope()->getAtomicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         variableModifications.push_back(&tempVar2);
+
         Modification tempVar3("resMod", "", "", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H"), std::make_optional(PeriodicTable::GetElement(1)->getPrincipalIsotope()->getAtomicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         variableModifications.push_back(&tempVar3);
+
         Modification tempVar4("PepCmod", "", "", "", motif, "Peptide C-terminal.", ChemicalFormula::ParseFormula("H"), std::make_optional(PeriodicTable::GetElement(1)->getPrincipalIsotope()->getAtomicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         variableModifications.push_back(&tempVar4);
+
         Modification tempVar5("ProtCmod", "", "", "", motif, "C-terminal.", ChemicalFormula::ParseFormula("H"), std::make_optional(PeriodicTable::GetElement(1)->getPrincipalIsotope()->getAtomicMass()), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
         variableModifications.push_back(&tempVar5);
 
@@ -387,4 +395,5 @@ namespace Test
         delete peptide;
 	delete carbamidomethylOnC;
     }
+#endif
 }
