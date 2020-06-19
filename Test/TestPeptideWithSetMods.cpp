@@ -24,18 +24,20 @@ int main () {
 	std::cout << ++i << ". TestPeptideWithSetMods::TestDifferentProteaseEquals\n";
 	Test::TestPeptideWithSetMods::TestDifferentProteaseEquals();
 
-	// Two commented out functions fail when trying to make a PeptideWithSetModifications object
-//	std::cout << ++i << ". TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing" << std::endl;
-//	Test::TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing();
+	std::cout << ++i << ". TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing" << std::endl;
+	Test::TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing();
 
 	std::cout << ++i << ". TestPeptideWithSetMods::TestSemiFewCleavages\n";
 	Test::TestPeptideWithSetMods::TestSemiFewCleavages();
 
-//	std::cout << ++i << ". TestPeptideWithSetMods::TestHardToParseModifiedSequence" << std::endl;
-//	Test::TestPeptideWithSetMods::TestHardToParseModifiedSequence();
+	std::cout << ++i << ". TestPeptideWithSetMods::TestHardToParseModifiedSequence" << std::endl;
+	Test::TestPeptideWithSetMods::TestHardToParseModifiedSequence();
 
 	std::cout << ++i << ". TestPeptideWithSetMods::TestSingleProteases\n";
 	Test::TestPeptideWithSetMods::TestSemiFewCleavages();
+
+	std::cout << ++i << ". TestPeptideWithSetMods::TestNonAndSemiSpecificDigests\n";
+	Test::TestPeptideWithSetMods::TestNonAndSemiSpecificDigests();
 
 	return 0;
 }
@@ -160,7 +162,6 @@ namespace Test
 				delete i;
 	}
 
-#ifdef LATER
 	void TestPeptideWithSetMods::TestNonAndSemiSpecificDigests()
 	{
 		std::vector<std::vector<Modification*>> initTempsForModificationPtr;
@@ -199,7 +200,6 @@ namespace Test
 		//This is a partial list of the full peptides. From this, we can GENERATE every possible semi that we would expect to see
 		std::vector<std::string> expectedProductsSemiFiveCleavages = {"MAAKCCKDDKEEK", "AAKCCKDDKEEK", "CCKDDKEEKFFK", "DDKEEKFFKGG", "EEKFFKGG", "FFKGG", "AAK", "AAKCCK", "AAKCCKDDK"};
 
-#ifdef LATER
 		//Check that, when we digested with semi, we made all possible semi sequences, labeled full and semi correctly, and have no duplicates
 		for (auto s : expectedProductsSemiFiveCleavages) //foreach precursor peptide
 		{
@@ -207,57 +207,78 @@ namespace Test
 			{
 				std::string sToFind = s.substr(i); //get a peptide from this precursor (fixed C)
 				/*
-				auto peps = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
-						{
-						x::BaseSequence->Equals(sToFind);
-						})->ToArray(); //find the peptide in the digested list
-						*/
-				std::vector<FlashLFQ::Identification> peps;
+				   auto peps = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
+				   {
+				   x::BaseSequence->Equals(sToFind);
+				   })->ToArray(); //find the peptide in the digested list
+				   */
+				std::vector<PeptideWithSetModifications*> peps;
 
-				for (int i = 0; i < fiveCleavageProductsTrypsin.size(); i++) {
-					
+				for (auto i : fiveCleavageProductsSemiTrypsin) {
+					if(i->getBaseSequence() == sToFind)
+						peps.push_back(i);
 				}
-				
+
 				Assert::IsTrue(peps.size() == 1); //There should be exactly one! More than that means there are duplicates, fewer means we didn't generate it!
 				auto pep = peps[0]; //get that single peptide
 				//if it's a full sequence (cleaved at both indexes (including termini))
-				if ((pep.BaseSequence[0] == pep.BaseSequence[1] || pep.BaseSequence[0] == 'M') && (pep.BaseSequence[pep.BaseSequence->Length - 1] == 'K' || (pep.BaseSequence[pep.BaseSequence->Length - 1] == 'G' && pep.BaseSequence[pep.BaseSequence->Length - 2] == 'G')))
+				if ((pep->getBaseSequence()[0] == pep->getBaseSequence()[1] || pep->getBaseSequence()[0] == 'M') && (pep->getBaseSequence()[pep->getBaseSequence().size() - 1] == 'K' || (pep->getBaseSequence()[pep->getBaseSequence().size() - 1] == 'G' && pep->getBaseSequence()[pep->getBaseSequence().size() - 2] == 'G')))
 				{
-					Assert::IsTrue(pep.CleavageSpecificityForFdrCategory == CleavageSpecificity::Full);
+					Assert::IsTrue(pep->getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Full);
 				}
 				else
 				{
-					Assert::IsTrue(pep.CleavageSpecificityForFdrCategory == CleavageSpecificity::Semi);
+					Assert::IsTrue(pep->getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Semi);
 				}
 				//try to remake the pwsm with unknown specificity... was it assigned the correct specificity?
-				PeptideWithSetModifications *pwsmRemake = new PeptideWithSetModifications(fiveCleavages, semiDigestionParams, pep.OneBasedStartResidueInProtein, pep.OneBasedEndResidueInProtein, CleavageSpecificity::Unknown, "", 3, pep.AllModsOneIsNterminus, 0);
-				Assert::IsTrue(pwsmRemake->getCleavageSpecificityForFdrCategory() == pep.CleavageSpecificityForFdrCategory);
+				//lvalue conversion
+				std::unordered_map<int, Modification*> tempOneModsOneIsNterminus1 = pep->getAllModsOneIsNterminus();
+				PeptideWithSetModifications *pwsmRemake = new PeptideWithSetModifications(fiveCleavages, semiDigestionParams, pep->getOneBasedStartResidueInProtein(), pep->getOneBasedEndResidueInProtein(), CleavageSpecificity::Unknown, "", 3, tempOneModsOneIsNterminus1, 0);
+				Assert::IsTrue(pwsmRemake->getCleavageSpecificityForFdrCategory() == pep->getCleavageSpecificityForFdrCategory());
 
 				//Repeat the above going from the other direction (fixed N)
 				sToFind = s.substr(0, semiDigestionParams->getMinPeptideLength() + i); //get a peptide from this precursor (fixed N)
-				peps = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
-						{
-						x::BaseSequence->Equals(sToFind);
-						})->ToArray(); //find the peptide in the digested list
+				/*
+				   peps = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
+				   {
+				   x::BaseSequence->Equals(sToFind);
+				   })->ToArray(); //find the peptide in the digested list*/
+
+				peps.clear();
+
+				for (auto i : fiveCleavageProductsSemiTrypsin) {
+					if (i->getBaseSequence() == sToFind)
+						peps.push_back(i);
+				}
 				Assert::IsTrue(peps.size() == 1); //There should be exactly one! More than that means there are duplicates, fewer means we didn't generate it!
 				pep = peps[0]; //get that single peptide
 				//if it's a full sequence (cleaved at both indexes (including termini))
-				if ((pep.BaseSequence[0] == pep.BaseSequence[1] || pep.BaseSequence[0] == 'M') && pep.BaseSequence::Last() == 'K')
+				if ((pep->getBaseSequence()[0] == pep->getBaseSequence()[1] || pep->getBaseSequence()[0] == 'M') && pep->getBaseSequence()[pep->getBaseSequence().size() - 1] == 'K')
 				{
-					Assert::IsTrue(pep.CleavageSpecificityForFdrCategory == CleavageSpecificity::Full);
+					Assert::IsTrue(pep->getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Full);
 				}
 				else
 				{
-					Assert::IsTrue(pep.CleavageSpecificityForFdrCategory == CleavageSpecificity::Semi);
+					Assert::IsTrue(pep->getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Semi);
 				}
 				//try to remake the pwsm with unknown specificity... was it assigned the correct specificity?
-				pwsmRemake = new PeptideWithSetModifications(fiveCleavages, semiDigestionParams, pep.OneBasedStartResidueInProtein, pep.OneBasedEndResidueInProtein, CleavageSpecificity::Unknown, "", 3, pep.AllModsOneIsNterminus, 0);
-				Assert::IsTrue(pwsmRemake->getCleavageSpecificityForFdrCategory() == pep.CleavageSpecificityForFdrCategory);
+				if (pwsmRemake != nullptr)
+					delete pwsmRemake;
+				std::unordered_map<int, Modification*> tempOneModsOneIsNterminus2 = pep->getAllModsOneIsNterminus();
+				pwsmRemake = new PeptideWithSetModifications(fiveCleavages, semiDigestionParams, pep->getOneBasedStartResidueInProtein(), pep->getOneBasedEndResidueInProtein(), CleavageSpecificity::Unknown, "", 3, tempOneModsOneIsNterminus2, 0);
+				Assert::IsTrue(pwsmRemake->getCleavageSpecificityForFdrCategory() == pep->getCleavageSpecificityForFdrCategory());
 
 				delete pwsmRemake;
+
+				for (auto i : tempOneModsOneIsNterminus1)
+					if (i.second != nullptr)
+						delete i.second;
+
+				for (auto i : tempOneModsOneIsNterminus2)
+					if (i.second != nullptr)
+						delete i.second;
 			}
 		}
-#endif
 		//confirm there were 85 peptides generated by the semi
 		Assert::AreEqual(85, fiveCleavageProductsSemiTrypsin.size());
 
@@ -266,55 +287,67 @@ namespace Test
 		DigestionParams *semiCleaveDigestionParams = new DigestionParams(semiTrypsinForTestNonAndSemiSpecificDigests->getName(), 3, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Cleave, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 		initTempsForModificationPtr.push_back(std::vector<Proteomics::Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Proteomics::Modification*>());
-		auto fiveCleavageProductsSemiTrypsinCleaveVector = std::vector<PeptideWithSetModifications*>(fiveCleavages->Digest(semiCleaveDigestionParams, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]));
-		auto fiveCleavageProductsSemiTrypsinCleave = std::list<PeptideWithSetModifications*>(fiveCleavageProductsSemiTrypsinCleaveVector.begin(), fiveCleavageProductsSemiTrypsinCleaveVector.end());
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsSemiTrypsinCleaveVector = (fiveCleavages->Digest(semiCleaveDigestionParams, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]));
+		std::list<PeptideWithSetModifications*> fiveCleavageProductsSemiTrypsinCleave = std::list<PeptideWithSetModifications*>(fiveCleavageProductsSemiTrypsinCleaveVector.begin(), fiveCleavageProductsSemiTrypsinCleaveVector.end());
 		counterFor_initTempsForModificationPtr += 2;
-#ifdef LATER
-		int numVariableWithMet = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
-				{
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiCleaveDigestionParams' statement was not added since semiCleaveDigestionParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiDigestionParams' statement was not added since semiDigestionParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete fullyDigestParams' statement was not added since fullyDigestParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiTrypsinForTestNonAndSemiSpecificDigests' statement was not added since semiTrypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete trypsinForTestNonAndSemiSpecificDigests' statement was not added since trypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete fiveCleavages' statement was not added since fiveCleavages was passed to a method or constructor. Handle memory management manually.
-				return x::BaseSequence[0] == 'M';
-				})->Count(); //how many had methionine in the variable digestion?
+
+		/*
+		   int numVariableWithMet = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
+		   {
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiCleaveDigestionParams' statement was not added since semiCleaveDigestionParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiDigestionParams' statement was not added since semiDigestionParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete fullyDigestParams' statement was not added since fullyDigestParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiTrypsinForTestNonAndSemiSpecificDigests' statement was not added since semiTrypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete trypsinForTestNonAndSemiSpecificDigests' statement was not added since trypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete fiveCleavages' statement was not added since fiveCleavages was passed to a method or constructor. Handle memory management manually.
+		return x::BaseSequence[0] == 'M';
+		})->Count(); //how many had methionine in the variable digestion?*/
+
+		int numVariableWithMet = 0;
+
+		for (auto i : fiveCleavageProductsSemiTrypsin)
+			if (i->getBaseSequence()[0] == 'M')
+				numVariableWithMet++;
 
 		Assert::AreEqual(fiveCleavageProductsSemiTrypsin.size(), fiveCleavageProductsSemiTrypsinCleave.size() + numVariableWithMet); //there should be the same number of sequences as before, minus the amount of methionine peptides
 
-#endif
 		//check semi when methionine is retained
 		DigestionParams *semiRetainDigestionParams = new DigestionParams(semiTrypsinForTestNonAndSemiSpecificDigests->getName(), 3, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Retain, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
 
 		initTempsForModificationPtr.push_back(std::vector<Proteomics::Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Proteomics::Modification*>());
-		auto fiveCleavageProductsSemiTrypsinRetainVector = fiveCleavages->Digest(semiRetainDigestionParams, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsSemiTrypsinRetainVector = fiveCleavages->Digest(semiRetainDigestionParams, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
 		counterFor_initTempsForModificationPtr += 2;
-		auto fiveCleavageProductsSemiTrypsinRetain = std::list<Modification*>(fiveCleavageProductsSemiTrypsinRetainVector.begin(), fiveCleavageProductsSemiTrypsinVector.end());
-#ifdef LATER
+		std::list<PeptideWithSetModifications*> fiveCleavageProductsSemiTrypsinRetain = std::list<PeptideWithSetModifications*>(fiveCleavageProductsSemiTrypsinRetainVector.begin(), fiveCleavageProductsSemiTrypsinVector.end());
 
-		int numNotRetained = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
-				{
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiRetainDigestionParams' statement was not added since semiRetainDigestionParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiCleaveDigestionParams' statement was not added since semiCleaveDigestionParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiDigestionParams' statement was not added since semiDigestionParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete fullyDigestParams' statement was not added since fullyDigestParams was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete semiTrypsinForTestNonAndSemiSpecificDigests' statement was not added since semiTrypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete trypsinForTestNonAndSemiSpecificDigests' statement was not added since trypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-				//C# TO C++ CONVERTER TODO TASK: A 'delete fiveCleavages' statement was not added since fiveCleavages was passed to a method or constructor. Handle memory management manually.
-				return x::BaseSequence[0] == 'A' && x::BaseSequence[1] == 'A' && (x::BaseSequence[x::BaseSequence->Length - 1] != 'K' && !(x::BaseSequence[x::BaseSequence->Length - 1] == 'G' && x::BaseSequence[x::BaseSequence->Length - 2] == 'G'));
-				})->Count();
+		/*
+		   int numNotRetained = fiveCleavageProductsSemiTrypsin.Where([&] (std::any x)
+		   {
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiRetainDigestionParams' statement was not added since semiRetainDigestionParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiCleaveDigestionParams' statement was not added since semiCleaveDigestionParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiDigestionParams' statement was not added since semiDigestionParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete fullyDigestParams' statement was not added since fullyDigestParams was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete semiTrypsinForTestNonAndSemiSpecificDigests' statement was not added since semiTrypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete trypsinForTestNonAndSemiSpecificDigests' statement was not added since trypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
+		//C# TO C++ CONVERTER TODO TASK: A 'delete fiveCleavages' statement was not added since fiveCleavages was passed to a method or constructor. Handle memory management manually.
+		return i->getBaseSequence()[0] == 'A' && i->getBaseSequence()[1] == 'A' && (i->getBaseSequence()[i->getBaseSequence().size() - 1] != 'K' && !(i->getBaseSequence()[i->getBaseSequence().size() - 1] == 'G' && i->getBaseSequence()[i->getBaseSequence().size() - 2] == 'G'));
+		})->Count();*/
+
+		int numNotRetained = 0;
+		for (auto i : fiveCleavageProductsSemiTrypsin) {
+			if (i->getBaseSequence()[0] == 'A' && i->getBaseSequence()[1] == 'A' && (i->getBaseSequence()[i->getBaseSequence().size() - 1] != 'K' && !(i->getBaseSequence()[i->getBaseSequence().size() - 1] == 'G' && i->getBaseSequence()[i->getBaseSequence().size() - 2] == 'G'))) 
+				numNotRetained++;
+		}
+
 		Assert::AreEqual(fiveCleavageProductsSemiTrypsinRetain.size() + numNotRetained, fiveCleavageProductsSemiTrypsin.size()); //there should be the same number of sequences as before, minus the amount of cleaved peptides
-#endif
 
 		//Check the speedy semi-specific search (the previous ones were the slow classic)
 		//Fixed N
 		DigestionParams *modernSemiDigestionParamsN = new DigestionParams(trypsinForTestNonAndSemiSpecificDigests->getName(), 3, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Semi, FragmentationTerminus::N);
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
-		auto fiveCleavageProductsModernSemiTrypsinNVector = fiveCleavages->Digest(modernSemiDigestionParamsN, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
-		auto fiveCleavageProductsModernSemiTrypsinN = std::list<Modification*> (fiveCleavageProductsModernSemiTrypsinNVector.begin(), fiveCleavageProductsModernSemiTrypsinNVector.end());
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsModernSemiTrypsinNVector = fiveCleavages->Digest(modernSemiDigestionParamsN, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+		std::list<PeptideWithSetModifications*> fiveCleavageProductsModernSemiTrypsinN = std::list<PeptideWithSetModifications*> (fiveCleavageProductsModernSemiTrypsinNVector.begin(), fiveCleavageProductsModernSemiTrypsinNVector.end());
 		counterFor_initTempsForModificationPtr += 2;
 		Assert::AreEqual(7, fiveCleavageProductsModernSemiTrypsinN.size());
 
@@ -322,9 +355,9 @@ namespace Test
 		DigestionParams *modernSemiDigestionParamsC = new DigestionParams(trypsinForTestNonAndSemiSpecificDigests->getName(), 3, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Semi, FragmentationTerminus::C);
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
-		auto fiveCleavageProductsModernSemiTrypsinCVector = fiveCleavages->Digest(modernSemiDigestionParamsC, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsModernSemiTrypsinCVector = fiveCleavages->Digest(modernSemiDigestionParamsC, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
 		counterFor_initTempsForModificationPtr += 2;
-		auto fiveCleavageProductsModernSemiTrypsinC = std::list<Modification*> (fiveCleavageProductsModernSemiTrypsinCVector.begin(), fiveCleavageProductsModernSemiTrypsinCVector.end());
+		std::list<PeptideWithSetModifications*> fiveCleavageProductsModernSemiTrypsinC = std::list<PeptideWithSetModifications*> (fiveCleavageProductsModernSemiTrypsinCVector.begin(), fiveCleavageProductsModernSemiTrypsinCVector.end());
 		Assert::AreEqual(6, fiveCleavageProductsModernSemiTrypsinC.size());
 
 		//test the maxPeptideLength for both singleN and SingleC (variable methionine)
@@ -333,35 +366,31 @@ namespace Test
 
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
-		auto fiveCleavageProductsModernNonSpecificNVector = fiveCleavages->Digest(modernNonSpecificN, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsModernNonSpecificNVector = fiveCleavages->Digest(modernNonSpecificN, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
 		counterFor_initTempsForModificationPtr += 2;
-		auto fiveCleavageProductsModernNonSpecificN = std::list<Modification*> (fiveCleavageProductsModernNonSpecificNVector.begin(), fiveCleavageProductsModernNonSpecificNVector.end());
+		auto fiveCleavageProductsModernNonSpecificN = std::list<PeptideWithSetModifications*> (fiveCleavageProductsModernNonSpecificNVector.begin(), fiveCleavageProductsModernNonSpecificNVector.end());
 		Assert::AreEqual(17, fiveCleavageProductsModernNonSpecificN.size());
 
-#ifdef LATER
 		for (auto pep : fiveCleavageProductsModernNonSpecificN)
 		{
-			Assert::IsTrue(pep.BaseSequence->Length <= 4 && pep.BaseSequence->Length >= 2);
+			Assert::IsTrue(pep->getBaseSequence().size() <= 4 && pep->getBaseSequence().size() >= 2);
 		}
-#endif
 		//Single C max peptide length
 		auto modernNonSpecificC = new DigestionParams("singleC", 4, 2, 4, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::None, FragmentationTerminus::C);
 
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
 		initTempsForModificationPtr.push_back(std::vector<Modification*>());
-		auto fiveCleavageProductsModernNonSpecificCVector = fiveCleavages->Digest(modernNonSpecificC, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+		std::vector<PeptideWithSetModifications*> fiveCleavageProductsModernNonSpecificCVector = fiveCleavages->Digest(modernNonSpecificC, initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0], initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
 		counterFor_initTempsForModificationPtr += 2;
 
-		auto fiveCleavageProductsModernNonSpecificC = std::list(fiveCleavageProductsModernNonSpecificCVector.begin(), fiveCleavageProductsModernNonSpecificCVector.end());
+		std::list<PeptideWithSetModifications*> fiveCleavageProductsModernNonSpecificC = std::list(fiveCleavageProductsModernNonSpecificCVector.begin(), fiveCleavageProductsModernNonSpecificCVector.end());
 
 		Assert::AreEqual(17, fiveCleavageProductsModernNonSpecificC.size());
 
-#ifdef LATER
 		for (auto pep : fiveCleavageProductsModernNonSpecificC)
 		{
-			Assert::IsTrue(pep.BaseSequence->Length <= 4 && pep.BaseSequence->Length >= 2);
+			Assert::IsTrue(pep->getBaseSequence().size() <= 4 && pep->getBaseSequence().size() >= 2);
 		}
-#endif
 
 		//test speedy nonspecific with variable methionine
 		TestSingleProteases(fiveCleavages, InitiatorMethionineBehavior::Variable, FragmentationTerminus::N, 17);
@@ -375,25 +404,57 @@ namespace Test
 		TestSingleProteases(fiveCleavages, InitiatorMethionineBehavior::Retain, FragmentationTerminus::N, 17);
 		TestSingleProteases(fiveCleavages, InitiatorMethionineBehavior::Retain, FragmentationTerminus::C, 17);
 
-		//C# TO C++ CONVERTER TODO TASK: A 'delete modernNonSpecificC' statement was not added since modernNonSpecificC was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete modernNonSpecificN' statement was not added since modernNonSpecificN was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete modernSemiDigestionParamsC' statement was not added since modernSemiDigestionParamsC was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete modernSemiDigestionParamsN' statement was not added since modernSemiDigestionParamsN was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete semiRetainDigestionParams' statement was not added since semiRetainDigestionParams was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete semiCleaveDigestionParams' statement was not added since semiCleaveDigestionParams was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete semiDigestionParams' statement was not added since semiDigestionParams was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete fullyDigestParams' statement was not added since fullyDigestParams was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete semiTrypsinForTestNonAndSemiSpecificDigests' statement was not added since semiTrypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete trypsinForTestNonAndSemiSpecificDigests' statement was not added since trypsinForTestNonAndSemiSpecificDigests was passed to a method or constructor. Handle memory management manually.
-		//C# TO C++ CONVERTER TODO TASK: A 'delete fiveCleavages' statement was not added since fiveCleavages was passed to a method or constructor. Handle memory management manually.
-
 
 		for (auto i : initTempsForModificationPtr)
 			for (auto j : i)
 				if (j != nullptr)
 					delete j;
+
+		for (auto i : fiveCleavageProductsTrypsin)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsSemiTrypsin)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsSemiTrypsinCleave)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsSemiTrypsinRetain)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsModernSemiTrypsinN)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsModernSemiTrypsinC)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsModernNonSpecificN)
+			if (i != nullptr)
+				delete i;
+
+		for (auto i : fiveCleavageProductsModernNonSpecificC)
+			if (i != nullptr)
+				delete i;
+
+		delete fiveCleavages;
+		delete trypsinForTestNonAndSemiSpecificDigests;
+		delete fullyDigestParams;
+		delete semiTrypsinForTestNonAndSemiSpecificDigests;
+		delete semiDigestionParams;
+		delete semiCleaveDigestionParams;
+		delete semiRetainDigestionParams;
+		delete modernSemiDigestionParamsN;
+		delete modernSemiDigestionParamsC;
+		delete modernNonSpecificN;
+		delete modernNonSpecificC;
 	}
-#endif
+
 	void TestPeptideWithSetMods::TestSingleProteases(Protein *protein, InitiatorMethionineBehavior initiatorMethionineBehavior, FragmentationTerminus fragmentationTerminus, int numSequencesExpected)
 	{
 		std::string protease = FragmentationTerminus::N == fragmentationTerminus ? "singleN" : "singleC";
