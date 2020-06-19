@@ -6,11 +6,8 @@
 #include <vector>
 #include "exceptionhelper.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
 namespace Proteomics { class Protein; }
-//namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
-//namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
 #include "DigestionParams.h"
 
 #include "cereal/cereal.hpp"
@@ -46,7 +43,8 @@ namespace Proteomics
                 //delete _protein;
             }
 
-            ProteolyticPeptide(Proteomics::Protein *protein, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages, CleavageSpecificity cleavageSpecificityForFdrCategory, const std::string &peptideDescription = "");
+            ProteolyticPeptide(Proteomics::Protein *protein, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages,
+                               CleavageSpecificity cleavageSpecificityForFdrCategory, const std::string &peptideDescription = "");
 
         private:
             //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
@@ -79,7 +77,9 @@ namespace Proteomics
             /// <param name="digestionParams"></param>
             /// <param name="variableModifications"></param>
             /// <returns></returns>
-            std::vector<PeptideWithSetModifications*> GetModifiedPeptides(std::vector<Modification*> allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> variableModifications);
+            std::vector<PeptideWithSetModifications*> GetModifiedPeptides(std::vector<Modification*> allKnownFixedModifications,
+                                                                          DigestionParams *digestionParams,
+                                                                          std::vector<Modification*> variableModifications);
 
             
         protected:
@@ -106,7 +106,7 @@ namespace Proteomics
             /// <returns></returns>
             bool CanBeCTerminalMod(Modification *variableModification, int peptideLength);
 
-            static std::vector<std::unordered_map<int, Modification*>> GetVariableModificationPatterns(std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications, int maxModsForPeptide, int peptideLength);
+            static std::vector<std::unordered_map<int, Modification*>> GetVariableModificationPatterns(std::unordered_map<int, std::vector<Modification*>&> &possibleVariableModifications, int maxModsForPeptide, int peptideLength);
 
             static std::vector<std::vector<int>> GetVariableModificationPatterns(std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications, int unmodifiedResiduesDesired, std::vector<int> &variableModificationPattern, int index);
 

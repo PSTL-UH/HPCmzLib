@@ -9,7 +9,6 @@ namespace Proteomics
     {
         // First find the capital letter...
         auto motif = attemptToLocalize->getTarget();
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
 #ifdef ORIG
         auto motifStartLocation = (int) motif->ToString()->find(motif->ToString()->First([&] (std::any b)
         {
@@ -18,7 +17,7 @@ namespace Proteomics
 #endif
         int motifStartLocation;
         std::string motifstring = motif->ToString();
-        for ( int i; i < (int) motifstring.length(); i++ )
+        for ( int i=0; i < (int) motifstring.length(); i++ )
         {
             if ( std::isupper(motifstring[i])){
                 motifStartLocation = i;
@@ -30,11 +29,9 @@ namespace Proteomics
         // Look up starting at and including the capital letter
         auto proteinToMotifOffset = proteinOneBasedIndex - motifStartLocation - 1;
         auto indexUp = 0;
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
         int upper = motifstring.length();
         while (indexUp < upper)
         {
-            //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
             if (indexUp + proteinToMotifOffset < 0 ||
                 indexUp + proteinToMotifOffset >= (int) proteinSequence.length() ||
                 !MotifMatches(motifstring[indexUp], proteinSequence[indexUp + proteinToMotifOffset]))

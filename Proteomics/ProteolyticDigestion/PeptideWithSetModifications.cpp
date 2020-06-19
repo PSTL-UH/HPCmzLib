@@ -614,10 +614,12 @@ namespace Proteomics
 
             // modification on peptide N-terminus
             Modification *mod;
-            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(1);
-            if (AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
+            auto allMods = getAllModsOneIsNterminus();
+            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = allMods.find(1);
+            if (AllModsOneIsNterminus_iterator != allMods.end())
             {
                 mod = AllModsOneIsNterminus_iterator->second;
+                if ( mod == nullptr ) std::cout << "HELLO This shouldnt happen\n";
                 subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
             }
 
@@ -626,8 +628,8 @@ namespace Proteomics
                 subsequence->append(this->operator[](r));
 
                 // modification on this residue
-                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = getAllModsOneIsNterminus().find(r + 2);
-                if ( AllModsOneIsNterminus_iterator != getAllModsOneIsNterminus().end())
+                std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = allMods.find(r + 2);
+                if ( AllModsOneIsNterminus_iterator != allMods.end())
                 {
                     mod = AllModsOneIsNterminus_iterator->second;
                     subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');
@@ -635,8 +637,8 @@ namespace Proteomics
             }
 
             // modification on peptide C-terminus
-            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = getAllModsOneIsNterminus().find(getLength() + 2);
-            if (AllModsOneIsNterminus_iterator2 != getAllModsOneIsNterminus().end())
+            std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator2 = allMods.find(getLength() + 2);
+            if (AllModsOneIsNterminus_iterator2 != allMods.end())
             {
                 mod = AllModsOneIsNterminus_iterator2->second;
                 subsequence->append('[' + mod->getModificationType() + ":" + mod->getIdWithMotif() + ']');

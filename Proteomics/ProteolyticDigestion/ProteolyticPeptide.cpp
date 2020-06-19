@@ -117,13 +117,14 @@ namespace Proteomics
             int peptideLength = getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1;
             int maximumVariableModificationIsoforms = digestionParams->getMaxModificationIsoforms();
             int maxModsForPeptide = digestionParams->getMaxModsForPeptide();
-            std::unordered_map<int, std::vector<Modification*>> twoBasedPossibleVariableAndLocalizeableModifications(peptideLength + 4);
+            std::unordered_map<int, std::vector<Modification*>&> twoBasedPossibleVariableAndLocalizeableModifications(peptideLength + 4);
             
             auto pepNTermVariableMods = new std::vector<Modification*>();
             twoBasedPossibleVariableAndLocalizeableModifications.emplace(1, *pepNTermVariableMods);
             
             auto pepCTermVariableMods = new std::vector<Modification*>();
             twoBasedPossibleVariableAndLocalizeableModifications.emplace(peptideLength + 2, *pepCTermVariableMods);
+
             
             for (auto variableModification : variableModifications)
             {
@@ -140,11 +141,12 @@ namespace Proteomics
                         variableModification->getLocationRestriction() == "Anywhere.")
                     {
                         std::vector<Modification*> residueVariableMods;
-                        std::unordered_map<int, std::vector<Modification*>>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
+                        std::unordered_map<int, std::vector<Modification*>&>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
                         if (twoBasedPossibleVariableAndLocalizeableModifications_iterator == twoBasedPossibleVariableAndLocalizeableModifications.end())
                         {
-                            residueVariableMods = {variableModification};
-                            twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, residueVariableMods);
+                            auto rVarMods = new std::vector<Modification*>();
+                            rVarMods->push_back(variableModification);
+                            twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, *rVarMods);
                         }
                         else
                         {
@@ -189,11 +191,12 @@ namespace Proteomics
                                                              variableModification->getLocationRestriction() == "Anywhere.")))
                         {
                             std::vector<Modification*> residueVariableMods;
-                            std::unordered_map<int, std::vector<Modification*>>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
+                            std::unordered_map<int, std::vector<Modification*>&>::const_iterator twoBasedPossibleVariableAndLocalizeableModifications_iterator = twoBasedPossibleVariableAndLocalizeableModifications.find(r + 2);
                             if (twoBasedPossibleVariableAndLocalizeableModifications_iterator == twoBasedPossibleVariableAndLocalizeableModifications.end())
                             {
-                                residueVariableMods = {variableModification};
-                                twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, residueVariableMods);
+                                auto rVarMods = new std::vector<Modification*>;
+                                rVarMods->push_back(variableModification);
+                                twoBasedPossibleVariableAndLocalizeableModifications.emplace(r + 2, *rVarMods);
                             }
                             else
                             {
@@ -223,6 +226,7 @@ namespace Proteomics
                     {
                         numFixedMods++;
                         kvp.emplace(std::get<0>(ok), std::get<1>(ok));
+
                     }
                 }
                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
@@ -268,7 +272,7 @@ namespace Proteomics
 
 
         std::vector<std::unordered_map<int, Modification*>> ProteolyticPeptide::GetVariableModificationPatterns(
-            std::unordered_map<int, std::vector<Modification*>> &possibleVariableModifications,
+            std::unordered_map<int, std::vector<Modification*> &> &possibleVariableModifications,
             int maxModsForPeptide, int peptideLength)
         {
             std::vector<std::unordered_map<int, Modification*>> v;
@@ -278,7 +282,7 @@ namespace Proteomics
             }
             else
             {
-                std::unordered_map<int, std::vector<Modification*>> possible_variable_modifications = possibleVariableModifications;
+                std::unordered_map<int, std::vector<Modification*>&> possible_variable_modifications = possibleVariableModifications;
 
                 std::vector<int> base_variable_modification_pattern(peptideLength + 4);
                 int totalAvailableMods=0;
@@ -287,7 +291,6 @@ namespace Proteomics
                         totalAvailableMods += b.second.size();
                     }
                 }
-
                 for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide);
                      variable_modifications++)
                 {

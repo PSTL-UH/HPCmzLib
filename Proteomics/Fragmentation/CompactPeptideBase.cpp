@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <cmath>
 
 #include "CompactPeptideBase.h"
 #include "NeutralTerminusFragment.h"
@@ -82,8 +83,14 @@ namespace Proteomics
                     mass += Residue::ResidueMonoisotopicMass[peptide[r]];
 #endif
                     char OneLetter = peptide->getBaseSequence()[r];
-                    mass += Residue::GetResidue(OneLetter)->getMonoisotopicMass();
-                    
+                    auto res = Residue::GetResidue(OneLetter);
+                    if ( res != nullptr ) {
+                        mass += res->getMonoisotopicMass();
+                    }
+                    else {
+                        mass =std::nan("0");
+                    }
+                            
                     // side-chain mod
                     Modification* currentModification;
                     std::unordered_map<int, Modification*>::const_iterator AllModsOneIsNterminus_iterator = peptide->getAllModsOneIsNterminus().find(r + 2);
@@ -125,7 +132,13 @@ namespace Proteomics
                     mass += Residue::ResidueMonoisotopicMass[peptide[r]];
 #endif
                     char OneLetter = peptide->getBaseSequence()[r];
-                    mass += Residue::GetResidue(OneLetter)->getMonoisotopicMass();
+                    auto res = Residue::GetResidue(OneLetter);
+                    if ( res != nullptr ) {
+                        mass += res->getMonoisotopicMass();
+                    }
+                    else {
+                        mass = std::nan("0");
+                    }
 
                     // side-chain mod
                     Modification *currentModification;

@@ -116,8 +116,10 @@ namespace Proteomics
             for (int i = 0; i < (int)oneBasedIndicesToCleaveAfter.size() - getMaximumMissedCleavages() - 1; i++)
             {
                 bool retain = getProtease()->Retain(i, getInitiatorMethionineBehavior(), protein->getBaseSequence()[0]);
-                if (retain) //it's okay to use i instead of oneBasedIndicesToCleaveAfter[i], because the index of zero is zero and it only checks if it's the N-terminus or not
+                if (retain) 
                 {
+                    //it's okay to use i instead of oneBasedIndicesToCleaveAfter[i], because the index of zero is zero and
+                    //it only checks if it's the N-terminus or not
                     int peptideLength = oneBasedIndicesToCleaveAfter[i + getMaximumMissedCleavages() + 1] - oneBasedIndicesToCleaveAfter[i];
                     if (peptideLength >= getMinPeptideLength()) //if bigger than min
                     {
@@ -195,8 +197,10 @@ namespace Proteomics
             int maxIndexDifference = getMaximumMissedCleavages() < lastIndex ? getMaximumMissedCleavages() : lastIndex; //the number of index differences allowed.
             //If the protein has fewer cleavage sites than allowed missed cleavages, just use the number of cleavage sites (lastIndex)
             bool nTerminusFragmentation = getDigestionParams()->getFragmentationTerminus() == FragmentationTerminus::N;
-            for (int i = 1; i <= maxIndexDifference; i++) //i is the difference (in indexes) between indexes (cleavages), so it needs to start at 1, or the peptide would have length = 0
+            for (int i = 1; i <= maxIndexDifference; i++) 
             {
+                //i is the difference (in indexes) between indexes (cleavages), so it needs to start at 1,
+                //or the peptide would have length = 0
                 int startIndex = nTerminusFragmentation ? oneBasedIndicesToCleaveAfter[lastIndex - i] : oneBasedIndicesToCleaveAfter[0];
                 int endIndex = nTerminusFragmentation ? oneBasedIndicesToCleaveAfter[lastIndex] : oneBasedIndicesToCleaveAfter[i];
 
