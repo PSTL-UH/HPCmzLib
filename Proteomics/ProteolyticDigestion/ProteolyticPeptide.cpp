@@ -12,7 +12,12 @@ namespace Proteomics
     namespace ProteolyticDigestion
     {
 
-        ProteolyticPeptide::ProteolyticPeptide(Proteomics::Protein *protein, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages, CleavageSpecificity cleavageSpecificityForFdrCategory, const std::string &peptideDescription)
+        ProteolyticPeptide::ProteolyticPeptide(Proteomics::Protein *protein,
+                                               int oneBasedStartResidueInProtein,
+                                               int oneBasedEndResidueInProtein,
+                                               int missedCleavages,
+                                               CleavageSpecificity cleavageSpecificityForFdrCategory,
+                                               const std::string &peptideDescription)
         {
             _protein = protein;
             privateOneBasedStartResidueInProtein = oneBasedStartResidueInProtein;
@@ -102,7 +107,8 @@ namespace Proteomics
         {
             if (_baseSequence == "")
             {
-                _baseSequence = getProtein()->getBaseSequence().substr(getOneBasedStartResidueInProtein() - 1, getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1);
+                _baseSequence = getProtein()->getBaseSequence().substr(getOneBasedStartResidueInProtein() - 1,
+                                                                       getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1);
             }
             return _baseSequence;
         }
@@ -112,7 +118,10 @@ namespace Proteomics
             return getBaseSequence()[zeroBasedIndex];
         }
 
-        std::vector<PeptideWithSetModifications*> ProteolyticPeptide::GetModifiedPeptides(std::vector<Modification*> allKnownFixedModifications, DigestionParams *digestionParams, std::vector<Modification*> variableModifications)
+        std::vector<PeptideWithSetModifications*> ProteolyticPeptide::GetModifiedPeptides(
+            std::vector<Modification*> allKnownFixedModifications,
+            DigestionParams *digestionParams,
+            std::vector<Modification*> variableModifications)
         {
             int peptideLength = getOneBasedEndResidueInProtein() - getOneBasedStartResidueInProtein() + 1;
             int maximumVariableModificationIsoforms = digestionParams->getMaxModificationIsoforms();
@@ -231,7 +240,8 @@ namespace Proteomics
                 }
                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return new PeptideWithSetModifications(getProtein(), digestionParams, getOneBasedStartResidueInProtein(),
-                // getOneBasedEndResidueInProtein(), getCleavageSpecificityForFdrCategory(), getPeptideDescription(), getMissedCleavages(), kvp, numFixedMods);
+                //    getOneBasedEndResidueInProtein(), getCleavageSpecificityForFdrCategory(), getPeptideDescription(),
+                //    getMissedCleavages(), kvp, numFixedMods);
                 PeptideWithSetModifications *p = new PeptideWithSetModifications(getProtein(),
                                                                                  digestionParams,
                                                                                  getOneBasedStartResidueInProtein(),
@@ -242,13 +252,14 @@ namespace Proteomics
                                                                                  kvp,
                                                                                  numFixedMods);
                 v.push_back(p);
+                //std::cout << p->getBaseSequence() << " numFixedMods " << numFixedMods << " kvp size " << kvp.size() <<   std::endl;
                 
                 variable_modification_isoforms++;
                 if (variable_modification_isoforms == maximumVariableModificationIsoforms)
                 {
                     //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                     // yield break;
-                    return v;
+                    break;
                 }
             }
             return v;
@@ -291,6 +302,7 @@ namespace Proteomics
                         totalAvailableMods += b.second.size();
                     }
                 }
+
                 for (int variable_modifications = 0; variable_modifications <= std::min(totalAvailableMods, maxModsForPeptide);
                      variable_modifications++)
                 {
@@ -367,17 +379,17 @@ namespace Proteomics
         std::unordered_map<int, Modification*> ProteolyticPeptide::GetNewVariableModificationPattern(std::vector<int> variableModificationArray,
                                                  std::vector<std::tuple<int, std::vector<Modification*>>> possibleVariableModifications)
         {
-            auto modification_pattern = std::unordered_map<int, Modification*>();
+            auto modification_pattern = new std::unordered_map<int, Modification*>();
             
             for (auto kvp: possibleVariableModifications )
             {
                 if (variableModificationArray[std::get<0>(kvp)] > 0)
                 {
-                    modification_pattern.emplace(std::get<0>(kvp), std::get<1>(kvp)[variableModificationArray[std::get<0>(kvp)] - 1]);
+                    modification_pattern->emplace(std::get<0>(kvp), std::get<1>(kvp)[variableModificationArray[std::get<0>(kvp)] - 1]);
                 }
             }
 
-            return modification_pattern;
+            return *modification_pattern;
         }
 
         std::unordered_map<int, Modification*> ProteolyticPeptide::GetFixedModsOneIsNterminus(

@@ -33,7 +33,21 @@ namespace Proteomics
             PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
 
 
-        PeptideWithSetModifications::PeptideWithSetModifications(Proteomics::Protein *protein, Proteomics::ProteolyticDigestion::DigestionParams *digestionParams, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, CleavageSpecificity cleavageSpecificity, const std::string &peptideDescription, int missedCleavages, std::unordered_map<int, Modification*> &allModsOneIsNterminus, int numFixedMods) : ProteolyticPeptide(protein, oneBasedStartResidueInProtein, oneBasedEndResidueInProtein, missedCleavages, cleavageSpecificity, peptideDescription), NumFixedMods(numFixedMods), DigestionParamString(digestionParams->ToString()), ProteinAccession(protein->getAccession())
+        PeptideWithSetModifications::PeptideWithSetModifications(Proteomics::Protein *protein,
+                                                                 Proteomics::ProteolyticDigestion::DigestionParams *digestionParams,
+                                                                 int oneBasedStartResidueInProtein,
+                                                                 int oneBasedEndResidueInProtein,
+                                                                 CleavageSpecificity cleavageSpecificity,
+                                                                 const std::string &peptideDescription,
+                                                                 int missedCleavages,
+                                                                 std::unordered_map<int, Modification*> &allModsOneIsNterminus,
+                                                                 int numFixedMods) :
+            ProteolyticPeptide(protein, oneBasedStartResidueInProtein,
+                               oneBasedEndResidueInProtein, missedCleavages,
+                               cleavageSpecificity, peptideDescription),
+            NumFixedMods(numFixedMods),
+            DigestionParamString(digestionParams->ToString()),
+            ProteinAccession(protein->getAccession())
         {
             _allModsOneIsNterminus = allModsOneIsNterminus;
             _digestionParams = digestionParams;
@@ -41,7 +55,19 @@ namespace Proteomics
             UpdateCleavageSpecificity();
         }
 
-        PeptideWithSetModifications::PeptideWithSetModifications(const std::string &sequence, std::unordered_map<std::string, Modification*> &allKnownMods, int numFixedMods, Proteomics::ProteolyticDigestion::DigestionParams *digestionParams, Proteomics::Protein *p, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, int missedCleavages, CleavageSpecificity cleavageSpecificity, const std::string &peptideDescription) : ProteolyticPeptide(p, oneBasedStartResidueInProtein, oneBasedEndResidueInProtein, missedCleavages, cleavageSpecificity, peptideDescription), NumFixedMods(numFixedMods)
+        PeptideWithSetModifications::PeptideWithSetModifications(const std::string &sequence,
+                                                                 std::unordered_map<std::string, Modification*> &allKnownMods,
+                                                                 int numFixedMods,
+                                                                 Proteomics::ProteolyticDigestion::DigestionParams *digestionParams,
+                                                                 Proteomics::Protein *p,
+                                                                 int oneBasedStartResidueInProtein,
+                                                                 int oneBasedEndResidueInProtein,
+                                                                 int missedCleavages,
+                                                                 CleavageSpecificity cleavageSpecificity,
+                                                                 const std::string &peptideDescription) :
+            ProteolyticPeptide(p, oneBasedStartResidueInProtein, oneBasedEndResidueInProtein, missedCleavages,
+                               cleavageSpecificity, peptideDescription),
+            NumFixedMods(numFixedMods)
         {
             if (sequence.find("|") != std::string::npos)
             {
@@ -341,9 +367,9 @@ namespace Proteomics
 
                             // the diagnostic ion is assumed to be annotated in the mod info as the *neutral mass* of the
                             // diagnostic ion, not the ionized species
-                            Product tempVar3(ProductType::D, new NeutralTerminusFragment(FragmentationTerminus::Both, diagnosticIon,
-                                                                                         diagnosticIonLabel, 0), 0);
-                            diagnosticIons.insert(&tempVar3);
+                            auto tempVar3 = new Product (ProductType::D, new NeutralTerminusFragment(FragmentationTerminus::Both, diagnosticIon,
+                                                                                                     diagnosticIonLabel, 0), 0);
+                            diagnosticIons.insert(tempVar3);
                         }
                     }
                 }
@@ -406,9 +432,9 @@ namespace Proteomics
                 }
 
                 essentialSequence = sbsequence->toString();
-
                 delete sbsequence;
             }
+
             return essentialSequence;
         }
 
@@ -425,10 +451,20 @@ namespace Proteomics
                 dictWithLocalizedMass.erase(j + 2);
             }
 
-            Modification tempVar("", "", "", "", nullptr, "Anywhere.", nullptr, std::make_optional(massToLocalize + massOfExistingMod), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
-            dictWithLocalizedMass.emplace(j + 2, &tempVar);
+            auto tempVar = new Modification ("", "", "", "", nullptr, "Anywhere.", nullptr, std::make_optional(massToLocalize + massOfExistingMod),
+                                 std::unordered_map<std::string, std::vector<std::string>>(),
+                                 std::unordered_map<std::string, std::vector<std::string>>(),
+                                 std::vector<std::string>(), std::unordered_map<DissociationType,
+                                 std::vector<double>>(),
+                                 std::unordered_map<DissociationType, std::vector<double>>(), "");
+            dictWithLocalizedMass.emplace(j + 2, tempVar);
 
-            auto peptideWithLocalizedMass = new PeptideWithSetModifications(getProtein(), _digestionParams, getOneBasedStartResidueInProtein(), getOneBasedEndResidueInProtein(), getCleavageSpecificityForFdrCategory(), getPeptideDescription(), getMissedCleavages(), dictWithLocalizedMass, NumFixedMods);
+            auto peptideWithLocalizedMass = new PeptideWithSetModifications(getProtein(), _digestionParams,
+                                                                            getOneBasedStartResidueInProtein(),
+                                                                            getOneBasedEndResidueInProtein(),
+                                                                            getCleavageSpecificityForFdrCategory(),
+                                                                            getPeptideDescription(), getMissedCleavages(),
+                                                                            dictWithLocalizedMass, NumFixedMods);
 
             //C# TO C++ CONVERTER TODO TASK: A 'delete peptideWithLocalizedMass' statement was not added
             //since peptideWithLocalizedMass was used in a 'return' or 'throw' statement.
@@ -653,8 +689,10 @@ namespace Proteomics
         {
             if (getCleavageSpecificityForFdrCategory() == CleavageSpecificity::Unknown)
             {
-                setCleavageSpecificityForFdrCategory(getDigestionParams()->getSpecificProtease()->GetCleavageSpecificity(getProtein()->getBaseSequence(), getOneBasedStartResidueInProtein(), getOneBasedEndResidueInProtein()));
-                //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
+                setCleavageSpecificityForFdrCategory(getDigestionParams()->getSpecificProtease()->GetCleavageSpecificity(
+                                                         getProtein()->getBaseSequence(),
+                                                         getOneBasedStartResidueInProtein(),
+                                                         getOneBasedEndResidueInProtein()));
                 setPeptideDescription(std::to_string(static_cast<int>(getCleavageSpecificityForFdrCategory())) );
             }
         }

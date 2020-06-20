@@ -91,31 +91,39 @@ namespace Proteomics
             }
         }
 
-        std::vector<ProteolyticPeptide*> Protease::GetUnmodifiedPeptides(Protein *protein, int maximumMissedCleavages, InitiatorMethionineBehavior initiatorMethionineBehavior, int minPeptidesLength, int maxPeptidesLength)
+        std::vector<ProteolyticPeptide*> Protease::GetUnmodifiedPeptides(
+            Protein *protein,
+            int maximumMissedCleavages,
+            InitiatorMethionineBehavior initiatorMethionineBehavior,
+            int minPeptidesLength,
+            int maxPeptidesLength)
         {
             std::vector<ProteolyticPeptide*> peptides;
-
+            int i=0;
+            
             // proteolytic cleavage in one spot (N)
-#ifdef ORIG
-            if (getCleavageSpecificity() == getCleavageSpecificity()::SingleN)
-#endif
             if (getCleavageSpecificity() == CleavageSpecificity::SingleN)
             {
-                bool maxTooBig = protein->getLength() + maxPeptidesLength < 0; //when maxPeptidesLength is too large, it becomes negative and causes issues
+                bool maxTooBig = protein->getLength() + maxPeptidesLength < 0;
+                //when maxPeptidesLength is too large, it becomes negative and causes issues
+
                 //This happens when maxPeptidesLength == int.MaxValue or something close to it
                 int startIndex = initiatorMethionineBehavior == InitiatorMethionineBehavior::Cleave ? 2 : 1;
                 for (int proteinStart = startIndex; proteinStart <= protein->getLength(); proteinStart++)
                 {
-                    if (OkayMinLength(std::make_optional(protein->getLength() - proteinStart + 1), std::make_optional(minPeptidesLength)))
+                    if (OkayMinLength(std::make_optional(protein->getLength() - proteinStart + 1),
+                                      std::make_optional(minPeptidesLength)))
                     {
                         //need Math.Max if max length is int.MaxLength, since +proteinStart will make it negative
                         //if the max length is too big to be an int (ie infinity), just do the protein length.
                         //if it's not too big to be an int, it might still be too big. Take the minimum of the
                         //protein length or the maximum length (-1, because the index is inclusive. Without -1,
                         //peptides will be one AA too long)
-                        auto  tempVar = new ProteolyticPeptide(protein, proteinStart,
-                                                               maxTooBig ? protein->getLength() : std::min(protein->getLength(), proteinStart + maxPeptidesLength - 1),
-                                                               0, CleavageSpecificity::SingleN, "SingleN");
+                        auto  tempVar = new ProteolyticPeptide(
+                            protein, proteinStart,
+                            maxTooBig ? protein->getLength() : std::min(protein->getLength(),
+                                                                        proteinStart + maxPeptidesLength - 1),
+                            0, CleavageSpecificity::SingleN, "SingleN");
                         peptides.push_back(tempVar);
                     }
                 }
@@ -124,12 +132,15 @@ namespace Proteomics
             // proteolytic cleavage in one spot (C)
             else if (getCleavageSpecificity() == CleavageSpecificity::SingleC)
             {
-                int startIndex = initiatorMethionineBehavior == InitiatorMethionineBehavior::Cleave ? 2 : 1; //where does the protein start
+                //where does the protein start
+                int startIndex = initiatorMethionineBehavior == InitiatorMethionineBehavior::Cleave ? 2 : 1;
+
                 int lengthDifference = startIndex - 1; //take it back one for zero based index
                 for (int proteinEnd = 1; proteinEnd <= protein->getLength(); proteinEnd++)
                 {
                     //length of peptide will be at least the start index
-                    if (OkayMinLength(std::make_optional(proteinEnd - lengthDifference), std::make_optional(minPeptidesLength))) //is the maximum possible length longer than the minimum?
+                    if (OkayMinLength(std::make_optional(proteinEnd - lengthDifference),
+                                      std::make_optional(minPeptidesLength))) //is the maximum possible length longer than the minimum?
                     {
                         //use the start index as the max of the N-terminus or the c-terminus minus the max (+1
                         //because inclusive, otherwise peptides will be one AA too long)
@@ -259,11 +270,19 @@ namespace Proteomics
                 return i;
             }).ToList();
 #endif
-            std::vector<int> uniqueindices (indices.size());
-            std::copy (indices.begin(), indices.end(), uniqueindices.begin() );
-            std::vector<int>::iterator ip;
-            ip = std::unique ( uniqueindices.begin(), uniqueindices.end() );
-            uniqueindices.resize ( std::distance(uniqueindices.begin(), ip ));
+            std::vector<int> uniqueindices;
+            for ( auto i : indices ) {
+                bool found = false;
+                for ( auto j : uniqueindices ) {
+                    if ( j == i ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (! found ) {
+                    uniqueindices.push_back(i);
+                }
+            }
             std::sort (uniqueindices.begin(), uniqueindices.end() );
             return uniqueindices;
         }
@@ -374,12 +393,16 @@ namespace Proteomics
             return v;
         }
 
-        std::vector<ProteolyticPeptide*> Protease::SemiProteolyticDigestion(Protein *protein, InitiatorMethionineBehavior initiatorMethionineBehavior, int maximumMissedCleavages, int minPeptidesLength, int maxPeptidesLength)
+        std::vector<ProteolyticPeptide*> Protease::SemiProteolyticDigestion(Protein *protein,
+                                                                            InitiatorMethionineBehavior initiatorMethionineBehavior,
+                                                                            int maximumMissedCleavages,
+                                                                            int minPeptidesLength,
+                                                                            int maxPeptidesLength)
         {
             std::vector<ProteolyticPeptide*> intervals;
             std::vector<int> oneBasedIndicesToCleaveAfter = GetDigestionSiteIndices(protein->getBaseSequence());
-
-            // It's possible not to go through this loop (maxMissedCleavages+1>number of indexes), and that's okay. It will get digested in the next loops (finish C/N termini)
+            //It's possible not to go through this loop (maxMissedCleavages+1>number of indexes), and that's okay.
+            //It will get digested in the next loops (finish C/N termini)
             for (int i = 0; i < (int)oneBasedIndicesToCleaveAfter.size() - maximumMissedCleavages - 1; i++)
             {
                 bool retain = Retain(i, initiatorMethionineBehavior, protein->getBaseSequence()[0]);
@@ -438,10 +461,17 @@ namespace Proteomics
                 {
                     if (OkayLength(std::make_optional(j - nTerminusProtein), std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)))
                     {
-                        ProteolyticPeptide tempVar(protein, nTerminusProtein + 1, j, j - nTerminusProtein, CleavageSpecificity::Semi, "semi");
-                        intervals.push_back(std::find(localOneBasedIndicesToCleaveAfter.begin(),
-                                                      localOneBasedIndicesToCleaveAfter.end(), j) !=
-                                            localOneBasedIndicesToCleaveAfter.end() ? new ProteolyticPeptide(protein, nTerminusProtein + 1, j, j - nTerminusProtein, CleavageSpecificity::Full, "full") : &tempVar);
+                        if ( std::find(localOneBasedIndicesToCleaveAfter.begin(), localOneBasedIndicesToCleaveAfter.end(), j) !=
+                             localOneBasedIndicesToCleaveAfter.end() ) {
+                            auto tempVar = new ProteolyticPeptide(protein, nTerminusProtein + 1, j, j - nTerminusProtein,
+                                                                   CleavageSpecificity::Full, "full");
+                            intervals.push_back( tempVar);
+                        }
+                        else {
+                            auto tempVar = new ProteolyticPeptide (protein, nTerminusProtein + 1, j, j - nTerminusProtein,
+                                                                   CleavageSpecificity::Semi, "semi");
+                            intervals.push_back( tempVar);
+                        }
                     }
                 }
             }
@@ -451,7 +481,8 @@ namespace Proteomics
             {
                 bool retain = initiatorMethionineBehavior == InitiatorMethionineBehavior::Retain;
                 // FixedC
-                int nTerminusProtein = retain ? oneBasedIndicesToCleaveAfter[0] : oneBasedIndicesToCleaveAfter[0] + 1; // +1 start after M (since already covered earlier)
+                // +1 start after M (since already covered earlier)
+                int nTerminusProtein = retain ? oneBasedIndicesToCleaveAfter[0] : oneBasedIndicesToCleaveAfter[0] + 1; 
                 int cTerminusProtein = oneBasedIndicesToCleaveAfter[i];
                 std::unordered_set<int> localOneBasedIndicesToCleaveAfter;
                 for (int j = 1; j < i; j++) //j starts at 1, because zero is n terminus
@@ -461,8 +492,10 @@ namespace Proteomics
                 int start = nTerminusProtein + 1; //plus one to not doublecount the n terminus (in addition to the M term skip)
                 for (int j = start; j < cTerminusProtein; j++)
                 {
-                    if (OkayLength(std::make_optional(cTerminusProtein - j), std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)) &&
-                        std::find(localOneBasedIndicesToCleaveAfter.begin(), localOneBasedIndicesToCleaveAfter.end(), j) == localOneBasedIndicesToCleaveAfter.end())
+                    if (OkayLength(std::make_optional(cTerminusProtein - j), std::make_optional(minPeptidesLength),
+                                   std::make_optional(maxPeptidesLength))                                            &&
+                        std::find(localOneBasedIndicesToCleaveAfter.begin(), localOneBasedIndicesToCleaveAfter.end(), j) ==
+                        localOneBasedIndicesToCleaveAfter.end())
                     {
                         auto tempVar2 = new ProteolyticPeptide (protein, j + 1, cTerminusProtein,
                                                                 cTerminusProtein - j, CleavageSpecificity::Semi, "semi");
@@ -574,7 +607,7 @@ namespace Proteomics
                 });
 #endif
                 std::vector<int> indexesOfAcceptableLength;
-                for ( auto j : indexesOfAcceptableLength ) {
+                for ( auto j : internalIndices ) {
                     if ( OkayLength(cTerminusProtein - j, std::make_optional(minPeptidesLength),
                                     std::make_optional(maxPeptidesLength))) {
                         indexesOfAcceptableLength.push_back(j);
