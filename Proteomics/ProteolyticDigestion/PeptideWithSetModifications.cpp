@@ -100,7 +100,7 @@ namespace Proteomics
 
         int PeptideWithSetModifications::getNumMods() const
         {
-            return getAllModsOneIsNterminus().size();
+            return _allModsOneIsNterminus.size();
         }
 
         int PeptideWithSetModifications::getNumVariableMods() const
@@ -598,7 +598,7 @@ namespace Proteomics
                                 currentModificationLocation = baseSequenceSb->length() + 2;
                             }
 
-                            getAllModsOneIsNterminus().emplace(currentModificationLocation, mod);
+                            _allModsOneIsNterminus.emplace(currentModificationLocation, mod);
                             currentlyReadingMod = false;
                             currentModification = new StringBuilder();
                         }

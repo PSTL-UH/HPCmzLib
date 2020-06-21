@@ -18,7 +18,7 @@ XmlWriter::XmlWriter(std::string fileName)
         }
     }
     else {
-        std::cerr << "File already exists.";
+        std::cerr << "File already exists.\n";
     }
 }
 

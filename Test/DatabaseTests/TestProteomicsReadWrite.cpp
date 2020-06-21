@@ -552,6 +552,8 @@ namespace Test
 
         delete proteinWithChain;
         delete ParentProtein;
+
+        std::experimental::filesystem::remove(testdir + "/fdsfsd.xml" );
     }
 
 #ifdef ORIG
