@@ -68,6 +68,11 @@ namespace Proteomics
 #endif
             std::vector<std::string> myLines;
             std::ifstream sr(path);
+            if ( !sr.is_open() ) {
+                std::cout << " Could not load Protease Dictionary " << path << std::endl;
+                return dict;
+            }
+            
             std::string oneline;
             int n=0;
             while( getline (sr, oneline) ){
@@ -86,8 +91,6 @@ namespace Proteomics
                     std::vector<DigestionMotif*> motifList = DigestionMotif::ParseDigestionMotifsFromString(fields[1]);
 
                     std::string name = fields[0];
-                    // C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the
-                    // C# 'typeof' operator:
 #ifdef ORIG
                     auto cleavageSpecificity = (std::any_cast<CleavageSpecificity>(Enum::Parse(typeof(CleavageSpecificity), fields[4], true)));
 #endif
@@ -103,7 +106,6 @@ namespace Proteomics
             }
 
             return dict;
-
         }
     }
 }
