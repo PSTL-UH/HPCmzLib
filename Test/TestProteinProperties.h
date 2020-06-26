@@ -9,7 +9,7 @@
 #include <optional>
 #include "stringhelper.h"
 
-#include "../Proteomics/AminoAcidPolymer.h"
+#include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
 using namespace Proteomics;
 
 
