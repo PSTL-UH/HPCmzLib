@@ -61,10 +61,10 @@ make TestPtmListLoader
 ./TestPtmListLoader
 
 
-#echo " "
-#echo "  TestProteinProperties"
-#make TestProteinProperties
-#./TestProteinProperties
+echo " "
+echo "  TestProteinProperties"
+make TestProteinProperties
+./TestProteinProperties
 
 echo " "
 echo "  TestProteinDigestion"

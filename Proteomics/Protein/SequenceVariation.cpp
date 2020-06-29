@@ -88,14 +88,15 @@ namespace Proteomics {
         return s != nullptr                                                   &&
             getOneBasedBeginPosition() == s->getOneBasedBeginPosition()       &&
             getOneBasedEndPosition() == s->getOneBasedEndPosition()           &&
+
             ( (s->getOriginalSequence() == "" && getOriginalSequence() == "") ||
               getOriginalSequence() == s->getOriginalSequence() )             &&
             ((s->getVariantSequence() == "" && getVariantSequence() == "")    ||
-             getVariantSequence() == s->getVariantSequence())                 &&
+             getVariantSequence() == s->getVariantSequence() )                 &&
             ((s->getDescription() == nullptr && getDescription() == nullptr)  ||
-             getDescription()->Equals(s->getDescription()))                &&
-            ( (s->getOneBasedModifications().empty() && getOneBasedModifications().empty()) ||
-              sequenceequal );
+             getDescription()->Equals(s->getDescription() ) )                &&
+            ( (s->getOneBasedModifications().empty() && getOneBasedModifications().empty()  ||
+               sequenceequal ) );
     }
 
     int SequenceVariation::GetHashCode() {

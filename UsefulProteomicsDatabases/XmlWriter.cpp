@@ -17,9 +17,9 @@ XmlWriter::XmlWriter(std::string fileName)
             doIndent = true;
         }
     }
-    else {
-        std::cerr << "File already exists.\n";
-    }
+    //else {
+    //   std::cerr << "File already exists.\n";
+    //}
 }
 
 void XmlWriter::WriteStartDocument()
