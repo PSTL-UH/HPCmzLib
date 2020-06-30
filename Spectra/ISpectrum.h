@@ -1,13 +1,20 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include <vector>
 #include <functional>
 #include <optional>
 #include <type_traits>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class DoubleRange; }
-namespace Spectra { class IPeak; }
+#include "DoubleRange.h"
+#include "IPeak.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016 Stefan Solntsev

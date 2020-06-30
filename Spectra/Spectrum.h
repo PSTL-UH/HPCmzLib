@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include "ISpectrum.h"
 #include "../MzLibUtil/DoubleRange.h"
@@ -68,8 +76,6 @@ namespace Spectra {
 
             setXArray(std::vector<double>(count));
             setYArray(std::vector<double>(count));
-            // Buffer::BlockCopy(xy, 0, getXArray(), 0, sizeof(double) * count);
-            // Buffer::BlockCopy(xy, sizeof(double)*count, getYArray(), 0, sizeof(double)*count);
             std::copy (xy[0].begin(), xy[0].end(), this->XArray.begin()); 
             std::copy (xy[1].begin(), xy[1].end(), this->YArray.begin()); 
             peakList = std::vector<TPeak>(this->getSize());
@@ -194,12 +200,7 @@ namespace Spectra {
         }
 
         std::vector<std::vector<double>> CopyTo2DArray() override {
-            //C# TO C++ CONVERTER NOTE: The following call to the 'RectangularVectors' helper
-            // class reproduces the rectangular array initialization that is automatic in C#:
-            //ORIGINAL LINE: double[,] data = new double[2, Size];
             std::vector<std::vector<double>> data = RectangularVectors::ReturnRectangularDoubleVector(2, this->getSize());
-            // Buffer::BlockCopy(getXArray(), 0, data, 0, size * getSize());
-            // Buffer::BlockCopy(getYArray(), 0, data, size * getSize(), size * getSize());
             std::copy(data[0].begin(), data[0].begin()+this->getSize(), this->XArray.begin());
             std::copy(data[1].begin(), data[1].begin()+this->getSize(), this->YArray.begin());
             return data;
@@ -211,7 +212,7 @@ namespace Spectra {
             {
                 return std::nullopt;
             }
-            // int index = std::binary_search(this->XArray.begin(), this->XArray.end(), x);
+
             int index = BinarySearch(this->XArray, x);
             if (index >= 0) {
                 return std::make_optional(index);
@@ -240,8 +241,6 @@ namespace Spectra {
         }
 
         int NumPeaksWithinRange(double minX, double maxX) override {
-            // int startingIndex = Array::BinarySearch(getXArray(), minX);
-            // int startingIndex = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
             int startingIndex = BinarySearch(this->XArray, minX);
             if (startingIndex < 0) {
                 startingIndex = ~startingIndex;
@@ -249,8 +248,7 @@ namespace Spectra {
             if (startingIndex >= this->getSize()) {
                 return 0;
             }
-            // int endIndex = Array::BinarySearch(getXArray(), maxX);
-            // int endIndex = std::binary_search(this->XArray.begin(), this->XArray.end(), maxX);
+
             int endIndex = BinarySearch(this->XArray, maxX);
             if (endIndex < 0) {
                 endIndex = ~endIndex;
@@ -266,7 +264,7 @@ namespace Spectra {
             auto quantile = 1.0 - static_cast<double>(topNPeaks) / this->getSize();
             quantile = std::max((double)0.0, quantile);
             quantile = std::min((double)1.0, quantile);
-            //double cutoffYvalue = getYArray().Quantile(quantile);
+
             double cutoffYvalue = Math::Quantile(this->getYArray(), quantile);
             std::vector<TPeak> t;
             
@@ -284,8 +282,6 @@ namespace Spectra {
         }
 
         std::vector<TPeak> Extract(double minX, double maxX) override {
-            // int ind = Array::BinarySearch(getXArray(), minX);
-            // int ind = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
             int ind = BinarySearch(this->XArray, minX);
             if (ind < 0) {
                 ind = ~ind;
@@ -300,8 +296,6 @@ namespace Spectra {
         }
 
         std::vector<int> ExtractIndices(double minX, double maxX) {
-            // int ind = Array::BinarySearch(getXArray(), minX);
-            // int ind = std::binary_search(this->XArray.begin(), this->XArray.end(), minX);
             int ind = BinarySearch(this->XArray, minX);
             if (ind < 0) {
                 ind = ~ind;

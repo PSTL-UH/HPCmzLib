@@ -5,7 +5,8 @@
  *
  * Additional copyrights may follow
  *
- */#pragma once
+ */
+#pragma once
 
 #include <string>
 #include <vector>

@@ -1,10 +1,9 @@
 #
-# Copyright (c) 2018      University of Houston. All rights reserved.
+# Copyright (c) 2019-2020     University of Houston. All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
 #
-# $HEADER$
 #
 include ../Makefile.defs
 
