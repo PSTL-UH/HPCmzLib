@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include "Enums/Polarity.h"
 #include "Enums/MzAnalyzerType.h"
@@ -9,13 +17,8 @@
 #include <optional>
 #include "stringhelper.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { class MzSpectrum; }
 #include "MzSpectra/MzSpectrum.h"
-//namespace MzLibUtil { class MzRange; }
-//namespace MassSpectrometry { class IsotopicEnvelope; }
 #include "MzSpectra/IsotopicEnvelope.h"
-//namespace MassSpectrometry { class MzPeak; }
 #include "MzSpectra/MzPeak.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey

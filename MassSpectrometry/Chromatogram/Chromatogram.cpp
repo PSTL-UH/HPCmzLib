@@ -1,4 +1,12 @@
-﻿#include "Chromatogram.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "Chromatogram.h"
 
 using namespace MzLibUtil;
 using namespace Spectra;
@@ -26,10 +34,8 @@ namespace MassSpectrometry
         {
             case SmoothingType::BoxCar:
             {
-                //std::vector<double> newTimes = this->getXArray().BoxCarSmooth(points);
                 std::vector<double> newTimes = Math::BoxCarSmooth(this->getXArray(), points);
-                //std::vector<double> newIntensities = this->getYArray().BoxCarSmooth(points);
-                 std::vector<double> newIntensities = Math::BoxCarSmooth(this->getYArray(), points);
+                std::vector<double> newIntensities = Math::BoxCarSmooth(this->getYArray(), points);
                 return new Chromatogram(newTimes, newIntensities, false);
 
             }

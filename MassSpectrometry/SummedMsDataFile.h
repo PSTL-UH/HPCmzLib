@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include <vector>
 #include <cmath>
@@ -7,10 +15,6 @@
 #include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { class MsDataFile; }
-//namespace MassSpectrometry { class MsDataScan; }
-//namespace MassSpectrometry { class MzSpectrum; }
 #include "MsDataFile.h"
 #include "MsDataScan.h"
 #include "MzSpectra/MzSpectrum.h"

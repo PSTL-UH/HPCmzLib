@@ -1,4 +1,12 @@
-﻿#include "SummedMsDataFile.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "SummedMsDataFile.h"
 #include "MsDataScan.h"
 #include "../MzLibUtil/MzLibException.h"
 #include "Enums/Polarity.h"
@@ -11,7 +19,9 @@
 
 namespace MassSpectrometry {
 
-    SummedMsDataFile::SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination) : MsDataFile(raw->getNumSpectra() - numScansToAverage + 1, raw->getSourceFile()), raw(raw), numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination)
+    SummedMsDataFile::SummedMsDataFile(MsDataFile *raw, int numScansToAverage, double ppmToleranceForPeakCombination) :
+        MsDataFile(raw->getNumSpectra() - numScansToAverage + 1, raw->getSourceFile()), raw(raw),
+        numScansToAverage(numScansToAverage), ppmToleranceForPeakCombination(ppmToleranceForPeakCombination)
     {
     }
 
@@ -65,7 +75,9 @@ namespace MassSpectrometry {
             double& ijTime= injectionTime;
             std::vector<std::vector<double>> noiseData;
 
-            Scans[oneBasedScanNumber - 1] = new MsDataScan (peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime, scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData, "scan=" + std::to_string(oneBasedScanNumber));
+            Scans[oneBasedScanNumber - 1] = new MsDataScan (peaks, oneBasedScanNumber, msnOrder, isCentroid, polarity, retentionTime,
+                                                            scanWindowRange, "", mzAnalyzer, totalIonCurrent, ijTime, noiseData,
+                                                            "scan=" + std::to_string(oneBasedScanNumber));
         }
         return Scans[oneBasedScanNumber - 1];
     }

@@ -1,9 +1,18 @@
-﻿#include "SourceFile.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "SourceFile.h"
 
 
 namespace MassSpectrometry {
 
-    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum,
+                           const std::string &fileChecksumType, const std::string &id) {
         privateNativeIdFormat = nativeIdFormat;
         privateMassSpectrometerFileFormat = massSpectrometerFileFormat;
         privateCheckSum = checkSum;
@@ -11,7 +20,9 @@ namespace MassSpectrometry {
         privateId = id;
     }
 
-    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, const std::string &filePath, const std::string &id) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum,
+                           const std::string &fileChecksumType, const std::string &filePath, const std::string &id) :
+        SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
 
 #ifdef ORIG
         Uri.TryCreate(Directory.GetParent(filePath).FullName, UriKind.Absolute, out Uri result);
@@ -22,7 +33,9 @@ namespace MassSpectrometry {
         this->privateFileName = privateUri->getFileName();
     }
 
-    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum, const std::string &fileChecksumType, Uri *uri, const std::string &id, const std::string &fileName) : SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
+    SourceFile::SourceFile(const std::string &nativeIdFormat, const std::string &massSpectrometerFileFormat, const std::string &checkSum,
+                           const std::string &fileChecksumType, Uri *uri, const std::string &id, const std::string &fileName) :
+        SourceFile(nativeIdFormat, massSpectrometerFileFormat, checkSum, fileChecksumType, id) {
         this->privateUri = uri;
         this->privateFileName = fileName;
     }

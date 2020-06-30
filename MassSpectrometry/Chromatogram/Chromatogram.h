@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include "ChromatographicPeak.h"
 #include "../Enums/SmoothingType.h"
@@ -71,7 +79,6 @@ namespace MassSpectrometry
         std::vector<double> GetTimes()
             {
                 std::vector<double> times(this->getSize());
-                //Buffer::BlockCopy(getXArray(), 0, times, 0, sizeof(double) * getSize());
                 std::vector<double> d = this->getXArray();
                 std::copy(d.begin(), d.begin()+this->getSize(), times.begin());
                 return times;
@@ -80,7 +87,6 @@ namespace MassSpectrometry
         std::vector<double> GetIntensities()
             {
                 std::vector<double> intensities(this->getSize());
-                //Buffer::BlockCopy(getYArray(), 0, intensities, 0, sizeof(double) * getSize());
                 std::vector<double> d = this->getYArray();
                 std::copy (d.begin(), d.begin()+this->getSize(), intensities.begin() );
                 return intensities;

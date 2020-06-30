@@ -1,4 +1,12 @@
-﻿#include <algorithm>
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include <algorithm>
 #include <string>
 #include <iostream>
 
@@ -331,7 +339,6 @@ namespace MassSpectrometry {
 
             // C# TO C++ CONVERTER TODO TASK: A 'delete newMassGroup' statement
             // was not added since newMassGroup was passed to a method or constructor.
-            // Handle memory management manually.
         }
 
 #ifdef ORIG

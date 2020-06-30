@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include <string>
 #include <unordered_set>
@@ -7,9 +15,6 @@
 #include <limits>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace MassSpectrometry { class DeconvolutionFeature; }
-//namespace MassSpectrometry { class IsotopicEnvelope; }
 #include "DeconvolutionFeature.h"
 #include "MzSpectra/IsotopicEnvelope.h"
 

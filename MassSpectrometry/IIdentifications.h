@@ -1,10 +1,16 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */#pragma once
 
 #include <string>
 #include <vector>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MzLibUtil { class Tolerance; }
+#include "Tolerance.h"
 
 using namespace MzLibUtil;
 

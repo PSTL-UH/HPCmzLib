@@ -1,4 +1,12 @@
-﻿#include "bits/stdc++.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "bits/stdc++.h"
 
 #include "MsDataFile.h"
 #include "SourceFile.h"
@@ -53,7 +61,6 @@ namespace MassSpectrometry
         //    Sorts a pair of one-dimensional Array objects (one contains the keys and
         //    the other contains the corresponding items) based on the keys in the first
         //    Array using the specified IComparer.
-        // For the C++ version, I replace it by a bubble-sort for the moment.
         int numPeaks = intensities.size();
         Sort::SortPairs ( intensities, mArray, numPeaks );
         
@@ -63,8 +70,6 @@ namespace MassSpectrometry
 #ifdef ORIG
             numPeaks = std::min(intensities.Count([&] (std::any b)
             {
-                //C# TO C++ CONVERTER TODO TASK: A 'delete c' statement was not added since c
-                //was passed to a method or constructor. Handle memory management manually.
                 return b >= minIntensity;
             }), numPeaks);
 #endif
@@ -90,7 +95,6 @@ namespace MassSpectrometry
     
     void MsDataFile::WindowModeHelper(std::vector<double> &intensities, std::vector<double> &mArray, IFilteringParams *filteringParams, double scanRangeMinMz, double scanRangeMaxMz, std::optional<double> WindowMaxNormalizationToValue)
     {
-        //Array::Sort(mArray, intensities);
         Sort::SortPairs ( mArray, intensities, mArray.size() );
         constexpr double shiftToMakeRangeInclusive = 0.000000001;
         std::vector<MzPeak*> mzIntensites;
@@ -253,7 +257,6 @@ namespace MassSpectrometry
                                            double percentMaxThreshold)
     {
         //The discrete bin value 1.0005079 was from J. Proteome Res., 2018, 17 (11), pp 3644–3656
-        //Array::Sort(mArray, intensities);
         Sort::SortPairs (mArray, intensities, mArray.size());
         int numberOfWindows = static_cast<int>(std::round((scanRangeMaxMz - scanRangeMinMz + discreteMassBin) / discreteMassBin * std::pow(10, 0))) / std::pow(10, 0);
         
