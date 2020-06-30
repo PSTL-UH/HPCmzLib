@@ -1,4 +1,12 @@
-﻿#include "PeriodicTableLoader.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "PeriodicTableLoader.h"
 #include "../Chemistry/Element.h"
 #include "../Chemistry/PeriodicTable.h"
 
@@ -142,7 +150,8 @@ namespace UsefulProteomicsDatabases {
             prevAtomicNumber = atomicNumber;
         } while (line.find("Atomic Number") != std::string::npos);
         
-//C# TO C++ CONVERTER TODO TASK: A 'delete element' statement was not added since element was passed to a method or constructor. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete element' statement was not added since element was passed
+        // to a method or constructor. Handle memory management manually.
         sr.close();
     }
 }

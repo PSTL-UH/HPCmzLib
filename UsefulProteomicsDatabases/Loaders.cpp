@@ -1,4 +1,12 @@
-﻿#include "Loaders.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "Loaders.h"
 #include "UnimodLoader.h"
 #include "../Proteomics/Modifications/Modification.h"
 #include "PtmListLoader.h"
