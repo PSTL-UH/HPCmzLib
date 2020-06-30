@@ -1,4 +1,12 @@
-﻿#include "Tolerance.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "Tolerance.h"
 #include "PpmTolerance.h"
 #include "AbsoluteTolerance.h"
 #include "DoubleRange.h"
@@ -17,9 +25,6 @@ static bool iequals(const std::string& a, const std::string& b) {
 namespace MzLibUtil {
 
     
-//Regex *const Tolerance::StringRegex = new Regex(LR"((\+-|-\+|±)?\s*([\d.]+)\s*(PPM|Absolute))", RegexOptions::Compiled | RegexOptions::IgnoreCase);
-//    Tolerance::StringRegex = new std::regex("((\+-|-\+|±)?\s*([\d.]+)\s*(PPM|Absolute))", std::regex::icase);
-
     Tolerance::Tolerance(double value) {
         privateValue = std::abs(value);
     }

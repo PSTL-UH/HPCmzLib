@@ -1,15 +1,19 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <tuple>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
 #include "ChemicalFormula.h"
-//namespace Chemistry { class ChemicalFormula; }
-//namespace Chemistry { class Polynomial; }
-//namespace Chemistry { class Composition; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work copyright 2016, 2017 Stefan Solntsev
@@ -106,22 +110,24 @@ namespace Chemistry {
                                                            double _mergeFineResolution);
 
         static std::vector<Polynomial> MultiplyFinePolynomial(std::vector<std::vector<Composition*>> &elementalComposition,
-                                                              double _fineResolution, double _mwResolution, double _fineMinProb);
+                                                              double _fineResolution, double _mwResolution,
+                                                              double _fineMinProb);
 
         static void MultiplyFineFinalPolynomial(std::vector<Polynomial> &tPolynomial, std::vector<Polynomial> &fPolynomial,
-                                                std::vector<Polynomial> &fgidPolynomial, double _fineResolution, double _mwResolution,
-                                                double _fineMinProb);
+                                                std::vector<Polynomial> &fgidPolynomial, double _fineResolution,
+                                                double _mwResolution,   double _fineMinProb);
 
-        static void MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins, std::vector<int> &maxs, std::vector<int> &indices,
+        static void MultipleFinePolynomialRecursiveHelper(std::vector<int> &mins, std::vector<int> &maxs,
+                                                          std::vector<int> &indices,
                                                           int index, std::vector<Polynomial> &fPolynomial,
-                                                          std::vector<Composition*> &elementalComposition, int atoms, double minProb,
-                                                          int maxValue);
+                                                          std::vector<Composition*> &elementalComposition, int atoms,
+                                                          double minProb, int maxValue);
 
         static double FactorLn(int n);
 
         static IsotopicDistribution *CalculateFineGrain(std::vector<std::vector<Composition*>> &elementalComposition,
-                                                        double _mwResolution, double _mergeFineResolution, double _fineResolution,
-                                                        double _fineMinProb);
+                                                        double _mwResolution, double _mergeFineResolution,
+                                                        double _fineResolution, double _fineMinProb);
 
     };
 }

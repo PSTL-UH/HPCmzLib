@@ -1,4 +1,12 @@
-﻿#include "MzmlMethods.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "MzmlMethods.h"
 #include "../MassSpectrometry/MsDataFile.h"
 #include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
@@ -12,6 +20,7 @@
 #include <cmath>
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
+
 namespace IO
 {
     namespace MzML

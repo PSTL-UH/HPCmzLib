@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#pragma once
 
 #include <string>
 #include "stringhelper.h"
@@ -66,7 +74,6 @@ namespace MzLibUtil {
         /// </summary>
         double getWidth() const;
 
-//        std::wstring ToString() override;
         std::string ToString();
 
         virtual std::string ToString(const std::string &format);

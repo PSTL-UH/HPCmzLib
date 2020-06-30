@@ -1,4 +1,12 @@
-﻿#include "Element.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "Element.h"
 #include "Isotope.h"
 #include "PeriodicTable.h"
 #include "../MzLibUtil/MzLibException.h"
@@ -18,13 +26,13 @@ namespace Chemistry {
         std::vector<Isotope*> tmpvector;
         for (auto i : IsotopesInOrderTheyWereAdded) {
             if (i != nullptr) {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                yield return i;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                // yield return i;
                 tmpvector.push_back(i);
             }
             else {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-//                yield break;
+                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
+                // yield break;
                 break;
             }
         }
@@ -93,6 +101,7 @@ namespace Chemistry {
             setPrincipalIsotope(isotope);
         }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete isotope' statement was not added since isotope was assigned to another object. Handle memory management manually.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete isotope' statement was not added since isotope
+        //was assigned to another object. Handle memory management manually.
     }
 }

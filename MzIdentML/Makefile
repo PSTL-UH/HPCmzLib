@@ -4,7 +4,6 @@
 #
 # Additional copyrights may follow
 #
-# $HEADER$
 #
 include ../Makefile.defs
 

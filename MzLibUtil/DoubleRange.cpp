@@ -1,4 +1,12 @@
-﻿#include "DoubleRange.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "DoubleRange.h"
 
 namespace MzLibUtil {
 
@@ -41,8 +49,6 @@ namespace MzLibUtil {
     }
 
     std::string DoubleRange::ToString(const std::string &format) {
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-//        return StringHelper::formatSimple(L"[{0};{1}]", getMinimum().ToString(format, System::Globalization::CultureInfo::InvariantCulture), getMaximum().ToString(format, System::Globalization::CultureInfo::InvariantCulture));
         return StringHelper::formatSimple("[{0};{1}]", getMinimum(), getMaximum());
     }
 

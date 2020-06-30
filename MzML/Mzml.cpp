@@ -1,4 +1,12 @@
-﻿#include "Mzml.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "Mzml.h"
 #include "../MassSpectrometry/MsDataScan.h"
 #include "../MassSpectrometry/SourceFile.h"
 #include "../MassSpectrometry/FilteringParams.h"
@@ -21,7 +29,6 @@
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
-//using namespace xercesc_3_1;
 
 #include <stdio.h>
 

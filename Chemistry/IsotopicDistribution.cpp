@@ -1,13 +1,19 @@
-﻿#include "IsotopicDistribution.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+
+#include "IsotopicDistribution.h"
 #include "ChemicalFormula.h"
 #include "Isotope.h"
 #include <any>
 #include <iostream>
 
 namespace Chemistry {
-
-//std::vector<double> IsotopicDistribution::factorLnArray = std::vector<double>(50003);
-//int IsotopicDistribution::_factorLnTop = 1;
 
     std::vector<double> IsotopicDistribution::factorLnArray;
     int IsotopicDistribution::_factorLnTop;
@@ -213,17 +219,12 @@ namespace Chemistry {
             else {
                 std::vector<int> means(size);
                 std::vector<int> stds(size);
-//                std::vector<int> indices(size);
-
-//                double nPolynomialTerms = std::log(std::pow(2, size));
                 for (int i = 0; i < size; i++) {
                     int n1 = static_cast<int>(elementalComposition[k][0]->Atoms * elementalComposition[k][i]->Probability);
                     int s1 = static_cast<int>(std::ceil(ncAdd + nc * std::sqrt(elementalComposition[k][i]->Atoms * elementalComposition[k][i]->Probability * (1.0 - elementalComposition[k][i]->Probability))));
-//                    nPolynomialTerms += std::log(n1 + s1);
 
                     means[i] = n1;
                     stds[i] = s1;
-//                    indices[i] = n1 + s1;
                 }
                 std::vector<int> mins(means.size() - 1);
                 std::vector<int> maxs(means.size() - 1);

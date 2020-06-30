@@ -1,4 +1,12 @@
-﻿#include "ChemicalFormula.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "ChemicalFormula.h"
 #include "Isotope.h"
 #include "Element.h"
 #include "Interfaces/IHasChemicalFormula.h"
@@ -14,9 +22,6 @@
 using namespace MzLibUtil;
 
 namespace Chemistry {
-
-//regex *const ChemicalFormula::FormulaRegex = new regex(LR"(\s*([A-Z][a-z]*)(?:\{([0-9]+)\})?(-)?([0-9]+)?\s*)", RegexOptions::Compiled);
-//regex *const ChemicalFormula::ValidateFormulaRegex = new regex(L"^(" + FormulaRegex + L")+$", RegexOptions::Compiled);
 
     ChemicalFormula::ChemicalFormula() {
         setIsotopes(std::unordered_map<Isotope*, int>());
@@ -152,7 +157,8 @@ namespace Chemistry {
             returnFormula->Add(iformula);
         }
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete returnFormula' statement was not added since returnFormula was used in a 'return' or 'throw' statement.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete returnFormula' statement was not added since returnFormula
+        //was used in a 'return' or 'throw' statement.
         return returnFormula;
     }
 
@@ -215,7 +221,8 @@ namespace Chemistry {
             }
         }
         
-//C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was used in a 'return' or 'throw' statement.
+        //C# TO C++ CONVERTER TODO TASK: A 'delete f' statement was not added since f was
+        //used in a 'return' or 'throw' statement.
       return f;
     }
 

@@ -1,4 +1,12 @@
-﻿#include "PpmTolerance.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+#include "PpmTolerance.h"
 #include "DoubleRange.h"
 
 
@@ -8,8 +16,6 @@ namespace MzLibUtil {
     }
 
     std::string PpmTolerance::ToString() {
-//C# TO C++ CONVERTER TODO TASK: There is no native C++ equivalent to 'ToString':
-//        return StringHelper::formatSimple(L"{0}{1} PPM", L"±", getValue().ToString(L"f4", System::Globalization::CultureInfo::InvariantCulture));
         return StringHelper::formatSimple("{0}{1} PPM", "±", getValue());
     }
 
