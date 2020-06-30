@@ -1,4 +1,13 @@
-﻿#include "ProteinDbLoader.h"
+﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/*
+ * Copyright (c) 2019-2020 University of Houston. All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ */
+
+#include "ProteinDbLoader.h"
 #include "FastaHeaderFieldRegex.h"
 #include "../Proteomics/Modifications/Modification.h"
 #include "../Proteomics/Protein/Protein.h"
