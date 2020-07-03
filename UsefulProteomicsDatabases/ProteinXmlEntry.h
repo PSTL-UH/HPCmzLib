@@ -129,10 +129,10 @@ namespace UsefulProteomicsDatabases
 			void setReadingOrganism(bool value);
 
 		private:
-			// These lines are confusing
-			// Want a look at the original C# code before implementing these two lines
-			std::vector<(int, std::string)*> AnnotatedMods = std::vector<(int position, std::string originalModificationID)*>();
-			std::vector<(int, std::string)*> AnnotatedVariantMods = std::vector<(int position, std::string originalModificationID)*>();
+			// For both, the int is position
+			// The string is originalModificationID
+			std::vector<std::tuple<int, std::string>*> AnnotatedMods = std::vector<std::tuple<int, std::string>*>();
+			std::vector<std::tuple<int, std::string>*> AnnotatedVariantMods = std::vector<std::tuple<int, std::string>*>();
 
 		public:
 			/// <summary>
@@ -155,6 +155,7 @@ namespace UsefulProteomicsDatabases
 			/// Original statement after c++ conversion
 			/// Protein *ParseEntryEndElement(XmlReader *xml, bool isContaminant, const std::string &proteinDbLocation, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications);
 			Protein *ParseEntryEndElement(tinyxml2::XMLDocument *xml, bool isContaminant, const std::string &proteinDbLocation, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications);
+
 			/// <summary>
 			/// Finish parsing a subfeature element
 			/// </summary>
@@ -170,7 +171,7 @@ namespace UsefulProteomicsDatabases
 			void ParseFeatureEndElement(tinyxml2::XMLDocument *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications);
 
 		private:
-			static void ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::unordered_map<int, std::string>*> &annotatedMods);
+			static void ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::tuple<int, std::string>*> &annotatedMods);
 
 			static ModificationMotif *GetMotif(const std::string &proteinSequence, int position);
 

@@ -320,11 +320,14 @@ namespace UsefulProteomicsDatabases
 		//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
 		//        switch (elementName)
 		//ORIGINAL LINE: case "accession":
+
+		// Note, all changed lines will be commented out. Just in case I need to come back to look at it and compare
 		if (elementName == "accession")
 		{
 			if (getAccession() == "")
 			{
-				setAccession(xml->ReadElementString());
+				//setAccession(xml->ReadElementString());
+				setAccession(xml
 			}
 
 		}
@@ -558,7 +561,7 @@ namespace UsefulProteomicsDatabases
 		setVariationValue("");
 	}
 
-	void ProteinXmlEntry::ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<(int, std::string)*> &annotatedMods)
+	void ProteinXmlEntry::ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::tuple<int, std::string>*> &annotatedMods)
 	{
 		for (auto annotatedMod : annotatedMods)
 		{
