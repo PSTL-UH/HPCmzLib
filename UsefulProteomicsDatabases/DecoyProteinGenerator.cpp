@@ -1,12 +1,4 @@
-﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
-/*
- * Copyright (c) 2019-2020 University of Houston. All rights reserved.
- * $COPYRIGHT$
- *
- * Additional copyrights may follow
- *
- */
-#include "DecoyProteinGenerator.h"
+﻿#include "DecoyProteinGenerator.h"
 #include "../Proteomics/Protein/Protein.h"
 #include "../Proteomics/Protein/SequenceVariation.h"
 #include "../Proteomics/Modifications/Modification.h"

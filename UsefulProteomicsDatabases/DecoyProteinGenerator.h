@@ -1,12 +1,4 @@
-﻿/* -*- Mode: C; c-basic-offset:4 ; -*- */
-/*
- * Copyright (c) 2019-2020 University of Houston. All rights reserved.
- * $COPYRIGHT$
- *
- * Additional copyrights may follow
- *
- */
-#pragma once
+﻿#pragma once
 
 #include "DecoyType.h"
 #include <string>
@@ -16,6 +8,7 @@
 #include <mutex>
 #include "stringhelper.h"
 
+//C# TO C++ CONVERTER NOTE: Forward class declarations:
 #include "../Proteomics/Protein/Protein.h"
 #include "../Proteomics/Protein/SequenceVariation.h"
 
