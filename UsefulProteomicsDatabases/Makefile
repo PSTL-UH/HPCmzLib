@@ -17,7 +17,8 @@ HEADER =  DecoyType.h           \
 	ProteinDbWriter.h       \
 	PtmListLoader.h         \
 	XmlWriter.h		\
-	UnimodLoader.h
+	UnimodLoader.h			\
+	ProteinXmlEntry.h
 
 
 OBJ =   DecoyType.o             \
@@ -29,7 +30,8 @@ OBJ =   DecoyType.o             \
 	XmlWriter.o		\
 	UnimodLoader.o		\
 	Loaders.o              \
-	PtmListLoader.o        
+	PtmListLoader.o		\
+	ProteinXmlEntry.o
 
 .SUFFIXES: .o.cpp
 
