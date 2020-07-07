@@ -4,12 +4,7 @@
 #include <vector>
 #include <any>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-
-//namespace Proteomics { namespace ProteolyticDigestion { class PeptideWithSetModifications;} }
 #include "../ProteolyticDigestion/PeptideWithSetModifications.h"
-
-//namespace Proteomics { namespace Fragmentation { class NeutralTerminusFragment; } }
 #include "../Fragmentation/NeutralTerminusFragment.h"
 
 #include "../../Chemistry/Chemistry.h"
@@ -43,7 +38,8 @@ namespace Proteomics
                 void setMonoisotopicMassIncludingFixedMods(double value);
 
             /// <summary>
-            /// Sometimes says not equal when in reality should be equal, due to rounding errors. Small but annoying bug. Careful when fixing! Make sure Indexing runs at a reasonable speed.
+            /// Sometimes says not equal when in reality should be equal, due to rounding errors. S
+            /// mall but annoying bug. Careful when fixing! Make sure Indexing runs at a reasonable speed.
             /// </summary>
             bool Equals(CompactPeptideBase *obj);
 

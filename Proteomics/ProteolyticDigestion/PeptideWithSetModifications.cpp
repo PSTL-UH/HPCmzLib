@@ -93,7 +93,7 @@ namespace Proteomics
             return _digestionParams;
         }
 
-        std::unordered_map<int, Modification*> PeptideWithSetModifications::getAllModsOneIsNterminus() const
+        std::unordered_map<int, Modification*> &PeptideWithSetModifications::getAllModsOneIsNterminus() 
         {
             return _allModsOneIsNterminus;
         }

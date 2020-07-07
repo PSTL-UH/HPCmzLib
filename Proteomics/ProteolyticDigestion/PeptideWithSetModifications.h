@@ -19,11 +19,7 @@
 #include "../../MassSpectrometry/Enums/DissociationType.h"
 #include "../Fragmentation/ProductType.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class Modification; }
 #include "../Modifications/Modification.h"
-
-//namespace Proteomics { namespace ProteolyticDigestion { class DigestionParams; } }
 #include "DigestionParams.h"
 namespace Proteomics { class Protein; }
 
@@ -95,7 +91,7 @@ namespace Proteomics
 
             Proteomics::ProteolyticDigestion::DigestionParams *getDigestionParams() const;
 
-            std::unordered_map<int, Modification*> getAllModsOneIsNterminus() const;
+            std::unordered_map<int, Modification*> &getAllModsOneIsNterminus();
 
             int getNumMods() const;
 
