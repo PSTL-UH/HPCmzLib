@@ -31,12 +31,22 @@ fi
 
 AC_LANG_PUSH([C++])
 AX_CHECK_COMPILE_FLAG([-Wno-delete-non-virtual-dtor], [CXXFLAGS="$CXXFLAGS -Wno-delete-non-virtual-dtor"],,[$ERROR_ON_UNKNOWN_OPTIONS])
-AC_LANG_POP([C++])
+#AC_LANG_POP([C++])
 
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([zlib.h math.h])
+AC_CHECK_HEADER([zlib.h],
+[],
+[AC_MSG_ERROR(Couldn't find zlib.h)])
+
+AC_CHECK_HEADER([math.h],
+[],
+[AC_MSG_ERROR(Couldn't find math.h)])
+
+AC_CHECK_HEADER([tinyxml2.h],
+[],
+[AC_MSG_ERROR(Couldn't find tinyxml2.h)])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -44,12 +54,13 @@ AC_C_INLINE
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
-AX_XERCESC
-AX_XSDCXX
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([fesetround floor pow sqrt])
+
+AX_XERCESC
+AX_XSDCXX
 
 
 dnl ==================================================

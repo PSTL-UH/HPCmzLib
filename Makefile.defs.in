@@ -31,5 +31,5 @@ CFLAGS      = @CFLAGS@
 CXX         = @CXX@
 CXXFLAGS    = @CXXFLAGS@ -I$(MZLIB_INC_DIR) -I$(MZLIB_DIR)/MzLibUtil -I$(XSD_INC_DIR)/xsd -I$(XSD_INC_DIR)/xercesc 
 CXXLOCALFLAGS = -DNDEBUG
-LDFLAGS     = -L$(MZLIB_LIB_DIR)  -lflashlfq -lmzlib -lz -lstdc++fs -L$(XSD_LIB_DIR) $(XSD_LIB)
+LDFLAGS     = -L$(MZLIB_LIB_DIR)  -lflashlfq -lmzlib -lz -lstdc++fs -ltinyxml2 -L$(XSD_LIB_DIR) $(XSD_LIB)
 
