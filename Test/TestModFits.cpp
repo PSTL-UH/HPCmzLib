@@ -90,6 +90,7 @@ namespace Test
 
         Assert::IsTrue(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                          peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
 
         ModificationMotif::TryGetMotif("N", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN,
@@ -101,7 +102,9 @@ namespace Test
 
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
 
+        
         ModificationMotif::TryGetMotif("Mx", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN,
                                              std::unordered_map<std::string, std::vector<std::string>>(),
@@ -111,7 +114,9 @@ namespace Test
                                              std::unordered_map<DissociationType, std::vector<double>>(), "");
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
 
+        
         ModificationMotif::TryGetMotif("Mr", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN,
                                              std::unordered_map<std::string, std::vector<std::string>>(),
@@ -121,6 +126,7 @@ namespace Test
                                              std::unordered_map<DissociationType, std::vector<double>>(), "");
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
 
         ModificationMotif::TryGetMotif("xM", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN,
@@ -131,7 +137,9 @@ namespace Test
                                              std::unordered_map<DissociationType, std::vector<double>>(), "");
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
 
+        
         ModificationMotif::TryGetMotif("Nxs", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN, 
                                              std::unordered_map<std::string, std::vector<std::string>>(),
@@ -146,7 +154,8 @@ namespace Test
         proteinOneBasedIndex = 1;
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
-
+        delete attemptToLocalize;
+        
         ModificationMotif::TryGetMotif("Nxs", &motif);
         attemptToLocalize = new Modification("", "", "", "", motif, "Anywhere.", nullptr, NAN,
                                              std::unordered_map<std::string, std::vector<std::string>>(),
@@ -161,6 +170,8 @@ namespace Test
         proteinOneBasedIndex = 1;
         Assert::IsFalse(ModificationLocalization::ModFits(attemptToLocalize, protein->getBaseSequence(), peptideOneBasedIndex,
                                                           peptideLength, proteinOneBasedIndex));
+        delete attemptToLocalize;
+
         peptideOneBasedIndex = 2;
         peptideLength = 1;
         proteinOneBasedIndex = 2;
