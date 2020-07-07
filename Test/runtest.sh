@@ -60,6 +60,11 @@ echo "  TestPtmListLoader"
 make TestPtmListLoader
 ./TestPtmListLoader
 
+echo " "
+echo "  TestModFits"
+make TestModFits
+./TestModFits
+
 
 echo " "
 echo "  TestProteinProperties"
