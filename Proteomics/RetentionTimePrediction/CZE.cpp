@@ -47,8 +47,8 @@ namespace Proteomics
 
         double CZE::PredictedCharge(const std::string &peptideSequence)
         {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-            std::string substitutedString = StringHelper::replace(StringHelper::replace(peptideSequence, "R", ""), "K", "")->Replace("H", "")->ToString();
+            std::string sString1 = StringHelper::replace(StringHelper::replace(peptideSequence, "R", ""), "K", "");
+            std::string substitutedString = StringHelper::replace(sString1, "H", "");
             return (1 + (peptideSequence.length() - substitutedString.length()));
         }
 

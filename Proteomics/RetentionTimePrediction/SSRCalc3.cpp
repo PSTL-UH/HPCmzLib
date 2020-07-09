@@ -6,9 +6,10 @@ namespace Proteomics
     namespace RetentionTimePrediction
     {
 
-const std::string SSRCalc3::VERSION = "Krokhin,3.0";
+        const std::string SSRCalc3::VERSION = "Krokhin,3.0";
 
-        std::vector<PeptideWithSetModifications*> SSRCalc3::ChooseRegressionPeptides(std::vector<PeptideWithSetModifications*> &peptides, int &minCount)
+        std::vector<PeptideWithSetModifications*> SSRCalc3::ChooseRegressionPeptides(std::vector<PeptideWithSetModifications*> &peptides,
+                                                                                     int &minCount)
         {
             minCount = 0;
             return peptides;
@@ -19,371 +20,371 @@ const std::string SSRCalc3::VERSION = "Krokhin,3.0";
             return std::vector<PeptideWithSetModifications*> ();
         }
 
-CLUSTCOMB_List *const SSRCalc3::CLUSTCOMB = new CLUSTCOMB_List();
-std::unordered_map<std::string, double> SSRCalc3::HlxScore4;
-std::unordered_map<std::string, double> SSRCalc3::HlxScore5;
-std::unordered_map<std::string, double> SSRCalc3::HlxScore6;
-const std::vector<int> SSRCalc3::EMap = std::vector<int>(128);
+        CLUSTCOMB_List *const SSRCalc3::CLUSTCOMB = new CLUSTCOMB_List();
+        std::unordered_map<std::string, double> SSRCalc3::HlxScore4;
+        std::unordered_map<std::string, double> SSRCalc3::HlxScore5;
+        std::unordered_map<std::string, double> SSRCalc3::HlxScore6;
+        std::vector<int> SSRCalc3::EMap = std::vector<int>(128);
 
-        void SSRCalc3::CLUSTCOMB_List::Add(const std::string &pattern, double value)
+        void CLUSTCOMB_List::Add(const std::string &pattern, double value)
         {
-            Regex tempVar(pattern);
-            this->push_back(KeyValuePair<Regex*, double>(&tempVar, value));
+            std::regex* tempVar = new std::regex(pattern);
+            RegexVec.push_back(std::make_pair(*tempVar, value));
         }
 
         SSRCalc3::StaticConstructor::StaticConstructor()
         {
                 
-        /*
-          Translator1 note:  For the Java version we are prepending and appending 0s to the "pick" (key) column.  This
-          is done dynamically and repeatedly in the perl code.  As far as I can tell, pick is never used
-          without the surrounding 0s.
-        */
-                
-        // ReSharper disable NonLocalizedString
-        CLUSTCOMB->push_back("0110", 0.3);
-        CLUSTCOMB->push_back("0150", 0.4);
-        CLUSTCOMB->push_back("0510", 0.4);
-        CLUSTCOMB->push_back("0550", 1.3);
-        CLUSTCOMB->push_back("01110", 0.5);
-        CLUSTCOMB->push_back("01150", 0.7);
-        CLUSTCOMB->push_back("01510", 0.7);
-        CLUSTCOMB->push_back("01550", 2.1);
-        CLUSTCOMB->push_back("05110", 0.7);
-        CLUSTCOMB->push_back("05150", 2.1);
-        CLUSTCOMB->push_back("05510", 2.1);
-        CLUSTCOMB->push_back("05550", 2.8);
-        CLUSTCOMB->push_back("011110", 0.7);
-        CLUSTCOMB->push_back("011150", 0.9);
-        CLUSTCOMB->push_back("011510", 0.9);
-        CLUSTCOMB->push_back("011550", 2.2);
-        CLUSTCOMB->push_back("015110", 0.9);
-        CLUSTCOMB->push_back("015150", 2.2);
-        CLUSTCOMB->push_back("015510", 0.9);
-        CLUSTCOMB->push_back("015550", 3.0);
-        CLUSTCOMB->push_back("051110", 0.9);
-        CLUSTCOMB->push_back("051150", 2.2);
-        CLUSTCOMB->push_back("051510", 2.2);
-        CLUSTCOMB->push_back("051550", 3.0);
-        CLUSTCOMB->push_back("055110", 2.2);
-        CLUSTCOMB->push_back("055150", 3.0);
-        CLUSTCOMB->push_back("055510", 3.0);
-        CLUSTCOMB->push_back("055550", 3.5);
-        CLUSTCOMB->push_back("0111110", 0.9);
-        CLUSTCOMB->push_back("0111150", 1.0);
-        CLUSTCOMB->push_back("0111510", 1.0);
-        CLUSTCOMB->push_back("0111550", 2.3);
-        CLUSTCOMB->push_back("0115110", 1.0);
-        CLUSTCOMB->push_back("0115150", 2.3);
-        CLUSTCOMB->push_back("0115510", 2.3);
-        CLUSTCOMB->push_back("0115550", 3.1);
-        CLUSTCOMB->push_back("0151110", 1.0);
-        CLUSTCOMB->push_back("0151150", 2.3);
-        CLUSTCOMB->push_back("0151510", 2.3);
-        CLUSTCOMB->push_back("0151550", 3.1);
-        CLUSTCOMB->push_back("0155110", 2.3);
-        CLUSTCOMB->push_back("0155150", 3.1);
-        CLUSTCOMB->push_back("0155510", 3.1);
-        CLUSTCOMB->push_back("0155550", 3.6);
-        CLUSTCOMB->push_back("0511110", 1.0);
-        CLUSTCOMB->push_back("0511150", 2.3);
-        CLUSTCOMB->push_back("0511510", 2.3);
-        CLUSTCOMB->push_back("0511550", 3.1);
-        CLUSTCOMB->push_back("0515110", 3.6);
-        CLUSTCOMB->push_back("0515150", 2.3);
-        CLUSTCOMB->push_back("0515510", 3.1);
-        CLUSTCOMB->push_back("0515550", 3.6);
-        CLUSTCOMB->push_back("0551110", 2.3);
-        CLUSTCOMB->push_back("0551150", 3.1);
-        CLUSTCOMB->push_back("0551510", 3.1);
-        CLUSTCOMB->push_back("0551550", 3.6);
-        CLUSTCOMB->push_back("0555110", 3.1);
-        CLUSTCOMB->push_back("0555150", 3.6);
-        CLUSTCOMB->push_back("0555510", 3.6);
-        CLUSTCOMB->push_back("0555550", 4.0);
-        CLUSTCOMB->push_back("01111110", 1.1);
-        CLUSTCOMB->push_back("01111150", 1.7);
-        CLUSTCOMB->push_back("01111510", 1.7);
-        CLUSTCOMB->push_back("01111550", 2.5);
-        CLUSTCOMB->push_back("01115110", 1.7);
-        CLUSTCOMB->push_back("01115150", 2.5);
-        CLUSTCOMB->push_back("01115510", 2.5);
-        CLUSTCOMB->push_back("01115550", 3.3);
-        CLUSTCOMB->push_back("01151110", 1.7);
-        CLUSTCOMB->push_back("01151150", 2.5);
-        CLUSTCOMB->push_back("01151510", 2.5);
-        CLUSTCOMB->push_back("01151550", 3.3);
-        CLUSTCOMB->push_back("01155110", 2.5);
-        CLUSTCOMB->push_back("01155150", 3.3);
-        CLUSTCOMB->push_back("01155510", 3.3);
-        CLUSTCOMB->push_back("01155550", 3.7);
-        CLUSTCOMB->push_back("01511110", 1.7);
-        CLUSTCOMB->push_back("01511150", 2.5);
-        CLUSTCOMB->push_back("01511510", 2.5);
-        CLUSTCOMB->push_back("01511550", 3.3);
-        CLUSTCOMB->push_back("01515110", 2.5);
-        CLUSTCOMB->push_back("01515150", 3.3);
-        CLUSTCOMB->push_back("01515510", 3.3);
-        CLUSTCOMB->push_back("01515550", 3.7);
-        CLUSTCOMB->push_back("01551110", 2.5);
-        CLUSTCOMB->push_back("01551150", 3.3);
-        CLUSTCOMB->push_back("01551510", 3.3);
-        CLUSTCOMB->push_back("01551550", 3.7);
-        CLUSTCOMB->push_back("01555110", 3.3);
-        CLUSTCOMB->push_back("01555150", 3.7);
-        CLUSTCOMB->push_back("01555510", 3.7);
-        CLUSTCOMB->push_back("01555550", 4.1);
-        CLUSTCOMB->push_back("05111110", 1.7);
-        CLUSTCOMB->push_back("05111150", 2.5);
-        CLUSTCOMB->push_back("05111510", 2.5);
-        CLUSTCOMB->push_back("05111550", 3.3);
-        CLUSTCOMB->push_back("05115110", 2.5);
-        CLUSTCOMB->push_back("05115150", 3.3);
-        CLUSTCOMB->push_back("05115510", 3.3);
-        CLUSTCOMB->push_back("05115550", 3.7);
-        CLUSTCOMB->push_back("05151110", 2.5);
-        CLUSTCOMB->push_back("05151150", 3.3);
-        CLUSTCOMB->push_back("05151510", 3.3);
-        CLUSTCOMB->push_back("05151550", 3.7);
-        CLUSTCOMB->push_back("05155110", 3.3);
-        CLUSTCOMB->push_back("05155150", 3.7);
-        CLUSTCOMB->push_back("05155510", 3.7);
-        CLUSTCOMB->push_back("05155550", 4.1);
-        CLUSTCOMB->push_back("05511110", 2.5);
-        CLUSTCOMB->push_back("05511150", 3.3);
-        CLUSTCOMB->push_back("05511510", 3.3);
-        CLUSTCOMB->push_back("05511550", 3.7);
-        CLUSTCOMB->push_back("05515110", 3.3);
-        CLUSTCOMB->push_back("05515150", 3.7);
-        CLUSTCOMB->push_back("05515510", 3.7);
-        CLUSTCOMB->push_back("05515550", 4.1);
-        CLUSTCOMB->push_back("05551110", 3.3);
-        CLUSTCOMB->push_back("05551150", 3.7);
-        CLUSTCOMB->push_back("05551510", 3.7);
-        CLUSTCOMB->push_back("05551550", 4.1);
-        CLUSTCOMB->push_back("05555110", 3.7);
-        CLUSTCOMB->push_back("05555150", 4.1);
-        CLUSTCOMB->push_back("05555510", 4.1);
-        CLUSTCOMB->push_back("05555550", 4.5);
-                
-        HlxScore4.emplace("XXUX", 0.8);
-        HlxScore4.emplace("XZOX", 0.8);
-        HlxScore4.emplace("XUXX", 0.8);
-        HlxScore4.emplace("XXOX", 0.7);
-        HlxScore4.emplace("XOXX", 0.7);
-        HlxScore4.emplace("XZUX", 0.7);
-        HlxScore4.emplace("XXOZ", 0.7);
-        HlxScore4.emplace("ZXOX", 0.7);
-        HlxScore4.emplace("XOZZ", 0.7);
-        HlxScore4.emplace("ZOXX", 0.7);
-        HlxScore4.emplace("ZOZX", 0.7);
-        HlxScore4.emplace("ZUXX", 0.7);
-        HlxScore4.emplace("ZXUX", 0.5);
-        HlxScore4.emplace("XOZX", 0.5);
-        HlxScore4.emplace("XZOZ", 0.5);
-        HlxScore4.emplace("XUZX", 0.5);
-        HlxScore4.emplace("ZZOX", 0.2);
-        HlxScore4.emplace("ZXOZ", 0.2);
-        HlxScore4.emplace("ZOXZ", 0.2);
-        HlxScore4.emplace("XOXZ", 0.2);
-        HlxScore4.emplace("ZZUZ", 0.2);
-        HlxScore4.emplace("XUXZ", 0.2);
-        HlxScore4.emplace("ZUXZ", 0.2);
-        HlxScore4.emplace("XZUZ", 0.2);
-        HlxScore4.emplace("XUZZ", 0.2);
-        HlxScore4.emplace("ZXUZ", 0.2);
-        HlxScore4.emplace("ZOZZ", 0.2);
-        HlxScore4.emplace("ZZOZ", 0.2);
-        HlxScore4.emplace("ZZUX", 0.2);
-        HlxScore4.emplace("ZUZX", 0.2);
-        HlxScore4.emplace("XXUZ", 0.2);
-        HlxScore4.emplace("ZUZZ", 0.2);
-                
-        HlxScore5.emplace("XXOXX", 3.75);
-        HlxScore5.emplace("XXOXZ", 3.75);
-        HlxScore5.emplace("XXOZX", 3.75);
-        HlxScore5.emplace("XZOXX", 3.75);
-        HlxScore5.emplace("ZXOXX", 3.75);
-        HlxScore5.emplace("XXOZZ", 2.7);
-        HlxScore5.emplace("XZOXZ", 2.7);
-        HlxScore5.emplace("XZOZX", 2.7);
-        HlxScore5.emplace("ZXOXZ", 2.7);
-        HlxScore5.emplace("ZXOZX", 2.7);
-        HlxScore5.emplace("ZZOXX", 2.7);
-        HlxScore5.emplace("ZXOZZ", 1.3);
-        HlxScore5.emplace("XZOZZ", 1.3);
-        HlxScore5.emplace("ZZOXZ", 1.3);
-        HlxScore5.emplace("ZZOZX", 1.3);
-        HlxScore5.emplace("ZZOZZ", 1.3);
-        HlxScore5.emplace("XXUXX", 3.75);
-        HlxScore5.emplace("XXUXZ", 3.75);
-        HlxScore5.emplace("XXUZX", 3.75);
-        HlxScore5.emplace("XZUXX", 3.75);
-        HlxScore5.emplace("ZXUXX", 3.75);
-        HlxScore5.emplace("XXUZZ", 1.1);
-        HlxScore5.emplace("XZUXZ", 1.1);
-        HlxScore5.emplace("XZUZX", 1.1);
-        HlxScore5.emplace("ZXUZX", 1.1);
-        HlxScore5.emplace("ZXUXZ", 1.1);
-        HlxScore5.emplace("ZZUXX", 1.1);
-        HlxScore5.emplace("XZUZZ", 1.3);
-        HlxScore5.emplace("ZXUZZ", 1.3);
-        HlxScore5.emplace("ZZUXZ", 1.3);
-        HlxScore5.emplace("ZZUZX", 1.3);
-        HlxScore5.emplace("ZZUZZ", 1.3);
-        HlxScore5.emplace("XXOOX", 1.25);
-        HlxScore5.emplace("ZXOOX", 1.25);
-        HlxScore5.emplace("XZOOX", 1.25);
-        HlxScore5.emplace("XOOXX", 1.25);
-        HlxScore5.emplace("XOOXZ", 1.25);
-        HlxScore5.emplace("XOOZX", 1.25);
-        HlxScore5.emplace("XXOOZ", 1.25);
-        HlxScore5.emplace("ZXOOZ", 1.25);
-        HlxScore5.emplace("XZOOZ", 1.25);
-        HlxScore5.emplace("ZZOOX", 1.25);
-        HlxScore5.emplace("ZZOOZ", 1.25);
-        HlxScore5.emplace("ZOOXX", 1.25);
-        HlxScore5.emplace("ZOOXZ", 1.25);
-        HlxScore5.emplace("ZOOZX", 1.25);
-        HlxScore5.emplace("XOOZZ", 1.25);
-        HlxScore5.emplace("ZOOZZ", 1.25);
-        HlxScore5.emplace("XXOUX", 1.25);
-        HlxScore5.emplace("ZXOUX", 1.25);
-        HlxScore5.emplace("XXUOX", 1.25);
-        HlxScore5.emplace("ZXUOX", 1.25);
-        HlxScore5.emplace("XOUXX", 1.25);
-        HlxScore5.emplace("XOUXZ", 1.25);
-        HlxScore5.emplace("XUOXX", 1.25);
-        HlxScore5.emplace("XUOXZ", 1.25);
-        HlxScore5.emplace("XXOUZ", 0.75);
-        HlxScore5.emplace("ZXOUZ", 0.75);
-        HlxScore5.emplace("XZOUX", 0.75);
-        HlxScore5.emplace("XZOUZ", 0.75);
-        HlxScore5.emplace("ZZOUX", 0.75);
-        HlxScore5.emplace("ZZOUZ", 0.75);
-        HlxScore5.emplace("XXUOZ", 0.75);
-        HlxScore5.emplace("ZXUOZ", 0.75);
-        HlxScore5.emplace("XZUOX", 0.75);
-        HlxScore5.emplace("XZUOZ", 0.75);
-        HlxScore5.emplace("ZZUOX", 0.75);
-        HlxScore5.emplace("ZZUOZ", 0.75);
-        HlxScore5.emplace("ZOUXX", 0.75);
-        HlxScore5.emplace("ZOUXZ", 0.75);
-        HlxScore5.emplace("XOUZX", 0.75);
-        HlxScore5.emplace("ZOUZX", 0.75);
-        HlxScore5.emplace("XOUZZ", 0.75);
-        HlxScore5.emplace("ZOUZZ", 0.75);
-        HlxScore5.emplace("ZUOXX", 0.75);
-        HlxScore5.emplace("ZUOXZ", 0.75);
-        HlxScore5.emplace("XUOZX", 0.75);
-        HlxScore5.emplace("ZUOZX", 0.75);
-        HlxScore5.emplace("XUOZZ", 0.75);
-        HlxScore5.emplace("ZUOZZ", 0.75);
-        HlxScore5.emplace("XUUXX", 1.25);
-        HlxScore5.emplace("XXUUX", 1.25);
-        HlxScore5.emplace("XXUUZ", 0.6);
-        HlxScore5.emplace("ZXUUX", 0.6);
-        HlxScore5.emplace("ZXUUZ", 0.6);
-        HlxScore5.emplace("XZUUX", 0.6);
-        HlxScore5.emplace("XZUUZ", 0.6);
-        HlxScore5.emplace("ZZUUX", 0.6);
-        HlxScore5.emplace("ZZUUZ", 0.6);
-        HlxScore5.emplace("ZUUXX", 0.6);
-        HlxScore5.emplace("XUUXZ", 0.6);
-        HlxScore5.emplace("ZUUXZ", 0.6);
-        HlxScore5.emplace("XUUZX", 0.6);
-        HlxScore5.emplace("ZUUZX", 0.6);
-        HlxScore5.emplace("XUUZZ", 0.6);
-        HlxScore5.emplace("ZUUZZ", 0.6);
-                
-        HlxScore6.emplace("XXOOXX", 3.0);
-        HlxScore6.emplace("XXOOXZ", 3.0);
-        HlxScore6.emplace("ZXOOXX", 3.0);
-        HlxScore6.emplace("ZXOOXZ", 3.0);
-        HlxScore6.emplace("XXOUXX", 3.0);
-        HlxScore6.emplace("XXOUXZ", 3.0);
-        HlxScore6.emplace("XXUOXX", 3.0);
-        HlxScore6.emplace("XXUOXZ", 3.0);
-        HlxScore6.emplace("ZXUOXX", 3.0);
-        HlxScore6.emplace("ZXOUXX", 3.0);
-        HlxScore6.emplace("XXOOZX", 1.6);
-        HlxScore6.emplace("XXOOZZ", 1.6);
-        HlxScore6.emplace("XZOOXX", 1.6);
-        HlxScore6.emplace("XZOOXZ", 1.6);
-        HlxScore6.emplace("XZOOZX", 1.6);
-        HlxScore6.emplace("XZOOZZ", 1.6);
-        HlxScore6.emplace("ZXOOZX", 1.6);
-        HlxScore6.emplace("ZXOOZZ", 1.6);
-        HlxScore6.emplace("ZZOOXX", 1.6);
-        HlxScore6.emplace("ZZOOXZ", 1.6);
-        HlxScore6.emplace("ZXOUXZ", 1.6);
-        HlxScore6.emplace("XZUOXX", 1.6);
-        HlxScore6.emplace("ZXUOXZ", 1.6);
-        HlxScore6.emplace("ZZOOZX", 1.5);
-        HlxScore6.emplace("ZZOOZZ", 1.5);
-        HlxScore6.emplace("XXOUZX", 1.5);
-        HlxScore6.emplace("XXOUZZ", 1.5);
-        HlxScore6.emplace("XZOUXX", 1.5);
-        HlxScore6.emplace("XZOUXZ", 1.5);
-        HlxScore6.emplace("ZXOUZX", 1.5);
-        HlxScore6.emplace("ZXOUZZ", 1.5);
-        HlxScore6.emplace("ZZOUXX", 1.5);
-        HlxScore6.emplace("ZZOUXZ", 1.5);
-        HlxScore6.emplace("XXUOZX", 1.5);
-        HlxScore6.emplace("XXUOZZ", 1.5);
-        HlxScore6.emplace("XZUOXZ", 1.5);
-        HlxScore6.emplace("ZXUOZX", 1.5);
-        HlxScore6.emplace("ZXUOZZ", 1.5);
-        HlxScore6.emplace("ZZUOXX", 1.5);
-        HlxScore6.emplace("ZZUOXZ", 1.5);
-        HlxScore6.emplace("ZZUOZX", 1.25);
-        HlxScore6.emplace("ZZUOZZ", 1.25);
-        HlxScore6.emplace("ZZOUZX", 1.25);
-        HlxScore6.emplace("ZZOUZZ", 1.25);
-        HlxScore6.emplace("XZOUZX", 1.25);
-        HlxScore6.emplace("XZOUZZ", 1.25);
-        HlxScore6.emplace("XZUOZX", 1.25);
-        HlxScore6.emplace("XZUOZZ", 1.25);
-        HlxScore6.emplace("XXUUXX", 1.25);
-        HlxScore6.emplace("XXUUXZ", 1.25);
-        HlxScore6.emplace("ZXUUXX", 1.25);
-        HlxScore6.emplace("XXUUZX", 1.25);
-        HlxScore6.emplace("XXUUZZ", 1.25);
-        HlxScore6.emplace("XZUUXX", 1.25);
-        HlxScore6.emplace("XZUUXZ", 1.25);
-        HlxScore6.emplace("XZUUZX", 0.75);
-        HlxScore6.emplace("XZUUZZ", 0.75);
-        HlxScore6.emplace("ZXUUXZ", 1.25);
-        HlxScore6.emplace("ZXUUZX", 1.25);
-        HlxScore6.emplace("ZXUUZZ", 1.25);
-        HlxScore6.emplace("ZZUUXX", 1.25);
-        HlxScore6.emplace("ZZUUXZ", 1.25);
-        HlxScore6.emplace("ZZUUZX", 0.75);
-        HlxScore6.emplace("ZZUUZZ", 0.75);
-        // ReSharper restore NonLocalizedString
-                
-        // populate eMap
-        for (int i = 0; i < EMap.size(); i++)
-        {
-            EMap[i] = -1; //default
-        }
-        EMap['K'] = 0;
-        EMap['R'] = 1;
-        EMap['H'] = 2;
-        EMap['D'] = 3;
-        EMap['E'] = 4;
-        EMap['C'] = 5;
-        EMap['Y'] = 6;
+            /*
+              Translator1 note:  For the Java version we are prepending and appending 0s to the "pick" (key) column.  This
+              is done dynamically and repeatedly in the perl code.  As far as I can tell, pick is never used
+              without the surrounding 0s.
+            */
+            
+            // ReSharper disable NonLocalizedString
+            CLUSTCOMB->Add("0110", 0.3);
+            CLUSTCOMB->Add("0150", 0.4);
+            CLUSTCOMB->Add("0510", 0.4);
+            CLUSTCOMB->Add("0550", 1.3);
+            CLUSTCOMB->Add("01110", 0.5);
+            CLUSTCOMB->Add("01150", 0.7);
+            CLUSTCOMB->Add("01510", 0.7);
+            CLUSTCOMB->Add("01550", 2.1);
+            CLUSTCOMB->Add("05110", 0.7);
+            CLUSTCOMB->Add("05150", 2.1);
+            CLUSTCOMB->Add("05510", 2.1);
+            CLUSTCOMB->Add("05550", 2.8);
+            CLUSTCOMB->Add("011110", 0.7);
+            CLUSTCOMB->Add("011150", 0.9);
+            CLUSTCOMB->Add("011510", 0.9);
+            CLUSTCOMB->Add("011550", 2.2);
+            CLUSTCOMB->Add("015110", 0.9);
+            CLUSTCOMB->Add("015150", 2.2);
+            CLUSTCOMB->Add("015510", 0.9);
+            CLUSTCOMB->Add("015550", 3.0);
+            CLUSTCOMB->Add("051110", 0.9);
+            CLUSTCOMB->Add("051150", 2.2);
+            CLUSTCOMB->Add("051510", 2.2);
+            CLUSTCOMB->Add("051550", 3.0);
+            CLUSTCOMB->Add("055110", 2.2);
+            CLUSTCOMB->Add("055150", 3.0);
+            CLUSTCOMB->Add("055510", 3.0);
+            CLUSTCOMB->Add("055550", 3.5);
+            CLUSTCOMB->Add("0111110", 0.9);
+            CLUSTCOMB->Add("0111150", 1.0);
+            CLUSTCOMB->Add("0111510", 1.0);
+            CLUSTCOMB->Add("0111550", 2.3);
+            CLUSTCOMB->Add("0115110", 1.0);
+            CLUSTCOMB->Add("0115150", 2.3);
+            CLUSTCOMB->Add("0115510", 2.3);
+            CLUSTCOMB->Add("0115550", 3.1);
+            CLUSTCOMB->Add("0151110", 1.0);
+            CLUSTCOMB->Add("0151150", 2.3);
+            CLUSTCOMB->Add("0151510", 2.3);
+            CLUSTCOMB->Add("0151550", 3.1);
+            CLUSTCOMB->Add("0155110", 2.3);
+            CLUSTCOMB->Add("0155150", 3.1);
+            CLUSTCOMB->Add("0155510", 3.1);
+            CLUSTCOMB->Add("0155550", 3.6);
+            CLUSTCOMB->Add("0511110", 1.0);
+            CLUSTCOMB->Add("0511150", 2.3);
+            CLUSTCOMB->Add("0511510", 2.3);
+            CLUSTCOMB->Add("0511550", 3.1);
+            CLUSTCOMB->Add("0515110", 3.6);
+            CLUSTCOMB->Add("0515150", 2.3);
+            CLUSTCOMB->Add("0515510", 3.1);
+            CLUSTCOMB->Add("0515550", 3.6);
+            CLUSTCOMB->Add("0551110", 2.3);
+            CLUSTCOMB->Add("0551150", 3.1);
+            CLUSTCOMB->Add("0551510", 3.1);
+            CLUSTCOMB->Add("0551550", 3.6);
+            CLUSTCOMB->Add("0555110", 3.1);
+            CLUSTCOMB->Add("0555150", 3.6);
+            CLUSTCOMB->Add("0555510", 3.6);
+            CLUSTCOMB->Add("0555550", 4.0);
+            CLUSTCOMB->Add("01111110", 1.1);
+            CLUSTCOMB->Add("01111150", 1.7);
+            CLUSTCOMB->Add("01111510", 1.7);
+            CLUSTCOMB->Add("01111550", 2.5);
+            CLUSTCOMB->Add("01115110", 1.7);
+            CLUSTCOMB->Add("01115150", 2.5);
+            CLUSTCOMB->Add("01115510", 2.5);
+            CLUSTCOMB->Add("01115550", 3.3);
+            CLUSTCOMB->Add("01151110", 1.7);
+            CLUSTCOMB->Add("01151150", 2.5);
+            CLUSTCOMB->Add("01151510", 2.5);
+            CLUSTCOMB->Add("01151550", 3.3);
+            CLUSTCOMB->Add("01155110", 2.5);
+            CLUSTCOMB->Add("01155150", 3.3);
+            CLUSTCOMB->Add("01155510", 3.3);
+            CLUSTCOMB->Add("01155550", 3.7);
+            CLUSTCOMB->Add("01511110", 1.7);
+            CLUSTCOMB->Add("01511150", 2.5);
+            CLUSTCOMB->Add("01511510", 2.5);
+            CLUSTCOMB->Add("01511550", 3.3);
+            CLUSTCOMB->Add("01515110", 2.5);
+            CLUSTCOMB->Add("01515150", 3.3);
+            CLUSTCOMB->Add("01515510", 3.3);
+            CLUSTCOMB->Add("01515550", 3.7);
+            CLUSTCOMB->Add("01551110", 2.5);
+            CLUSTCOMB->Add("01551150", 3.3);
+            CLUSTCOMB->Add("01551510", 3.3);
+            CLUSTCOMB->Add("01551550", 3.7);
+            CLUSTCOMB->Add("01555110", 3.3);
+            CLUSTCOMB->Add("01555150", 3.7);
+            CLUSTCOMB->Add("01555510", 3.7);
+            CLUSTCOMB->Add("01555550", 4.1);
+            CLUSTCOMB->Add("05111110", 1.7);
+            CLUSTCOMB->Add("05111150", 2.5);
+            CLUSTCOMB->Add("05111510", 2.5);
+            CLUSTCOMB->Add("05111550", 3.3);
+            CLUSTCOMB->Add("05115110", 2.5);
+            CLUSTCOMB->Add("05115150", 3.3);
+            CLUSTCOMB->Add("05115510", 3.3);
+            CLUSTCOMB->Add("05115550", 3.7);
+            CLUSTCOMB->Add("05151110", 2.5);
+            CLUSTCOMB->Add("05151150", 3.3);
+            CLUSTCOMB->Add("05151510", 3.3);
+            CLUSTCOMB->Add("05151550", 3.7);
+            CLUSTCOMB->Add("05155110", 3.3);
+            CLUSTCOMB->Add("05155150", 3.7);
+            CLUSTCOMB->Add("05155510", 3.7);
+            CLUSTCOMB->Add("05155550", 4.1);
+            CLUSTCOMB->Add("05511110", 2.5);
+            CLUSTCOMB->Add("05511150", 3.3);
+            CLUSTCOMB->Add("05511510", 3.3);
+            CLUSTCOMB->Add("05511550", 3.7);
+            CLUSTCOMB->Add("05515110", 3.3);
+            CLUSTCOMB->Add("05515150", 3.7);
+            CLUSTCOMB->Add("05515510", 3.7);
+            CLUSTCOMB->Add("05515550", 4.1);
+            CLUSTCOMB->Add("05551110", 3.3);
+            CLUSTCOMB->Add("05551150", 3.7);
+            CLUSTCOMB->Add("05551510", 3.7);
+            CLUSTCOMB->Add("05551550", 4.1);
+            CLUSTCOMB->Add("05555110", 3.7);
+            CLUSTCOMB->Add("05555150", 4.1);
+            CLUSTCOMB->Add("05555510", 4.1);
+            CLUSTCOMB->Add("05555550", 4.5);
+            
+            HlxScore4.emplace("XXUX", 0.8);
+            HlxScore4.emplace("XZOX", 0.8);
+            HlxScore4.emplace("XUXX", 0.8);
+            HlxScore4.emplace("XXOX", 0.7);
+            HlxScore4.emplace("XOXX", 0.7);
+            HlxScore4.emplace("XZUX", 0.7);
+            HlxScore4.emplace("XXOZ", 0.7);
+            HlxScore4.emplace("ZXOX", 0.7);
+            HlxScore4.emplace("XOZZ", 0.7);
+            HlxScore4.emplace("ZOXX", 0.7);
+            HlxScore4.emplace("ZOZX", 0.7);
+            HlxScore4.emplace("ZUXX", 0.7);
+            HlxScore4.emplace("ZXUX", 0.5);
+            HlxScore4.emplace("XOZX", 0.5);
+            HlxScore4.emplace("XZOZ", 0.5);
+            HlxScore4.emplace("XUZX", 0.5);
+            HlxScore4.emplace("ZZOX", 0.2);
+            HlxScore4.emplace("ZXOZ", 0.2);
+            HlxScore4.emplace("ZOXZ", 0.2);
+            HlxScore4.emplace("XOXZ", 0.2);
+            HlxScore4.emplace("ZZUZ", 0.2);
+            HlxScore4.emplace("XUXZ", 0.2);
+            HlxScore4.emplace("ZUXZ", 0.2);
+            HlxScore4.emplace("XZUZ", 0.2);
+            HlxScore4.emplace("XUZZ", 0.2);
+            HlxScore4.emplace("ZXUZ", 0.2);
+            HlxScore4.emplace("ZOZZ", 0.2);
+            HlxScore4.emplace("ZZOZ", 0.2);
+            HlxScore4.emplace("ZZUX", 0.2);
+            HlxScore4.emplace("ZUZX", 0.2);
+            HlxScore4.emplace("XXUZ", 0.2);
+            HlxScore4.emplace("ZUZZ", 0.2);
+            
+            HlxScore5.emplace("XXOXX", 3.75);
+            HlxScore5.emplace("XXOXZ", 3.75);
+            HlxScore5.emplace("XXOZX", 3.75);
+            HlxScore5.emplace("XZOXX", 3.75);
+            HlxScore5.emplace("ZXOXX", 3.75);
+            HlxScore5.emplace("XXOZZ", 2.7);
+            HlxScore5.emplace("XZOXZ", 2.7);
+            HlxScore5.emplace("XZOZX", 2.7);
+            HlxScore5.emplace("ZXOXZ", 2.7);
+            HlxScore5.emplace("ZXOZX", 2.7);
+            HlxScore5.emplace("ZZOXX", 2.7);
+            HlxScore5.emplace("ZXOZZ", 1.3);
+            HlxScore5.emplace("XZOZZ", 1.3);
+            HlxScore5.emplace("ZZOXZ", 1.3);
+            HlxScore5.emplace("ZZOZX", 1.3);
+            HlxScore5.emplace("ZZOZZ", 1.3);
+            HlxScore5.emplace("XXUXX", 3.75);
+            HlxScore5.emplace("XXUXZ", 3.75);
+            HlxScore5.emplace("XXUZX", 3.75);
+            HlxScore5.emplace("XZUXX", 3.75);
+            HlxScore5.emplace("ZXUXX", 3.75);
+            HlxScore5.emplace("XXUZZ", 1.1);
+            HlxScore5.emplace("XZUXZ", 1.1);
+            HlxScore5.emplace("XZUZX", 1.1);
+            HlxScore5.emplace("ZXUZX", 1.1);
+            HlxScore5.emplace("ZXUXZ", 1.1);
+            HlxScore5.emplace("ZZUXX", 1.1);
+            HlxScore5.emplace("XZUZZ", 1.3);
+            HlxScore5.emplace("ZXUZZ", 1.3);
+            HlxScore5.emplace("ZZUXZ", 1.3);
+            HlxScore5.emplace("ZZUZX", 1.3);
+            HlxScore5.emplace("ZZUZZ", 1.3);
+            HlxScore5.emplace("XXOOX", 1.25);
+            HlxScore5.emplace("ZXOOX", 1.25);
+            HlxScore5.emplace("XZOOX", 1.25);
+            HlxScore5.emplace("XOOXX", 1.25);
+            HlxScore5.emplace("XOOXZ", 1.25);
+            HlxScore5.emplace("XOOZX", 1.25);
+            HlxScore5.emplace("XXOOZ", 1.25);
+            HlxScore5.emplace("ZXOOZ", 1.25);
+            HlxScore5.emplace("XZOOZ", 1.25);
+            HlxScore5.emplace("ZZOOX", 1.25);
+            HlxScore5.emplace("ZZOOZ", 1.25);
+            HlxScore5.emplace("ZOOXX", 1.25);
+            HlxScore5.emplace("ZOOXZ", 1.25);
+            HlxScore5.emplace("ZOOZX", 1.25);
+            HlxScore5.emplace("XOOZZ", 1.25);
+            HlxScore5.emplace("ZOOZZ", 1.25);
+            HlxScore5.emplace("XXOUX", 1.25);
+            HlxScore5.emplace("ZXOUX", 1.25);
+            HlxScore5.emplace("XXUOX", 1.25);
+            HlxScore5.emplace("ZXUOX", 1.25);
+            HlxScore5.emplace("XOUXX", 1.25);
+            HlxScore5.emplace("XOUXZ", 1.25);
+            HlxScore5.emplace("XUOXX", 1.25);
+            HlxScore5.emplace("XUOXZ", 1.25);
+            HlxScore5.emplace("XXOUZ", 0.75);
+            HlxScore5.emplace("ZXOUZ", 0.75);
+            HlxScore5.emplace("XZOUX", 0.75);
+            HlxScore5.emplace("XZOUZ", 0.75);
+            HlxScore5.emplace("ZZOUX", 0.75);
+            HlxScore5.emplace("ZZOUZ", 0.75);
+            HlxScore5.emplace("XXUOZ", 0.75);
+            HlxScore5.emplace("ZXUOZ", 0.75);
+            HlxScore5.emplace("XZUOX", 0.75);
+            HlxScore5.emplace("XZUOZ", 0.75);
+            HlxScore5.emplace("ZZUOX", 0.75);
+            HlxScore5.emplace("ZZUOZ", 0.75);
+            HlxScore5.emplace("ZOUXX", 0.75);
+            HlxScore5.emplace("ZOUXZ", 0.75);
+            HlxScore5.emplace("XOUZX", 0.75);
+            HlxScore5.emplace("ZOUZX", 0.75);
+            HlxScore5.emplace("XOUZZ", 0.75);
+            HlxScore5.emplace("ZOUZZ", 0.75);
+            HlxScore5.emplace("ZUOXX", 0.75);
+            HlxScore5.emplace("ZUOXZ", 0.75);
+            HlxScore5.emplace("XUOZX", 0.75);
+            HlxScore5.emplace("ZUOZX", 0.75);
+            HlxScore5.emplace("XUOZZ", 0.75);
+            HlxScore5.emplace("ZUOZZ", 0.75);
+            HlxScore5.emplace("XUUXX", 1.25);
+            HlxScore5.emplace("XXUUX", 1.25);
+            HlxScore5.emplace("XXUUZ", 0.6);
+            HlxScore5.emplace("ZXUUX", 0.6);
+            HlxScore5.emplace("ZXUUZ", 0.6);
+            HlxScore5.emplace("XZUUX", 0.6);
+            HlxScore5.emplace("XZUUZ", 0.6);
+            HlxScore5.emplace("ZZUUX", 0.6);
+            HlxScore5.emplace("ZZUUZ", 0.6);
+            HlxScore5.emplace("ZUUXX", 0.6);
+            HlxScore5.emplace("XUUXZ", 0.6);
+            HlxScore5.emplace("ZUUXZ", 0.6);
+            HlxScore5.emplace("XUUZX", 0.6);
+            HlxScore5.emplace("ZUUZX", 0.6);
+            HlxScore5.emplace("XUUZZ", 0.6);
+            HlxScore5.emplace("ZUUZZ", 0.6);
+            
+            HlxScore6.emplace("XXOOXX", 3.0);
+            HlxScore6.emplace("XXOOXZ", 3.0);
+            HlxScore6.emplace("ZXOOXX", 3.0);
+            HlxScore6.emplace("ZXOOXZ", 3.0);
+            HlxScore6.emplace("XXOUXX", 3.0);
+            HlxScore6.emplace("XXOUXZ", 3.0);
+            HlxScore6.emplace("XXUOXX", 3.0);
+            HlxScore6.emplace("XXUOXZ", 3.0);
+            HlxScore6.emplace("ZXUOXX", 3.0);
+            HlxScore6.emplace("ZXOUXX", 3.0);
+            HlxScore6.emplace("XXOOZX", 1.6);
+            HlxScore6.emplace("XXOOZZ", 1.6);
+            HlxScore6.emplace("XZOOXX", 1.6);
+            HlxScore6.emplace("XZOOXZ", 1.6);
+            HlxScore6.emplace("XZOOZX", 1.6);
+            HlxScore6.emplace("XZOOZZ", 1.6);
+            HlxScore6.emplace("ZXOOZX", 1.6);
+            HlxScore6.emplace("ZXOOZZ", 1.6);
+            HlxScore6.emplace("ZZOOXX", 1.6);
+            HlxScore6.emplace("ZZOOXZ", 1.6);
+            HlxScore6.emplace("ZXOUXZ", 1.6);
+            HlxScore6.emplace("XZUOXX", 1.6);
+            HlxScore6.emplace("ZXUOXZ", 1.6);
+            HlxScore6.emplace("ZZOOZX", 1.5);
+            HlxScore6.emplace("ZZOOZZ", 1.5);
+            HlxScore6.emplace("XXOUZX", 1.5);
+            HlxScore6.emplace("XXOUZZ", 1.5);
+            HlxScore6.emplace("XZOUXX", 1.5);
+            HlxScore6.emplace("XZOUXZ", 1.5);
+            HlxScore6.emplace("ZXOUZX", 1.5);
+            HlxScore6.emplace("ZXOUZZ", 1.5);
+            HlxScore6.emplace("ZZOUXX", 1.5);
+            HlxScore6.emplace("ZZOUXZ", 1.5);
+            HlxScore6.emplace("XXUOZX", 1.5);
+            HlxScore6.emplace("XXUOZZ", 1.5);
+            HlxScore6.emplace("XZUOXZ", 1.5);
+            HlxScore6.emplace("ZXUOZX", 1.5);
+            HlxScore6.emplace("ZXUOZZ", 1.5);
+            HlxScore6.emplace("ZZUOXX", 1.5);
+            HlxScore6.emplace("ZZUOXZ", 1.5);
+            HlxScore6.emplace("ZZUOZX", 1.25);
+            HlxScore6.emplace("ZZUOZZ", 1.25);
+            HlxScore6.emplace("ZZOUZX", 1.25);
+            HlxScore6.emplace("ZZOUZZ", 1.25);
+            HlxScore6.emplace("XZOUZX", 1.25);
+            HlxScore6.emplace("XZOUZZ", 1.25);
+            HlxScore6.emplace("XZUOZX", 1.25);
+            HlxScore6.emplace("XZUOZZ", 1.25);
+            HlxScore6.emplace("XXUUXX", 1.25);
+            HlxScore6.emplace("XXUUXZ", 1.25);
+            HlxScore6.emplace("ZXUUXX", 1.25);
+            HlxScore6.emplace("XXUUZX", 1.25);
+            HlxScore6.emplace("XXUUZZ", 1.25);
+            HlxScore6.emplace("XZUUXX", 1.25);
+            HlxScore6.emplace("XZUUXZ", 1.25);
+            HlxScore6.emplace("XZUUZX", 0.75);
+            HlxScore6.emplace("XZUUZZ", 0.75);
+            HlxScore6.emplace("ZXUUXZ", 1.25);
+            HlxScore6.emplace("ZXUUZX", 1.25);
+            HlxScore6.emplace("ZXUUZZ", 1.25);
+            HlxScore6.emplace("ZZUUXX", 1.25);
+            HlxScore6.emplace("ZZUUXZ", 1.25);
+            HlxScore6.emplace("ZZUUZX", 0.75);
+            HlxScore6.emplace("ZZUUZZ", 0.75);
+            // ReSharper restore NonLocalizedString
+            
+            // populate eMap
+            for (int i = 0; i < (int)EMap.size(); i++)
+            {
+                EMap[i] = -1; //default
+            }
+            EMap['K'] = 0;
+            EMap['R'] = 1;
+            EMap['H'] = 2;
+            EMap['D'] = 3;
+            EMap['E'] = 4;
+            EMap['C'] = 5;
+            EMap['Y'] = 6;
         }
 
-SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
+        SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
 
         SSRCalc3::SSRCalc3(const std::string &name, Column column)
         {
             setName(name);
 
             AAParams *NULLPARAM = new AAParams(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            for (int i = 0; i < AAPARAMS.size(); i++)
+            for (int i = 0; i < (int)AAPARAMS.size(); i++)
             {
                 AAPARAMS[i] = NULLPARAM;
             }
@@ -725,9 +726,9 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             if (ALGORITHM_VERSION == 3)
             {
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
-                cc = cc.ReplaceAAs("LIW", "5"); // Not L10N
-                cc = cc.ReplaceAAs("AMYV", "1"); // Not L10N
-                cc = cc.ReplaceAAs("A-Z", "0"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "LIW", "5"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "AMYV", "1"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "A-Z", "0"); // Not L10N
             }
             else
             // Suppress the unreachable code warning
@@ -735,9 +736,9 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             #pragma warning( disable: 162 )
             {
             // ReSharper disable HeuristicUnreachableCode
-                cc = cc.ReplaceAAs("LIWF", "5"); // Not L10N
-                cc = cc.ReplaceAAs("MYV", "1"); // Not L10N
-                cc = cc.ReplaceAAs("A-Z", "0"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "LIWF", "5"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "MYV", "1"); // Not L10N
+                cc = HelpersLocal::ReplaceAAs(cc, "A-Z", "0"); // Not L10N
             }
             // ReSharper restore HeuristicUnreachableCode
             //C# TO C++ CONVERTER TODO TASK: C++ #pragma warning numbers are different from C# #pragma warning numbers:
@@ -749,15 +750,21 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             // Should an encoded aa string such as 015101510 match pick "01510" once or twice?
             // The perl code seems to match once.  0151001510 would match twice.
 
-            for (auto pair : CLUSTCOMB)
+            for (auto pair : CLUSTCOMB->RegexVec )
             {
                 int occurs = 0;
+#ifdef ORIG
                 Match *m = pair.first::Match(cc);
                 while (m->Success)
                 {
                     occurs++;
                     m = m->NextMatch();
                 }
+#endif
+                std::sregex_iterator m (cc.begin(), cc.end(), pair.first );
+                std::sregex_iterator reg_end;
+                for ( ; m != reg_end; ++occurs);
+                
                 if (occurs > 0)
                 {
                     double sk = pair.second;
@@ -986,11 +993,11 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             /* Translator1 note:  notice lowercase 'z'.  This never appears in any patterns to which this
                string is compared, and will never match any helicity patterns.
             */
-            hc = hc.ReplaceAAs("PHRK", "z"); // Not L10N
-            hc = hc.ReplaceAAs("WFIL", "X"); // Not L10N
-            hc = hc.ReplaceAAs("YMVA", "Z"); // Not L10N
-            hc = hc.ReplaceAAs("DE", "O"); // Not L10N
-            hc = hc.ReplaceAAs("GSPCNKQHRT", "U"); // Not L10N
+            hc =HelpersLocal::ReplaceAAs(hc, "PHRK", "z"); // Not L10N
+            hc =HelpersLocal::ReplaceAAs(hc, "WFIL", "X"); // Not L10N
+            hc =HelpersLocal::ReplaceAAs(hc, "YMVA", "Z"); // Not L10N
+            hc =HelpersLocal::ReplaceAAs(hc, "DE", "O"); // Not L10N
+            hc =HelpersLocal::ReplaceAAs(hc, "GSPCNKQHRT", "U"); // Not L10N
 
             double sum = 0.0;
             int sqlen = hc.length();
@@ -1002,7 +1009,7 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
                 std::string hc4 = "", hc5 = "", hc6 = "";
                 double sc4 = 0.0, sc5 = 0.0, sc6 = 0.0;
 
-                if (hc.substr(i)->length() >= 6)
+                if (hc.substr(i).length() >= 6)
                 {
                     hc6 = hc.substr(i, 6);
                     sc6 = 0.0;
@@ -1019,7 +1026,7 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
                     continue;
                 }
 
-                if (hc.substr(i)->length() >= 5)
+                if (hc.substr(i).length() >= 5)
                 {
                     hc5 = hc.substr(i, 5);
                     sc5 = 0.0;
@@ -1036,7 +1043,7 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
                     continue;
                 }
 
-                if (hc.substr(i)->length() >= 4)
+                if (hc.substr(i).length() >= 4)
                 {
                     hc4 = hc.substr(i, 4);
                     sc4 = 0.0;
@@ -1200,8 +1207,8 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             std::string prechop = sq;
             std::string sqCopy = sq.substr(2, sq.length() - 4);
 
-            std::string pass1 = sqCopy.ReplaceAAs("WFILYMVA", "1"); // Not L10N
-            pass1 = pass1.ReplaceAAs("GSPCNKQHRTDE", "0"); // Not L10N
+            std::string pass1 = HelpersLocal::ReplaceAAs(sqCopy, "WFILYMVA", "1"); // Not L10N
+            pass1 = HelpersLocal::ReplaceAAs(pass1, "GSPCNKQHRTDE", "0"); // Not L10N
 
             for (int i = 0; i < pass1.length(); i++)
             {
@@ -1296,7 +1303,8 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             {
                 return 0.0;
             }
-            std::string Bksq = sq.Backwards();
+            std::string sqtemp = sq;
+            std::string Bksq = HelpersLocal::Backwards(sqtemp);
             std::vector<double> fhg = Heli2Calc(sq);
             double FwHiscor = fhg[HISC];
             double FwGscor = fhg[GSC];
@@ -1329,53 +1337,42 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             if (mpart[0] == 'D' || mpart[0] == 'E') // Not L10N
             {
                 mpart = mpart.substr(1, 2);
-                if (mpart.ContainsAA("PGKRH")) // Not L10N
+                if (HelpersLocal::ContainsAA(mpart, "PGKRH")) // Not L10N
                 {
                     return 0.0;
                 }
-                mpart = mpart.ReplaceAAs("LI", "X"); // Not L10N
-                mpart = mpart.ReplaceAAs("AVYFWM", "Z"); // Not L10N
-                mpart = mpart.ReplaceAAs("GSPCNKQHRTDE", "U"); // Not L10N
+                mpart = HelpersLocal::ReplaceAAs(mpart, "LI", "X"); // Not L10N
+                mpart = HelpersLocal::ReplaceAAs(mpart, "AVYFWM", "Z"); // Not L10N
+                mpart = HelpersLocal::ReplaceAAs(mpart, "GSPCNKQHRTDE", "U"); // Not L10N
 
-//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
-//                switch (mpart)
-                    // ReSharper disable NonLocalizedString
-//ORIGINAL LINE: case "XX":
                 if (mpart == "XX")
                 {
                         return 1.0;
                 }
-//ORIGINAL LINE: case "ZX":
                 else if (mpart == "ZX")
                 {
                         return 0.5;
                 }
-//ORIGINAL LINE: case "XZ":
                 else if (mpart == "XZ")
                 {
                         return 0.5;
                 }
-//ORIGINAL LINE: case "ZZ":
                 else if (mpart == "ZZ")
                 {
                         return 0.4;
                 }
-//ORIGINAL LINE: case "XU":
                 else if (mpart == "XU")
                 {
                         return 0.4;
                 }
-//ORIGINAL LINE: case "UX":
                 else if (mpart == "UX")
                 {
                         return 0.4;
                 }
-//ORIGINAL LINE: case "ZU":
                 else if (mpart == "ZU")
                 {
                         return 0.2;
                 }
-//ORIGINAL LINE: case "UZ":
                 else if (mpart == "UZ")
                 {
                         return 0.2;
@@ -1385,177 +1382,179 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             return 0;
         }
 
-        double SSRCalc3::AAParams::getRC() const
+        double AAParams::getRC() const
         {
             return privateRC;
         }
 
-        void SSRCalc3::AAParams::setRC(double value)
+        void AAParams::setRC(double value)
         {
             privateRC = value;
         }
 
-        double SSRCalc3::AAParams::getRC1() const
+        double AAParams::getRC1() const
         {
             return privateRC1;
         }
 
-        void SSRCalc3::AAParams::setRC1(double value)
+        void AAParams::setRC1(double value)
         {
             privateRC1 = value;
         }
 
-        double SSRCalc3::AAParams::getRC2() const
+        double AAParams::getRC2() const
         {
             return privateRC2;
         }
 
-        void SSRCalc3::AAParams::setRC2(double value)
+        void AAParams::setRC2(double value)
         {
             privateRC2 = value;
         }
 
-        double SSRCalc3::AAParams::getRCN() const
+        double AAParams::getRCN() const
         {
             return privateRCN;
         }
 
-        void SSRCalc3::AAParams::setRCN(double value)
+        void AAParams::setRCN(double value)
         {
             privateRCN = value;
         }
 
-        double SSRCalc3::AAParams::getRCN2() const
+        double AAParams::getRCN2() const
         {
             return privateRCN2;
         }
 
-        void SSRCalc3::AAParams::setRCN2(double value)
+        void AAParams::setRCN2(double value)
         {
             privateRCN2 = value;
         }
 
-        double SSRCalc3::AAParams::getRCS() const
+        double AAParams::getRCS() const
         {
             return privateRCS;
         }
 
-        void SSRCalc3::AAParams::setRCS(double value)
+        void AAParams::setRCS(double value)
         {
             privateRCS = value;
         }
 
-        double SSRCalc3::AAParams::getRC1S() const
+        double AAParams::getRC1S() const
         {
             return privateRC1S;
         }
 
-        void SSRCalc3::AAParams::setRC1S(double value)
+        void AAParams::setRC1S(double value)
         {
             privateRC1S = value;
         }
 
-        double SSRCalc3::AAParams::getRC2S() const
+        double AAParams::getRC2S() const
         {
             return privateRC2S;
         }
 
-        void SSRCalc3::AAParams::setRC2S(double value)
+        void AAParams::setRC2S(double value)
         {
             privateRC2S = value;
         }
 
-        double SSRCalc3::AAParams::getRCNS() const
+        double AAParams::getRCNS() const
         {
             return privateRCNS;
         }
 
-        void SSRCalc3::AAParams::setRCNS(double value)
+        void AAParams::setRCNS(double value)
         {
             privateRCNS = value;
         }
 
-        double SSRCalc3::AAParams::getRCN2S() const
+        double AAParams::getRCN2S() const
         {
             return privateRCN2S;
         }
 
-        void SSRCalc3::AAParams::setRCN2S(double value)
+        void AAParams::setRCN2S(double value)
         {
             privateRCN2S = value;
         }
 
-        double SSRCalc3::AAParams::getUndKRH() const
+        double AAParams::getUndKRH() const
         {
             return privateUndKRH;
         }
 
-        void SSRCalc3::AAParams::setUndKRH(double value)
+        void AAParams::setUndKRH(double value)
         {
             privateUndKRH = value;
         }
 
-        double SSRCalc3::AAParams::getAMASS() const
+        double AAParams::getAMASS() const
         {
             return privateAMASS;
         }
 
-        void SSRCalc3::AAParams::setAMASS(double value)
+        void AAParams::setAMASS(double value)
         {
             privateAMASS = value;
         }
 
-        double SSRCalc3::AAParams::getCT() const
+        double AAParams::getCT() const
         {
             return privateCT;
         }
 
-        void SSRCalc3::AAParams::setCT(double value)
+        void AAParams::setCT(double value)
         {
             privateCT = value;
         }
 
-        double SSRCalc3::AAParams::getNT() const
+        double AAParams::getNT() const
         {
             return privateNT;
         }
 
-        void SSRCalc3::AAParams::setNT(double value)
+        void AAParams::setNT(double value)
         {
             privateNT = value;
         }
 
-        double SSRCalc3::AAParams::getPK() const
+        double AAParams::getPK() const
         {
             return privatePK;
         }
 
-        void SSRCalc3::AAParams::setPK(double value)
+        void AAParams::setPK(double value)
         {
             privatePK = value;
         }
 
-        double SSRCalc3::AAParams::getH2BASCORE() const
+        double AAParams::getH2BASCORE() const
         {
             return privateH2BASCORE;
         }
 
-        void SSRCalc3::AAParams::setH2BASCORE(double value)
+        void AAParams::setH2BASCORE(double value)
         {
             privateH2BASCORE = value;
         }
 
-        double SSRCalc3::AAParams::getH2CMULT() const
+        double AAParams::getH2CMULT() const
         {
             return privateH2CMULT;
         }
 
-        void SSRCalc3::AAParams::setH2CMULT(double value)
+        void AAParams::setH2CMULT(double value)
         {
             privateH2CMULT = value;
         }
 
-        SSRCalc3::AAParams::AAParams(double rc, double rc1, double rc2, double rcn, double rcn2, double rcs, double rc1s, double rc2s, double rcns, double rcn2s, double undkrh, double amass, double ct, double nt, double pk, double h2bascore, double h2cmult)
+        AAParams::AAParams(double rc, double rc1, double rc2, double rcn, double rcn2, double rcs,
+                           double rc1s, double rc2s, double rcns, double rcn2s, double undkrh, double amass,
+                           double ct, double nt, double pk, double h2bascore, double h2cmult)
         {
             setRC(rc);
             setRC1(rc1);
@@ -1576,8 +1575,9 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             setH2CMULT(h2cmult);
         }
 
-        std::string HelpersLocal::ReplaceAAs(std::vector<char> &s, const std::string &aas, const std::string &newValue)
+        std::string HelpersLocal::ReplaceAAs(std::string &stemp, const std::string &aas, const std::string &newValue)
         {
+            std::vector<char> s (stemp.begin(), stemp.end() );
             StringBuilder *sb = new StringBuilder();
             bool allAAs = (aas == "A-Z"); // Not L10N
             for (auto c : s)
@@ -1600,8 +1600,9 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             return sb->toString();
         }
 
-        bool HelpersLocal::ContainsAA(std::vector<char> &s, const std::string &aas)
+        bool HelpersLocal::ContainsAA(std::string  &stemp, const std::string &aas)
         {
+            std::vector<char> s (stemp.begin(), stemp.end() );
             for (auto c : s)
             {
                 if (aas.find(c) != std::string::npos)
@@ -1612,16 +1613,19 @@ SSRCalc3::StaticConstructor SSRCalc3::staticConstructor;
             return false;
         }
 
-        std::string HelpersLocal::Backwards(std::vector<char> &s)
+        std::string HelpersLocal::Backwards(std::string &stemp)
         {
+            std::vector<char> s (stemp.begin(), stemp.end() );            
             StringBuilder *sb = new StringBuilder();
-            for (char c : std::reverse(s.begin(), s.end()))
+            std::reverse(s.begin(), s.end());
+            for (char c : s)
             {
                 sb->append(c);
             }
 
+            std::string st = sb->toString();
             delete sb;
-            return sb->toString();
+            return st;
         }
     }
 }

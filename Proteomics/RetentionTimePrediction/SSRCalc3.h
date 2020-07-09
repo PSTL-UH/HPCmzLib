@@ -6,19 +6,20 @@
 #include <algorithm>
 #include <cmath>
 #include <cctype>
+#include <regex>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace Proteomics { namespace RetentionTimePrediction { class CLUSTCOMB_List; } }
-namespace Proteomics { namespace RetentionTimePrediction { class AAParams; } }
+//namespace Proteomics { namespace RetentionTimePrediction { class CLUSTCOMB_List; } }
+//namespace Proteomics { namespace RetentionTimePrediction { class AAParams; } }  
 
+#include "../ProteolyticDigestion/PeptideWithSetModifications.h"
 using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
 {
     namespace RetentionTimePrediction
-    {
-        /**
+    {        
+        /*
         /*
         /* reference, O. V. Krokhin, R. Craig, V. Spicer, W. Ens, K. G. Standing, R. C. Beavis, J. A. Wilkins
         /* An improved model for prediction of retention times of tryptic peptides in ion-pair reverse-phase HPLC:
@@ -33,21 +34,98 @@ namespace Proteomics
         /* Copyright (c) 2005 John Wilkins
         /* Sequence Specific Retention Calculator
         /* Authors: Oleg Krokhin, Vic Spicer, John Cortens
-         */
-
+        */
+        
         /* Translated from perl to C, Ted Holzman FHCRC, 6/2006  */
         /* Retranslated from C to Java, Ted Holzman FHCRC 7/2006 */
         /* Translated from Java to C#, Brendan MacLean UW 10/2008 */
+        /* Translated from C# to C++, Edgar Gabriel, UH, 07/2020 */
         /* NB: This is a version 0.1 direct translation.
         /*     An attempt has been made to keep function names, variable names, and algorithms
         /*     as close as possible to the original perl.
-         */
+        */
 
-
+        //class CLUSTCOMB_List final : public std::vector<KeyValuePair<Regex*, double>*>
+        class CLUSTCOMB_List
+        {
+        public:
+            std::vector<std::pair<std::regex, double>> RegexVec;
+            
+            void Add(const std::string &pattern, double value);
+        };
+        
+        class AAParams
+        {
+        private:
+            double privateRC = 0;
+            double privateRC1 = 0;
+            double privateRC2 = 0;
+            double privateRCN = 0;
+            double privateRCN2 = 0;
+            double privateRCS = 0;
+            double privateRC1S = 0;
+            double privateRC2S = 0;
+            double privateRCNS = 0;
+            double privateRCN2S = 0;
+            double privateUndKRH = 0;
+            double privateAMASS = 0;
+            double privateCT = 0;
+            double privateNT = 0;
+            double privatePK = 0;
+            double privateH2BASCORE = 0;
+            double privateH2CMULT = 0;
+            
+            //Retention Factors
+        public:
+            double getRC() const;
+            void setRC(double value);
+            double getRC1() const;
+            void setRC1(double value);
+            double getRC2() const;
+            void setRC2(double value);
+            double getRCN() const;
+            void setRCN(double value);
+            double getRCN2() const;
+            void setRCN2(double value);
+            //Short peptide retention factors
+            double getRCS() const;
+            void setRCS(double value);
+            double getRC1S() const;
+            void setRC1S(double value);
+            double getRC2S() const;
+            void setRC2S(double value);
+            double getRCNS() const;
+            void setRCNS(double value);
+            double getRCN2S() const;
+            void setRCN2S(double value);
+            
+            double getUndKRH() const;
+            void setUndKRH(double value);
+            double getAMASS() const;
+            void setAMASS(double value);
+            //isoelectric factors
+            double getCT() const;
+            void setCT(double value);
+            double getNT() const;
+            void setNT(double value);
+            double getPK() const;
+            void setPK(double value);
+            //helicity2 bascore & connector multiplier
+            double getH2BASCORE() const;
+            void setH2BASCORE(double value);
+            double getH2CMULT() const;
+            void setH2CMULT(double value);
+            
+            AAParams(double rc, double rc1, double rc2, double rcn, double rcn2, double rcs, double rc1s,
+                     double rc2s, double rcns, double rcn2s, double undkrh, double amass, double ct, double nt,
+                     double pk, double h2bascore, double h2cmult);
+        };
+        
         // ReSharper disable InconsistentNaming
         // ReSharper disable CharImplicitlyConvertedToNumeric
         class SSRCalc3
         {
+            
         private:
             std::string privateName;
             int privateNOELECTRIC = 0;
@@ -57,12 +135,14 @@ namespace Proteomics
             int privateNOHELIX1 = 0;
             int privateNOHELIX2 = 0;
             int privateNOEHEL = 0;
-
+            
             /* Lookup table data.  These are translations of the .h table in C which is a    */
             /* translation of the ReadParmFile perl routine.  This does not read a parameter */
             /* file; it makes static initializers for the parameter data.                    */
 
         public:
+            std::vector<AAParams*> AAPARAMS = std::vector<AAParams*>(128);
+
             static const std::string VERSION; // Not L10N
 
             std::vector<PeptideWithSetModifications*> ChooseRegressionPeptides(std::vector<PeptideWithSetModifications*> &peptides, int &minCount);
@@ -74,34 +154,23 @@ namespace Proteomics
             //    return null;
             //}
 
+
         private:
+            
             static CLUSTCOMB_List *const CLUSTCOMB;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, double> HlxScore4 = new Dictionary<string, double>();
             static std::unordered_map<std::string, double> HlxScore4;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, double> HlxScore5 = new Dictionary<string, double>();
             static std::unordered_map<std::string, double> HlxScore5;
-//C# TO C++ CONVERTER WARNING: C++ has no equivalent to a 'readonly' collection which allows modification of internal state:
-//ORIGINAL LINE: private static readonly Dictionary<string, double> HlxScore6 = new Dictionary<string, double>();
             static std::unordered_map<std::string, double> HlxScore6;
-            static const std::vector<int> EMap;
+            static std::vector<int> EMap;
 
-        private:
-            class CLUSTCOMB_List final : public std::vector<KeyValuePair<Regex*, double>*>
-            {
-            public:
-                void Add(const std::string &pattern, double value);
-            };
-
-            private:
-                class StaticConstructor
+         private:
+            class StaticConstructor
                 {
                 public:
                     StaticConstructor();
                 };
 
-            private:
+         private:
                 static SSRCalc3::StaticConstructor staticConstructor;
 
 
@@ -112,13 +181,12 @@ namespace Proteomics
                 A100
             };
 
-        public:
-            std::vector<AAParams*> AAPARAMS = std::vector<AAParams*>(128);
 
+        public:
             SSRCalc3(const std::string &name, Column column);
 
-                std::string getName() const;
-                void setName(const std::string &value);
+            std::string getName() const;
+            void setName(const std::string &value);
 
         private:
             void A300Column();
@@ -133,22 +201,22 @@ namespace Proteomics
             // Translator2 note:  To avoid warnings on unreachable code, these were changed
             //    to auto-implemented properties, which means they can now be set.
 
-            public:
-                int getNOELECTRIC() const;
-                void setNOELECTRIC(int value);
-                int getNOCLUSTER() const;
-                void setNOCLUSTER(int value);
-                int getNODIGEST() const;
-                void setNODIGEST(int value);
-                int getNOSMALL() const;
-                void setNOSMALL(int value);
-                int getNOHELIX1() const;
-                void setNOHELIX1(int value);
-                int getNOHELIX2() const;
-                void setNOHELIX2(int value);
-                int getNOEHEL() const;
-                void setNOEHEL(int value);
-
+        public:
+            int getNOELECTRIC() const;
+            void setNOELECTRIC(int value);
+            int getNOCLUSTER() const;
+            void setNOCLUSTER(int value);
+            int getNODIGEST() const;
+            void setNODIGEST(int value);
+            int getNOSMALL() const;
+            void setNOSMALL(int value);
+            int getNOHELIX1() const;
+            void setNOHELIX1(int value);
+            int getNOHELIX2() const;
+            void setNOHELIX2(int value);
+            int getNOEHEL() const;
+            void setNOEHEL(int value);
+            
             //Translator1 note:  This constant controls whether "bugs" in the original
             //perl code are maintained.  A conversation with the developers has revealed
             //that the constant data in the static initialization blocks has been "tuned"
@@ -263,71 +331,7 @@ namespace Proteomics
 
             double Helectric(const std::string &sq);
 
-        public:
-            class AAParams
-            {
-            private:
-                double privateRC = 0;
-                double privateRC1 = 0;
-                double privateRC2 = 0;
-                double privateRCN = 0;
-                double privateRCN2 = 0;
-                double privateRCS = 0;
-                double privateRC1S = 0;
-                double privateRC2S = 0;
-                double privateRCNS = 0;
-                double privateRCN2S = 0;
-                double privateUndKRH = 0;
-                double privateAMASS = 0;
-                double privateCT = 0;
-                double privateNT = 0;
-                double privatePK = 0;
-                double privateH2BASCORE = 0;
-                double privateH2CMULT = 0;
-
-                //Retention Factors
-                public:
-                    double getRC() const;
-                    void setRC(double value);
-                    double getRC1() const;
-                    void setRC1(double value);
-                    double getRC2() const;
-                    void setRC2(double value);
-                    double getRCN() const;
-                    void setRCN(double value);
-                    double getRCN2() const;
-                    void setRCN2(double value);
-                //Short peptide retention factors
-                    double getRCS() const;
-                    void setRCS(double value);
-                    double getRC1S() const;
-                    void setRC1S(double value);
-                    double getRC2S() const;
-                    void setRC2S(double value);
-                    double getRCNS() const;
-                    void setRCNS(double value);
-                    double getRCN2S() const;
-                    void setRCN2S(double value);
-
-                    double getUndKRH() const;
-                    void setUndKRH(double value);
-                    double getAMASS() const;
-                    void setAMASS(double value);
-                                                           //isoelectric factors
-                    double getCT() const;
-                    void setCT(double value);
-                    double getNT() const;
-                    void setNT(double value);
-                    double getPK() const;
-                    void setPK(double value);
-                //helicity2 bascore & connector multiplier
-                    double getH2BASCORE() const;
-                    void setH2BASCORE(double value);
-                    double getH2CMULT() const;
-                    void setH2CMULT(double value);
-
-                AAParams(double rc, double rc1, double rc2, double rcn, double rcn2, double rcs, double rc1s, double rc2s, double rcns, double rcn2s, double undkrh, double amass, double ct, double nt, double pk, double h2bascore, double h2cmult);
-            };
+            public:
             /*
              * Translator2 note: The code for the Isoparams array was found in
              *      the Java version, but never used.  Refering to the Perl
@@ -385,7 +389,7 @@ namespace Proteomics
             }
             */
         };
-
+        
         class HelpersLocal final
         {
             /// <summary>
@@ -396,7 +400,7 @@ namespace Proteomics
             /// <param name="newValue">The value to use as a replacement</param>
             /// <returns>Modified string with specified AAs replaced</returns>
         public:
-            static std::string ReplaceAAs(std::vector<char> &s, const std::string &aas, const std::string &newValue);
+            static std::string ReplaceAAs(std::string &s, const std::string &aas, const std::string &newValue);
 
             /// <summary>
             /// Inspects a sequence of amino acids, and returns true if it contains
@@ -405,9 +409,9 @@ namespace Proteomics
             /// <param name="s">Amino acid sequence</param>
             /// <param name="aas">List of characters to search for</param>
             /// <returns>True if any of the amino acid characters are found</returns>
-            static bool ContainsAA(std::vector<char> &s, const std::string &aas);
+            static bool ContainsAA(std::string &s, const std::string &aas);
 
-            static std::string Backwards(std::vector<char> &s);
+            static std::string Backwards(std::string &s);
         };
         // ReSharper restore CharImplicitlyConvertedToNumeric
         // ReSharper restore InconsistentNaming

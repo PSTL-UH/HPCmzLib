@@ -16,8 +16,7 @@ all:
 	cd Protein ; $(MAKE) ; cd ..
 	cd ProteolyticDigestion ; $(MAKE) ; cd ..
 	cd Fragmentation ; $(MAKE) ; cd ..
-
-#	cd RetentionTimePrediction ; $(MAKE) ; cd ..
+	cd RetentionTimePrediction ; $(MAKE) ; cd ..
 
 clean:
 	cd AminoAcidPolymer ; $(MAKE) clean; cd ..
@@ -25,5 +24,4 @@ clean:
 	cd Modifications ; $(MAKE) clean; cd ..
 	cd Protein ; $(MAKE) clean; cd ..
 	cd ProteolyticDigestion ; $(MAKE) clean; cd ..
-
-#	cd RetentionTimePrediction ; $(MAKE) clean; cd ..
+	cd RetentionTimePrediction ; $(MAKE) clean; cd ..
