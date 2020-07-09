@@ -5051,6 +5051,15 @@ fi
 
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "cereal/cereal.hpp" "ac_cv_header_cereal_cereal_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_cereal_cereal_hpp" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find cereal.hpp" "$LINENO" 5
+fi
+
+
+
 # Checks for typedefs, structures, and compiler characteristics.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }

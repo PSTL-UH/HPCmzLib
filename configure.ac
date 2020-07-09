@@ -48,6 +48,10 @@ AC_CHECK_HEADER([tinyxml2.h],
 [],
 [AC_MSG_ERROR(Couldn't find tinyxml2.h)])
 
+AC_CHECK_HEADER([cereal/cereal.hpp],
+[],
+[AC_MSG_ERROR(Couldn't find cereal.hpp)])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
