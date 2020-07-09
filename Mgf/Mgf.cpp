@@ -9,6 +9,9 @@
 #include "../MassSpectrometry/Enums/Polarity.h"
 #include "../MzLibUtil/MzRange.h"
 
+#include <iostream>
+#include <fstream>
+
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
 namespace IO
@@ -29,141 +32,151 @@ namespace IO
         {
             if (!FileSystem::fileExists(filePath))
             {
-                throw FileNotFoundException();
+                //throw FileNotFoundException();
+                throw std::runtime_error("Mgf::LoadAllStaticData:: Could not open file" + filePath);
             }
 
             std::vector<MsDataScan*> scans;
             std::unordered_set<int> checkForDuplicateScans;
 
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+#ifdef ORIG
+            FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);                
+            BufferedStream bs = BufferedStream(fs);
+            StreamReader sr = StreamReader(bs);
+#endif
+            std::ifstream sr ( filePath );
+
+            std::string s;
+
+            //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
+            while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
             {
-                FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (BufferedStream bs = new BufferedStream(fs))
+                //do nothing with the first few scans
+            }
+            bool readingPeaks = false;
+            std::vector<double> mzs;
+            std::vector<double> intensities;
+            double precursorMz = 0;
+            int charge = 2;
+            int scanNumber = 0;
+            int oldScanNumber = 0;
+            double rtInMinutes = 0;
+            
+            //while ((s = sr.ReadLine()) != "")
+            while (getline(sr, s))
+            {
+                if (s == "END IONS")
                 {
-                    BufferedStream bs = BufferedStream(fs);
-//C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-//ORIGINAL LINE: using (StreamReader sr = new StreamReader(bs))
+                    if (!std::get<1>(checkForDuplicateScans.insert(scanNumber))) //returns false if the scan already exists
                     {
-                        StreamReader sr = StreamReader(bs);
-                        std::string s;
-                        while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
+                        throw MzLibException("Scan number " + std::to_string(scanNumber) + " appeared multiple times in " + filePath
+                                             + ", which is not allowed because we assume all scan numbers are unique.");
+                    }
+                    
+                    readingPeaks = false;
+                    double intensities_sum = 0.0;
+                    for ( auto p: intensities  ) {
+                        intensities_sum += p;
+                    }
+                    
+                    MzSpectrum *spectrum = new MzSpectrum(mzs, intensities, false);
+                    auto tempVar = new MsDataScan (spectrum, scanNumber, 2, true, charge > 0 ? Polarity::Positive:
+                                                   Polarity::Negative, rtInMinutes, new MzRange(mzs[0], mzs[mzs.size() - 1]), "",
+                                                   MZAnalyzerType::Unknown, intensities_sum, std::make_optional(0),
+                                                   std::vector<std::vector<double>>(), "", std::make_optional(precursorMz),
+                                                   std::make_optional(charge), std::nullopt, std::make_optional(precursorMz),
+                                                   std::nullopt, std::make_optional(DissociationType::Unknown), std::nullopt,
+                                                   std::make_optional(precursorMz));
+                    scans.push_back(tempVar);
+                    mzs.clear();
+                    intensities.clear();
+                    oldScanNumber = scanNumber;
+                    charge = 2; //default when unknown
+                    
+                    //skip the next two lines which are "" and "BEGIN IONS"
+                    //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
+                    while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
+                    {
+                        //do nothing
+                    }
+                    
+                    //C# TO C++ CONVERTER TODO TASK: A 'delete spectrum' statement was not added since spectrum was
+                    //passed to a method or constructor. Handle memory management manually.
+                }
+                else
+                {
+                    if (readingPeaks)
+                    {
+                        std::vector<std::string> sArray = StringHelper::split(s, ' ');
+                        mzs.push_back(std::stod(sArray[0]));
+                        intensities.push_back(std::stod(sArray[1]));
+                    }
+                    else
+                    {
+                        std::vector<std::string> sArray = StringHelper::split(s, '=');
+                        if (sArray.size() == 1)
                         {
-                            //do nothing with the first few scans
-                        }
-                        bool readingPeaks = false;
-                        std::vector<double> mzs;
-                        std::vector<double> intensities;
-                        double precursorMz = 0;
-                        int charge = 2;
-                        int scanNumber = 0;
-                        int oldScanNumber = 0;
-                        double rtInMinutes = 0;
-
-                        while ((s = sr.ReadLine()) != "")
-                        {
-                            if (s == "END IONS")
+                            readingPeaks = true;
+                            sArray = StringHelper::split(s, ' ');
+                            mzs.push_back(std::stod(sArray[0]));
+                            intensities.push_back(std::stod(sArray[1]));
+                            
+                            if (oldScanNumber == scanNumber) //if there's no recorded scan number, simply index them.
                             {
-                                if (!checkForDuplicateScans.insert(scanNumber)) //returns false if the scan already exists
+                                scanNumber++;
+                            }
+                        }
+                        else
+                        {
+                            if (sArray[0] == "PEPMASS")
+                            {
+                                sArray = StringHelper::split(sArray[1], ' ');
+                                precursorMz = std::stod(sArray[0]);
+                                
+                            }
+                            else if (sArray[0] == "CHARGE")
+                            {
+                                std::string entry = sArray[1];
+                                char ctemp = '-';
+                                charge = std::stoi(entry.substr(0, entry.length() - 1));
+                                if (entry[entry.length() - 1] == ctemp )
                                 {
-                                    throw MzLibException("Scan number " + std::to_string(scanNumber) + " appeared multiple times in " + filePath + ", which is not allowed because we assume all scan numbers are unique.");
+                                    charge *= -1;
                                 }
-
-                                readingPeaks = false;
-                                MzSpectrum *spectrum = new MzSpectrum(mzs.ToArray(), intensities.ToArray(), false);
-                                MsDataScan tempVar(spectrum, scanNumber, 2, true, charge > 0 ? Polarity::Positive: Polarity::Negative, rtInMinutes, new MzRange(mzs[0], mzs[mzs.size() - 1]), "", MZAnalyzerType::Unknown, intensities.Sum(), std::make_optional(0), std::vector<std::vector<double>>(), "", std::make_optional(precursorMz), std::make_optional(charge), std::nullopt, std::make_optional(precursorMz), std::nullopt, std::make_optional(DissociationType::Unknown), std::nullopt, std::make_optional(precursorMz));
-                                scans.push_back(&tempVar);
-                                mzs = std::vector<double>();
-                                intensities = std::vector<double>();
-                                oldScanNumber = scanNumber;
-                                charge = 2; //default when unknown
-
-                                //skip the next two lines which are "" and "BEGIN IONS"
-                                while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
-                                {
-                                    //do nothing
-                                }
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete spectrum' statement was not added since spectrum was passed to a method or constructor. Handle memory management manually.
+                                
+                            }
+                            else if (sArray[0] == "SCANS")
+                            {
+                                scanNumber = std::stoi(sArray[1]);
+                                
+                            }
+                            else if (sArray[0] == "RTINSECONDS")
+                            {
+                                rtInMinutes = std::stod(sArray[sArray.size() - 1]) / 60.0;
+                                
                             }
                             else
                             {
-                                if (readingPeaks)
-                                {
-                                    std::vector<std::string> sArray = StringHelper::split(s, ' ');
-                                    mzs.push_back(std::stod(sArray[0]));
-                                    intensities.push_back(std::stod(sArray[1]));
-                                }
-                                else
-                                {
-                                    std::vector<std::string> sArray = StringHelper::split(s, '=');
-                                    if (sArray.size() == 1)
-                                    {
-                                        readingPeaks = true;
-                                        sArray = StringHelper::split(s, ' ');
-                                        mzs.push_back(std::stod(sArray[0]));
-                                        intensities.push_back(std::stod(sArray[1]));
-
-                                        if (oldScanNumber == scanNumber) //if there's no recorded scan number, simply index them.
-                                        {
-                                            scanNumber++;
-                                        }
-                                    }
-                                    else
-                                    {
-//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
-//                                        switch (sArray[0])
-//ORIGINAL LINE: case "PEPMASS":
-                                        if (sArray[0] == "PEPMASS")
-                                        {
-                                                sArray = StringHelper::split(sArray[1], ' ');
-                                                precursorMz = std::stod(sArray[0]);
-
-                                        }
-//ORIGINAL LINE: case "CHARGE":
-                                        else if (sArray[0] == "CHARGE")
-                                        {
-                                                std::string entry = sArray[1];
-                                                charge = std::stoi(entry.substr(0, entry.length() - 1));
-                                                if (entry[entry.length() - 1].Equals("-"))
-                                                {
-                                                    charge *= -1;
-                                                }
-
-                                        }
-//ORIGINAL LINE: case "SCANS":
-                                        else if (sArray[0] == "SCANS")
-                                        {
-                                                scanNumber = std::stoi(sArray[1]);
-
-                                        }
-//ORIGINAL LINE: case "RTINSECONDS":
-                                        else if (sArray[0] == "RTINSECONDS")
-                                        {
-                                                rtInMinutes = std::stod(sArray[sArray.size() - 1]) / 60.0;
-
-                                        }
-                                        else
-                                        {
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
                 }
-            }
-
+            }                                    
+                        
             MassSpectrometry::SourceFile *sourceFile = new SourceFile("no nativeID format", "mgf format", "", "", "");
 
-            delete sourceFile;
-            return new Mgf(scans.OrderBy([&] (std::any x)
-            {
-                x::OneBasedScanNumber;
+#ifdef ORIG
+            return = new Mgf(scans.OrderBy([&] (std::any x)  {
+                        x::OneBasedScanNumber;
             })->ToArray(), sourceFile);
-
-//C# TO C++ CONVERTER TODO TASK: A 'delete sourceFile' statement was not added since sourceFile was passed to a method or constructor. Handle memory management manually.
+#endif
+            std::sort (scans.begin(), scans.end(), [&] (auto *l, auto *r) {
+                    return l->getOneBasedScanNumber() < r->getOneBasedScanNumber();
+                });
+            auto thismgf = new Mgf(scans, sourceFile );
+            return  thismgf;
+            //C# TO C++ CONVERTER TODO TASK: A 'delete sourceFile' statement was not added since sourceFile
+            //was passed to a method or constructor. Handle memory management manually.
         }
 
         MsDataScan *Mgf::GetOneBasedScan(int scanNumber)

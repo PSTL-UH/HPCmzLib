@@ -32,6 +32,7 @@ all:
 	cd FlashLFQ ; $(MAKE) ; cd ..
 	cd pepXML ; $(MAKE) ; cd ..
 	cd MzIdentML ; $(MAKE) ; cd ..
+	cd Mgf ; $(MAKE) ; cd ..
 
 $(MZLIB_LIB): $(HEADER) $(OBJ) 
 	$(AR) $(AR_FLAGS) $(MZLIB_LIB_DIR)/$(MZLIB_LIB) $(OBJ)
@@ -51,6 +52,7 @@ clean:
 	cd FlashLFQ ; $(MAKE) clean ; cd ..
 	cd pepXML ; $(MAKE) clean ; cd ..
 	cd MzIdentML ; $(MAKE) clean ; cd ..
+	cd Mgf ; $(MAKE) clean ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(MZLIB_LIB) ; cd ..
 	cd $(MZLIB_LIB_DIR) ; rm -f $(FLASHLFQ_LIB) ; cd ..
 	rm -rf *.o *~

@@ -9,12 +9,10 @@
 #include "stringhelper.h"
 #include "tangible_filesystem.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class MsDataScan; }
-namespace MassSpectrometry { class SourceFile; }
-namespace MassSpectrometry { class FilteringParams; }
-
+#include "../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
+
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
 
 namespace IO
