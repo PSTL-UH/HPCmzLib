@@ -46,14 +46,14 @@ private:
     std::vector<std::string> tagStack;
     std::ofstream outFile;
     std::string xmlEncode="utf-8";
-    int current_indent;
+    int current_indent=0;
     int increment_indent=2;
-    bool startDocument;
-    bool docWrite;
-    bool elementOpen;
-    bool stringWritten;
-    bool needNewLine;
-    bool doIndent;
+    bool startDocument=false;
+    bool docWrite=false;
+    bool elementOpen=false;
+    bool stringWritten=false;
+    bool needNewLine=true;
+    bool doIndent=true;
     
 };
 
