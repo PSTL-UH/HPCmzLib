@@ -14,20 +14,10 @@
 #include "stringhelper.h"
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Chemistry { class IHasChemicalFormula; }
-//namespace Chemistry { class IHasMass; }
-//namespace Chemistry { class Isotope; }
-//namespace Chemistry { class ChemicalFormula; }
-
-//namespace Proteomics { class Residue; }
 #include "Residue.h"
 namespace Proteomics { namespace AminoAcidPolymer { class Fragment; } }
-//namespace Proteomics { class DigestionPointAndLength; }
 #include "DigestionPoint.h"
-//namespace Proteomics { class IProtease; }
 #include "IProtease.h"
-//namespace Proteomics { class OldSchoolModification; }
 #include "OldSchoolModification.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
@@ -193,7 +183,8 @@ namespace Proteomics
             /// <param name="includeTermini">Include the N and C terminus (-1 and Length + 1)</param>
             /// <returns>A collection of all the sites where the proteases would cleave</returns>
             static std::vector<int> GetCleavageIndexes(const std::string &sequence,
-                                                       std::vector<IProtease*> &proteases, bool includeTermini);
+                                                       std::vector<IProtease*> &proteases,
+                                                       bool includeTermini);
             
             static std::vector<std::string> Digest(const std::string &sequence, std::vector<IProtease*> &proteases,
                                                    int maxMissedCleavages, int minLength, int maxLength,

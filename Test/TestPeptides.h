@@ -51,8 +51,6 @@ namespace Test
 {
     class TestPeptides final
     {
-    private:
-
     public:
 
         static void PeptideTestReal();
@@ -194,7 +192,8 @@ namespace Test
         static void BadSeqeunce();
 
         static void TestNonSpecificOverride();
-
+    };
+    
 #ifdef LATER
     private:
         class OkComparer : public IEqualityComparer<DigestionPointAndLength*>
@@ -205,6 +204,7 @@ namespace Test
             int GetHashCode(DigestionPointAndLength *obj) override;
         };
     };
+#endif
 
     class TestProtease : public IProtease
     {
@@ -216,6 +216,5 @@ namespace Test
         int MissedCleavages(AminoAcidPolymer *aminoAcidSequence) override;
 
         int MissedCleavages(const std::string &sequence) override;
-#endif
     };
 }

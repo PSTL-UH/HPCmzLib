@@ -5,8 +5,6 @@
 #include <any>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { namespace Fragmentation { class NeutralTerminusFragment; } }
 #include "NeutralTerminusFragment.h"
 
 namespace Proteomics

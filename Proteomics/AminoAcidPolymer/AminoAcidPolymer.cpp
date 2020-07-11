@@ -185,33 +185,32 @@ namespace Proteomics {
         // it requires however for the two arrays to be pre-sorted, which I am not sure whether it
         // is given here. So I prefer to implement it manually.
         // Step 1: insert all elements of aFrags that are not in bFrags
-        std::for_each(aFrags.begin(), aFrags.end(), [&] (Proteomics::AminoAcidPolymer::Fragment *a) {
-                bool found = false;
-                std::vector<Proteomics::AminoAcidPolymer::Fragment*>::iterator it;
-                for ( it = bFrags.begin(); it != bFrags.end(); ++it) {
-                    if ( a == *it ) {
-                        found = true;
-                        break;
-                    }
+        for ( auto a: aFrags ) {
+            bool found = false;
+            for ( auto b: bFrags ) {
+                if ( a->Equals(b) ) {
+                    found = true;
+                    break;
                 }
-                if ( found == false ) {
-                    cFrags.push_back( a);
-                }                    
-            });
+            }
+            if (!found ) {
+                cFrags.push_back(a);
+            }
+        }
+        
         // Step 2: insert all elements of bFrags that are not in aFrags
-        std::for_each(bFrags.begin(), bFrags.end(), [&] (Proteomics::AminoAcidPolymer::Fragment *b) {
-                bool found = false;
-                std::vector<Proteomics::AminoAcidPolymer::Fragment*>::iterator it;
-                for ( it = aFrags.begin(); it != aFrags.end(); ++it) {
-                    if ( b == *it ) {
-                        found = true;
-                        break;
-                    }
+        for ( auto b: bFrags ) {
+            bool found = false;
+            for ( auto a: aFrags ) {
+                if ( b->Equals(a) ) {
+                    found = true;
+                    break;
                 }
-                if ( found == false ) {
-                    cFrags.push_back( b);
-                }                    
-            });
+            }
+            if (!found ) {
+                cFrags.push_back(b);
+            }
+        }
         
         
         return cFrags;

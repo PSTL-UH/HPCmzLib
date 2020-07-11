@@ -1258,7 +1258,8 @@ namespace Test
     {
         return obj->getLength() + obj->getIndex() * 256;
     }
-
+#endif
+    
     std::vector<int> TestProtease::GetDigestionSites(AminoAcidPolymer *aminoAcidSequence)
     {
         return GetDigestionSites(aminoAcidSequence->getBaseSequence());
@@ -1266,10 +1267,8 @@ namespace Test
 
     std::vector<int> TestProtease::GetDigestionSites(const std::string &aminoAcidSequence)
     {
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-        yield return 4;
-//C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
-        yield return 5;
+        std::vector<int> res = {4,5};
+        return res;
     }
 
     int TestProtease::MissedCleavages(AminoAcidPolymer *aminoAcidSequence)
@@ -1281,5 +1280,4 @@ namespace Test
     {
         throw NotImplementedException();
     }
-#endif
 }

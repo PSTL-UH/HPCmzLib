@@ -27,18 +27,23 @@ namespace Proteomics
             if (NeutralLoss != 0)
             {
                 sb->append("-");
-                //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
                 sb->append(std::to_string(NeutralLoss));
             }
 
-            //delete sb;
-            return sb->toString();
+            std::string s = sb->toString();
+            delete sb;
+            return s;
         }
 
         std::string Product::ToString()
         {
-            return std::to_string(static_cast<int>(productType)) + "" + std::to_string(TerminusFragment->FragmentNumber)
-                + ";" + std::to_string(NeutralMass) + "-" + std::to_string(NeutralLoss);
+            ProductType pT = productType;
+            std::ostringstream out;
+            out.precision(11);
+            out << std::fixed << TerminusFragment->FragmentNumber;
+            
+            return ProductTypeToString(pT) + out.str()
+                + ";" + std::to_string(NeutralMass) + "-" + std::to_string(static_cast<int>(NeutralLoss));
         }
 
         bool Product::Equals(Product *other)
