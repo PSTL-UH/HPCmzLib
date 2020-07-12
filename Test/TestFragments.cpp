@@ -96,7 +96,6 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Test_GetTheoreticalFragments_cTerminalModifiedPeptide_NeutralLoss " << std::endl;    
     Test::TestFragments::Test_GetTheoreticalFragments_cTerminalModifiedPeptide_NeutralLoss();
     
-#ifdef LATER
     std::cout << ++i << ". Test_GetTheoreticalFragments_internallyModifiedPeptide_NeutralLoss " << std::endl;    
     Test::TestFragments::Test_GetTheoreticalFragments_internallyModifiedPeptide_NeutralLoss();
     
@@ -121,6 +120,7 @@ int main ( int argc, char **argv )
     std::cout << ++i << ". Test_Fragment_MolecularIon_NeutralLoss_unmatchedDissociationType " << std::endl;    
     Test::TestFragments::Test_Fragment_MolecularIon_NeutralLoss_unmatchedDissociationType();
     
+#ifdef LATER
     std::cout << ++i << ". Test_NeutralMassShiftFromProductType " << std::endl;    
     Test::TestFragments::Test_NeutralMassShiftFromProductType();
     
@@ -135,13 +135,15 @@ int main ( int argc, char **argv )
     
     std::cout << ++i << ". Test_TerminusSpecificProductTypesFromPeptideWithSetMods " << std::endl;    
     Test::TestFragments::Test_TerminusSpecificProductTypesFromPeptideWithSetMods();
+#endif
     
     std::cout << ++i << ". Test_MatchedFragmentIonToString " << std::endl;    
     Test::TestFragments::Test_MatchedFragmentIonToString();
     
     std::cout << ++i << ". Test_CID_Fragmentation_No_Unmodified_B1_ions " << std::endl;    
     Test::TestFragments::Test_CID_Fragmentation_No_Unmodified_B1_ions();
-    
+
+#ifdef LATER
     std::cout << ++i << ". Test_ETD_ECD_EThcD_Fragmentation_No_FragmentsAtProline" << std::endl;    
     Test::TestFragments::Test_ETD_ECD_EThcD_Fragmentation_No_FragmentsAtProline(DissociationType dissociationType, int fragmentCount);
     
@@ -698,7 +700,6 @@ namespace Test
             }
         }
         std::unordered_set<int> expectedCTerminalMasses = {119, 328};
-
         Assert::IsTrue(expectedCTerminalMasses == foundCTerminalMasses);
         std::vector<std::string> expectedCTerminalMassesLabels = {"y1;119.05824315-0", "y2;328.06716713-0"};
         Assert::IsTrue(expectedCTerminalMassesLabels == cTerminalMassesLabels);
@@ -831,7 +832,7 @@ namespace Test
         delete p;
     }
 
-#ifdef LATER
+
     void TestFragments::Test_GetTheoreticalFragments_internallyModifiedPeptide_NeutralLoss()
     {
         Protein *p = new Protein("PET", "accession");
@@ -858,43 +859,32 @@ namespace Test
         auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
 
         //evaluate N-terminal masses
-        auto n = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        }).ToList();
+        std::unordered_set<int> foundNTerminalMasses;
+        std::set<std::string> nTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                foundNTerminalMasses.emplace (static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                nTerminalMassesLabels.emplace(f->ToString());
+            }
+        }
+
         std::unordered_set<int> expectedNTerminalMasses = {97, 306, 208};
-        Assert::IsTrue(expectedNTerminalMasses == n.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        })));
-        auto nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedNTerminalMassesLabels = {"b1;97.05276385-0", "b2;306.061687827-0", "b2;208.08479225361-97.97689557339"};
-        Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels));
+        Assert::IsTrue(expectedNTerminalMasses == foundNTerminalMasses);
+        std::set<std::string> expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;306.06168783-0", "b2;208.08479225-97.976895573"};
+        Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         //evaluate C-terminal masses
-        auto c = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        }).ToList();
+        std::unordered_set<int> foundCTerminalMasses;
+        std::set<std::string> cTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments  ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::C ) {
+                foundCTerminalMasses.emplace(static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                cTerminalMassesLabels.emplace(f->ToString() );
+            }
+        }
         std::unordered_set<int> expectedCTerminalMasses = {119, 328, 230};
-        Assert::IsTrue(expectedCTerminalMasses == c.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        })));
-        auto cTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedCTerminalMassesLabels = {"y1;119.058243153-0", "y2;328.067167131-0", "y2;230.09027155761-97.97689557339"};
+        Assert::IsTrue(expectedCTerminalMasses == foundCTerminalMasses);
+        std::set<std::string> expectedCTerminalMassesLabels = {"y1;119.05824315-0", "y2;328.06716713-0", "y2;230.09027156-97.976895573"};
         Assert::IsTrue(expectedCTerminalMassesLabels == cTerminalMassesLabels);
 
         delete digestionParams;
@@ -928,45 +918,34 @@ namespace Test
         auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::AnyActivationType, FragmentationTerminus::Both);
 
         //evaluate N-terminal masses
-        auto nTerminalMasses = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        }).ToList();
+        std::unordered_set<int> foundNTerminalMasses;
+        std::set<std::string> nTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                foundNTerminalMasses.emplace (static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                nTerminalMassesLabels.emplace(f->ToString());
+            }
+        }
         std::unordered_set<int> expectedNTerminalMasses = {177, 306, 79, 208};
-        Assert::IsTrue(expectedNTerminalMasses == nTerminalMasses.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        }));
-        auto nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedNTerminalMassesLabels = {"b1;177.019094739-0", "b2;306.061687827-0",
-                                                                         "b1;79.04219916561-97.97689557339",
-                                                                         "b2;208.08479225361-97.97689557339"};
+        Assert::IsTrue(expectedNTerminalMasses == foundNTerminalMasses);
+        std::set<std::string> expectedNTerminalMassesLabels = {"b1;177.01909474-0",
+                                                               "b2;306.06168783-0",
+                                                               "b1;79.042199165-97.976895573",
+                                                               "b2;208.08479225-97.976895573"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         //evaluate C-terminal masses
-        auto cTerminalMasses = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        }).ToList();
+        std::unordered_set<int> foundCTerminalMasses;
+        std::set<std::string> cTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments  ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::C ) {
+                foundCTerminalMasses.emplace(static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                cTerminalMassesLabels.emplace(f->ToString() );
+            }
+        }
         std::unordered_set<int> expectedCTerminalMasses = {119, 248};
-        Assert::IsTrue(expectedCTerminalMasses == cTerminalMasses.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        }));
-        auto cTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedCTerminalMassesLabels = {"y1;119.058243153-0", "y2;248.100836242-0"};
+        Assert::IsTrue(expectedCTerminalMasses == foundCTerminalMasses);
+        std::set<std::string> expectedCTerminalMassesLabels = {"y1;119.05824315-0", "y2;248.10083624-0"};
         Assert::IsTrue(expectedCTerminalMassesLabels == cTerminalMassesLabels);
         
         delete digestionParams;
@@ -997,46 +976,35 @@ namespace Test
         std::vector<Modification*> vm1 = {phosphorylation}, vm2;
         auto aPeptideWithSetModifications = p->Digest(digestionParams, vm1, vm2).front();
 
-        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both); //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
+        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
 
         //evaluate N-terminal masses
-        auto nTerminalMasses = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        }).ToList();
+        std::unordered_set<int> foundNTerminalMasses;
+        std::set<std::string> nTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                foundNTerminalMasses.emplace (static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                nTerminalMassesLabels.emplace(f->ToString());
+            }
+        }
         std::unordered_set<int> expectedNTerminalMasses = {177, 306};
-        Assert::IsTrue(expectedNTerminalMasses == nTerminalMasses.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        }));
-        auto nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedNTerminalMassesLabels = {"b1;177.019094739-0", "b2;306.061687827-0"};
+        Assert::IsTrue(expectedNTerminalMasses == foundNTerminalMasses );
+        std::set<std::string> expectedNTerminalMassesLabels = {"b1;177.01909474-0", "b2;306.06168783-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         //evaluate C-terminal masses
-        auto cTerminalMasses = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        }).ToList();
+        std::unordered_set<int> foundCTerminalMasses;
+        std::set<std::string> cTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments  ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::C ) {
+                foundCTerminalMasses.emplace(static_cast<int>(std::round(f->NeutralMass * std::pow(10, 0))) / std::pow(10, 0));
+                cTerminalMassesLabels.emplace(f->ToString() );
+            }
+        }
         std::unordered_set<int> expectedCTerminalMasses = {119, 248};
-        Assert::IsTrue(expectedCTerminalMasses == cTerminalMasses.Select([&] (std::any v)
-        {
-            static_cast<int>(std::round(v::NeutralMass * std::pow(10, 0))) / std::pow(10, 0);
-        }));
-        auto cTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::C;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedCTerminalMassesLabels = {"y1;119.058243153-0", "y2;248.100836242-0"};
+        Assert::IsTrue(expectedCTerminalMasses == foundCTerminalMasses);
+        std::set<std::string> expectedCTerminalMassesLabels = {"y1;119.05824315-0", "y2;248.10083624-0"};
         Assert::IsTrue(expectedCTerminalMassesLabels == cTerminalMassesLabels);
 
         delete digestionParams;
@@ -1055,114 +1023,133 @@ namespace Test
 
         auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD,
                                                                                 FragmentationTerminus::N);
-        auto nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        std::unordered_set<std::string> expectedNTerminalMassesLabels = {"b1;97.05276385-0", "b2;226.095356938-0"};
+
+        std::set<std::string> nTerminalMassesLabels;
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+        std::set<std::string> expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::AnyActivationType,
                                                                            FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        expectedNTerminalMassesLabels = {"b1;97.05276385-0", "b2;226.095356938-0"};
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
+        expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::CID, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        expectedNTerminalMassesLabels = {"b2;226.095356938-0"};
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
+        expectedNTerminalMassesLabels = {"b2;226.09535694-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::ECD, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        expectedNTerminalMassesLabels = {"c1;114.079312951-0", "c2;243.121906039-0"};
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
+        expectedNTerminalMassesLabels = {"c1;114.07931295-0", "c2;243.12190604-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::ETD, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
         expectedNTerminalMassesLabels = {"c1;114.079312951-0", "c2;243.121906039-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::EThcD, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        expectedNTerminalMassesLabels = {"b1;97.05276385-0", "b2;226.095356938-0", "c1;114.079312951-0", "c2;243.121906039-0"};
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
+        expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0", "c1;114.079312951-0", "c2;243.121906039-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::ISCID, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
         expectedNTerminalMassesLabels = { };
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom] = { };
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::Custom, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
         expectedNTerminalMassesLabels = { };
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::IRMPD, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
-        expectedNTerminalMassesLabels = {"b1;97.05276385-0", "b2;226.095356938-0"};
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
+        expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::PQD, FragmentationTerminus::N);
-        nTerminalMassesLabels = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-            return f::TerminusFragment->Terminus == FragmentationTerminus::N;
-        })->Select([&] (std::any f)
-        {
-            f.ToString();
-        }).ToList();
+        nTerminalMassesLabels.clear();
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
+                nTerminalMassesLabels.emplace(f->ToString());
+                std::cout << "nTerminal " << f->ToString() << std::endl;
+            }
+        }
+
+        expectedNTerminalMassesLabels.clear();        
         expectedNTerminalMassesLabels = { };
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
@@ -1204,12 +1191,21 @@ namespace Test
         //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
 
         //evaluate N-terminal masses
+#ifdef ORIG
         auto diagnosticIons = theseTheoreticalFragments->Where([&] (std::any f)
         {
             return f->ProductType == ProductType::D;
         }).ToList();
-        Assert::AreEqual("D99;97.976895573-0", diagnosticIons.front().ToString());
-
+#endif
+        std::vector<Product *>diagnosticIons;
+        for ( auto f: theseTheoreticalFragments ) {
+            if (f->productType == ProductType::D ) {
+                diagnosticIons.push_back(f);
+            }
+        }
+        std::string s = "D99;97.976895574-0";
+        Assert::AreEqual( s, diagnosticIons.front()->ToString());
+        
         delete digestionParams;
         delete phosphorylation;
         delete p;
@@ -1250,96 +1246,132 @@ namespace Test
         //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
 
         //evaluate N-terminal masses
+#ifdef ORIG
         auto molecularIons = theseTheoreticalFragments->Where([&] (std::any f)
         {
             return f->ProductType == ProductType::M;
         }).ToList();
-        Assert::AreEqual("M0;327.14303540761-97.97689557339", molecularIons.front().ToString());
-
+#endif
+        std::vector<Product *> molecularIons;
+        for ( auto f: theseTheoreticalFragments ) {
+            if (f->productType == ProductType::M ) {
+                molecularIons.push_back(f);
+            }
+        }
+        std::string s = "M0;327.14303541-97.976895573";
+        Assert::AreEqual( s , molecularIons.front()->ToString());
+    
         delete digestionParams;
-elete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete phosphorylation;
         delete p;
     }
 
     void TestFragments::Test_Fragment_DiagnosticIons_unmatchedDissociationType()
     {
         Protein *p = new Protein("PET", "accession");
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("P", &motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.",
+                                                         ChemicalFormula::ParseFormula("H1O3P1"),
+                                                         std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::CID, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::CID, {ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         "");
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2,
+                                                               CleavageSpecificity::Full, FragmentationTerminus::Both);
+        std::vector<Modification*> vm1 = {phosphorylation}, vm2;
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, vm1, vm2).front();
 
-        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both); //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
+        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
 
         //evaluate N-terminal masses
+#ifdef ORIG
         auto diagnosticIons = theseTheoreticalFragments->Where([&] (std::any f)
         {
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
-        delete p;
             return f->ProductType == ProductType::D;
         }).ToList();
-        Assert::AreEqual(0, diagnosticIons.size()());
+#endif
+        std::vector<Product *> diagnosticIons;
+        for ( auto f: theseTheoreticalFragments ) {
+            if ( f->productType == ProductType::D ) {
+                diagnosticIons.push_back(f);
+            }
+        }
+        Assert::AreEqual(0, (int)diagnosticIons.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
+        delete phosphorylation;
         delete p;
     }
 
     void TestFragments::Test_Fragment_MolecularIon_NeutralLoss_unmatchedDissociationType()
     {
         Protein *p = new Protein("PTE", "accession");
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("P", motif);
-        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("P", &motif);
+        Modification *phosphorylation = new Modification("phospho", "", "CommonBiological", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1O3P1"),
+                                                         std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::unordered_map<std::string, std::vector<std::string>>(),
+                                                         std::vector<std::string>(),
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::CID, {0, ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        std::unordered_map<DissociationType, std::vector<double>>
+                                                         std::unordered_map<DissociationType, std::vector<double>>
         {
             {
                 MassSpectrometry::DissociationType::CID, {ChemicalFormula::ParseFormula("H3O4P1")->getMonoisotopicMass()}
             }
         },
-        "");
-        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2, CleavageSpecificity::Full, FragmentationTerminus::Both);
-        auto aPeptideWithSetModifications = p->Digest(digestionParams, std::vector<Modification*> {phosphorylation}, std::vector<Modification*>()).front();
+                                                         "");
+        
+        DigestionParams *digestionParams = new DigestionParams("trypsin", 2, 2, INT_MAX, 1024, InitiatorMethionineBehavior::Variable, 2,
+                                                               CleavageSpecificity::Full, FragmentationTerminus::Both);
+        std::vector<Modification*> vm1 = {phosphorylation}, vm2;
+        auto aPeptideWithSetModifications = p->Digest(digestionParams, vm1, vm2).front();
 
-        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both); //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
+        auto theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        //Note that dissociation type here intentionally mismatched to dissociation type in modification constructor
 
         //evaluate N-terminal masses
-        auto molecularIons = theseTheoreticalFragments->Where([&] (std::any f)
-        {
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
-        delete p;
+#ifdef ORIG
+        auto molecularIons = theseTheoreticalFragments->Where([&] (std::any f) {
             return f->ProductType == ProductType::M;
         }).ToList();
-        Assert::AreEqual(0, molecularIons.size()());
+#endif
+        std::vector<Product *> molecularIons;
+        for ( auto f: theseTheoreticalFragments ) {
+            if (f->productType == ProductType::M ) {
+                molecularIons.push_back(f);
+            }
+        }
+        
+        Assert::AreEqual(0, (int)molecularIons.size());
 
-//C# TO C++ CONVERTER TODO TASK: A 'delete digestionParams' statement was not added since digestionParams was passed to a method or constructor. Handle memory management manually.
-//C# TO C++ CONVERTER TODO TASK: A 'delete phosphorylation' statement was not added since phosphorylation was passed to a method or constructor. Handle memory management manually.
+        delete digestionParams;
+        delete phosphorylation;
         delete p;
     }
 
+#ifdef LATER
     void TestFragments::Test_NeutralMassShiftFromProductType()
     {
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
+        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
         for (auto p : Enum::GetValues(typeof(ProductType)))
         {
             double mass = Chemistry::ClassExtensions::RoundedDouble(std::make_optional(DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(0, p))).value();
@@ -1422,7 +1454,10 @@ elete phosphorylation' statement was not added since phosphorylation was passed 
     {
         DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].push_back(ProductType::b);
         DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].push_back(ProductType::y);
-        Assert::IsTrue(std::find(DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].begin(), DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].end(), ProductType::b) != DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].end());
+
+        Assert::IsTrue(std::find(DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].begin(),
+                                 DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].end(), ProductType::b) !=
+                       DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom].end());
 
         auto productCollection = TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[FragmentationTerminus::N].Intersect(DissociationTypeCollection::ProductsFromDissociationType[DissociationType::Custom]);
         Assert::IsTrue(productCollection->Contains(ProductType::b));
@@ -1507,19 +1542,21 @@ elete phosphorylation' statement was not added since phosphorylation was passed 
         }).Distinct().ToList());
 
         delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+        delete protein;
     }
-
+#endif
+    
     void TestFragments::Test_MatchedFragmentIonToString()
     {
         NeutralTerminusFragment tempVar(FragmentationTerminus::N, 1, 1, 1);
         Product *P = new Product(ProductType::b, &tempVar, 0);
         MatchedFragmentIon *m = new MatchedFragmentIon(P, 1, 1, 1);
-//C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        Assert::AreEqual("b1+1\t;1", m->ToString());
+
+        std::string s = "b1+1\t;1";
+        Assert::AreEqual( s, m->ToString());
 
         delete m;
-//C# TO C++ CONVERTER TODO TASK: A 'delete P' statement was not added since P was passed to a method or constructor. Handle memory management manually.
+        delete P;
     }
 
     void TestFragments::Test_CID_Fragmentation_No_Unmodified_B1_ions()
@@ -1527,79 +1564,115 @@ elete phosphorylation' statement was not added since phosphorylation was passed 
         //FOR CID B1 ions should always be missing whether or not there is a modification on first amino acid or not.
 
         Protein *protein = new Protein("PEPTIDE", "accession");
-        DigestionParams tempVar();
-        PeptideWithSetModifications *p = new PeptideWithSetModifications(protein, &tempVar, 1, 7, CleavageSpecificity::Full, "", 0, std::unordered_map<int, Modification*>(), 0);
+        DigestionParams *tempVar  = new DigestionParams("trypsin");
+        std::unordered_map<int, Modification*> vmap;
+        PeptideWithSetModifications *p = new PeptideWithSetModifications(protein, tempVar, 1, 7, CleavageSpecificity::Full, "", 0,
+                                                                         vmap, 0);
 
         auto f = p->Fragment(DissociationType::CID, FragmentationTerminus::Both);
-        Assert::AreEqual(11, f.size()());
+        Assert::AreEqual(11, (int)f.size());
 
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("P", motif);
-        Modification *m = new Modification("myId", "", "myModType", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("P", &motif);
+        Modification *m = new Modification("myId", "", "myModType", "", motif, "Anywhere.", nullptr, std::make_optional(10),
+                                           std::unordered_map<std::string, std::vector<std::string>>(),
+                                           std::unordered_map<std::string, std::vector<std::string>>(),
+                                           std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(),
+                                           std::unordered_map<DissociationType, std::vector<double>>(), "");
         std::vector<Modification*> modList = {m};
         std::unordered_map<int, std::vector<Modification*>> i =
         {
             {1, modList}
         };
 
-        protein = new Protein("PEPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), i, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
-        DigestionParams tempVar2();
-        std::vector<PeptideWithSetModifications*> pwsmList = protein->Digest(&tempVar2, std::vector<Modification*>(), std::vector<Modification*>());
+        protein = new Protein("PEPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), i,
+                              std::vector<ProteolysisProduct *>(), "", "", false, false, std::vector<DatabaseReference *>(),
+                              std::vector<SequenceVariation *>(), std::vector<SequenceVariation *>(), "",
+                              std::vector<DisulfideBond *>(), std::vector<SpliceSite *>(), "");
+        DigestionParams *tempVar2 = new DigestionParams("trypsin");
+        std::vector<Modification*> vm1, vm2;
+        std::vector<PeptideWithSetModifications*> pwsmList = protein->Digest(tempVar2, vm1, vm2 );
 
-        PeptideWithSetModifications *modifiedPwsm = pwsmList.Where([&] (std::any z)
-        {
-        delete m;
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+#ifdef ORIG
+        PeptideWithSetModifications *modifiedPwsm = pwsmList.Where([&] (std::any z) {
             return z::AllModsOneIsNterminus->Count == 1;
         }).First();
-        PeptideWithSetModifications *unmodifiedPwsm = pwsmList.Where([&] (std::any z)
-        {
-        delete m;
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+#endif
+        PeptideWithSetModifications *modifiedPwsm;
+        for ( auto z : pwsmList ) {
+            if (z->getAllModsOneIsNterminus().size() == 1 ) {
+                modifiedPwsm = z;
+                break;
+            }
+        }
+#ifdef ORIG
+        PeptideWithSetModifications *unmodifiedPwsm = pwsmList.Where([&] (std::any z)  {
             return z::AllModsOneIsNterminus->Count == 0;
         }).First();
+#endif
+        PeptideWithSetModifications *unmodifiedPwsm;
+        for ( auto z : pwsmList ) {
+            if ( z->getAllModsOneIsNterminus().size() == 0 ) {
+                unmodifiedPwsm = z;
+                break;
+            }
+        }
 
         std::vector<Product*> modifiedPwsmFragments = modifiedPwsm->Fragment(DissociationType::CID, FragmentationTerminus::Both);
         std::vector<Product*> unmodifiedPwsmFragments = unmodifiedPwsm->Fragment(DissociationType::CID, FragmentationTerminus::Both);
-        Assert::AreEqual(11, modifiedPwsmFragments.size()());
-        Assert::AreEqual(11, unmodifiedPwsmFragments.size()());
+        Assert::AreEqual(11, (int)modifiedPwsmFragments.size());
+        Assert::AreEqual(11, (int)unmodifiedPwsmFragments.size());
 
         i = std::unordered_map<int, std::vector<Modification*>>
         {
             {2, modList}
         };
 
-        protein = new Protein("PPPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), i, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
-        DigestionParams tempVar3();
-        pwsmList = protein->Digest(&tempVar3, std::vector<Modification*>(), std::vector<Modification*>());
+        protein = new Protein("PPPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), i,
+                              std::vector<ProteolysisProduct *>(), "", "", false, false, std::vector<DatabaseReference*>(),
+                              std::vector<SequenceVariation *>(), std::vector<SequenceVariation *>(), "",
+                              std::vector<DisulfideBond *>(), std::vector<SpliceSite *>(), "");
+        DigestionParams *tempVar3 = new DigestionParams("trypsin");
+        std::vector<Modification*> vm3, vm4;
+        pwsmList = protein->Digest(tempVar3, vm3, vm4);
 
-        modifiedPwsm = pwsmList.Where([&] (std::any z)
-        {
-        delete m;
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+#ifdef ORIG
+        modifiedPwsm = pwsmList.Where([&] (std::any z)  {
             return z::AllModsOneIsNterminus->Count == 1;
         }).First();
-        unmodifiedPwsm = pwsmList.Where([&] (std::any z)
-        {
-        delete m;
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+#endif
+        for ( auto z : pwsmList ) {
+            if ( z->getAllModsOneIsNterminus().size() == 1 ) {
+                modifiedPwsm = z;
+                break;
+            }
+        }
+#ifdef ORIG
+        unmodifiedPwsm = pwsmList.Where([&] (std::any z) {
             return z::AllModsOneIsNterminus->Count == 0;
         }).First();
+#endif
+        for ( auto z : pwsmList ) {
+            if ( z->getAllModsOneIsNterminus().size() == 0 ) {
+                unmodifiedPwsm = z;
+                break;
+            }
+        }
 
         modifiedPwsmFragments = modifiedPwsm->Fragment(DissociationType::CID, FragmentationTerminus::Both);
         unmodifiedPwsmFragments = unmodifiedPwsm->Fragment(DissociationType::CID, FragmentationTerminus::Both);
-        Assert::AreEqual(11, modifiedPwsmFragments.size()());
-        Assert::AreEqual(11, unmodifiedPwsmFragments.size()());
+        Assert::AreEqual(11, (int)modifiedPwsmFragments.size());
+        Assert::AreEqual(11, (int)unmodifiedPwsmFragments.size());
 
         delete m;
         delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was passed to a method or constructor. Handle memory management manually.
+        delete protein;
+        delete tempVar;
+        delete tempVar2;
+        delete tempVar3;
     }
 
+#ifdef LATER
     void TestFragments::Test_ETD_ECD_EThcD_Fragmentation_No_FragmentsAtProline(DissociationType dissociationType, int fragmentCount)
     {
         Protein *protein = new Protein("PEPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification>>(), std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
@@ -1693,8 +1766,6 @@ elete phosphorylation' statement was not added since phosphorylation was passed 
 
         auto z = fragments.Where([&] (std::any f)
         {
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete m' statement was not added since m was passed to a method or constructor. Handle memory management manually.
             return f->ProductType == ProductType::zDot;
         }).ToList();
 
@@ -1790,8 +1861,6 @@ elete phosphorylation' statement was not added since phosphorylation was passed 
 
         auto diagnosticIons = fragments.Where([&] (std::any f)
         {
-        delete p;
-//C# TO C++ CONVERTER TODO TASK: A 'delete modWithDiagnosticIons' statement was not added since modWithDiagnosticIons was passed to a method or constructor. Handle memory management manually.
             return f->ProductType == ProductType::D;
         }).ToList();
 
