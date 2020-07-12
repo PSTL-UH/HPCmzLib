@@ -40,10 +40,11 @@ namespace Proteomics
             ProductType pT = productType;
             std::ostringstream out;
             out.precision(11);
-            out << std::fixed << TerminusFragment->FragmentNumber;
-            
-            return ProductTypeToString(pT) + out.str()
-                + ";" + std::to_string(NeutralMass) + "-" + std::to_string(static_cast<int>(NeutralLoss));
+            out << TerminusFragment->FragmentNumber << ";";
+            out << NeutralMass << "-" << NeutralLoss;
+                                                                               
+            return ProductTypeToString(pT) + out.str();
+
         }
 
         bool Product::Equals(Product *other)
