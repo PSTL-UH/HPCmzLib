@@ -50,7 +50,7 @@ namespace Spectra
     class ISpectrum
     {
 #ifndef NDEBUG
-        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+        //static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
 #endif
     public:
         virtual std::vector<double> getXArray() const = 0;

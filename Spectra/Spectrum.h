@@ -47,7 +47,7 @@ namespace Spectra {
     template<typename TPeak>
     class Spectrum : public ISpectrum<TPeak> {
 #ifndef NDEBUG
-        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+        //static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
 #endif
         
     private:

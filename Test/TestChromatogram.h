@@ -22,42 +22,21 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with MassSpectrometry.Tests. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
+
+#include "MzLibUtil.h"
 using namespace MzLibUtil;
-using namespace NUnit::Framework;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 namespace Test
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] public sealed class TestChromatogram
     class TestChromatogram final
     {
-    private:
-        static Stopwatch *privateStopwatch;
-
-        static Stopwatch *getStopwatch();
-        static void setStopwatch(Stopwatch *value);
-
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public static void Setup()
-        static void Setup();
+        static void ChromatogramTest();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TearDown] public static void TearDown()
-        static void TearDown();
+        static void TestGetApex();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void ChromatogramTest()
-        void ChromatogramTest();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestGetApex()
-        void TestGetApex();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void AnotherChromatogramTest()
-        void AnotherChromatogramTest();
+        static void AnotherChromatogramTest();
     };
 }

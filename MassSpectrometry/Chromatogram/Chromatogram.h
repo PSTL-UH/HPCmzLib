@@ -49,7 +49,7 @@ namespace MassSpectrometry
     class AChromatogram : public Spectrum<TPeak> {
 
 #ifndef NDEBUG
-        static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
+        //static_assert(std::is_base_of<IPeak, TPeak>::value, "TPeak must inherit from IPeak");
 #endif
         
     protected:
@@ -122,7 +122,7 @@ namespace MassSpectrometry
                 
                 if (index >= this->getSize())
                 {
-                    return GetPeak(this->getSize() - 1);
+                    return this->GetPeak(this->getSize() - 1);
                 }
                 
                 double maxvalue = -1; // double.negative infinity?
@@ -164,7 +164,8 @@ namespace MassSpectrometry
                     peaks.push_back(this->GetPeak(index));
                     index++;
                 }
-                return new ChromatographicElutionProfile<TPeak>(peaks);
+                auto res =  new ChromatographicElutionProfile<TPeak>(peaks);
+                return res;
             }
         
         //virtual TPeak GetApex()
@@ -243,8 +244,19 @@ namespace MassSpectrometry
         
         std::string ToString() 
             {
-                return StringHelper::formatSimple("Count = {0:N0} TIC = {1:G4}", this->getSize(),
-                                                  this->getYArray().Sum());
+                double sum=0;
+                int i=0;
+                for ( auto p: this->getYArray() ) {
+                    if ( i == 0 ) {
+                        sum =  p;
+                    }
+                    else {
+                        sum+= p;
+                    }
+                    i++;
+                }
+                    
+                return StringHelper::formatSimple("Count = {0:N0} TIC = {1:G4}", this->getSize(), sum);                                                  
             }
     };
     

@@ -37,7 +37,7 @@ using namespace Spectra;
 namespace MassSpectrometry {
     template<typename T>
     class ChromatographicElutionProfile {
-        static_assert(std::is_base_of<IPeak, T>::value, "T must inherit from IPeak");
+        //static_assert(std::is_base_of<IPeak, T>::value, "T must inherit from IPeak");
 
     private:
         DoubleRange *privateTimeRange;
@@ -47,18 +47,17 @@ namespace MassSpectrometry {
         std::vector<T> const _peaks;
 
     public:
-    ChromatographicElutionProfile(std::vector<T> *peaks) : _peaks(peaks) {
-            setCount(peaks->Count);
+    ChromatographicElutionProfile(std::vector<T> peaks) : _peaks(peaks) {
+            setCount(peaks.size());
             if (getCount() == 0) {
                 return;
             }
             double sum=0.0;
             std::for_each(_peaks.begin(), _peaks.end(), [&] (T p) {
-                    sum+= p.getY();
+                    sum += p->getY();
                 } );
             setSummedArea (sum);
-            DoubleRange tempVar(_peaks[0]->getX(), _peaks[getCount() - 1]->getX());
-            setTimeRange(&tempVar);
+            privateTimeRange = new DoubleRange (_peaks[0]->getX(), _peaks[getCount() - 1]->getX());
         }
 
         T getStartPeak() const {
