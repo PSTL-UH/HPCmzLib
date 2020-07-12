@@ -1028,7 +1028,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
         std::set<std::string> expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0"};
@@ -1040,7 +1039,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1053,7 +1051,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1066,7 +1063,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1079,12 +1075,11 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
         expectedNTerminalMassesLabels.clear();        
-        expectedNTerminalMassesLabels = {"c1;114.079312951-0", "c2;243.121906039-0"};
+        expectedNTerminalMassesLabels = {"c1;114.07931295-0", "c2;243.12190604-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::EThcD, FragmentationTerminus::N);
@@ -1092,12 +1087,11 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
         expectedNTerminalMassesLabels.clear();        
-        expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0", "c1;114.079312951-0", "c2;243.121906039-0"};
+        expectedNTerminalMassesLabels = {"b1;97.052763849-0", "b2;226.09535694-0", "c1;114.07931295-0", "c2;243.12190604-0"};
         Assert::IsTrue(expectedNTerminalMassesLabels == nTerminalMassesLabels);
 
         theseTheoreticalFragments = aPeptideWithSetModifications->Fragment(DissociationType::ISCID, FragmentationTerminus::N);
@@ -1105,7 +1099,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1119,7 +1112,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1132,7 +1124,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1145,7 +1136,6 @@ namespace Test
         for ( auto f: theseTheoreticalFragments ) {
             if ( f->TerminusFragment->Terminus == FragmentationTerminus::N ) {
                 nTerminalMassesLabels.emplace(f->ToString());
-                std::cout << "nTerminal " << f->ToString() << std::endl;
             }
         }
 
@@ -1548,8 +1538,8 @@ namespace Test
     
     void TestFragments::Test_MatchedFragmentIonToString()
     {
-        NeutralTerminusFragment tempVar(FragmentationTerminus::N, 1, 1, 1);
-        Product *P = new Product(ProductType::b, &tempVar, 0);
+        auto  tempVar = new NeutralTerminusFragment (FragmentationTerminus::N, 1, 1, 1);
+        Product *P = new Product(ProductType::b, tempVar, 0);
         MatchedFragmentIon *m = new MatchedFragmentIon(P, 1, 1, 1);
 
         std::string s = "b1+1\t;1";

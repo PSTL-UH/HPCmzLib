@@ -225,14 +225,20 @@ namespace Proteomics
                  TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus].Intersect(
                      DissociationTypeCollection::ProductsFromDissociationType[dissociationType]);
 #endif
-
+             
              std::vector<ProductType> v1 = TerminusSpecificProductTypes::ProductIonTypesFromSpecifiedTerminus[fragmentationTerminus];
              std::vector<ProductType> v2 = DissociationTypeCollection::ProductsFromDissociationType[dissociationType];
-             std::vector<ProductType> vInter(std::min(v1.size(), v2.size()));
-             std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), vInter.begin());
+             std::vector<ProductType> vInter;
+             for ( auto p: v1 )  {
+                 for ( auto q: v2 ) {
+                     if ( p == q ) {
+                         vInter.push_back(p);
+                     }
+                 }
+             }
              std::unordered_map<FragmentationTerminus, std::vector<ProductType>> productCollection = {{fragmentationTerminus, vInter}};
-
-            std::vector<std::tuple<ProductType, int>> skippers;
+             
+             std::vector<std::tuple<ProductType, int>> skippers;
 #ifdef ORIG
             for (auto product : productCollection->Where([&] (std::any f)
             {
@@ -250,7 +256,7 @@ namespace Proteomics
                     }
                 }
             }
-
+            
             switch (dissociationType)
             {
                 case DissociationType::CID:
@@ -344,10 +350,10 @@ namespace Proteomics
                         {
                             if (neutralLoss != 0)
                             {
-                                NeutralTerminusFragment tempVar2(FragmentationTerminus::Both, getMonoisotopicMass(), 0, 0);
+                                auto  tempVar2 = new NeutralTerminusFragment (FragmentationTerminus::Both, getMonoisotopicMass(), 0, 0);
                                 //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                                 //yield return new Product(ProductType::M, &tempVar2, neutralLoss);
-                                Product *pp = new Product(ProductType::M, &tempVar2, neutralLoss);
+                                Product *pp = new Product(ProductType::M, tempVar2, neutralLoss);
                                 v.push_back( pp);
                             }
                         }

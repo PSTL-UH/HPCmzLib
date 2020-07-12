@@ -29,7 +29,7 @@ namespace Proteomics
             /// </summary>
             virtual ~Product()
             {
-                //delete TerminusFragment;
+                delete TerminusFragment;
             }
 
             Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss);
