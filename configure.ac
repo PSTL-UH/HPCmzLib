@@ -44,9 +44,9 @@ AC_CHECK_HEADER([math.h],
 [],
 [AC_MSG_ERROR(Couldn't find math.h)])
 
-AC_CHECK_HEADER([tinyxml2.h],
+AC_CHECK_HEADER([libxml2/libxml/xmlreader.h],
 [],
-[AC_MSG_ERROR(Couldn't find tinyxml2.h)])
+[AC_MSG_ERROR(Couldn't find libxml/xmlreader.h)])
 
 AC_CHECK_HEADER([cereal/cereal.hpp],
 [],

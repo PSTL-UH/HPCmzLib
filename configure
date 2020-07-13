@@ -5042,11 +5042,11 @@ fi
 
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "tinyxml2.h" "ac_cv_header_tinyxml2_h" "$ac_includes_default"
-if test "x$ac_cv_header_tinyxml2_h" = xyes; then :
+ac_fn_cxx_check_header_mongrel "$LINENO" "libxml2/libxml/xmlreader.h" "ac_cv_header_libxml2_libxml_xmlreader_h" "$ac_includes_default"
+if test "x$ac_cv_header_libxml2_libxml_xmlreader_h" = xyes; then :
 
 else
-  as_fn_error $? "Couldn't find tinyxml2.h" "$LINENO" 5
+  as_fn_error $? "Couldn't find libxml/xmlreader.h" "$LINENO" 5
 fi
 
 
