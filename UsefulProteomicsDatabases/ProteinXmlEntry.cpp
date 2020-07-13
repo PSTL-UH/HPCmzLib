@@ -314,56 +314,39 @@ namespace UsefulProteomicsDatabases
 		privateReadingOrganism = value;
 	}
 
-	ProteinXmlEntry::~ProteinXmlEntry() {
-		// Add things you feel fit here careful as to what you put here as a lot
-		// of the information being dynamically allocated are being returned.
-		// Don't add everything, only what you need.
-	}
-
-	void ProteinXmlEntry::ParseElement(const std::string &elementName, tinyxml2::XMLNode *xml)
+	void ProteinXmlEntry::ParseElement(const std::string &elementName, xmlTextReaderPtr *xml)
 	{
 		int outValue;
 		//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
 		//        switch (elementName)
 		//ORIGINAL LINE: case "accession":
-
-		// Note, all changed lines will be commented out. Just in case I need to come back to look at it and compare
 		if (elementName == "accession")
 		{
 			if (getAccession() == "")
 			{
-				//setAccession(xml->ReadElementString());
-				setAccession(xml->ToElement()->GetText());
+				setAccession((char *)xmlTextReaderReadString(*xml));
 			}
+
 		}
 		//ORIGINAL LINE: case "name":
 		else if (elementName == "name")
 		{
-			// xml->Depth == 2
-			// Logic was replaced with:
-			// xml->Parent()->ToElement()->GetText() == "entry"
-			// Because they use name at multiple depths.
-			// If the parent is entry, then the depth should be 2 
-			// Thus, we set the name
-			if (xml->Parent()->ToElement()->GetText() == "entry" && !getReadingGene() && !getReadingOrganism())
+			if (xmlTextReaderDepth(*xml) == 2 && !getReadingGene() && !getReadingOrganism())
 			{
-				//setName(xml->ReadElementString());
-				setName(xml->ToElement()->GetText());
+				setName((char *)xmlTextReaderReadString(*xml));
 			}
 			if (getReadingGene() && !getReadingOrganism())
 			{
-				// getGeneNames().push_back(std::tuple<std::string, std::string>(xml->GetAttribute("type"), xml->ReadElementString()));
-				getGeneNames().push_back(std::tuple<std::string, std::string>(xml->ToElement()->Attribute("type"), xml->ToElement()->GetText()));
+				getGeneNames().push_back(std::tuple<std::string, std::string>(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")), (char *)xmlTextReaderReadString(*xml)));
 			}
 			if (getReadingOrganism())
 			{
-				// xml->GetAttribute("type")->Equals("scientific")
-				if (xml->ToElement()->Attribute("type") == "scientific")
+				if ((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type") == "scientific")
 				{
-					// setOrganism(xml->ReadElementString());
-					setOrganism(xml->ToElement()->GetText());
+					setOrganism((char *)xmlTextReaderReadString(*xml));
 				}
 			}
+
 		}
 		//ORIGINAL LINE: case "gene":
 		else if (elementName == "gene")
@@ -385,74 +368,69 @@ namespace UsefulProteomicsDatabases
 		{
 			if (getFullName() == "")
 			{
-				//setFullName(xml->ReadElementString());
-				setFullName(xml->ToElement()->GetText());
+				setFullName((char *)xmlTextReaderReadString(*xml));
 			}
 
 		}
 		//ORIGINAL LINE: case "feature":
 		else if (elementName == "feature")
 		{
-			// setFeatureType(xml->GetAttribute("type"));
-			// setFeatureDescription(xml->GetAttribute("description"));
-			setFeatureType(xml->ToElement()->Attribute("type"));
-			setFeatureDescription(xml->ToElement()->Attribute("description"));
+			setFeatureType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
+			setFeatureDescription(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"description")));
+
 		}
 		//ORIGINAL LINE: case "subfeature":
 		else if (elementName == "subfeature")
 		{
-			// setSubFeatureType(xml->GetAttribute("type"));
-			// setSubFeatureDescription(xml->GetAttribute("description"));
-			setSubFeatureType(xml->ToElement()->Attribute("type"));
-			setSubFeatureDescription(xml->ToElement()->Attribute("description"));
+			setSubFeatureType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
+			setSubFeatureDescription(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"description")));
+
 		}
 		//ORIGINAL LINE: case "original":
 		else if (elementName == "original")
 		{
-			// setOriginalValue(xml->ReadElementString());
-			setOriginalValue(xml->ToElement()->GetText());
+			setOriginalValue((char *)xmlTextReaderReadString(*xml));
+
 		}
 		//ORIGINAL LINE: case "variation":
 		else if (elementName == "variation")
 		{
-			// setVariationValue(xml->ReadElementString());
-			setVariationValue(xml->ToElement()->GetText());
+			setVariationValue((char *)xmlTextReaderReadString(*xml));
+
 		}
 		//ORIGINAL LINE: case "dbReference":
 		else if (elementName == "dbReference")
 		{
 			getPropertyTypes().clear();
 			getPropertyValues().clear();
-			// setDBReferenceType(xml->GetAttribute("type"));
-			// setDBReferenceId(xml->GetAttribute("id"));
-			setDBReferenceType(xml->ToElement()->Attribute("type"));
-			setDBReferenceId(xml->ToElement()->Attribute("id"));
+			setDBReferenceType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
+			setDBReferenceId(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"id")));
+
 		}
 		//ORIGINAL LINE: case "property":
 		else if (elementName == "property")
 		{
-			// getPropertyTypes().push_back(xml->GetAttribute("type"));
-			// getPropertyValues().push_back(xml->GetAttribute("value"));
-			getPropertyTypes().push_back(xml->ToElement()->Attribute("type"));
-			getPropertyValues().push_back(xml->ToElement()->Attribute("value"));
+			getPropertyTypes().push_back(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
+			getPropertyValues().push_back(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"value")));
+
 		}
 		//ORIGINAL LINE: case "position":
 		else if (elementName == "position")
 		{
-			// setOneBasedFeaturePosition(std::stoi(xml->GetAttribute("position")));
-			setOneBasedFeaturePosition(std::stoi(xml->ToElement()->Attribute("position")));
+			setOneBasedFeaturePosition(std::stoi(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position"))));
+
 		}
 		//ORIGINAL LINE: case "subposition":
 		else if (elementName == "subposition")
 		{
-			// setOneBasedFeatureSubPosition(std::stoi(xml->GetAttribute("subposition")));
-			setOneBasedFeatureSubPosition(std::stoi(xml->ToElement()->Attribute("subposition")));
+			setOneBasedFeatureSubPosition(std::stoi(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"subposition"))));
+
 		}
 		//ORIGINAL LINE: case "begin":
 		else if (elementName == "begin")
 		{
-			// setOneBasedBeginPosition(int::TryParse(xml->GetAttribute("position"), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
-			std::string positionStringToInt = xml->ToElement()->Attribute("position");
+			// setOneBasedBeginPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
+			std::string positionStringToInt = std::string((char *)xmlTextReaderGetAttribute(*xml, (xmlChar*) "position"));
 			bool isAllInt = true;
 
 			for (const char& it : positionStringToInt) {
@@ -468,8 +446,9 @@ namespace UsefulProteomicsDatabases
 		//ORIGINAL LINE: case "end":
 		else if (elementName == "end")
 		{
-			// setOneBasedEndPosition(int::TryParse(xml->GetAttribute("position"), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
-			std::string positionStringToInt = xml->ToElement()->Attribute("position");
+			// setOneBasedEndPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
+
+			std::string positionStringToInt = std::string((char *)xmlTextReaderGetAttribute(*xml, (xmlChar*) "position"));
 			bool isAllInt = true;
 
 			for (const char& it : positionStringToInt) {
@@ -484,88 +463,66 @@ namespace UsefulProteomicsDatabases
 		//ORIGINAL LINE: case "sequence":
 		else if (elementName == "sequence")
 		{
-			// setSequence(SubstituteWhitespace->Replace(xml->ReadElementString(), ""));
-			setSequence(std::regex_replace(xml->ToElement()->GetText(), *SubstituteWhitespace, ""));
+			//setSequence(SubstituteWhitespace->Replace((char *)xmlTextReaderReadString(*xml), ""));
+			setSequence(std::regex_replace((char *)xmlTextReaderReadString(*xml), *SubstituteWhitespace, ""));
 		}
 	}
 
-	Protein *ProteinXmlEntry::ParseEndElement(tinyxml2::XMLNode *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, bool isContaminant, const std::string &proteinDbLocation)
+	Protein *ProteinXmlEntry::ParseEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, bool isContaminant, const std::string &proteinDbLocation)
 	{
-		// Same operations apply from above function
-		// Every replacement will be commented out and the
-		// replacement will be under the comment
 		Protein *protein = nullptr;
+		char* Name = (char*) xmlTextReaderName(*xml);
 
-		// xml->Name == "feature"
-		if (xml->ToElement()->Name() == "feature")
+		if (std::string(Name) == "feature")
 		{
 			ParseFeatureEndElement(xml, modTypesToExclude, unknownModifications);
 		}
-
-		// xml->Name == "subfeature"
-		if (xml->ToElement()->Name() == "subfeature")
+		if (std::string(Name) == "subfeature")
 		{
 			ParseSubFeatureEndElement(xml, modTypesToExclude, unknownModifications);
 		}
-		// xml->Name == "dbReference"
-		else if (xml->ToElement()->Name() == "dbReference")
+		else if (std::string(Name) == "dbReference")
 		{
 			ParseDatabaseReferenceEndElement(xml);
 		}
-		// xml->Name == "gene"
-		else if (xml->ToElement()->Name() == "gene")
+		else if (std::string(Name) == "gene")
 		{
 			setReadingGene(false);
 		}
-		// xml->Name == "organism"
-		else if (xml->ToElement()->Name() == "organism")
+		else if (std::string(Name) == "organism")
 		{
 			setReadingOrganism(false);
 		}
-		// xml->Name == "entry"
-		else if (xml->ToElement()->Name() == "entry")
+		else if (std::string(Name) == "entry")
 		{
 			protein = ParseEntryEndElement(xml, isContaminant, proteinDbLocation, modTypesToExclude, unknownModifications);
 		}
+
+		delete [] Name;
 		return protein;
 	}
 
-	Protein *ProteinXmlEntry::ParseEntryEndElement(tinyxml2::XMLNode *xml, bool isContaminant, const std::string &proteinDbLocation, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	Protein *ProteinXmlEntry::ParseEntryEndElement(xmlTextReaderPtr *xml, bool isContaminant, const std::string &proteinDbLocation, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
 		Protein *result = nullptr;
 		if (getAccession() != "" && getSequence() != "")
 		{
-			auto tempOneBasedModifications = getOneBasedModifications();
-			ParseAnnotatedMods(tempOneBasedModifications, modTypesToExclude, unknownModifications, AnnotatedMods);
-			std::string tempSamplenameForVariants = "";
+			ParseAnnotatedMods(privateOneBasedModifications, modTypesToExclude, unknownModifications, AnnotatedMods);
+			//	result = new Protein(getSequence(), getAccession(), getOrganism(), getGeneNames(), getOneBasedModifications(), getProteolysisProducts(), getName(), getFullName(), false, isContaminant, getDatabaseReferences(), getSequenceVariations(), std::vector<SequenceVariation>(), "", getDisulfideBonds(), getSpliceSites(), proteinDbLocation);
 			std::vector<SequenceVariation*> tempAppliedSequenceVariations = std::vector<SequenceVariation*>();
-
-			result = new Protein(privateSequence, privateAccession, privateOrganism,
-					privateGeneNames,
-					privateOneBasedModifications,
+			std::string tempSampleNameForVariants = "";
+			result = new Protein(privateSequence, privateAccession, privateOrganism, 
+					privateGeneNames, 
+					privateOneBasedModifications, 
 					privateProteolysisProducts,
 					privateName, privateFullName,
-					false, isContaminant,
+					false, isContaminant, 
 					privateDatabaseReferences,
 					privateSequenceVariations, tempAppliedSequenceVariations,
-					tempSamplenameForVariants,
+					tempSampleNameForVariants,
 					privateDisulfideBonds,
 					privateSpliceSites,
 					proteinDbLocation);
-
-			/* annoying that I am having rvalue lvalue issues
-			   result = new Protein(getSequence(), getAccession(), getOrganism(), 
-			   getGeneNames(), 
-			   getOneBasedModifications(), 
-			   getProteolysisProducts(), 
-			   getName(), getFullName(), 
-			   false, isContaminant, 
-			   getDatabaseReferences(), 
-			   getSequenceVariations(), std::vector<SequenceVariation>(), 
-			   "", 
-			   getDisulfideBonds(), 
-			   getSpliceSites(), 
-			   proteinDbLocation);*/
 		}
 		Clear();
 
@@ -573,20 +530,18 @@ namespace UsefulProteomicsDatabases
 		return result;
 	}
 
-	void ProteinXmlEntry::ParseSubFeatureEndElement(tinyxml2::XMLNode *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	void ProteinXmlEntry::ParseSubFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
 		if (getSubFeatureType() == "modified residue")
 		{
 			setSubFeatureDescription(StringHelper::split(getSubFeatureDescription(), ';')[0]);
-			// Original line after conversion:
-			// AnnotatedVariantMods.push_back(std::tuple<int, std::string>(getOneBasedFeatureSubPosition(), getSubFeatureDescription()));
 			AnnotatedVariantMods.push_back( new std::tuple<int, std::string>(privateOneBasedFeatureSubPosition, privateSubFeatureDescription));
 		}
 	}
 
-	void ProteinXmlEntry::ParseFeatureEndElement(tinyxml2::XMLNode *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	void ProteinXmlEntry::ParseFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
-		if (getFeatureType() == "modified residue")
+		if (privateFeatureType == "modified residue")
 		{
 			setFeatureDescription(StringHelper::split(getFeatureDescription(), ';')[0]);
 			AnnotatedMods.push_back(new std::tuple<int, std::string> (getOneBasedFeaturePosition(), getFeatureDescription()));
@@ -646,38 +601,26 @@ namespace UsefulProteomicsDatabases
 
 	void ProteinXmlEntry::ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::tuple<int, std::string>*> &annotatedMods)
 	{
-		for (std::tuple<int, std::string>* annotatedMod : annotatedMods)
+		for (auto annotatedMod : annotatedMods)
 		{
 			std::string annotatedId = std::get<1>(*annotatedMod);
 			int annotatedModLocation = std::get<0>(*annotatedMod);
 
 			Modification *foundMod;
-
-			// Original lines after conversion
-			// std::unordered_map<std::string, Modification*>::const_iterator ProteinDbLoader.IdWithMotifToMod_iterator = ProteinDbLoader.IdWithMotifToMod.find(annotatedId);
-			// if (ProteinDbLoader::IdWithMotifToMod_iterator != ProteinDbLoader::IdWithMotifToMod.end())
 			if (ProteinDbLoader::IdWithMotifToMod.find(annotatedId) != ProteinDbLoader::IdWithMotifToMod.end())
 			{
-				// foundMod = ProteinDbLoader::IdWithMotifToMod_iterator->second;
 				foundMod = ProteinDbLoader::IdWithMotifToMod.at(annotatedId);
-
 				// if the list of known mods contains this IdWithMotif
-				// if (std::find(modTypesToExclude.begin(), modTypesToExclude.end(), foundMod.getModificationType()) != modTypesToExclude.end())
-				if (std::find(modTypesToExclude.begin(), modTypesToExclude.end(), foundMod->getModificationType()) != modTypesToExclude.end())
-				{	
+				if (std::find(modTypesToExclude.begin(), modTypesToExclude.end(), foundMod->getModificationType()) == modTypesToExclude.end())
+				{
 					std::vector<Modification*> listOfModsAtThisLocation;
 
-					// std::unordered_map<int, std::vector<Modification*>>::const_iterator destination_iterator = destination.find(annotatedModLocation);
-					// if (destination_iterator != destination.end())
 					if (destination.find(annotatedModLocation) != destination.end())
 					{
-						// listOfModsAtThisLocation = destination.at(annotatedModLocation);
-						// listOfModsAtThisLocation->Add(foundMod);
 						destination.at(annotatedModLocation).push_back(new Modification(*foundMod));
 					}
 					else
 					{
-						// listOfModsAtThisLocation = destination.at(annotatedModLocation);
 						destination.emplace(annotatedModLocation, std::vector<Modification*> {foundMod});
 					}
 				}
@@ -687,32 +630,23 @@ namespace UsefulProteomicsDatabases
 			// no known mod - try looking it up in the dictionary of mods without motif appended
 			else
 			{
-				// IList<Modification*> mods;
+				// foundMod = ProteinDbLoader::IdWithMotifToMod.at(annotatedId);
 				std::vector<Modification*> mods;
-				// std::unordered_map<std::string, std::vector<Modification*>>::const_iterator ProteinDbLoader.IdToPossibleMods_iterator = ProteinDbLoader.IdToPossibleMods.find(annotatedId);
-				// if (ProteinDbLoader::IdToPossibleMods_iterator != ProteinDbLoader::IdToPossibleMods.end())
 				if (ProteinDbLoader::IdToPossibleMods.find(annotatedId) != ProteinDbLoader::IdToPossibleMods.end())
 				{
-					// foundMod = ProteinDbLoader::IdWithMotifToMod_iterator->second;
-					foundMod = ProteinDbLoader::IdWithMotifToMod.at(annotatedId);
-					// mods = ProteinDbLoader::IdToPossibleMods_iterator->second;
 					mods = ProteinDbLoader::IdToPossibleMods.at(annotatedId);
 					for (Modification *mod : mods)
 					{
-						if (std::find(modTypesToExclude.begin(), modTypesToExclude.end(), mod->getModificationType()) != modTypesToExclude.end())
+						if (std::find(modTypesToExclude.begin(), modTypesToExclude.end(), mod->getModificationType()) == modTypesToExclude.end())
 						{
 							// TValue listOfModsAtThisLocation;
-							// std::unordered_map<int, std::vector<Modification*>>::const_iterator destination_iterator = destination.find(annotatedModLocation);
-							// if (destination_iterator != destination.end())
+
 							if (destination.find(annotatedModLocation) != destination.end())
 							{
-								// listOfModsAtThisLocation = destination_iterator->second;
-								// listOfModsAtThisLocation->Add(mod);
 								destination.at(annotatedModLocation).push_back(new Modification(*mod));
 							}
 							else
 							{
-								// listOfModsAtThisLocation = destination_iterator->second;
 								destination.emplace(annotatedModLocation, std::vector<Modification*> {mod});
 							}
 							break;
@@ -721,8 +655,6 @@ namespace UsefulProteomicsDatabases
 				}
 				else
 				{
-					// mods = ProteinDbLoader::IdToPossibleMods.second;
-
 					// could not find the annotated mod's ID in our list of known mods - it's an unknown mod
 					// I don't think this really does anything...
 					if (unknownModifications.find(annotatedId) == unknownModifications.end())
@@ -738,7 +670,6 @@ namespace UsefulProteomicsDatabases
 	ModificationMotif *ProteinXmlEntry::GetMotif(const std::string &proteinSequence, int position)
 	{
 		std::string aminoAcid = proteinSequence.substr(position - 1, 1);
-		// ModificationMotif motif;
 		ModificationMotif *motif;
 		if (ModificationMotif::TryGetMotif(aminoAcid, &motif))
 		{
@@ -750,12 +681,12 @@ namespace UsefulProteomicsDatabases
 		}
 	}
 
-	void ProteinXmlEntry::ParseDatabaseReferenceEndElement(tinyxml2::XMLNode *xml)
+	void ProteinXmlEntry::ParseDatabaseReferenceEndElement(xmlTextReaderPtr *xml)
 	{
-		/* DatabaseReference tempVar(getDBReferenceType(), getDBReferenceId(), Enumerable::Range(0, getPropertyTypes().size())->Select([&] (std::any i)
-					{
-					return std::tuple < std::string;
-					}, std::string > (getPropertyTypes()[i], getPropertyValues()[i])).ToList()); */
+		/*DatabaseReference tempVar(getDBReferenceType(), getDBReferenceId(), Enumerable::Range(0, getPropertyTypes().size())->Select([&] (std::any i)
+		  {
+		  return std::tuple < std::string;
+		  }, std::string > (getPropertyTypes()[i], getPropertyValues()[i])).ToList());*/
 
 		std::vector<std::tuple<std::string, std::string>> tempProperties;
 		for (int i = 0; i < getPropertyTypes().size(); i++) {
@@ -763,14 +694,14 @@ namespace UsefulProteomicsDatabases
 		}
 
 		DatabaseReference tempVar(getDBReferenceType(), getDBReferenceId(), tempProperties);
-		// getDatabaseReferences().push_back(&tempVar);
+		//getDatabaseReferences().push_back(&tempVar);
 		privateDatabaseReferences.push_back(&tempVar);
 		setPropertyTypes(std::vector<std::string>());
 		setPropertyValues(std::vector<std::string>());
 		setDBReferenceType("");
 		setDBReferenceId("");
 	}
-	
+
 	void ProteinXmlEntry::Clear()
 	{
 		setAccession("");

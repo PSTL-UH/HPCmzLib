@@ -26,6 +26,13 @@
 
 using namespace Proteomics;
 
+namespace libxml2 {
+	enum XmlNodeTypes {
+		Element = 1,
+		EndElement = 15
+	};
+}
+
 namespace UsefulProteomicsDatabases
 {
 
@@ -57,6 +64,7 @@ namespace UsefulProteomicsDatabases
 		// EDGAR: NOT dealing with XML databases right now.
 		//        only fasta supported
 		std::vector<Modification*> prespecified = GetPtmListFromProteinXml(proteinDbLocation);
+
 		// SHANE: There isn't a such thing as a null vector, so I am just going to leave these two lines out
 		// allKnownModifications = allKnownModifications ? allKnownModifications : std::vector<Modification*>();
 		// modTypesToExclude = modTypesToExclude ? modTypesToExclude : std::vector<std::string>();
@@ -94,39 +102,35 @@ namespace UsefulProteomicsDatabases
 		std::regex *substituteWhitespace = new std::regex(R"(\s+)");
 		ProteinXmlEntry *block = new ProteinXmlEntry();
 
-		//XmlReader xml = XmlReader::Create(uniprotXmlFileStream);
-		tinyxml2::XMLNode *xml;
-		tinyxml2::XMLDocument xmlDoc;
+		xmlTextReaderPtr reader = xmlTextReaderPtr();
 		char proteinDbLocationCharArray[proteinDbLocation.size() + 1];
-		proteinDbLocation.copy(proteinDbLocationCharArray, proteinDbLocation.size() + 1);
-		proteinDbLocationCharArray[proteinDbLocation.size() + 1] = '\0';
-		tinyxml2::XMLError eResult = xmlDoc.LoadFile(proteinDbLocationCharArray);
-		bool failedRead = false;
-		if (failedRead = (eResult != tinyxml2::XML_SUCCESS)) {
-			std::cout << "reading xml file has failed\n";
-			failedRead = true;
-		}
-
-		if (!failedRead) {
-			xml = xmlDoc.FirstChild();
-			LoadProteinXMLHelper(xml->FirstChild(), modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation, targets, block);
-		}
-		/*
-		   while (xml.read())
+		strcpy(proteinDbLocationCharArray, proteinDbLocation.c_str());
+		reader = xmlNewTextReaderFilename(proteinDbLocationCharArray);
+		/* while (reader->Read())
 		   {
-		   if (xml.NodeType == XmlNodeType::Element) {
-		   block->ParseElement(xml.Name, xml);
+		   if (reader->NodeType() == XmlNodeType::Element)
+		   {
+		   block->ParseElement(reader->Name(), reader);
 		   }
-		   if (xml.NodeType == XmlNodeType::EndElement || xml.IsEmptyElement)
+		   if (reader->NodeType() == XmlNodeType::EndElement || reader->IsEmptyElement())
 		   {
-		   Protein *newProtein = block->ParseEndElement(xml, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
+		   Protein *newProtein = block->ParseEndElement(reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
 		   if (newProtein != nullptr)
 		   {
 		   targets.push_back(newProtein);
 		   }
-		   }	
 		   }
-		   */
+		   } */
+
+		while (xmlTextReaderRead(reader)) {
+			if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
+				block->ParseElement(std::string((char *)xmlTextReaderName(reader)), &reader);
+			} else if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::EndElement || xmlTextReaderIsEmptyElement(reader)) { 
+				Protein *newProtein = block->ParseEndElement(&reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
+				if (newProtein != nullptr)
+					targets.push_back(newProtein);
+			}
+		} 
 
 		delete block;
 		delete substituteWhitespace;
@@ -142,36 +146,7 @@ namespace UsefulProteomicsDatabases
 
 		for (auto i : decoys) 
 			proteinsToExpand.push_back(i);
-		/*
-		   return proteinsToExpand.SelectMany([&] (std::any p)  {
-		   p::GetVariantProteins(maxHeterozygousVariants, minAlleleDepth);
-		   }).ToList();
-		   std::cout << "ProteinDbLoader::LoadProteinXML not supported right now. Use fasta files. "<< std::endl;
-		   std::vector<Protein*> tmp;*/
-
-		// SHANE: Original code:
-		// return proteinsToExpand.SelectMany(p => p.GetVariantProteins(maxHeterozygousVariants, minAlleleDepth)).ToList();
-		// unsure what this is supposed to do. leaving the return statement as is and hope it just works.
-		// may need to be changed
 		return proteinsToExpand;
-	}
-
-	void ProteinDbLoader::LoadProteinXMLHelper(tinyxml2::XMLNode *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, bool &isContaminant, const std::string &proteinDbLocation, std::vector<Protein*> &targets, ProteinXmlEntry *block) {
-
-		tinyxml2::XMLDocument *cloneDocument;
-		tinyxml2::XMLNode *clone = xml->ShallowClone(cloneDocument);
-
-		block->ParseElement(xml->ToElement()->Name(), xml);			
-		if (!xml->NoChildren()) 
-			LoadProteinXMLHelper(xml->FirstChild(), modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation, targets, block);
-
-		if (xml->Parent()->LastChild() != xml) {
-
-			LoadProteinXMLHelper(xml->NextSibling(), modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation, targets, block);
-		}
-
-		block->ParseEndElement(xml, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
-		delete cloneDocument;
 	}
 
 	std::vector<Modification*> ProteinDbLoader::GetPtmListFromProteinXml(const std::string &proteinDbLocation)
@@ -185,9 +160,7 @@ namespace UsefulProteomicsDatabases
 		}
 		else
 		{
-			// SHANE: A lot of C# specific things riddled throughout. 
-			// Commenting them all out.
-			last_database_location = proteinDbLocation;
+			// last_database_location = proteinDbLocation;
 			StringBuilder *storedKnownModificationsBuilder = new StringBuilder();
 			// auto stream = FileStream(proteinDbLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
 			std::regex *startingWhitespace = new std::regex(R"(/^\s+/gm)");
@@ -195,8 +168,16 @@ namespace UsefulProteomicsDatabases
 			// Stream *uniprotXmlFileStream = StringHelper::endsWith(proteinDbLocation, ".gz") ? static_cast<Stream*>(&tempVar): stream;
 
 			// XmlReader xml = XmlReader::Create(uniprotXmlFileStream);
-
 			/*
+			   while (xml.Read())
+			   {
+			   if (xml.NodeType == XmlNodeType::Element)
+			   {
+			   if (xml.Name == "modification")
+			   {
+			   std::string modification = startingWhitespace->Replace(xml.ReadElementString(), "");
+			   storedKnownModificationsBuilder->appendLine(modification);
+			   }
 			   else if (xml.Name == "entry")
 			   {
 			//if we are up to entry fields in the protein database, then there no more prespecified modifications to read
@@ -207,53 +188,39 @@ namespace UsefulProteomicsDatabases
 			break;
 			}
 			}
-			}
-			*/
+			}*/
 
-			tinyxml2::XMLNode *xml;
-			tinyxml2::XMLDocument xmlDoc;
-			char proteinDbLocationCharArray[proteinDbLocation.size() + 1];
-			proteinDbLocation.copy(proteinDbLocationCharArray, proteinDbLocation.size() + 1);
-			proteinDbLocationCharArray[proteinDbLocation.size() + 1] = '\0';
-			tinyxml2::XMLError eResult = xmlDoc.LoadFile(proteinDbLocationCharArray);
-			bool failedRead = false;
-			if (failedRead = (eResult != tinyxml2::XML_SUCCESS)) {
-				std::cout << "reading xml file has failed\n";
-				failedRead = true;
+			xmlTextReaderPtr reader;
+			reader = xmlNewTextReaderFilename(proteinDbLocation.c_str());
+
+			while (xmlTextReaderRead(reader)){
+				if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
+					char* Name = (char*) xmlTextReaderName(reader);
+					if (std::string(Name) == "modification") { 
+						char* Text = (char*) xmlTextReaderReadString(reader);
+						std::string modification = std::regex_replace(Text, *startingWhitespace, "");
+						storedKnownModificationsBuilder->appendLine(modification);
+						delete [] Text;
+					}
+					else if (std::string(Name) == "entry") {
+						std::vector<std::tuple<Modification*, std::string>> errors;
+						protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? 
+							std::vector<Modification*>() : 
+							std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
+						break;
+					}
+
+					delete [] Name;
+				}
 			}
 
-			if (!failedRead) {
-				xml = xmlDoc.FirstChild();
-				bool leave = true;
-				GetPtmListFromProteinXmlHelper(xml->FirstChild(), storedKnownModificationsBuilder, startingWhitespace, leave);
-			}
 			delete startingWhitespace;
-			// delete storedKnownModificationsBuilder;
-			return protein_xml_modlist_general;
 			delete storedKnownModificationsBuilder;
+			return protein_xml_modlist_general;
 		}
-		// std::cout << "ProteinDbLoader:: GetPtmListFromProteinXml not supported right now. Use fasta files. "<< std::endl;
+		std::cout << "Xml file failed. "<< std::endl;
 		std::vector<Modification*> tmp;
 		return tmp;
-	}
-
-
-	void ProteinDbLoader::GetPtmListFromProteinXmlHelper(tinyxml2::XMLNode *xml, StringBuilder *storedKnownModificationsBuilder, std::regex *startingWhitespace, bool &leave) {
-		if (!leave) {
-			if (xml->ToElement()->Name() == "modification") {
-				std::string modification = std::regex_replace(xml->ToElement()->GetText(), *startingWhitespace, "");
-				storedKnownModificationsBuilder->appendLine(modification);
-			} else if (xml->ToElement()->Name() == "entry") {
-				std::vector<std::tuple<Modification*, std::string>> errors;
-				protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? std::vector<Modification*>() : std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
-				leave = true;
-			}
-			if (!xml->NoChildren())
-				GetPtmListFromProteinXmlHelper(xml->FirstChild(), storedKnownModificationsBuilder, startingWhitespace, leave);
-
-			if (xml->Parent()->LastChild() != xml)
-				GetPtmListFromProteinXmlHelper(xml->FirstChild(), storedKnownModificationsBuilder, startingWhitespace, leave);
-		}
 	}
 
 	std::vector<Protein*> ProteinDbLoader::LoadProteinFasta(const std::string &proteinDbLocation,
