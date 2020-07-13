@@ -31,7 +31,6 @@ fi
 
 AC_LANG_PUSH([C++])
 AX_CHECK_COMPILE_FLAG([-Wno-delete-non-virtual-dtor], [CXXFLAGS="$CXXFLAGS -Wno-delete-non-virtual-dtor"],,[$ERROR_ON_UNKNOWN_OPTIONS])
-#AC_LANG_POP([C++])
 
 # Checks for libraries.
 
@@ -43,10 +42,6 @@ AC_CHECK_HEADER([zlib.h],
 AC_CHECK_HEADER([math.h],
 [],
 [AC_MSG_ERROR(Couldn't find math.h)])
-
-AC_CHECK_HEADER([libxml2/libxml/xmlreader.h],
-[],
-[AC_MSG_ERROR(Couldn't find libxml/xmlreader.h)])
 
 AC_CHECK_HEADER([cereal/cereal.hpp],
 [],
@@ -70,13 +65,35 @@ AX_XSDCXX
 dnl ==================================================
 AC_MSG_CHECKING(for mzLib main directory)
 AC_ARG_WITH(mzlib_dir,
- [  --with-mzlib-dir=dir               Main mzLib directory (default=$PWD)],
+ [  --with-mzlib-dir=dir            Main mzLib directory (default=$PWD)],
      mzlib_dir="${withval}", mzlib_dir="")
          if test "x$mzlib_dir" = "x" ; then
                 mzlib_dir=$PWD
          fi
      AC_MSG_RESULT(${mzlib_dir})
      AC_SUBST(mzlib_dir)
+dnl ==================================================
+
+dnl ==================================================
+AC_MSG_CHECKING(for libxml2)
+AC_ARG_WITH(libxml2_dir,
+ [  --with-libxml2-dir=dir          libxml2 directory (default=/usr/include/libxml2/)],
+     libxml2_dir="${withval}", libxml2_dir="")
+         if test "x$libxml2_dir" = "x" ; then
+                libxml2_dir=/usr/include/libxml2
+         fi
+     AC_MSG_RESULT(${libxml2_dir})
+
+     save_CXXFLAGS="$CXXFLAGS"
+     save_CPPFLAGS="$CPPFLAGS"
+     CXXFLAGS="$save_CXXFLAGS -I$libxml2_dir" 
+     CPPFLAGS="$save_CPPFLAGS -I$libxml2_dir" 
+     AC_CHECK_HEADER([libxml/xmlreader.h],
+     [],
+     [AC_MSG_ERROR(Couldn't find libxml/xmlreader.h)])
+     CXXFLAGS="$save_CXXFLAGS"
+     CPPFLAGS="$save_CPPFLAGS"
+     AC_SUBST(libxml2_dir)
 dnl ==================================================
 
 

@@ -622,6 +622,7 @@ ac_includes_default="\
 #endif"
 
 ac_subst_vars='LTLIBOBJS
+libxml2_dir
 mzlib_dir
 XSDCXX_CPPFLAGS
 XSDCXX
@@ -700,6 +701,7 @@ with_libxerces_c_prefix
 with_xsdcxx
 with_xsdcxx_inc
 with_mzlib_dir
+with_libxml2_dir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1340,7 +1342,8 @@ Optional Packages:
                           check PATH (ARG=yes); disable (ARG=no)
   --with-xsdcxx-inc=[DIR] path to CodeSynthesis XSD headers (ARG=path); use
                           standard prefix (ARG=); disable (ARG=no)
-  --with-mzlib-dir=dir               Main mzLib directory (default=$PWD)
+  --with-mzlib-dir=dir            Main mzLib directory (default=$PWD)
+  --with-libxml2-dir=dir          libxml2 directory (default=/usr/include/libxml2/)
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -4626,7 +4629,6 @@ else
   :
 fi
 
-#AC_LANG_POP([C++])
 
 # Checks for libraries.
 
@@ -5038,15 +5040,6 @@ if test "x$ac_cv_header_math_h" = xyes; then :
 
 else
   as_fn_error $? "Couldn't find math.h" "$LINENO" 5
-fi
-
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "libxml2/libxml/xmlreader.h" "ac_cv_header_libxml2_libxml_xmlreader_h" "$ac_includes_default"
-if test "x$ac_cv_header_libxml2_libxml_xmlreader_h" = xyes; then :
-
-else
-  as_fn_error $? "Couldn't find libxml/xmlreader.h" "$LINENO" 5
 fi
 
 
@@ -6853,6 +6846,38 @@ fi
          fi
      { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${mzlib_dir}" >&5
 $as_echo "${mzlib_dir}" >&6; }
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
+$as_echo_n "checking for libxml2... " >&6; }
+
+# Check whether --with-libxml2_dir was given.
+if test "${with_libxml2_dir+set}" = set; then :
+  withval=$with_libxml2_dir; libxml2_dir="${withval}"
+else
+  libxml2_dir=""
+fi
+
+         if test "x$libxml2_dir" = "x" ; then
+                libxml2_dir=/usr/include/libxml2
+         fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${libxml2_dir}" >&5
+$as_echo "${libxml2_dir}" >&6; }
+
+     save_CXXFLAGS="$CXXFLAGS"
+     save_CPPFLAGS="$CPPFLAGS"
+     CXXFLAGS="$save_CXXFLAGS -I$libxml2_dir"
+     CPPFLAGS="$save_CPPFLAGS -I$libxml2_dir"
+     ac_fn_cxx_check_header_mongrel "$LINENO" "libxml/xmlreader.h" "ac_cv_header_libxml_xmlreader_h" "$ac_includes_default"
+if test "x$ac_cv_header_libxml_xmlreader_h" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find libxml/xmlreader.h" "$LINENO" 5
+fi
+
+
+     CXXFLAGS="$save_CXXFLAGS"
+     CPPFLAGS="$save_CPPFLAGS"
 
 
 
