@@ -23,6 +23,8 @@ Test/TestPeptideWithSetMods
 Test/TestPtmListLoader
 Test/TestModFits
 Test/TestChromatogram
+Test/TestMgf
+Test/tester.mgf
 Test/elements.dat
 Test/TestMzML
 Test/TestFlashLFQ/TestFlashLFQ
