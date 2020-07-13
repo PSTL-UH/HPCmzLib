@@ -18,8 +18,6 @@
 #include <vector>
 #include <type_traits>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-namespace MassSpectrometry { class ChromatographicPeak; }
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey
 // Modified work Copyright 2016 Stefan Solntsev
@@ -102,14 +100,12 @@ namespace MassSpectrometry
                 return this->getYArray()[index];
             }
         
-        //virtual TPeak GetApex(DoubleRange *timeRange)
-        TPeak GetApex(DoubleRange *timeRange)
+        virtual TPeak GetApex(DoubleRange *timeRange)
             {
                 return GetApex(timeRange->getMinimum(), timeRange->getMaximum());
             }
         
-        //virtual TPeak GetApex(double mintime, double maxTime)
-        TPeak GetApex(double mintime, double maxTime)
+        virtual TPeak GetApex(double mintime, double maxTime)
             {
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
@@ -140,15 +136,13 @@ namespace MassSpectrometry
                 return this->GetPeak(apexIndex);
             }
         
-        //virtual ChromatographicElutionProfile<TPeak> *GetElutionProfile(DoubleRange *timeRange)
-        ChromatographicElutionProfile<TPeak> *GetElutionProfile(DoubleRange *timeRange)
+        virtual ChromatographicElutionProfile<TPeak> *GetElutionProfile(DoubleRange *timeRange)
             {
                 return GetElutionProfile(timeRange->getMinimum(), timeRange->getMaximum());
             }
         
-        //virtual ChromatographicElutionProfile<TPeak> *GetElutionProfile(double mintime, double maxTime)
-        ChromatographicElutionProfile<TPeak> *GetElutionProfile(double mintime, double maxTime)
-            {
+        virtual ChromatographicElutionProfile<TPeak> *GetElutionProfile(double mintime, double maxTime)
+           {
                 //int index = Array::BinarySearch(getXArray(), mintime);
                 std::vector<double> d = this->getXArray();
                 // int index = std::binary_search(d.begin(), d.end(), mintime);
@@ -168,8 +162,7 @@ namespace MassSpectrometry
                 return res;
             }
         
-        //virtual TPeak GetApex()
-        TPeak GetApex()
+        virtual TPeak GetApex()
             {
                 if (this->getSize() == 0)
                 {
