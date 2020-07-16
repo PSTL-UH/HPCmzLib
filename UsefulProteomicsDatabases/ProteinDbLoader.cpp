@@ -75,10 +75,11 @@ namespace UsefulProteomicsDatabases
 			//modsDictionary = GetModificationDict(new HashSet<Modification>(prespecified.Concat(allKnownModifications)));
 			//
 			// SHANE: both lines for modsDictionry was already commented out. 
-			// I have to really modify the hell out of the two commented lines below as C# allows for lazy programming
-			// IdToPossibleMods = GetModificationDict(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
-			// IdWithMotifToMod = GetModificationDictWithMotifs(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
-
+			// I have to really modify the hell out of the two ifedefed out lines below as C# allows for lazy programming
+#ifdef ORIG
+			IdToPossibleMods = GetModificationDict(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
+			IdWithMotifToMod = GetModificationDictWithMotifs(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
+#endif
 			std::vector<Modification*> concatenatedModification;
 
 			for (auto i : prespecified)
@@ -106,34 +107,41 @@ namespace UsefulProteomicsDatabases
 		char proteinDbLocationCharArray[proteinDbLocation.size() + 1];
 		strcpy(proteinDbLocationCharArray, proteinDbLocation.c_str());
 		reader = xmlNewTextReaderFilename(proteinDbLocationCharArray);
-		/* while (reader->Read())
-		   {
-		   if (reader->NodeType() == XmlNodeType::Element)
-		   {
-		   block->ParseElement(reader->Name(), reader);
-		   }
-		   if (reader->NodeType() == XmlNodeType::EndElement || reader->IsEmptyElement())
-		   {
-		   Protein *newProtein = block->ParseEndElement(reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
-		   if (newProtein != nullptr)
-		   {
-		   targets.push_back(newProtein);
-		   }
-		   }
-		   } */
+#ifdef ORIG	 
+		while (reader->Read())
+		{
+			if (reader->NodeType() == XmlNodeType::Element)
+			{
+				block->ParseElement(reader->Name(), reader);
+			}
+			if (reader->NodeType() == XmlNodeType::EndElement || reader->IsEmptyElement())
+			{
+				Protein *newProtein = block->ParseEndElement(reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
+				if (newProtein != nullptr)
+				{
+					targets.push_back(newProtein);
+				}
+			}
+		}
+#endif
 
-		while (xmlTextReaderRead(reader)) {
+		int debugReader;
+		while ((debugReader = xmlTextReaderRead(reader)) == 1) {
 			if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
-				block->ParseElement(std::string((char *)xmlTextReaderName(reader)), &reader);
+				std::string name = (char *)xmlTextReaderName(reader);
+				block->ParseElement(name , &reader);
 			} else if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::EndElement || xmlTextReaderIsEmptyElement(reader)) { 
 				Protein *newProtein = block->ParseEndElement(&reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
 				if (newProtein != nullptr)
 					targets.push_back(newProtein);
 			}
-		} 
+		}
+		xmlFreeTextReader(reader);
 
-		delete block;
-		delete substituteWhitespace;
+		if (debugReader == -1)
+			std::cout << "There MAY have been an issue the xmlprotein entry that was just done.\n" 
+				<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
+				<< "This message may pop up twice.\n\n";
 
 		std::vector<Protein*> decoys = DecoyProteinGenerator::GenerateDecoys(targets, decoyType, maxThreads);
 		// SHANE: C++ doesn't have a way to inline concatenate objects. Need to do this manually.
@@ -141,11 +149,18 @@ namespace UsefulProteomicsDatabases
 
 		std::vector<Protein*> proteinsToExpand;
 		if (generateTargets) 
-			for (auto i : targets) 
+			for (Protein* i : targets) 
 				proteinsToExpand.push_back(i);			
 
 		for (auto i : decoys) 
 			proteinsToExpand.push_back(i);
+
+
+		delete block;
+		delete substituteWhitespace;
+		for (auto i : prespecified)
+			delete i;
+
 		return proteinsToExpand;
 	}
 
@@ -160,40 +175,42 @@ namespace UsefulProteomicsDatabases
 		}
 		else
 		{
-			// last_database_location = proteinDbLocation;
-			StringBuilder *storedKnownModificationsBuilder = new StringBuilder();
-			// auto stream = FileStream(proteinDbLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
+
 			std::regex *startingWhitespace = new std::regex(R"(/^\s+/gm)");
-			// GZipStream tempVar(stream, CompressionMode::Decompress);
-			// Stream *uniprotXmlFileStream = StringHelper::endsWith(proteinDbLocation, ".gz") ? static_cast<Stream*>(&tempVar): stream;
+			StringBuilder *storedKnownModificationsBuilder = new StringBuilder();
+#ifdef ORIG
+			last_database_location = proteinDbLocation;
+			auto stream = FileStream(proteinDbLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
+			GZipStream tempVar(stream, CompressionMode::Decompress);
+			Stream *uniprotXmlFileStream = StringHelper::endsWith(proteinDbLocation, ".gz") ? static_cast<Stream*>(&tempVar): stream;
 
-			// XmlReader xml = XmlReader::Create(uniprotXmlFileStream);
-			/*
-			   while (xml.Read())
-			   {
-			   if (xml.NodeType == XmlNodeType::Element)
-			   {
-			   if (xml.Name == "modification")
-			   {
-			   std::string modification = startingWhitespace->Replace(xml.ReadElementString(), "");
-			   storedKnownModificationsBuilder->appendLine(modification);
-			   }
-			   else if (xml.Name == "entry")
-			   {
-			//if we are up to entry fields in the protein database, then there no more prespecified modifications to read
-			//and we can begin processing all the lines we have read.
-			//This block of code does not process information in any of the entries.
-			std::vector<(Modification, string)> errors;
-			protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? std::vector<Modification*>() : PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors).ToList();
-			break;
+			XmlReader xml = XmlReader::Create(uniprotXmlFileStream);
+			while (xml.Read())
+			{
+				if (xml.NodeType == XmlNodeType::Element)
+				{
+					if (xml.Name == "modification")
+					{
+						std::string modification = startingWhitespace->Replace(xml.ReadElementString(), "");
+						storedKnownModificationsBuilder->appendLine(modification);
+					}
+					else if (xml.Name == "entry")
+					{
+						//if we are up to entry fields in the protein database, then there no more prespecified modifications to read
+						//and we can begin processing all the lines we have read.
+						//This block of code does not process information in any of the entries.
+						std::vector<(Modification, string)> errors;
+						protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? std::vector<Modification*>() : PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors).ToList();
+						break;
+					}
+				}
 			}
-			}
-			}*/
-
+#endif
 			xmlTextReaderPtr reader;
 			reader = xmlNewTextReaderFilename(proteinDbLocation.c_str());
 
-			while (xmlTextReaderRead(reader)){
+			int debugReader;
+			while ((debugReader = xmlTextReaderRead(reader)) == 1) {
 				if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
 					char* Name = (char*) xmlTextReaderName(reader);
 					if (std::string(Name) == "modification") { 
@@ -213,6 +230,12 @@ namespace UsefulProteomicsDatabases
 					delete [] Name;
 				}
 			}
+			xmlFreeTextReader(reader);
+
+			if (debugReader == -1)
+				std::cout << "There MAY have been an issue the xmlprotein entry that was just done.\n" 
+					<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
+					<< "This message may pop up twice.\n\n";
 
 			delete startingWhitespace;
 			delete storedKnownModificationsBuilder;

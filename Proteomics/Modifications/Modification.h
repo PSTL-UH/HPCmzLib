@@ -94,11 +94,11 @@ namespace Proteomics
                      const std::string &_locationRestriction = "Unassigned.",
                      Chemistry::ChemicalFormula *_chemicalFormula = nullptr,
                      std::optional<double> _monoisotopicMass = std::nullopt,
-                     std::unordered_map<std::string, std::vector<std::string>> _databaseReference = std::unordered_map<std::string, std::vector<std::string>>(),
-                     std::unordered_map<std::string,std::vector<std::string>> _taxonomicRange = std::unordered_map<std::string, std::vector<std::string>>(),
+                     std::unordered_map<std::string, std::vector<std::string>> _databaseReference	= std::unordered_map<std::string, std::vector<std::string>>(),
+                     std::unordered_map<std::string, std::vector<std::string>> _taxonomicRange		= std::unordered_map<std::string, std::vector<std::string>>(),
                      std::vector<std::string> _keywords = std::vector<std::string>(),
-                     std::unordered_map<DissociationType,std::vector<double>> _neutralLosses = std::unordered_map<DissociationType, std::vector<double>>(),
-                     std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons = std::unordered_map<DissociationType, std::vector<double>>(),
+                     std::unordered_map<DissociationType, std::vector<double>> _neutralLosses	= std::unordered_map<DissociationType, std::vector<double>>(),
+                     std::unordered_map<DissociationType, std::vector<double>> _diagnosticIons	= std::unordered_map<DissociationType, std::vector<double>>(),
                      const std::string &_fileOrigin = "");
 
         ~Modification()

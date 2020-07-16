@@ -43,27 +43,28 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". TestUpdateUnimod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUnimod();
 
+#ifdef LATER
 	std::cout << ++i << ". TestUpdatePsiMod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdatePsiMod();
 
-#ifdef LATER
 	std::cout << ++i << ". TestUpdateElements" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateElements();
-
+#endif
 	std::cout << ++i << ". TestUpdateUniprot" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUniprot();
 
 	std::cout << ++i << ". FilesEqualHash" << std::endl;
 	Test::TestDatabaseLoaders::FilesEqualHash();
-#endif
 
+#ifdef LATER
 	std::cout << ++i << ". FilesLoading" << std::endl;
 	Test::TestDatabaseLoaders::FilesLoading();
 
-#ifdef LATER
+#endif
 	std::cout << ++i << ". SampleLoadModWithLongMotif" << std::endl;
 	Test::TestDatabaseLoaders::SampleLoadModWithLongMotif();
 
+#ifdef LATER
 	std::cout << ++i << ". SampleModFileLoading" << std::endl;
 	Test::TestDatabaseLoaders::SampleModFileLoading();
 
@@ -138,14 +139,14 @@ namespace Test
 		std::unordered_map<std::string, Modification*> unknownModifications;
 		std::vector<Modification*> tempMods;
 		std::vector<std::string> tempStringVector;
-		auto protein = ProteinDbLoader::LoadProteinXML(testdir + "/oblm.xml", true, DecoyType::Reverse,
+		std::vector<Protein*> protein = ProteinDbLoader::LoadProteinXML(testdir + "/oblm.xml", true, DecoyType::Reverse,
 				tempMods, false,
 				tempStringVector,
 				unknownModifications);
 		Assert::AreEqual(0, (int)protein[0]->getOneBasedPossibleLocalizedModifications().size());
 		auto variant = protein[0]->GetVariantProteins()[0];
 		protein[0]->getNonVariantProtein()->RestoreUnfilteredModifications();
-		Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein()->getOneBasedPossibleLocalizedModifications().size());
+		Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein()->getOneBasedPossibleLocalizedModifications().size());	
 	}
 
 	void TestDatabaseLoaders::TestUpdateUnimod()
@@ -164,7 +165,6 @@ namespace Test
 		Loaders::UpdatePsiMod(psimodLocation);
 	}
 
-#ifdef LATER
 	void TestDatabaseLoaders::TestUpdateElements()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
@@ -185,6 +185,7 @@ namespace Test
 
 	void TestDatabaseLoaders::FilesEqualHash()
 	{
+#ifdef ORIG		
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		auto fake = testdir + "/fake.txt";
 		StreamWriter file = StreamWriter(fake);
@@ -206,8 +207,34 @@ namespace Test
 		StreamWriter file = StreamWriter(fake);
 		file.WriteLine("fake");
 		Loaders::UpdateElements(fake);
-	}
 #endif
+		std::string testdir = std::experimental::filesystem::current_path().string();
+		std::string fake = testdir + "fake.txt";
+
+		std::ofstream file(fake);
+		file << "fake\n";
+		Loaders::UpdateUniprot(fake);
+		fake = testdir + "/fake1.txt";
+		
+		std::ofstream file2(fake);
+		file2 << "fake\n";
+		Loaders::UpdateUnimod(fake);
+		fake = testdir + "/fake2.txt";
+
+		std::ofstream file3(fake);
+		file3 << "fake\n";
+		Loaders::UpdateUnimod(fake);
+		fake = testdir + "/fake3.txt";
+
+		std::ofstream file4(fake);
+		file4 << "fake\n";
+		Loaders::UpdateElements(fake);
+
+		file.close();
+		file2.close();
+		file3.close();
+		file4.close();
+	}
 
 	void TestDatabaseLoaders::FilesLoading()
 	{
@@ -340,52 +367,84 @@ namespace Test
 		std::experimental::filesystem::remove("test.txt");
 	}
 
-#ifdef LATER
 	void TestDatabaseLoaders::SampleLoadModWithLongMotif()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
-		ModificationMotif motif;
-		ModificationMotif::TryGetMotif("msgRgk", motif);
-		Modification *testMod = new Modification("Asymmetric dimethylarginine", "", "Test", "", motif, "Anywhere.", nullptr, std::make_optional(100.0), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+		ModificationMotif *motif;
+		ModificationMotif::TryGetMotif("msgRgk", &motif);
+		Modification *testMod = new Modification("Asymmetric dimethylarginine", 
+				"", 
+				"Test", 
+				"", 
+				motif, 
+				"Anywhere.", 
+				nullptr, 
+				std::optional<double>(100.0));
+
 		std::vector<Modification*> allKnownMods = {testMod};
 
-		Assert::That(testMod->getValidModification());
+		Assert::IsTrue(testMod->getValidModification());
 
-		Assert::That(testMod->getTarget()->ToString() == "msgRgk");
+		Assert::IsTrue(testMod->getTarget()->ToString() == "msgRgk");
 
-		std::unordered_map<string, Modification> unk;
-		Protein *protein = ProteinDbLoader::LoadProteinXML(testdir + "DatabaseTests", "modified_start.xml"), true, DecoyType::None, allKnownMods, false, std::vector<std::string>(), unk).front();
+		std::unordered_map<std::string, Modification*> unknownModifications;
+		std::vector<std::string> modTypesToExclude;
 
-		Assert::That(StringHelper::startsWith(protein->getBaseSequence(), "MSGRGK"));
-		Assert::That(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
-		Assert::That(protein->getOneBasedPossibleLocalizedModifications().First()->Value->First() == testMod);
+		Protein *protein = ProteinDbLoader::LoadProteinXML(testdir + "/modified_start.xml",
+				true,
+				DecoyType::None,
+				allKnownMods,
+				false,
+				modTypesToExclude,
+				unknownModifications,
+				1,
+				1,
+				1)[0];
 
-		delete testMod;
+		bool startsWith = true;
+		std::string baseSequence = protein->getBaseSequence();
+		std::string startsWithStr = "MSGRGK";
+		for (int i = 0; i < 6; i++) {	
+			if (baseSequence[i] != startsWithStr[i])
+				startsWith = false;
+		}
+
+		Assert::IsTrue(startsWith);
+		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
+		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0] == testMod);
+
+		delete motif;
+		delete protein;
+		
+		for (auto i : allKnownMods)
+			delete i;
+
 	}
-
+	
 	void TestDatabaseLoaders::SampleModFileLoading()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests", "sampleModFile.txt"), errors);
+		PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFile.txt", errors);
 	}
 
 	void TestDatabaseLoaders::SampleModFileLoadingFail1()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		auto b = PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests", "sampleModFileFail1.txt"), errors);
-		Assert::AreEqual(0, b.size()());
+		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail1.txt", errors);
+		Assert::AreEqual(0, b.size());
 	}
 
 	void TestDatabaseLoaders::SampleModFileLoadingFail2()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		auto b = PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests", "sampleModFileFail2.txt"), errors);
-		Assert::AreEqual(0, b.size()());
+		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail2.txt", errors);
+		Assert::AreEqual(0, b.size());
 	}
 
+#ifdef LATER
 	void TestDatabaseLoaders::SampleModFileLoadingFail3()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();

@@ -341,9 +341,9 @@ namespace UsefulProteomicsDatabases
 			}
 			if (getReadingOrganism())
 			{
-				if ((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type") == "scientific")
+				if (((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")) == "scientific")
 				{
-					setOrganism((char *)xmlTextReaderReadString(*xml));
+					setOrganism((char *)xmlTextReaderReadString(*xml));	
 				}
 			}
 
