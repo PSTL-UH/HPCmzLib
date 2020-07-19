@@ -69,7 +69,8 @@ namespace UsefulProteomicsDatabases
 		// allKnownModifications = allKnownModifications ? allKnownModifications : std::vector<Modification*>();
 		// modTypesToExclude = modTypesToExclude ? modTypesToExclude : std::vector<std::string>();
 
-		//Dictionary<string, IList<Modification>> modsDictionary = new Dictionary<string, IList<Modification>>();
+		//Dictionary<string, IList<Modification>> modsDictionary = new Dictionary<string, IList<Modification>>();	
+		std::vector<Modification*> concatenatedModification;
 		if (prespecified.size() > 0 || allKnownModifications.size() > 0)
 		{
 			//modsDictionary = GetModificationDict(new HashSet<Modification>(prespecified.Concat(allKnownModifications)));
@@ -80,7 +81,6 @@ namespace UsefulProteomicsDatabases
 			IdToPossibleMods = GetModificationDict(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
 			IdWithMotifToMod = GetModificationDictWithMotifs(std::unordered_set<Modification*>(prespecified.Concat(allKnownModifications)));
 #endif
-			std::vector<Modification*> concatenatedModification;
 
 			for (auto i : prespecified)
 				concatenatedModification.push_back(i);
@@ -126,10 +126,12 @@ namespace UsefulProteomicsDatabases
 #endif
 
 		int debugReader;
+		xmlChar *delXmlChar1;
 		while ((debugReader = xmlTextReaderRead(reader)) == 1) {
 			if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
-				std::string name = (char *)xmlTextReaderName(reader);
-				block->ParseElement(name , &reader);
+				std::string name = (char *)(delXmlChar1 = xmlTextReaderName(reader));
+				block->ParseElement(name, &reader);
+				xmlFree(delXmlChar1);
 			} else if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::EndElement || xmlTextReaderIsEmptyElement(reader)) { 
 				Protein *newProtein = block->ParseEndElement(&reader, modTypesToExclude, unknownModifications, isContaminant, proteinDbLocation);
 				if (newProtein != nullptr)
@@ -137,9 +139,10 @@ namespace UsefulProteomicsDatabases
 			}
 		}
 		xmlFreeTextReader(reader);
+		xmlCleanupParser();
 
 		if (debugReader == -1)
-			std::cout << "There MAY have been an issue the xmlprotein entry that was just done.\n" 
+			std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
 				<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
 				<< "This message may pop up twice.\n\n";
 
@@ -148,13 +151,12 @@ namespace UsefulProteomicsDatabases
 		// std::vector<Protein*> proteinsToExpand = generateTargets ? targets.Concat(decoys) : decoys;
 
 		std::vector<Protein*> proteinsToExpand;
-		if (generateTargets) 
-			for (Protein* i : targets) 
-				proteinsToExpand.push_back(i);			
+		if (generateTargets)
+			for (Protein* i : targets)
+				proteinsToExpand.push_back(i);
 
-		for (auto i : decoys) 
+		for (auto i : decoys)
 			proteinsToExpand.push_back(i);
-
 
 		delete block;
 		delete substituteWhitespace;
@@ -210,30 +212,31 @@ namespace UsefulProteomicsDatabases
 			reader = xmlNewTextReaderFilename(proteinDbLocation.c_str());
 
 			int debugReader;
+			xmlChar *delXmlChar1, *delXmlChar2;
 			while ((debugReader = xmlTextReaderRead(reader)) == 1) {
 				if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
-					char* Name = (char*) xmlTextReaderName(reader);
-					if (std::string(Name) == "modification") { 
-						char* Text = (char*) xmlTextReaderReadString(reader);
+					std::string name((char*) (delXmlChar1 = xmlTextReaderName(reader)));
+					xmlFree(delXmlChar1);
+					if (name == "modification") { 
+						char* Text = (char*) (delXmlChar2 = xmlTextReaderReadString(reader));
 						std::string modification = std::regex_replace(Text, *startingWhitespace, "");
 						storedKnownModificationsBuilder->appendLine(modification);
-						delete [] Text;
+						xmlFree(delXmlChar2);
 					}
-					else if (std::string(Name) == "entry") {
+					else if (name == "entry") {
 						std::vector<std::tuple<Modification*, std::string>> errors;
 						protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? 
 							std::vector<Modification*>() : 
 							std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
 						break;
 					}
-
-					delete [] Name;
 				}
 			}
 			xmlFreeTextReader(reader);
+			xmlCleanupParser();
 
 			if (debugReader == -1)
-				std::cout << "There MAY have been an issue the xmlprotein entry that was just done.\n" 
+				std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
 					<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
 					<< "This message may pop up twice.\n\n";
 

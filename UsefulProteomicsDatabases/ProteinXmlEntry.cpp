@@ -320,11 +320,13 @@ namespace UsefulProteomicsDatabases
 		//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
 		//        switch (elementName)
 		//ORIGINAL LINE: case "accession":
+		xmlChar *delXmlChar1, *delXmlChar2, *delXmlChar3, *delXmlChar4, *delXmlChar5;
 		if (elementName == "accession")
 		{
 			if (getAccession() == "")
 			{
-				setAccession((char *)xmlTextReaderReadString(*xml));
+				setAccession((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
+				xmlFree(delXmlChar1);
 			}
 
 		}
@@ -333,7 +335,9 @@ namespace UsefulProteomicsDatabases
 		{
 			if (xmlTextReaderDepth(*xml) == 2 && !getReadingGene() && !getReadingOrganism())
 			{
-				setName((char *)xmlTextReaderReadString(*xml));
+				setName((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
+				xmlFree(delXmlChar1);
+				
 			}
 			if (getReadingGene() && !getReadingOrganism())
 			{
@@ -341,10 +345,12 @@ namespace UsefulProteomicsDatabases
 			}
 			if (getReadingOrganism())
 			{
-				if (((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")) == "scientific")
+				if (std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))) == "scientific")
 				{
-					setOrganism((char *)xmlTextReaderReadString(*xml));	
+					setOrganism((char *) (delXmlChar2 = xmlTextReaderReadString(*xml)));
+					xmlFree(delXmlChar2);
 				}
+				xmlFree(delXmlChar1);
 			}
 
 		}
@@ -368,69 +374,78 @@ namespace UsefulProteomicsDatabases
 		{
 			if (getFullName() == "")
 			{
-				setFullName((char *)xmlTextReaderReadString(*xml));
+				setFullName((char *) (delXmlChar1 = xmlTextReaderReadString(*xml)));
+				xmlFree(delXmlChar1);
 			}
 
 		}
 		//ORIGINAL LINE: case "feature":
 		else if (elementName == "feature")
 		{
-			setFeatureType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
-			setFeatureDescription(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"description")));
-
+			setFeatureType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
+			setFeatureDescription(std::string((char*)(delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description"))));
+			xmlFree(delXmlChar1);
+			xmlFree(delXmlChar2);
 		}
 		//ORIGINAL LINE: case "subfeature":
 		else if (elementName == "subfeature")
 		{
-			setSubFeatureType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
-			setSubFeatureDescription(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"description")));
+			setSubFeatureType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
+			setSubFeatureDescription(std::string((char*) (delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description"))));
+			xmlFree(delXmlChar1);
+			xmlFree(delXmlChar2);
 
 		}
 		//ORIGINAL LINE: case "original":
 		else if (elementName == "original")
 		{
-			setOriginalValue((char *)xmlTextReaderReadString(*xml));
+			setOriginalValue((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
+			xmlFree(delXmlChar1);
 
 		}
 		//ORIGINAL LINE: case "variation":
 		else if (elementName == "variation")
 		{
-			setVariationValue((char *)xmlTextReaderReadString(*xml));
-
+			setVariationValue((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
+			xmlFree(delXmlChar1);
 		}
 		//ORIGINAL LINE: case "dbReference":
 		else if (elementName == "dbReference")
 		{
 			getPropertyTypes().clear();
 			getPropertyValues().clear();
-			setDBReferenceType(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
-			setDBReferenceId(std::string((char*)xmlTextReaderGetAttribute(*xml, (xmlChar*)"id")));
-
+			setDBReferenceType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
+			setDBReferenceId(std::string((char*)(delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"id"))));
+			xmlFree(delXmlChar1);
+			xmlFree(delXmlChar2);
 		}
 		//ORIGINAL LINE: case "property":
 		else if (elementName == "property")
 		{
-			getPropertyTypes().push_back(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"type")));
-			getPropertyValues().push_back(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"value")));
-
+			getPropertyTypes().push_back(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
+			getPropertyValues().push_back(std::string((char *) (delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"value"))));
+			xmlFree(delXmlChar1);
+			xmlFree(delXmlChar2);
 		}
 		//ORIGINAL LINE: case "position":
 		else if (elementName == "position")
 		{
-			setOneBasedFeaturePosition(std::stoi(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position"))));
+			setOneBasedFeaturePosition(std::stoi(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")))));
+			xmlFree(delXmlChar1);
 
 		}
 		//ORIGINAL LINE: case "subposition":
 		else if (elementName == "subposition")
 		{
-			setOneBasedFeatureSubPosition(std::stoi(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"subposition"))));
-
+			setOneBasedFeatureSubPosition(std::stoi(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"subposition")))));
+			xmlFree(delXmlChar1);
 		}
 		//ORIGINAL LINE: case "begin":
 		else if (elementName == "begin")
 		{
 			// setOneBasedBeginPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
-			std::string positionStringToInt = std::string((char *)xmlTextReaderGetAttribute(*xml, (xmlChar*) "position"));
+			std::string positionStringToInt = std::string((char *)(delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position")));
+			xmlFree(delXmlChar1);
 			bool isAllInt = true;
 
 			for (const char& it : positionStringToInt) {
@@ -448,7 +463,8 @@ namespace UsefulProteomicsDatabases
 		{
 			// setOneBasedEndPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
 
-			std::string positionStringToInt = std::string((char *)xmlTextReaderGetAttribute(*xml, (xmlChar*) "position"));
+			std::string positionStringToInt = std::string((char *)(delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position")));
+			xmlFree(delXmlChar1);
 			bool isAllInt = true;
 
 			for (const char& it : positionStringToInt) {
@@ -464,14 +480,16 @@ namespace UsefulProteomicsDatabases
 		else if (elementName == "sequence")
 		{
 			//setSequence(SubstituteWhitespace->Replace((char *)xmlTextReaderReadString(*xml), ""));
-			setSequence(std::regex_replace((char *)xmlTextReaderReadString(*xml), *SubstituteWhitespace, ""));
+			setSequence(std::regex_replace((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)), *SubstituteWhitespace, ""));
+			xmlFree(delXmlChar1);
 		}
 	}
 
 	Protein *ProteinXmlEntry::ParseEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, bool isContaminant, const std::string &proteinDbLocation)
 	{
 		Protein *protein = nullptr;
-		char* Name = (char*) xmlTextReaderName(*xml);
+		xmlChar *delXmlChar1;
+		char* Name = (char*) (delXmlChar1 = xmlTextReaderName(*xml));
 
 		if (std::string(Name) == "feature")
 		{
@@ -498,7 +516,7 @@ namespace UsefulProteomicsDatabases
 			protein = ParseEntryEndElement(xml, isContaminant, proteinDbLocation, modTypesToExclude, unknownModifications);
 		}
 
-		delete [] Name;
+		xmlFree(delXmlChar1);
 		return protein;
 	}
 
@@ -701,9 +719,13 @@ namespace UsefulProteomicsDatabases
 		setDBReferenceType("");
 		setDBReferenceId("");
 	}
-
+	
 	void ProteinXmlEntry::Clear()
 	{
+		// SHANE: Unknown if needed. 
+		// Probably not needed as program is based off of shallow copies rather than deep copies.
+		// destructor();
+
 		setAccession("");
 		setName("");
 		setFullName("");
@@ -731,5 +753,36 @@ namespace UsefulProteomicsDatabases
 		setGeneNames(std::vector<std::tuple<std::string, std::string>>());
 		setReadingGene(false);
 		setReadingOrganism(false);
+	}
+
+	ProteinXmlEntry::~ProteinXmlEntry() {
+		// SHANE: Project standard seems to be shallow copies
+		// This could destory the protein as it is being made
+		// Need clarification before implementing
+		// destructor();
+	}
+
+	void ProteinXmlEntry::destructor() {	
+		for (auto i : AnnotatedMods)
+			delete i;
+
+		for (auto v : privateOneBasedModifications)
+			for (auto m : v.second)
+				delete m;
+
+		for (auto i : privateProteolysisProducts)
+			delete i;
+
+		for (auto i : privateSequenceVariations)
+			delete i;
+
+		for (auto i : privateDisulfideBonds)
+			delete i;
+
+		for (auto i : privateSpliceSites)
+			delete i;
+
+		for (auto i : privateDatabaseReferences)
+			delete i;
 	}
 }

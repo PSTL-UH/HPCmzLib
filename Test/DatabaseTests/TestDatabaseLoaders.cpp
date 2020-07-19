@@ -60,10 +60,10 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". FilesLoading" << std::endl;
 	Test::TestDatabaseLoaders::FilesLoading();
 
-#endif
 	std::cout << ++i << ". SampleLoadModWithLongMotif" << std::endl;
 	Test::TestDatabaseLoaders::SampleLoadModWithLongMotif();
 
+#endif
 #ifdef LATER
 	std::cout << ++i << ". SampleModFileLoading" << std::endl;
 	Test::TestDatabaseLoaders::SampleModFileLoading();
@@ -139,14 +139,23 @@ namespace Test
 		std::unordered_map<std::string, Modification*> unknownModifications;
 		std::vector<Modification*> tempMods;
 		std::vector<std::string> tempStringVector;
-		std::vector<Protein*> protein = ProteinDbLoader::LoadProteinXML(testdir + "/oblm.xml", true, DecoyType::Reverse,
-				tempMods, false,
+		std::vector<Protein*> protein = ProteinDbLoader::LoadProteinXML(testdir + "/oblm.xml", 
+				true, 
+				DecoyType::Reverse,
+				tempMods, 
+				false,
 				tempStringVector,
 				unknownModifications);
 		Assert::AreEqual(0, (int)protein[0]->getOneBasedPossibleLocalizedModifications().size());
 		auto variant = protein[0]->GetVariantProteins()[0];
 		protein[0]->getNonVariantProtein()->RestoreUnfilteredModifications();
-		Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein()->getOneBasedPossibleLocalizedModifications().size());	
+		Assert::AreEqual(1, (int)protein[0]->getNonVariantProtein()->getOneBasedPossibleLocalizedModifications().size());
+
+		for (auto i : tempMods)
+			delete i;
+
+		for (auto i : protein)
+			delete i;
 	}
 
 	void TestDatabaseLoaders::TestUpdateUnimod()
@@ -390,7 +399,7 @@ namespace Test
 		std::unordered_map<std::string, Modification*> unknownModifications;
 		std::vector<std::string> modTypesToExclude;
 
-		Protein *protein = ProteinDbLoader::LoadProteinXML(testdir + "/modified_start.xml",
+		std::vector<Protein*> protein = ProteinDbLoader::LoadProteinXML(testdir + "/modified_start.xml",
 				true,
 				DecoyType::None,
 				allKnownMods,
@@ -399,10 +408,10 @@ namespace Test
 				unknownModifications,
 				1,
 				1,
-				1)[0];
+				1);
 
 		bool startsWith = true;
-		std::string baseSequence = protein->getBaseSequence();
+		std::string baseSequence = protein[0]->getBaseSequence();
 		std::string startsWithStr = "MSGRGK";
 		for (int i = 0; i < 6; i++) {	
 			if (baseSequence[i] != startsWithStr[i])
@@ -410,13 +419,15 @@ namespace Test
 		}
 
 		Assert::IsTrue(startsWith);
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0] == testMod);
+		Assert::IsTrue(protein[0]->getOneBasedPossibleLocalizedModifications().size() == 1);
+		Assert::IsTrue(protein[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0] == testMod);
 
 		delete motif;
-		delete protein;
 		
 		for (auto i : allKnownMods)
+			delete i;
+
+		for (auto i : protein)
 			delete i;
 
 	}
