@@ -317,27 +317,28 @@ namespace UsefulProteomicsDatabases
 	void ProteinXmlEntry::ParseElement(const std::string &elementName, xmlTextReaderPtr *xml)
 	{
 		int outValue;
-		//C# TO C++ CONVERTER NOTE: The following 'switch' operated on a string variable and was converted to C++ 'if-else' logic:
-		//        switch (elementName)
-		//ORIGINAL LINE: case "accession":
 		xmlChar *delXmlChar1, *delXmlChar2, *delXmlChar3, *delXmlChar4, *delXmlChar5;
 		if (elementName == "accession")
 		{
 			if (getAccession() == "")
 			{
-				setAccession((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
-				xmlFree(delXmlChar1);
+                                auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                                if ( delXmlChar1 != nullptr ) {
+                                    setAccession((char *)delXmlChar1);
+                                    xmlFree(delXmlChar1);
+                                }
 			}
 
 		}
-		//ORIGINAL LINE: case "name":
 		else if (elementName == "name")
 		{
 			if (xmlTextReaderDepth(*xml) == 2 && !getReadingGene() && !getReadingOrganism())
 			{
-				setName((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
-				xmlFree(delXmlChar1);
-				
+                                auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                                if ( delXmlChar1 != nullptr ) {
+                                    setName((char *)delXmlChar1);
+                                    xmlFree(delXmlChar1);
+                                }				
 			}
 			if (getReadingGene() && !getReadingOrganism())
 			{
@@ -354,13 +355,11 @@ namespace UsefulProteomicsDatabases
 			}
 
 		}
-		//ORIGINAL LINE: case "gene":
 		else if (elementName == "gene")
 		{
 			setReadingGene(true);
 
 		}
-		//ORIGINAL LINE: case "organism":
 		else if (elementName == "organism")
 		{
 			if (getOrganism() == "")
@@ -369,85 +368,121 @@ namespace UsefulProteomicsDatabases
 			}
 
 		}
-		//ORIGINAL LINE: case "fullName":
 		else if (elementName == "fullName")
 		{
 			if (getFullName() == "")
 			{
-				setFullName((char *) (delXmlChar1 = xmlTextReaderReadString(*xml)));
-				xmlFree(delXmlChar1);
+                                auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                                if ( delXmlChar1 != nullptr ) {
+                                    setFullName((char *) delXmlChar1);
+                                    xmlFree(delXmlChar1);
+                                }
 			}
 
 		}
-		//ORIGINAL LINE: case "feature":
 		else if (elementName == "feature")
 		{
-			setFeatureType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
-			setFeatureDescription(std::string((char*)(delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description"))));
-			xmlFree(delXmlChar1);
-			xmlFree(delXmlChar2);
+                    auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type");
+                    if ( delXmlChar1 != nullptr ) {
+			setFeatureType(std::string((char *) delXmlChar1));
+                        xmlFree(delXmlChar1);
+                    }
+                    auto delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description");
+                    if ( delXmlChar2 != nullptr ) {
+                        setFeatureDescription(std::string((char*)delXmlChar2));
+                        xmlFree(delXmlChar2);
+                    }
 		}
-		//ORIGINAL LINE: case "subfeature":
 		else if (elementName == "subfeature")
 		{
-			setSubFeatureType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
-			setSubFeatureDescription(std::string((char*) (delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description"))));
-			xmlFree(delXmlChar1);
-			xmlFree(delXmlChar2);
-
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type");
+                        if ( delXmlChar1 != nullptr ) {
+                            setSubFeatureType(std::string((char *) delXmlChar1));
+                            xmlFree(delXmlChar1);
+                        }
+                        auto delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"description");
+                        if ( delXmlChar2 != nullptr ) {
+                            setSubFeatureDescription(std::string((char*) delXmlChar2));
+                            xmlFree(delXmlChar2);
+                        }
 		}
-		//ORIGINAL LINE: case "original":
 		else if (elementName == "original")
 		{
-			setOriginalValue((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                        if ( delXmlChar1 != nullptr ) {
+                            setOriginalValue((char *)delXmlChar1 );
+                            xmlFree(delXmlChar1);
+                        }
 
 		}
-		//ORIGINAL LINE: case "variation":
 		else if (elementName == "variation")
 		{
-			setVariationValue((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                        if ( delXmlChar1 != nullptr ) {
+                            setVariationValue((char *)delXmlChar1);
+                            xmlFree(delXmlChar1);
+                        }
 		}
-		//ORIGINAL LINE: case "dbReference":
 		else if (elementName == "dbReference")
 		{
 			getPropertyTypes().clear();
 			getPropertyValues().clear();
-			setDBReferenceType(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
-			setDBReferenceId(std::string((char*)(delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"id"))));
-			xmlFree(delXmlChar1);
-			xmlFree(delXmlChar2);
+
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type");
+                        if ( delXmlChar1 != nullptr ) {
+                            setDBReferenceType(std::string((char *) delXmlChar1 ));
+                            xmlFree(delXmlChar1);
+                        }
+                        auto delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"id");
+                        if ( delXmlChar2 != nullptr ) {
+                            setDBReferenceId(std::string((char*)delXmlChar2 ));
+                            xmlFree(delXmlChar2);
+                        }
 		}
-		//ORIGINAL LINE: case "property":
 		else if (elementName == "property")
 		{
-			getPropertyTypes().push_back(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type"))));
-			getPropertyValues().push_back(std::string((char *) (delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"value"))));
-			xmlFree(delXmlChar1);
-			xmlFree(delXmlChar2);
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"type");
+                        if ( delXmlChar1 != nullptr ) {
+                            getPropertyTypes().push_back(std::string((char *) delXmlChar1 ));
+                            xmlFree(delXmlChar1);
+                        }
+                        auto delXmlChar2 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"value");
+                        if ( delXmlChar2 != nullptr ) {
+                            getPropertyValues().push_back(std::string((char *) delXmlChar2 ));
+                            xmlFree(delXmlChar2);
+                        }
 		}
-		//ORIGINAL LINE: case "position":
 		else if (elementName == "position")
 		{
-			setOneBasedFeaturePosition(std::stoi(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")))));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"position");
+                        if ( delXmlChar1 != nullptr ) {
+                            setOneBasedFeaturePosition(std::stoi(std::string((char *) delXmlChar1 )));
+                            xmlFree(delXmlChar1);
+                        }
 
 		}
-		//ORIGINAL LINE: case "subposition":
 		else if (elementName == "subposition")
 		{
-			setOneBasedFeatureSubPosition(std::stoi(std::string((char *) (delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"subposition")))));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*)"subposition");
+                        if ( delXmlChar1 != nullptr ) {
+                            setOneBasedFeatureSubPosition(std::stoi(std::string((char *) delXmlChar1 )));
+                            xmlFree(delXmlChar1);
+                        }
 		}
-		//ORIGINAL LINE: case "begin":
 		else if (elementName == "begin")
 		{
 			// setOneBasedBeginPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
-			std::string positionStringToInt = std::string((char *)(delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position")));
-			xmlFree(delXmlChar1);
-			bool isAllInt = true;
-
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position");
+                        std::string positionStringToInt;
+                        bool isAllInt = true;
+                        if ( delXmlChar1 != nullptr ) {
+                            positionStringToInt = std::string((char *)(delXmlChar1 ));
+                            xmlFree(delXmlChar1);
+                        }
+                        else {
+                            isAllInt = false;
+                        }
+                        
 			for (const char& it : positionStringToInt) {
 				if (!std::isdigit(it)) {
 					isAllInt = false;
@@ -458,15 +493,20 @@ namespace UsefulProteomicsDatabases
 
 			setOneBasedBeginPosition(isAllInt ? static_cast<std::optional<int>>(std::stoi(positionStringToInt)) : std::nullopt);
 		}
-		//ORIGINAL LINE: case "end":
 		else if (elementName == "end")
 		{
 			// setOneBasedEndPosition(int::TryParse(std::string((char *) xmlTextReaderGetAttribute(*xml, (xmlChar*)"position")), outValue) ? static_cast<std::optional<int>>(outValue): nullptr);
 
-			std::string positionStringToInt = std::string((char *)(delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position")));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderGetAttribute(*xml, (xmlChar*) "position");
+			std::string positionStringToInt = std::string((char *)(delXmlChar1));
 			bool isAllInt = true;
-
+                        if ( delXmlChar1 != nullptr ) {
+                            positionStringToInt = std::string((char *)(delXmlChar1));
+                            xmlFree(delXmlChar1);
+                        }
+                        else {
+                            isAllInt = false;
+                        }
 			for (const char& it : positionStringToInt) {
 				if (!std::isdigit(it)) {
 					isAllInt = false;
@@ -476,16 +516,23 @@ namespace UsefulProteomicsDatabases
 
 			setOneBasedEndPosition(isAllInt ? static_cast<std::optional<int>>(std::stoi(positionStringToInt)) : std::nullopt);
 		}
-		//ORIGINAL LINE: case "sequence":
 		else if (elementName == "sequence")
 		{
 			//setSequence(SubstituteWhitespace->Replace((char *)xmlTextReaderReadString(*xml), ""));
-			setSequence(std::regex_replace((char *)(delXmlChar1 = xmlTextReaderReadString(*xml)), *SubstituteWhitespace, ""));
-			xmlFree(delXmlChar1);
+                        auto delXmlChar1 = xmlTextReaderReadString(*xml);
+                        if ( delXmlChar1 != nullptr )  {
+                            setSequence(std::regex_replace((char *)(delXmlChar1), *SubstituteWhitespace, ""));
+                            xmlFree(delXmlChar1);
+                        }
+                        else {
+                            setSequence ("");
+                        }
 		}
 	}
 
-	Protein *ProteinXmlEntry::ParseEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, bool isContaminant, const std::string &proteinDbLocation)
+	Protein *ProteinXmlEntry::ParseEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude,
+                                                  std::unordered_map<std::string, Modification*> &unknownModifications,
+                                                  bool isContaminant, const std::string &proteinDbLocation)
 	{
 		Protein *protein = nullptr;
 		xmlChar *delXmlChar1;
@@ -520,7 +567,10 @@ namespace UsefulProteomicsDatabases
 		return protein;
 	}
 
-	Protein *ProteinXmlEntry::ParseEntryEndElement(xmlTextReaderPtr *xml, bool isContaminant, const std::string &proteinDbLocation, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	Protein *ProteinXmlEntry::ParseEntryEndElement(xmlTextReaderPtr *xml, bool isContaminant,
+                                                       const std::string &proteinDbLocation,
+                                                       std::vector<std::string> &modTypesToExclude,
+                                                       std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
 		Protein *result = nullptr;
 		if (getAccession() != "" && getSequence() != "")
@@ -543,12 +593,11 @@ namespace UsefulProteomicsDatabases
 					proteinDbLocation);
 		}
 		Clear();
-
-		//C# TO C++ CONVERTER TODO TASK: A 'delete result' statement was not added since result was used in a 'return' or 'throw' statement.
 		return result;
 	}
 
-	void ProteinXmlEntry::ParseSubFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	void ProteinXmlEntry::ParseSubFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude,
+                                                        std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
 		if (getSubFeatureType() == "modified residue")
 		{
@@ -557,30 +606,36 @@ namespace UsefulProteomicsDatabases
 		}
 	}
 
-	void ProteinXmlEntry::ParseFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications)
+	void ProteinXmlEntry::ParseFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude,
+                                                     std::unordered_map<std::string, Modification*> &unknownModifications)
 	{
 		if (privateFeatureType == "modified residue")
 		{
 			setFeatureDescription(StringHelper::split(getFeatureDescription(), ';')[0]);
 			AnnotatedMods.push_back(new std::tuple<int, std::string> (getOneBasedFeaturePosition(), getFeatureDescription()));
 		}
-		else if (getFeatureType() == "peptide" || getFeatureType() == "propeptide" || getFeatureType() == "chain" || getFeatureType() == "signal peptide")
+		else if (getFeatureType() == "peptide" || getFeatureType() == "propeptide" ||
+                         getFeatureType() == "chain" || getFeatureType() == "signal peptide")
 		{
 			ProteolysisProduct tempVar(getOneBasedBeginPosition(), getOneBasedEndPosition(), getFeatureType());
 			getProteolysisProducts().push_back(&tempVar);
 		}
-		else if (getFeatureType() == "sequence variant" && getVariationValue() != "" && getVariationValue() != "") // Only keep if there is variant sequence information and position information
+		else if (getFeatureType() == "sequence variant" && getVariationValue() != "" && getVariationValue() != "") 
 		{
+                        // Only keep if there is variant sequence information and position information
 			ParseAnnotatedMods(privateOneBasedVariantModifications, modTypesToExclude, unknownModifications, AnnotatedVariantMods);
 			if (getOneBasedBeginPosition() && getOneBasedEndPosition())
 			{
-				SequenceVariation tempVar2(getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(), getOriginalValue(), getVariationValue(), getFeatureDescription(), getOneBasedVariantModifications());
-				getSequenceVariations().push_back(&tempVar2);
+                                 auto tempVar2 = new SequenceVariation(getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(),
+                                                                       getOriginalValue(), getVariationValue(), getFeatureDescription(),
+                                                                       getOneBasedVariantModifications());
+				getSequenceVariations().push_back(tempVar2);
 			}
 			else if (getOneBasedFeaturePosition() >= 1)
 			{
-				SequenceVariation tempVar3(getOneBasedFeaturePosition(), getOriginalValue(), getVariationValue(), getFeatureDescription(), getOneBasedVariantModifications());
-				getSequenceVariations().push_back(&tempVar3);
+				auto tempVar3 = new SequenceVariation(getOneBasedFeaturePosition(), getOriginalValue(), getVariationValue(),
+                                                                      getFeatureDescription(), getOneBasedVariantModifications());
+				getSequenceVariations().push_back(tempVar3);
 			}
 			AnnotatedVariantMods = std::vector<std::tuple<int, std::string>*>();
 		}
@@ -588,26 +643,28 @@ namespace UsefulProteomicsDatabases
 		{
 			if (getOneBasedBeginPosition() && getOneBasedEndPosition())
 			{
-				DisulfideBond tempVar4(getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(), getFeatureDescription());
-				getDisulfideBonds().push_back(&tempVar4);
+                                auto tempVar4 = new DisulfideBond (getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(),
+                                                                   getFeatureDescription());
+				getDisulfideBonds().push_back(tempVar4);
 			}
 			else if (getOneBasedFeaturePosition() >= 1)
 			{
-				DisulfideBond tempVar5(getOneBasedFeaturePosition(), getFeatureDescription());
-				getDisulfideBonds().push_back(&tempVar5);
+				auto tempVar5 = new DisulfideBond (getOneBasedFeaturePosition(), getFeatureDescription());
+				getDisulfideBonds().push_back(tempVar5);
 			}
 		}
 		else if (getFeatureType() == "splice site")
 		{
 			if (getOneBasedBeginPosition() && getOneBasedEndPosition())
 			{
-				SpliceSite tempVar6(getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(), getFeatureDescription());
-				getSpliceSites().push_back(&tempVar6);
+				auto tempVar6 = new SpliceSite (getOneBasedBeginPosition().value(), getOneBasedEndPosition().value(),
+                                                                getFeatureDescription());
+				getSpliceSites().push_back(tempVar6);
 			}
 			else if (getOneBasedFeaturePosition() >= 1)
 			{
-				SpliceSite tempVar7(getOneBasedFeaturePosition(), getFeatureDescription());
-				getSpliceSites().push_back(&tempVar7);
+				auto tempVar7 = new SpliceSite (getOneBasedFeaturePosition(), getFeatureDescription());
+				getSpliceSites().push_back(tempVar7);
 			}
 		}
 		setOneBasedBeginPosition(std::nullopt);
@@ -617,7 +674,10 @@ namespace UsefulProteomicsDatabases
 		setVariationValue("");
 	}
 
-	void ProteinXmlEntry::ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::tuple<int, std::string>*> &annotatedMods)
+	void ProteinXmlEntry::ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination,
+                                                 std::vector<std::string> &modTypesToExclude,
+                                                 std::unordered_map<std::string, Modification*> &unknownModifications,
+                                                 std::vector<std::tuple<int, std::string>*> &annotatedMods)
 	{
 		for (auto annotatedMod : annotatedMods)
 		{
@@ -677,8 +737,8 @@ namespace UsefulProteomicsDatabases
 					// I don't think this really does anything...
 					if (unknownModifications.find(annotatedId) == unknownModifications.end())
 					{
-						Modification tempVar(annotatedId);
-						unknownModifications.emplace(annotatedId, &tempVar);
+						auto tempVar = new Modification (annotatedId);
+						unknownModifications.emplace(annotatedId, tempVar);
 					}
 				}
 			}
@@ -711,9 +771,9 @@ namespace UsefulProteomicsDatabases
 			tempProperties.push_back(std::tuple<std::string, std::string>(privatePropertyTypes[i], privatePropertyTypes[i]));
 		}
 
-		DatabaseReference tempVar(getDBReferenceType(), getDBReferenceId(), tempProperties);
+		auto tempVar = new DatabaseReference (getDBReferenceType(), getDBReferenceId(), tempProperties);
 		//getDatabaseReferences().push_back(&tempVar);
-		privateDatabaseReferences.push_back(&tempVar);
+		privateDatabaseReferences.push_back(tempVar);
 		setPropertyTypes(std::vector<std::string>());
 		setPropertyValues(std::vector<std::string>());
 		setDBReferenceType("");

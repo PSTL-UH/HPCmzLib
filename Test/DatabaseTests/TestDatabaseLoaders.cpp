@@ -34,7 +34,7 @@ int main ( int argc, char **argv )
 	const std::string &elr=elfile;
 	UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-	std::cout << ++i << ". LoadModWithNl" << std::endl;
+        std::cout << ++i << ". LoadModWithNl" << std::endl;
 	Test::TestDatabaseLoaders::LoadModWithNl();
 
 	std::cout << ++i << ". LoadOriginalMismatchedModifications" << std::endl;
@@ -42,7 +42,7 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". TestUpdateUnimod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUnimod();
-
+        
 #ifdef LATER
 	std::cout << ++i << ". TestUpdatePsiMod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdatePsiMod();
@@ -60,10 +60,10 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". FilesLoading" << std::endl;
 	Test::TestDatabaseLoaders::FilesLoading();
 
+#endif
 	std::cout << ++i << ". SampleLoadModWithLongMotif" << std::endl;
 	Test::TestDatabaseLoaders::SampleLoadModWithLongMotif();
 
-#endif
 #ifdef LATER
 	std::cout << ++i << ". SampleModFileLoading" << std::endl;
 	Test::TestDatabaseLoaders::SampleModFileLoading();
