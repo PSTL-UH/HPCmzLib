@@ -30,8 +30,9 @@ namespace FlashLFQ
             sb->append("Detection Type_" + rawfile->FilenameWithoutExtension + "\t");
         }
 
+        std::string s = sb->toString();
         delete sb;
-        return sb->toString();
+        return s;
     }
 
     double Peptide::GetIntensity(SpectraFileInfo *fileInfo)

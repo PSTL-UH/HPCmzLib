@@ -580,8 +580,7 @@ namespace FlashLFQ
                 }
             }
         }
-        
-    
+        PpmTolerance *mbrTol= new PpmTolerance(MbrPpmTolerance);
 
         //foreach(SpectraFileInfo idDonorFile in *_spectraFileInfo)
         for ( SpectraFileInfo* idDonorFile : _spectraFileInfo )
@@ -615,28 +614,30 @@ namespace FlashLFQ
                         break;
                     }
                     for ( auto g: v->proteinGroups ) {
-                        if ( thisFilesMsmsIdentifiedProteins.find(g) !=  thisFilesMsmsIdentifiedProteins.end() ) {
-                            empty2 = false;
-                            break;
+                        for ( auto q:  thisFilesMsmsIdentifiedProteins ) {
+                            if ( g->Equals(q) ) {
+                                empty2 = false;
+                                break;
+                            }
                         }                        
                     }
                     if (  p->getNumIdentificationsByFullSeq() == 1 &&
                           !p->IsotopicEnvelopes.empty()       &&
                           empty1                              &&
-                          empty2                                ) {
+                          !empty2                                ) {
                         donorPeaksToMatch.push_back(p);
                     }
                 }
 
                 
             }
+        
             if (donorPeaksToMatch.empty())
             {
                 continue;
             }
             
             std::vector<RetentionTimeCalibDataPoint*> rtCalibrationCurve = GetRtCalSpline(idDonorFile, idAcceptorFile);
-            
             std::vector<ChromatographicPeak*> matchedPeaks(donorPeaksToMatch.size());
 #ifdef ORIG
             std::vector<double> donorRts = rtCalibrationCurve.Select([&] (std::any p) {
@@ -670,7 +671,6 @@ namespace FlashLFQ
                 }
                 
                 std::vector<RetentionTimeCalibDataPoint*> nearbyDataPoints;
-                
                 // calculate accepted range of RTs
                 for (int r = rtHypothesisIndex; r < (int)rtCalibrationCurve.size(); r++)
                 {
@@ -715,10 +715,11 @@ namespace FlashLFQ
                         nearbyRts.push_back(p->RtDiff);
                     }
                     acceptorFileRtHypothesis = donorPeak->getApex()->IndexedPeak->RetentionTime + Math::Median(nearbyRts);
+
                     double firstQuartile = Math::LowerQuartile(nearbyRts);
                     double thirdQuartile = Math::UpperQuartile(nearbyRts);
-                    double iqr = Math::InterquartileRange(nearbyRts);
-                    
+                    //double iqr = Math::InterquartileRange(nearbyRts);
+                    double iqr = thirdQuartile - firstQuartile;
                     lowerRange = firstQuartile - 1.5 * iqr;
                     upperRange = thirdQuartile + 1.5 * iqr;
                 }
@@ -837,6 +838,7 @@ namespace FlashLFQ
                 std::vector<IsotopicEnvelope*> envs2 = GetIsotopicEnvelopes(bestChargeXic, identification,
                                                                             bestEnv->ChargeState, true);
 
+                delete mbrTol;
 #ifdef ORIG
                 double maxRt = envs2.Max([&] (std::any p) {
                         p::IndexedPeak::RetentionTime;
@@ -883,7 +885,7 @@ namespace FlashLFQ
                 //C# TO C++ CONVERTER TODO TASK: A 'delete acceptorPeak' statement was not added since
                 // acceptorPeak was passed to a method or constructor. Handle memory management manually.
             }
-            
+        
             // save MBR results
 #ifdef ORIG
             //for (auto peak : matchedPeaks.Where([&] (std::any p) {
@@ -906,6 +908,9 @@ namespace FlashLFQ
                     }
                 }
             }
+            for ( int i=0; i < (int)rtCalibrationCurve.size(); i++  ) {
+                delete rtCalibrationCurve[i];
+            }
         }
         
         //foreach(var peak in *bestMbrHits)
@@ -914,13 +919,14 @@ namespace FlashLFQ
             _results->Peaks[idAcceptorFile].push_back(std::get<1>(peak));
         }
         RunErrorChecking (idAcceptorFile);
+
     }
         
     std::vector<RetentionTimeCalibDataPoint*> FlashLfqEngine::GetRtCalSpline(SpectraFileInfo *donor, SpectraFileInfo *acceptor)
     {
-        auto donorFileBestMsmsPeaks = std::unordered_map<std::string, ChromatographicPeak*>();
-        auto acceptorFileBestMsmsPeaks = std::unordered_map<std::string, ChromatographicPeak*>();
-        auto rtCalibrationCurve = std::vector<RetentionTimeCalibDataPoint*>();
+        std::unordered_map<std::string, ChromatographicPeak*> donorFileBestMsmsPeaks;
+        std::unordered_map<std::string, ChromatographicPeak*> acceptorFileBestMsmsPeaks;
+        std::vector<RetentionTimeCalibDataPoint*> rtCalibrationCurve;
 
         // get all peaks, not counting ambiguous peaks
 #ifdef ORIG
@@ -935,7 +941,7 @@ namespace FlashLFQ
                 donorPeaks.push_back(p);
             }
         }
-        
+
 #ifdef ORIG
         std::vector<ChromatographicPeak*> acceptorPeaks = _results::Peaks[acceptor].Where([&] (std::any p)
         {
@@ -945,9 +951,10 @@ namespace FlashLFQ
         std::vector<ChromatographicPeak*> acceptorPeaks;
         for ( auto p: _results->Peaks[acceptor] ) {
             if ( p->getApex() != nullptr && !p->IsMbrPeak && p->getNumIdentificationsByFullSeq() == 1) {
-                donorPeaks.push_back(p);
+                acceptorPeaks.push_back(p);
             }
         }
+
         // get the best (most intense) peak for each peptide in the acceptor file
         for (auto acceptorPeak : acceptorPeaks)
         {
@@ -963,7 +970,6 @@ namespace FlashLFQ
             }
             else
             {
-                currentBestPeak = acceptorFileBestMsmsPeaks_iterator->second;
                 acceptorFileBestMsmsPeaks.emplace(acceptorPeak->getIdentifications().front()->ModifiedSequence, acceptorPeak);
             }
         }
@@ -983,7 +989,6 @@ namespace FlashLFQ
             }
             else
             {
-                currentBestPeak = donorFileBestMsmsPeaks_iterator->second;
                 donorFileBestMsmsPeaks.emplace(donorPeak->getIdentifications().front()->ModifiedSequence,
                                                donorPeak);
             }
@@ -1002,10 +1007,6 @@ namespace FlashLFQ
                 auto  tempVar = new RetentionTimeCalibDataPoint(donorFilePeak, acceptorFilePeak);
                 rtCalibrationCurve.push_back(tempVar);
             }
-            else
-            {
-                donorFilePeak = donorFileBestMsmsPeaks_iterator->second;
-            }
         }
 
 #ifdef ORIG
@@ -1016,7 +1017,7 @@ namespace FlashLFQ
 #endif
         std::sort( rtCalibrationCurve.begin(),  rtCalibrationCurve.end(), [&] ( auto l, auto r) {
                 return l->DonorFilePeak->getApex()->IndexedPeak->RetentionTime <
-                    l->DonorFilePeak->getApex()->IndexedPeak->RetentionTime;
+                    r->DonorFilePeak->getApex()->IndexedPeak->RetentionTime;
             });
         return rtCalibrationCurve;
     }

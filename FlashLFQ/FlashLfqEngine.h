@@ -87,7 +87,6 @@ namespace FlashLFQ
         void CalculateTheoreticalIsotopeDistributions();
         void QuantifyMs2IdentifiedPeptides(SpectraFileInfo *fileInfo);
         void QuantifyMatchBetweenRunsPeaks(SpectraFileInfo *idAcceptorFile);
-        Tolerance *mbrTol;
 
         std::unordered_map<std::string, ChromatographicPeak*> bestMbrHits;
 

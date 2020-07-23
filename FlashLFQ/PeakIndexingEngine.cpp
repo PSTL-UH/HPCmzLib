@@ -245,11 +245,10 @@ namespace FlashLFQ
         // string to std::experimental::filesystem::path
         // in order to get path without filename.
         std::experimental::filesystem::path directory = std::experimental::filesystem::path(file->FullFilePathWithExtension);
-
+        
         // combine directory string with new file name.  need to add "/" to separate directory
         // from filename and add ".ind" extension
-        std::string indexPath = directory.string() + "/" + file->FilenameWithoutExtension + ".ind";
-
+        std::string indexPath = file->FilenameWithoutExtension + ".ind";
         //file is created when calling ofstream with indexPath.
 
         //----------------------------------------------------------------
@@ -289,7 +288,7 @@ namespace FlashLFQ
         //----------------------------------------------------------------
 
         //calling os.close() prevents cereal from writing data to file?
-        // os.close();
+        //os.close();
     }
 
     void PeakIndexingEngine::DeserializeIndex(SpectraFileInfo *file)
@@ -309,7 +308,8 @@ namespace FlashLFQ
         std::experimental::filesystem::path directory = std::experimental::filesystem::path(file->FullFilePathWithExtension);
 
         // combine directory string with new file name.  need to add "/" to separate directory from filename and add ".ind" extension
-        std::string indexPath = directory.string() + "/" + file->FilenameWithoutExtension + ".ind";
+        //std::string indexPath = directory.string() + "/" + file->FilenameWithoutExtension + ".ind";
+        std::string indexPath = file->FilenameWithoutExtension + ".ind";
 
         //file is opened for reading when calling ifstream with indexPath.
         // auto indexFile = File::OpenRead(indexPath);
@@ -319,6 +319,10 @@ namespace FlashLFQ
 
         //open ifstream for indexPath
         std::ifstream is(indexPath);
+        if ( !is.is_open() ) {
+            std::cout << "Could not open " << indexPath << std::endl;
+        }
+        
         cereal::XMLInputArchive archive_read(is);
 
         //Cereal only has functionality for smart pointers.  Must deserialize data from file to vector

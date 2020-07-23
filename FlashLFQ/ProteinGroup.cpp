@@ -8,7 +8,7 @@ namespace FlashLFQ
 
     ProteinGroup::ProteinGroup(const std::string &proteinGroupName, const std::string &geneName, const std::string &organism) : ProteinGroupName(proteinGroupName), GeneName(geneName), Organism(organism)
     {
-        intensities = std::unordered_map<SpectraFileInfo*, double>();
+        //intensities = std::unordered_map<SpectraFileInfo*, double>();
     }
 
     double ProteinGroup::GetIntensity(SpectraFileInfo *fileInfo)
@@ -50,8 +50,9 @@ namespace FlashLFQ
             sb->append("Intensity_" + rawfile->FilenameWithoutExtension + "\t");
         }
 
+        std::string s =  sb->toString();
         delete sb;
-        return sb->toString();
+        return s;
     }
 
     std::string ProteinGroup::ToString(std::vector<SpectraFileInfo*> &rawFiles)
@@ -76,13 +77,14 @@ namespace FlashLFQ
             }
         }
 
+        std::string s = str->toString();
         delete str;
-        return str->toString();
+        return s;
     }
 
-    bool ProteinGroup::Equals(std::any obj)
+    bool ProteinGroup::Equals(ProteinGroup *other)
     {
-        return (std::any_cast<ProteinGroup*>(obj))->ProteinGroupName == this->ProteinGroupName;
+        return other->ProteinGroupName == this->ProteinGroupName;
     }
 
     int ProteinGroup::GetHashCode()

@@ -122,7 +122,9 @@ enum class QuantileMethod {
     ///   The default quantile method in the framework (6).
     /// </summary>
     /// 
-    Default = Type6,
+    // Edgar: this seems to deliver the same values as the C# Statistics.LowerQuantile etc.
+    // methods. 
+    Default = Type8,
         
     /// <summary>
     ///   The default method in R (7).

@@ -31,7 +31,7 @@ namespace FlashLFQ
 
         std::string ToString(std::vector<SpectraFileInfo*> &rawFiles);
 
-        bool Equals(std::any obj);
+        bool Equals(ProteinGroup *other);
 
         int GetHashCode();
     };

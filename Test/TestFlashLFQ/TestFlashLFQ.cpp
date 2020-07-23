@@ -29,7 +29,7 @@ int main ( int argc, char **argv )
     //UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     Chemistry::PeriodicTable::Load (elr);
 
-    std::cout << ++i << ". TestFlashLf" << std::endl;        
+    std::cout << ++i << ". TestFlashLfq" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfq();
 
     std::cout << ++i << ". TestFlashLfqNormalization" << std::endl;
@@ -40,7 +40,7 @@ int main ( int argc, char **argv )
     
     std::cout << ++i << ". TestFlashLfqAdvancedProteinQuant" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqAdvancedProteinQuant();    
-
+    
     std::cout << ++i << ". TestFlashLfqMatchBetweenRuns " << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMatchBetweenRuns();
 
@@ -446,7 +446,7 @@ namespace Test
         // generate mzml files (5 peptides each)
         for (int f = 0; f < (int)filesToWrite.size(); f++) {
             // 1 MS1 scan per peptide
-            std::vector<MsDataScan*> scans = std::vector<MsDataScan*>(5);
+            std::vector<MsDataScan*> scans(5);
 
             for (int p = 0; p < (int)pepSequences.size(); p++) {
                 Proteomics::AminoAcidPolymer::Peptide tempVar(pepSequences[p]);
@@ -470,11 +470,11 @@ namespace Test
                     rt = file2Rt[p];
                 }
                 // add the scan
-                MzSpectrum tempVar2(mz, intensities, false);
-                MzRange tempVar3(400, 1600);
+                auto tempVar2 = new MzSpectrum (mz, intensities, false);
+                auto tempVar3 = new MzRange  (400, 1600);
                 std::vector<std::vector<double>> noiseData;
                 std::string nativeId = "scan=" + std::to_string((p+1));
-                scans[p] = new MsDataScan( &tempVar2, p + 1, 1, true, Polarity::Positive, rt, &tempVar3,
+                scans[p] = new MsDataScan( tempVar2, p + 1, 1, true, Polarity::Positive, rt, tempVar3,
                                            "f", MZAnalyzerType::Orbitrap, 
                                            intensities_sum, std::make_optional(1.0), noiseData,
                                            nativeId);
@@ -522,11 +522,11 @@ namespace Test
 
         // create the FlashLFQ engine
         std::vector<Identification*> vI1 = {id1, id2, id3, id4, id5, id6, id7, id9, id10};
-        FlashLfqEngine *engine = new FlashLfqEngine(vI1, false, true);
+        FlashLfqEngine *engine = new FlashLfqEngine(vI1, false, false, true);
         // run the engine
         auto results = engine->Run();
 
-        Assert::IsTrue(results->Peaks[file2].size() == 5);
+        Assert::IsTrue((int)results->Peaks[file2].size() == 5);
         int count=0;
         for ( auto p: results->Peaks[file2] ) {
             if (  p->IsMbrPeak ) {
@@ -534,7 +534,9 @@ namespace Test
             }
         }
         Assert::IsTrue(count == 1 );
-        ChromatographicPeak *peak;
+
+        
+        ChromatographicPeak *peak=nullptr;
         for ( auto p: results->Peaks[file2] ) {
             if ( p->IsMbrPeak ) {
                 peak = p;
@@ -542,16 +544,13 @@ namespace Test
             }
         }
 
-        ChromatographicPeak* otherFilePeak;
+        ChromatographicPeak* otherFilePeak=nullptr;
         for ( auto p: results->Peaks[file1] ) {
             if (  p->getIdentifications().front()->BaseSequence == peak->getIdentifications().front()->BaseSequence ) {
                 otherFilePeak = p;
                 break;
             }
         }
-
-        Assert::IsTrue(peak->Intensity > 0);
-        Assert::IsTrue(peak->Intensity == otherFilePeak->Intensity);
 
         Assert::IsTrue(results->Peaks[file1].size() == 5);
         count=0;
@@ -560,10 +559,16 @@ namespace Test
                 count++;                
             }
         }
-        Assert::IsTrue( count == 0 );
+        Assert::IsTrue( count == 0 );        
+        Assert::IsTrue(peak->Intensity > 0);
+        Assert::IsTrue(peak->Intensity == otherFilePeak->Intensity);
+        std::cout << peak->Intensity << std::endl;
+
         Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file1) > 0);
         Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file2) > 0);
-
+        std::cout << results->ProteinGroups["MyProtein"]->GetIntensity(file1) << std::endl;
+        std::cout << results->ProteinGroups["MyProtein"]->GetIntensity(file2) << std::endl;
+        
         delete engine;
         delete pg;
         delete id1;
