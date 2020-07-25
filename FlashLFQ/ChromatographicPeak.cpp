@@ -343,14 +343,22 @@ namespace FlashLFQ
             });
         }).Distinct().OrderBy([&] (std::any p)
         {
-            delete sb;
             return p;
         });
 #endif
         std::vector<std::string> t;
         for ( Identification* p : getIdentifications() ) {
             for ( ProteinGroup* v: p->proteinGroups ) {
-                t.push_back(v->ProteinGroupName );
+                bool found = false;
+                for ( auto q: t ) {
+                    if ( v->ProteinGroupName == q ) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found ) {
+                    t.push_back(v->ProteinGroupName );
+                }
             }
         }
 
@@ -363,20 +371,20 @@ namespace FlashLFQ
             sb->append("" + StringHelper::toString('\t'));
         }
 
-        sb->append("" + std::to_string(getIdentifications().front()->monoisotopicMass) + '\t');
+        sb->append("" + std::to_string(getIdentifications().front()->monoisotopicMass) + StringHelper::toString('\t'));
         if (!IsMbrPeak)
         {
-            sb->append("" + std::to_string(getIdentifications().front()->ms2RetentionTimeInMinutes) + '\t');
+            sb->append("" + std::to_string(getIdentifications().front()->ms2RetentionTimeInMinutes) + StringHelper::toString('\t'));
         }
         else
         {
             sb->append("" + StringHelper::toString('\t'));
         }
 
-        sb->append("" + getIdentifications().front()->precursorChargeState + '\t');
+        sb->append("" + getIdentifications().front()->precursorChargeState + StringHelper::toString('\t'));
         sb->append("" + std::to_string(Chemistry::ClassExtensions::ToMz(getIdentifications().front()->monoisotopicMass,
                                                              getIdentifications().front()->precursorChargeState)) + StringHelper::toString('\t'));
-        sb->append("" + std::to_string(Intensity) + "\t");
+        sb->append("" + std::to_string(Intensity) + StringHelper::toString("\t"));
 
         if (getApex() != nullptr)
         {
@@ -396,44 +404,44 @@ namespace FlashLFQ
                     maxval = p->IndexedPeak->RetentionTime;
                 }
             }
-            sb->append("" + std::to_string(minval) + "\t" );
-            sb->append("" + std::to_string(getApex()->IndexedPeak->RetentionTime) + "\t");
+            sb->append("" + std::to_string(minval) + StringHelper::toString("\t" ));
+            sb->append("" + std::to_string(getApex()->IndexedPeak->RetentionTime) + StringHelper::toString("\t"));
 #ifdef ORIG
             sb->append("" + IsotopicEnvelopes.Select([&] (std::any p)
             {
                 p::IndexedPeak::RetentionTime;
             }).Max() + "\t");
 #endif
-            sb->append("" + std::to_string(maxval) + "\t");
-            sb->append("" + std::to_string(getApex()->IndexedPeak->Mz) + "\t");
-            sb->append("" + std::to_string(getApex()->ChargeState) + "\t");
+            sb->append("" + std::to_string(maxval) + StringHelper::toString("\t"));
+            sb->append("" + std::to_string(getApex()->IndexedPeak->Mz) + StringHelper::toString("\t"));
+            sb->append("" + std::to_string(getApex()->ChargeState) + StringHelper::toString("\t"));
         }
         else
         {
-            sb->append(std::string("") + "-" + "\t");
-            sb->append(std::string("") + "-" + "\t");
-            sb->append(std::string("") + "-" + "\t");
+            sb->append(std::string("") + "-" + StringHelper::toString("\t"));
+            sb->append(std::string("") + "-" + StringHelper::toString("\t"));
+            sb->append(std::string("") + "-" + StringHelper::toString("\t"));
 
             sb->append(std::string("") + "-" + "\t");
             sb->append(std::string("") + "-" + "\t");
         }
 
-        sb->append("" + std::to_string(getNumChargeStatesObserved()) + "\t");
+        sb->append("" + std::to_string(getNumChargeStatesObserved()) + StringHelper::toString("\t"));
 
         if (IsMbrPeak)
         {
-            sb->append(std::string("") + "MBR" + "\t");
+            sb->append(std::string("") + "MBR" + StringHelper::toString("\t"));
         }
         else
         {
-            sb->append(std::string("") + "MSMS" + "\t");
+            sb->append(std::string("") + "MSMS" + StringHelper::toString("\t"));
         }
 
-        sb->append("" + std::to_string(getIdentifications().size()) + "\t");
-        sb->append("" + std::to_string(getNumIdentificationsByBaseSeq()) + "\t");
-        sb->append("" + std::to_string(getNumIdentificationsByFullSeq()) + "\t");
-        sb->append("" + std::to_string(SplitRT) + "\t");
-        sb->append("" + std::to_string(getMassError()) + "\t");
+        sb->append("" + std::to_string(getIdentifications().size()) + StringHelper::toString("\t"));
+        sb->append("" + std::to_string(getNumIdentificationsByBaseSeq()) + StringHelper::toString("\t"));
+        sb->append("" + std::to_string(getNumIdentificationsByFullSeq()) + StringHelper::toString("\t"));
+        sb->append("" + std::to_string(SplitRT) + StringHelper::toString("\t"));
+        sb->append("" + std::to_string(getMassError()) + StringHelper::toString("\t"));
         //sb.Append(string.Join(",", IsotopicEnvelopes.OrderBy(p => p.ChargeState).ThenBy(p => p.IndexedPeak.ZeroBasedMs1ScanIndex).Select(p => p.ToString())));
 
         std::string s = sb->toString();

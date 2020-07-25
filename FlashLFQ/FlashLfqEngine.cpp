@@ -26,6 +26,8 @@
 
 #include <string>
 #include <numeric>
+#include <iostream>
+#include <iomanip>
 
 using namespace Chemistry;
 using namespace MzLibUtil;
@@ -382,7 +384,7 @@ namespace FlashLFQ
         Tolerance *peakfindingTol = new PpmTolerance(PeakfindingPpmTolerance);
         Tolerance *ppmTolerance = new PpmTolerance(fPpmTolerance);
 
-        auto chromatographicPeaks = std::vector<ChromatographicPeak*>(ms2IdsForThisFile.size());
+        std::vector<ChromatographicPeak*> chromatographicPeaks(ms2IdsForThisFile.size());
 
         //ParallelOptions *tempVar = new ParallelOptions();
         //tempVar->MaxDegreeOfParallelism = MaxThreads;
@@ -404,7 +406,10 @@ namespace FlashLFQ
                 
                 // get XIC (peakfinding)
 #ifdef ORIG
-                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes, identification->massToLookFor, chargeState, identification->fileInfo, peakfindingTol).OrderBy([&] (std::any p) {
+                std::vector<IndexedMassSpectralPeak*> xic = Peakfind(identification->ms2RetentionTimeInMinutes,
+                                                                     identification->massToLookFor, chargeState,
+                                                                     identification->fileInfo,
+                                                                     peakfindingTol).OrderBy([&] (std::any p) {
                         p::RetentionTime;
                     }).ToList();
 #endif
@@ -433,11 +438,14 @@ namespace FlashLFQ
                 
                 // filter by isotopic distribution
                 std::vector<IsotopicEnvelope*> isotopicEnvelopes = GetIsotopicEnvelopes(xic,
-                                                          identification, chargeState, true);
+                                                                                        identification,
+                                                                                        chargeState,
+                                                                                        true);
                 
                 // add isotopic envelopes to the chromatographic peak
                 msmsFeature->IsotopicEnvelopes.insert(msmsFeature->IsotopicEnvelopes.end(),
-                                        isotopicEnvelopes.begin(), isotopicEnvelopes.end());
+                                                      isotopicEnvelopes.begin(),
+                                                      isotopicEnvelopes.end());
             }
             
             msmsFeature->CalculateIntensityForThisFeature(Integrate);
@@ -516,12 +524,12 @@ namespace FlashLFQ
         }
 
         _results->Peaks.emplace(fileInfo, chromatographicPeaks);
-
+        
         // C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added
         // since tempVar was passed to a method or constructor. Handle memory management manually.
-        delete ppmTolerance;
         // C# TO C++ CONVERTER TODO TASK: A 'delete peakfindingTol' statement was not added since
         // peakfindingTol was passed to a method or constructor. Handle memory management manually.
+        delete ppmTolerance;
     }
 
     void FlashLfqEngine::QuantifyMatchBetweenRunsPeaks(SpectraFileInfo *idAcceptorFile)
@@ -1332,7 +1340,10 @@ namespace FlashLFQ
                 if (corr > 0.7)
                 {
                     //IsotopicEnvelope tempVar(peak, chargeState, experimentalIsotopeAbundances.Sum());
-                    auto thissum = std::accumulate(experimentalIsotopeAbundances.begin(), experimentalIsotopeAbundances.end(), 0);
+                    double thissum = 0.0;
+                    for ( auto p  : experimentalIsotopeAbundances ) {
+                        thissum += p;
+                    }
                     auto  tempVar = new IsotopicEnvelope(peak, chargeState, thissum);
                     isotopicEnvelopes.push_back(tempVar);
                 }

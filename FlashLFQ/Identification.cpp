@@ -38,9 +38,9 @@ namespace FlashLFQ
         return this->BaseSequence == other->BaseSequence      &&
             this->ModifiedSequence == other->ModifiedSequence &&
             this->monoisotopicMass == other->monoisotopicMass &&
+            this->ms2RetentionTimeInMinutes == other->ms2RetentionTimeInMinutes &&
             this->fileInfo->Equals(other->fileInfo);
 
-        //  this->ms2RetentionTimeInMinutes == other->ms2RetentionTimeInMinutes &&
 
     }
 }

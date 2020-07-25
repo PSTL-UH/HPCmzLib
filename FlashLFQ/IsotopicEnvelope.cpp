@@ -6,7 +6,7 @@ namespace FlashLFQ
 
     IsotopicEnvelope::IsotopicEnvelope(IndexedMassSpectralPeak *monoisotopicPeak, int chargeState, double intensity) : IndexedPeak(monoisotopicPeak), ChargeState(chargeState)
     {
-        setIntensity(intensity / chargeState);
+        setIntensity(intensity / (double)chargeState);
     }
 
     double IsotopicEnvelope::getIntensity() const

@@ -17,7 +17,8 @@ using namespace IO::MzML;
 #include "Assert.h"
 #include "Quantiles.h"
 
-
+#include <iostream>
+#include <iomanip>
 
 int main ( int argc, char **argv )
 {
@@ -37,13 +38,13 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestFlashLfqMergeResults" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMergeResults();
-    
+
     std::cout << ++i << ". TestFlashLfqAdvancedProteinQuant" << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqAdvancedProteinQuant();    
-    
+
     std::cout << ++i << ". TestFlashLfqMatchBetweenRuns " << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMatchBetweenRuns();
-
+    
 #ifdef LATER
     std::cout << ++i << ". TestFlashLfqMatchBetweenRunsProteinQuant " << std::endl;        
     Test::TestFlashLFQ::TestFlashLfqMatchBetweenRunsProteinQuant();
@@ -562,12 +563,9 @@ namespace Test
         Assert::IsTrue( count == 0 );        
         Assert::IsTrue(peak->Intensity > 0);
         Assert::IsTrue(peak->Intensity == otherFilePeak->Intensity);
-        std::cout << peak->Intensity << std::endl;
 
         Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file1) > 0);
         Assert::IsTrue(results->ProteinGroups["MyProtein"]->GetIntensity(file2) > 0);
-        std::cout << results->ProteinGroups["MyProtein"]->GetIntensity(file1) << std::endl;
-        std::cout << results->ProteinGroups["MyProtein"]->GetIntensity(file2) << std::endl;
         
         delete engine;
         delete pg;

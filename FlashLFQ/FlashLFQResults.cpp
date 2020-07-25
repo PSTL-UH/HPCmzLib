@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <iomanip>
 
 #include "FlashLFQResults.h"
 #include "SpectraFileInfo.h"
@@ -8,6 +9,7 @@
 #include "ChromatographicPeak.h"
 #include "DetectionType.h"
 
+#include "Group.h"
 
 namespace FlashLFQ
 {
@@ -103,26 +105,20 @@ namespace FlashLFQ
                 p::Identifications::First().ModifiedSequence;
             }).ToList();
 #endif
-            std::vector<std::vector<ChromatographicPeak*>> groupedPeaks;
+            std::vector<ChromatographicPeak*> tmpPeaks;
             for ( ChromatographicPeak* p : std::get<1>(file) ) {
                 if ( p->getNumIdentificationsByFullSeq() == 1 ) {
-                    bool found = false;
-                    for (auto v: groupedPeaks ) {
-                        if ( !v.empty() &&
-                             v[0]->getIdentifications()[0]->ModifiedSequence ==
-                             p->getIdentifications()[0]->ModifiedSequence ) {
-                            found = true;
-                            v.push_back(p);
-                        }
-                    }
-                    if ( !found ) {
-                        std::vector<ChromatographicPeak*> *t = new std::vector<ChromatographicPeak*>;
-                        t->push_back(p);
-                        groupedPeaks.push_back(*t);                            
-                    }
+                    tmpPeaks.push_back(p);
                 }
             }
-            
+
+            std::function<bool(ChromatographicPeak*,ChromatographicPeak*)> f1 = [&]
+                ( ChromatographicPeak* l, ChromatographicPeak* r ) {
+                return l->getIdentifications()[0]->ModifiedSequence < r->getIdentifications()[0]->ModifiedSequence; };
+            std::function<bool(ChromatographicPeak*,ChromatographicPeak*)> f2 = [&]
+                ( ChromatographicPeak* l, ChromatographicPeak* r ) {
+                return l->getIdentifications()[0]->ModifiedSequence != r->getIdentifications()[0]->ModifiedSequence; };
+            std::vector< std::vector<ChromatographicPeak*>> groupedPeaks = Group::GroupBy ( tmpPeaks, f1, f2);                        
             
             for (auto sequenceWithPeaks : groupedPeaks)
             {
@@ -267,13 +263,25 @@ namespace FlashLFQ
         std::vector<ProteinGroup*> allProteinGroups;
         for ( auto p : ivec ) {
             for ( auto v: p->proteinGroups ) {
-                allProteinGroups.push_back(v );
+                bool found = false;
+                for ( auto q: allProteinGroups ) {
+                    if ( v->Equals(q) ){
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found ) {
+                    allProteinGroups.push_back(v );
+                }
             }
         }
         //Distinct.
-        std::sort(allProteinGroups.begin(), allProteinGroups.end() );
-        auto ip = std::unique (allProteinGroups.begin(), allProteinGroups.end() );
-        allProteinGroups.erase(ip, allProteinGroups.end());
+        //Edgar: Done already in the step above now.
+        //std::sort(allProteinGroups.begin(), allProteinGroups.end(), [&](auto l, auto r ) {
+        //        return l->ProteinGroupName < r->ProteinGroupName; });
+
+        // auto ip = std::unique (allProteinGroups.begin(), allProteinGroups.end() );
+        //allProteinGroups.erase(ip, allProteinGroups.end());
         
         for (auto pg : allProteinGroups)
         {
@@ -310,16 +318,15 @@ namespace FlashLFQ
             for (ProteinGroup *pg : id->proteinGroups)
             {
                 //TValue peaks;
-                std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>::const_iterator proteinGroupToPeaks_iterator = proteinGroupToPeaks.find(pg);
+                std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>::iterator proteinGroupToPeaks_iterator = proteinGroupToPeaks.find(pg);
                 if (proteinGroupToPeaks_iterator != proteinGroupToPeaks.end())
                 {
-                    auto peaks = proteinGroupToPeaks_iterator->second;
+                    std::vector<ChromatographicPeak*> &peaks = proteinGroupToPeaks_iterator->second;
                     //peaks->Add(peak);
                     peaks.push_back(peak);
                 }
                 else
                 {
-                    //peaks = proteinGroupToPeaks_iterator->second;
                     proteinGroupToPeaks.emplace(pg, std::vector<ChromatographicPeak*> {peak});
                 }
             }
@@ -328,10 +335,10 @@ namespace FlashLFQ
         for (auto pg : ProteinGroups)
         {
             //TValue proteinGroupPeaks;
-            std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>::const_iterator proteinGroupToPeaks_iterator = proteinGroupToPeaks.find(std::get<1>(pg));
+            std::unordered_map<ProteinGroup*, std::vector<ChromatographicPeak*>>::iterator proteinGroupToPeaks_iterator = proteinGroupToPeaks.find(std::get<1>(pg));
             if (proteinGroupToPeaks_iterator != proteinGroupToPeaks.end())
             {
-                auto proteinGroupPeaks = proteinGroupToPeaks_iterator->second;
+                std::vector<ChromatographicPeak*> &proteinGroupPeaks = proteinGroupToPeaks_iterator->second;
 #ifdef ORIG
                 auto peaksGroupedByFile = proteinGroupPeaks::GroupBy([&] (std::any p)
                 {
@@ -339,32 +346,13 @@ namespace FlashLFQ
                 }).ToList();
 #endif
 
-                std::vector< std::vector<ChromatographicPeak*>> peaksGroupedByFile;
-                std::sort(proteinGroupPeaks.begin(), proteinGroupPeaks.end(), [&]
+                std::function<bool(ChromatographicPeak*,ChromatographicPeak*)> f1 = [&]
                           ( ChromatographicPeak* l, ChromatographicPeak* r ) {
-                              return l->spectraFileInfo < r->spectraFileInfo;
-                          });
-                for ( auto p : proteinGroupPeaks ) {
-                    if ( peaksGroupedByFile.empty() ) {
-                        std::vector<ChromatographicPeak*> *v = new std::vector<ChromatographicPeak*>;
-                        v->push_back(p);
-                        peaksGroupedByFile.push_back(*v);
-                        continue;
-                    }
-                    bool found = false;
-                    for (  auto v: peaksGroupedByFile ) {
-                        if ( v[0]->spectraFileInfo == p->spectraFileInfo ) {
-                            found = true;
-                            v.push_back(p);
-                        }
-                    }
-                    if ( !found ) {
-                        std::vector<ChromatographicPeak*> *v = new std::vector<ChromatographicPeak*>;
-                        v->push_back(p);
-                        peaksGroupedByFile.push_back(*v);
-                    }
-                }
-
+                    return l->spectraFileInfo < r->spectraFileInfo; };
+                std::function<bool(ChromatographicPeak*,ChromatographicPeak*)> f2 = [&]
+                          ( ChromatographicPeak* l, ChromatographicPeak* r ) {
+                    return l->spectraFileInfo != r->spectraFileInfo; };
+                std::vector< std::vector<ChromatographicPeak*>> peaksGroupedByFile = Group::GroupBy ( proteinGroupPeaks, f1, f2);
                 
                 for (auto peaksForThisPgAndFile : peaksGroupedByFile)
                 {
@@ -394,9 +382,19 @@ namespace FlashLFQ
                         for ( auto v: p->getIdentifications() ) {
                             bool found = false;
                             for ( auto w: idVec ) {
-                                if ( w->proteinGroups == v->proteinGroups ) {
-                                    found = true;
-                                    break;
+                                if ( w->proteinGroups.size() != v->proteinGroups.size() ) break;
+                                for ( auto pp:  w->proteinGroups ) {
+                                    bool equal = false;
+                                    for ( auto qq: v->proteinGroups ) {
+                                        if ( pp->Equals(qq) ){
+                                            equal = true;
+                                            break;
+                                        }
+                                    }
+                                    if ( !equal ) {
+                                        //Could not find this element, proteinGroups can not be identical
+                                        break;
+                                    }
                                 }
                             }
                             if ( !found ) {
@@ -421,10 +419,6 @@ namespace FlashLFQ
                     std::get<1>(pg)->SetIntensity(file, proteinIntensity);
                 }
             }
-            //else
-            //{
-                //proteinGroupPeaks = proteinGroupToPeaks_iterator->second;
-            //}
         }
     }
 
