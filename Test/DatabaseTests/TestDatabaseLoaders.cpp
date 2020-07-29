@@ -444,7 +444,7 @@ namespace Test
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
 		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail1.txt", errors);
-		Assert::AreEqual(0, static_cast<int>(b.size()));
+		Assert::AreEqual(0,b.size());
 	}
 
 	void TestDatabaseLoaders::SampleModFileLoadingFail2()
@@ -453,7 +453,7 @@ namespace Test
 		std::vector<std::tuple<Modification*, std::string>> errors;
 		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail2.txt", errors);
 
-		Assert::AreEqual(0, static_cast<int>(b.size()));
+		Assert::AreEqual(0, b.size());
 	}
 
 #ifdef LATER
@@ -482,7 +482,7 @@ namespace Test
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
 		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail2.txt", errors);
-		Assert::AreEqual(0, static_cast<int>(b.size()));
+		Assert::AreEqual(0, b.size());
 	}
 
 	void TestDatabaseLoaders::SampleModFileLoadingFail6()
@@ -490,21 +490,21 @@ namespace Test
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
 		auto b = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileFail2.txt", errors);
-		Assert::AreEqual(0, static_cast<int>(b.size()));
+		Assert::AreEqual(0, b.size());
 	}
 
 	void TestDatabaseLoaders::CompactFormReading()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		Assert::AreEqual(2, static_cast<int>(PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests" + "sampleModFileDouble.txt", errors).size()));
+		Assert::AreEqual(2, PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests" + "sampleModFileDouble.txt", errors).size());
 	}
 
 	void TestDatabaseLoaders::CompactFormReading2()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		Assert::AreEqual(2, static_cast<int>(PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileDouble2.txt", errors).size()));
+		Assert::AreEqual(2, PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/sampleModFileDouble2.txt", errors).size());
 	}
 
 #ifdef LATER

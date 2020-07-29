@@ -16,13 +16,23 @@ public:
         }
     }
 
+    template<class T1, class T2>
+    static void AreEqual(T1 a, T2 b ) {
+        if ( a==b ){
+//            std::cout << "is equal" << std::endl;
+        }
+        else {
+            std::cout << "  Assert.h: " << a << " is NOT equal " << b << std::endl;
+//            std::abort();
+        }
+    }
+
     static void AreEqual(double a, std::optional<double> b) {
         if ( b.has_value() ) {
             if ( a==b.value() ){
 //            std::cout << "is equal" << std::endl;                
             }
         }
-        
         std::cout << "  Assert.h: " << a << " is NOT equal " << b.value() << std::endl;
         //   std::abort();        
     }
@@ -50,6 +60,17 @@ public:
     
     template<class T>
     static void AreNotEqual(T a, T b ) {
+        if ( a!=b ){
+//            std::cout << "is not equal" << std::endl;
+        }
+        else {
+            std::cout << "  Assert.h: " << a << " is EQUAL but should not be " << b << std::endl;
+//            std::abort();
+        }
+    }
+
+    template<class T1, class T2>
+    static void AreNotEqual(T1 a, T2 b ) {
         if ( a!=b ){
 //            std::cout << "is not equal" << std::endl;
         }
