@@ -9,8 +9,10 @@ str=$(wc -l tt.out)
 str2="3 tt.out"
 if [ "$str" = "$str2" ]; then
     echo "Pass"
+    exit 0;
 else
     echo "Fail"
 fi
 
+exit 1;
 
