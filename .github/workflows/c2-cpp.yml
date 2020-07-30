@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: configure
       run: |
-         sudo apt-get install -y cereal
+         sudo apt-get install -y cereal libcereal-dev xsdcxx
          ./configure
     - name: make
       run: make -j4
