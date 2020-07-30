@@ -41,6 +41,9 @@ $(OBJ):	$(HEADER)
 .cpp.o:	$(HEADER)
 	$(CXX) $(CXXFLAGS) -c $<
 
+check:
+	cd Test && ./runcheck.sh
+
 clean:  
 	cd MzLibUtil ; $(MAKE) clean ; cd ..
 	cd Chemistry ; $(MAKE) clean ; cd ..
