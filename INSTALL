@@ -1,0 +1,12 @@
+Installing the mzLib C++ library follows standard linux software practices:
+
+
+./configure
+make
+
+The library requires a C++17 compatible compiler, and has a number of additional dependencies that are verfied during the configure step.
+To speed up the compilation, you can choose a parallel make, e.g. using 
+
+make -j 8
+
+For running tests, change into the Test directory and run the runtest.sh script. This script will also create softlinks to the required input files.
