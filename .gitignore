@@ -6,7 +6,6 @@ typescript
 autom4te.cache/
 config.log
 config.status
-lib/
 Makefile.defs
 Test/TestChemicalFormula
 Test/TestElementsAndIsotopes
