@@ -39,17 +39,14 @@ namespace FlashLFQ
         {
             for (auto protein : std::get<1>(peptide)->proteinGroups)
             {
-                std::vector<Peptide*> peptides;
-                std::unordered_map<ProteinGroup*, std::vector<Peptide*>>::const_iterator proteinsToPeptides_iterator = proteinsToPeptides.find(protein);
+                std::unordered_map<ProteinGroup*, std::vector<Peptide*>>::iterator proteinsToPeptides_iterator = proteinsToPeptides.find(protein);
                 if (proteinsToPeptides_iterator != proteinsToPeptides.end())
                 {
-                    for ( auto v: proteinsToPeptides_iterator->second ) {
-                        peptides.push_back(v);
-                    }
+                    proteinsToPeptides_iterator->second.push_back(std::get<1>(peptide));
                 }
                 else
                 {
-                    proteinsToPeptides.emplace(protein, peptides);
+                    proteinsToPeptides.emplace(protein,  std::vector<Peptide*> {std::get<1>(peptide)} );
                 }
             }
         }
