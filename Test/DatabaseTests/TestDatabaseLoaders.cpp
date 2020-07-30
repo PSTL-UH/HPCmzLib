@@ -34,7 +34,7 @@ int main ( int argc, char **argv )
 	const std::string &elr=elfile;
 	UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-        std::cout << ++i << ". LoadModWithNl" << std::endl;
+	std::cout << ++i << ". LoadModWithNl" << std::endl;
 	Test::TestDatabaseLoaders::LoadModWithNl();
 
 	std::cout << ++i << ". LoadOriginalMismatchedModifications" << std::endl;
@@ -42,7 +42,7 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". TestUpdateUnimod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUnimod();
-        
+
 #ifdef LATER
 	std::cout << ++i << ". TestUpdatePsiMod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdatePsiMod();
@@ -85,11 +85,13 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". SampleModFileLoadingFail6" << std::endl;
 	Test::TestDatabaseLoaders::SampleModFileLoadingFail6();
 
+#ifdef LATER
 	std::cout << ++i << ". CompactFormReading" << std::endl;
 	Test::TestDatabaseLoaders::CompactFormReading();
 
 	std::cout << ++i << ". CompactFormReading2" << std::endl;
 	Test::TestDatabaseLoaders::CompactFormReading2();
+#endif
 
 #ifdef LATER
 	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
@@ -107,9 +109,9 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". TestWritePtmWithDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithDiagnosticIons();
 
+#endif
 	std::cout << ++i << ". TestWritePtmWithNeutralLossAndDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons();
-#endif
 
 	return 0;
 }
@@ -224,7 +226,7 @@ namespace Test
 		file << "fake\n";
 		Loaders::UpdateUniprot(fake);
 		fake = testdir + "/fake1.txt";
-		
+
 		std::ofstream file2(fake);
 		file2 << "fake\n";
 		Loaders::UpdateUnimod(fake);
@@ -423,7 +425,7 @@ namespace Test
 		Assert::IsTrue(protein[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0] == testMod);
 
 		delete motif;
-		
+
 		for (auto i : allKnownMods)
 			delete i;
 
@@ -431,7 +433,7 @@ namespace Test
 			delete i;
 
 	}
-	
+
 	void TestDatabaseLoaders::SampleModFileLoading()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
@@ -721,15 +723,23 @@ namespace Test
 		delete m;
 	}
 
+#endif
 	void TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::string filename = "test_neutral_loss_diagnostic_ion_mod.xml";
 		std::unordered_map<int, std::vector<Modification*>> mods;
 
-		ModificationMotif motif;
-		ModificationMotif::TryGetMotif("T", motif);
-		Modification *m = new Modification("Phospho", "", "Test", "", motif, "Anywhere.", nullptr, std::make_optional(80.0), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
+		ModificationMotif *motif;
+		ModificationMotif::TryGetMotif("T", &motif);
+
+		std::unordered_map<DissociationType, std::vector<double>> tempMapDisVectorDouble1, tempMapDisVectorDouble2;
+		tempMapDisVectorDouble1.insert(std::pair<DissociationType, std::vector<double>> (DissociationType::HCD, {80.0, 0.0}));
+		tempMapDisVectorDouble1.insert(std::pair<DissociationType, std::vector<double>> (DissociationType::ETD, {70.0, 0.0}));
+		tempMapDisVectorDouble2.insert(std::pair<DissociationType, std::vector<double>> (DissociationType::CID, {60.0, 0.0}));
+		tempMapDisVectorDouble2.insert(std::pair<DissociationType, std::vector<double>> (DissociationType::EThcD, {40.0, 0.0}));
+#ifdef ORIG
+		Modification *m = new Modification("Phospho", "", "Test", "", *motif, "Anywhere.", nullptr, std::make_optional(80.0), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>
 				{
 				{
 				DissociationType::HCD, {80.0, 0}
@@ -749,30 +759,91 @@ namespace Test
 				},
 				"");
 		Assert::That(m->getValidModification());
+#endif
+
+		Modification *m = new Modification(std::string("Phospho"), 
+				std::string(""), 
+				std::string("Test"), 
+				std::string(""), 
+				motif, 
+				std::string("Anywhere."), 
+				nullptr, 
+				std::make_optional(80.0), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::vector<std::string>(), 
+				tempMapDisVectorDouble1,
+				tempMapDisVectorDouble2,
+				std::string(""));
+		
+		Assert::IsTrue(m->getValidModification());
 
 		mods.emplace(4, std::vector<Modification*> {m});
 
-		Protein *protein = new Protein("PEPTIDE", "accession", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+		Protein *protein = new Protein("PEPTIDE", 
+				"accession", 
+				"", 
+				std::vector<std::tuple<std::string, std::string>>(), 
+				mods, 
+				std::vector<ProteolysisProduct*>(), 
+				"", 
+				"", 
+				false, 
+				false, 
+				std::vector<DatabaseReference*>(), 
+				std::vector<SequenceVariation*>(), 
+				std::vector<SequenceVariation*>(), 
+				"", 
+				std::vector<DisulfideBond*>(), 
+				std::vector<SpliceSite*>(), 
+				"");
+
+#ifdef ORIG
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().First()->Value->First().NeutralLosses.First()->Value->Count == 2);
+#endif
+		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
+		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
 
-		ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), {protein}, testdir + filename));
+		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
+		std::vector<Protein*> tempVectorOfProteins;
+		tempVectorOfProteins.push_back(protein);
+		ProteinDbWriter::WriteXmlDatabase(tempWriteXMlDatabase, tempVectorOfProteins, testdir + "/" + filename);
 
 		// with passed-in mods
-		Dictionary<std::string, Modification*> um;
+		std::unordered_map<std::string, Modification*> um;
+		std::vector<Modification*> tempVectorOfMods;
+		tempVectorOfMods.push_back(m);
+		std::vector<std::string> tempStringVector;
 		std::vector<Protein*> new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "/" + filename, true,
-				DecoyType::None, {m}, false,
-				std::vector<std::string>(), um);
+				DecoyType::None, tempVectorOfMods, false,
+				tempStringVector, um);
+#ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
+#endif
 
+		std::cout << "\nloser\n" << new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().size() << std::endl;
+		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
 		// should be able to read mod from top of database...
-		new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "/" + filename, true, DecoyType::None, std::vector<Modification*>(), false, std::vector<std::string>(), um);
+
+		for (auto i : new_proteins)
+			delete i;
+		tempStringVector.clear();
+
+		std::vector<Modification*> tempVectorOfMods2;
+		new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "/" + filename, true, DecoyType::None, tempVectorOfMods2, false, tempStringVector, um);
+#ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
+#endif
+		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
 
+		for (auto i : new_proteins)
+			delete i;
 		delete protein;
 		delete m;
 	}
-#endif
 }
