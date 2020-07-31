@@ -823,7 +823,7 @@ namespace Test
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
 #endif
 
-		std::cout << "\nloser\n" << new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().size() << std::endl;
+
 		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
 		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
 		// should be able to read mod from top of database...
