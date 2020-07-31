@@ -698,6 +698,7 @@ namespace Test
 		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
 
 		std::vector<Protein*> tempProteinVector;
+		tempProteinVector.push_back(protein);
 		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
 		ProteinDbWriter::WriteXmlDatabase(tempWriteXMlDatabase, tempProteinVector, testdir + "/" + filename);
 
