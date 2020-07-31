@@ -12,130 +12,152 @@
 
 XmlWriter::XmlWriter(std::string fileName)
 {
-    if (!( std::experimental::filesystem::exists(fileName))) {
-        outFile.open(fileName);
-        if (outFile.is_open()) {
-            //std::cout << "File created successfully.\n";
-            current_indent = 0;
-            startDocument = false;
-            docWrite = false;
-            elementOpen = false;
-            stringWritten = false;
-            needNewLine=true;
-            doIndent = true;
-        }
-    }
-    //else {
-    //   std::cerr << "File already exists.\n";
-    //}
+	if (!( std::experimental::filesystem::exists(fileName))) {
+		outFile.open(fileName);
+		if (outFile.is_open()) {
+			//std::cout << "File created successfully.\n";
+			current_indent = 0;
+			startDocument = false;
+			docWrite = false;
+			elementOpen = false;
+			stringWritten = false;
+			needNewLine=true;
+			doIndent = true;
+		}
+	}
+	//else {
+	//   std::cerr << "File already exists.\n";
+	//}
 }
 
 void XmlWriter::WriteStartDocument()
 {
-    if (!startDocument) {
-        startDocument = true;
-        docWrite = true;
-    }
+	if (!startDocument) {
+		startDocument = true;
+		docWrite = true;
+	}
 }
 
 
 void XmlWriter::WriteEndDocument()
 {
-    if (startDocument) {
-        startDocument   = false;
-        docWrite        = false;
-    }
+	if (startDocument) {
+		startDocument   = false;
+		docWrite        = false;
+	}
 }
 
 bool XmlWriter::isOpen() {
-    if (outFile.is_open()) {
-        return true;
-    }
-    return false;
+	if (outFile.is_open()) {
+		return true;
+	}
+	return false;
 }
 
 
 void XmlWriter::Close()
 {
-    if (!startDocument) {
-        outFile.close();
-    }
+	if (!startDocument) {
+		outFile.close();
+	}
 }
 
 void XmlWriter::WriteStartElement(std::string elementTag)
 {
-    if (startDocument) {
-        outFile << "<!--XML Document-->\n";
-        outFile << "<?xml version='1.0' encoding='" << xmlEncode << "'?>";
-        startDocument = false;
-    }
-    if (docWrite) {
-        if ( elementOpen ) {
-            outFile << ">";
-        }
-        if ( needNewLine)  {
-            outFile << "\n";
-        }
-        needNewLine = true;
-        for (int i = 0; i < current_indent; i++) {
-            outFile << " ";
-        }
-        outFile << "<" << elementTag;
-        
-        tagStack.push_back(elementTag);
-        current_indent += increment_indent;
+	if (startDocument) {
+#ifdef ORIG
+		outFile << "<!--XML Document-->\n";
+#endif
+		outFile << "<?xml version='1.0' encoding='" << xmlEncode << "'?>";
+		startDocument = false;
+	}
+	if (docWrite) {
+		if ( elementOpen ) {
+			outFile << ">";
+		}
+		if ( needNewLine)  {
+			outFile << "\n";
+		}
+		needNewLine = true;
+		for (int i = 0; i < current_indent; i++) {
+#ifdef ORIG
+			outFile << " ";
+#endif
+			outFile << "\t";
+		}
+		outFile << "<" << elementTag;
 
-        elementOpen     = true;
-        stringWritten   = false;
-    }
+		tagStack.push_back(elementTag);
+		current_indent += increment_indent;
+
+		elementOpen     = true;
+		stringWritten   = false;
+	}
 }
 
 void XmlWriter::WriteEndElement()
 {
-    if (docWrite) {
-        if (!(tagStack.empty())) {
-            current_indent -= increment_indent;
-            if ( elementOpen ) {
-                outFile << " />";
-            }
-            else {
-                if ( doIndent) {
-                    for (int i = 0; i < current_indent; i++) {
-                        outFile << " ";
-                    }
-                }
-                outFile << "</" << tagStack.back() << ">";
-            }
-        }
-        outFile << "\n";
-        needNewLine=false;
-        doIndent = true;
-        tagStack.pop_back();
-        
-        elementOpen     = false;
-        stringWritten   = false;
-    }
-    else {
-        std::cerr << "No tags to close.";
-    }
-    
+	if (docWrite) {
+		if (!(tagStack.empty())) {
+			current_indent -= increment_indent;
+			if ( elementOpen ) {
+				outFile << " />";
+			}
+			else {
+				if ( doIndent) {
+					for (int i = 0; i < current_indent; i++) {
+#ifdef ORIG
+						outFile << " ";
+#endif 
+						outFile << "\t";
+					}
+				}
+				outFile << "</" << tagStack.back() << ">";
+			}
+		}
+		outFile << "\n";
+		needNewLine=false;
+		doIndent = true;
+		tagStack.pop_back();
+
+		elementOpen     = false;
+		stringWritten   = false;
+	}
+	else {
+		std::cerr << "No tags to close.";
+	}
+
 }
 
 void XmlWriter::WriteAttributeString(std::string outAttribute, std::string outVal)
 {
-    if (docWrite && elementOpen ) {
-        outFile << " " << outAttribute << "=\"" << outVal << "\"";        
-    }
+	if (docWrite && elementOpen ) {
+		outFile << " " << outAttribute << "=\"" << outVal << "\"";        
+	}
 }
 
 
 void XmlWriter::WriteString(std::string outString)
 {
-    if (docWrite && elementOpen) {
-        outFile << ">" << outString;
-        stringWritten = true;
-        elementOpen = false;
-        doIndent = false;
-    }
+	if (docWrite && elementOpen) {
+		outFile << ">";
+		for (char c : outString) {
+			if (c == 10) {
+				outFile << "\n";
+				for (int i = 0; i < current_indent; i++) {
+					outFile << "\t";
+				}		
+			} else {
+				outFile << c;
+			}
+		}
+
+#ifdef ORIG
+		outFile << ">" << outString;
+#endif
+		stringWritten = true;
+		elementOpen = false;
+		doIndent = false;
+	}
 }
 
