@@ -47,7 +47,7 @@ private:
     std::ofstream outFile;
     std::string xmlEncode="utf-8";
     int current_indent=0;
-    int increment_indent=2;
+    int increment_indent=1;
     bool startDocument=false;
     bool docWrite=false;
     bool elementOpen=false;
