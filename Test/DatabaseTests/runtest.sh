@@ -18,11 +18,11 @@ fi
 
 echo " "
 echo "  TestProteomicsReadWrite"
-make TestProteomicsReadWrite
+make -s TestProteomicsReadWrite
 ./TestProteomicsReadWrite
 
 echo " "
 echo "  TestDatabaseLoaders"
-make TestDatabaseLoaders
+make -s TestDatabaseLoaders
 ./TestDatabaseLoaders
 

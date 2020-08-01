@@ -5,6 +5,6 @@ fi
 
 echo " "
 echo "  TestFlashLFQ"
-make TestFlashLFQ
+make -s TestFlashLFQ
 ./TestFlashLFQ
 

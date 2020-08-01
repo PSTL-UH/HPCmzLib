@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
 
 using namespace Chemistry;
 using namespace MassSpectrometry;
@@ -83,6 +84,12 @@ namespace UsefulProteomicsDatabases
 
         //StreamReader uniprot_mods = StreamReader(ptmListLocation);
         std::ifstream uniprot_mods(ptmListLocation);
+        if ( !uniprot_mods.is_open() ) {
+            std::string thisdir=std::experimental::filesystem::current_path().string();
+            std::cout << " Could not find file " << ptmListLocation << " in " << thisdir << std::endl;
+            exit (-1);
+        }
+
         std::vector<std::string> modification_specification;
         
         //This block will read one complete modification entry at a time until the EOF is reached.

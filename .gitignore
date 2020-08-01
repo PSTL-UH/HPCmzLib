@@ -45,4 +45,7 @@ Test/DatabaseTests/fake1.txt
 Test/DatabaseTests/fake2.txt
 Test/DatabaseTests/fake3.txt
 Test/DatabaseTestsfake.txt
+Test/DatabaseTests/test_diagnostic_ion_mod.xml
+Test/DatabaseTests/test_neutral_loss_diagnostic_ion_mod.xml
+Test/DatabaseTests/test_neutral_loss_mod.xml
 
