@@ -5,83 +5,83 @@ fi
 
 echo " "
 echo "  TestElementsAndIsotopes"
-make TestElementsAndIsotopes
+make -s TestElementsAndIsotopes
 ./TestElementsAndIsotopes
 
 echo " "
 echo "  TestAminoAcids"
-make TestAminoAcids
+make -s TestAminoAcids
 ./TestAminoAcids
 
 echo " "
 echo "  TestChemicalFormula"
-make TestChemicalFormula
+make -s TestChemicalFormula
 ./TestChemicalFormula
 
 echo " "
 echo "  TestModifications  "
-make TestModifications
+make -s TestModifications
 ./TestModifications
 
 echo " "
 echo "  TestDigestionMotif  "
-make TestDigestionMotif
+make -s TestDigestionMotif
 ./TestDigestionMotif
 
 echo " "
 echo "  TestPeptides  "
-make TestPeptides
+make -s TestPeptides
 ./TestPeptides
 
 echo " "
 echo "  TestPeptideWithSetMods  "
-make TestPeptideWithSetMods
+make -s TestPeptideWithSetMods
 ./TestPeptideWithSetMods
 
 echo " "
 echo "  TestFragments  "
-make TestFragments
+make -s TestFragments
 ./TestFragments
 
 echo " "
 echo "  TestMetaMorpheus"
-make TestMetaMorpheus
+make -s TestMetaMorpheus
 ./TestMetaMorpheus
 
 echo " "
 echo "  TestSpectra"
-make TestSpectra
+make -s TestSpectra
 ./TestSpectra
 
 echo " "
 echo "  TestMzML"
-make TestMzML
+make -s TestMzML
 ./TestMzML
 
 echo " "
 echo "  TestPtmListLoader"
-make TestPtmListLoader
+make -s TestPtmListLoader
 ./TestPtmListLoader
 
 echo " "
 echo "  TestModFits"
-make TestModFits
+make -s TestModFits
 ./TestModFits
 
 
 echo " "
 echo "  TestProteinProperties"
-make TestProteinProperties
+make -s TestProteinProperties
 ./TestProteinProperties
 
 echo " "
 echo "  TestProteinDigestion"
-make TestProteinDigestion
+make -s TestProteinDigestion
 ./TestProteinDigestion
 
 echo " "
 echo "  TestMgf"
-make TestMgf
+make -s TestMgf
 ./TestMgf
 
 cd DatabaseTests ; ./runtest.sh ; cd ..

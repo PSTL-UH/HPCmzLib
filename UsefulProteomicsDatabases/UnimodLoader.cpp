@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <stdlib.h>
 
 namespace UsefulProteomicsDatabases
 {
@@ -51,6 +52,11 @@ namespace UsefulProteomicsDatabases
         auto deserialized = dynamic_cast<unimod_t*>(unimodSerializer->Deserialize(&tempVar));
 #endif
         std::ifstream fs (unimodLocation);
+        if ( !fs.is_open() ) {
+            std::string thisdir=std::experimental::filesystem::current_path().string();
+            std::cout << " Could not find Unimodtable " << unimodLocation << " in " << thisdir << std::endl;
+            exit (-1);
+        }
         auto deserialized = unimod(fs, xml_schema::flags::dont_validate );
 
         std::unordered_map<std::string, std::string> positionConversion =
