@@ -12,11 +12,19 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
+#include <experimental/filesystem>
 
 namespace UsefulProteomicsDatabases {
 
     void PeriodicTableLoader::Load(const std::string &elementLocation) {
         std::ifstream sr(elementLocation);
+        if ( !sr.is_open() ) {
+            std::string thisdir=std::experimental::filesystem::current_path().string();
+            
+            std::cout << "Could not open file " << elementLocation << " in " << thisdir << std::endl;
+            exit (-1);
+        }
         std::string line;
         while ( getline(sr, line) ){
             if ( line.find("Atomic Number", 0) != std::string::npos ) {

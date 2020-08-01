@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <experimental/filesystem>
+#include <stdlib.h>
 
 #include "ProteaseDictionary.h"
 #include "Protease.h"
@@ -68,9 +70,11 @@ namespace Proteomics
 #endif
             std::vector<std::string> myLines;
             std::ifstream sr(path);
+            
             if ( !sr.is_open() ) {
-                std::cout << " Could not load Protease Dictionary " << path << std::endl;
-                return dict;
+                std::string thisdir=std::experimental::filesystem::current_path().string();
+                std::cout << " Could not find Protease Dictionary " << path << " in " << thisdir << std::endl;
+                exit (-1);
             }
             
             std::string oneline;
