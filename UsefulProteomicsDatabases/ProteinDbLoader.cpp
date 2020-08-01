@@ -284,11 +284,16 @@ namespace UsefulProteomicsDatabases
 		{
 			std::string line;
 			getline(fasta, line);
-			if (line == "")
-			{
-				break;
-			}
 
+			if (line == "" && fasta.eof() )
+			{
+                            break;
+			}
+                        if ( line == "" ) {
+                            continue;
+                        }
+                                
+                        
 			if (StringHelper::startsWith(line, ">"))
 			{
 				accession = ApplyRegex(accessionRegex, line);
@@ -301,7 +306,7 @@ namespace UsefulProteomicsDatabases
 					geneName.push_back(std::make_tuple("primary", geneNameString));
 				}
 
-				if (accession == "" || accession == "")
+				if (accession == "" )
 				{
 					accession = StringHelper::trimEnd(line.substr(1));
 				}
@@ -313,12 +318,14 @@ namespace UsefulProteomicsDatabases
 				sb->append(StringHelper::trim(line));
 			}
 
-			if ((fasta.peek() == '>' || fasta.peek() == -1) &&
-					accession != ""                            &&
-					sb != nullptr)
+                        char c = fasta.peek();
+			if ((c == '>' || c == 0 || c == '\n' || c == EOF ) &&
+                            accession != ""                                &&
+                            sb != nullptr)
 			{
 				//std::string sequence = substituteWhitespace->Replace(sb->toString(), "");
 				std::string sequence = std::regex_replace(sb->toString(), *substituteWhitespace, "");
+                                delete sb;
 				while (std::find(unique_accessions.begin(), unique_accessions.end(), accession) != unique_accessions.end())
 				{
 					accession += "_" + std::to_string(unique_identifier);
@@ -354,18 +361,12 @@ namespace UsefulProteomicsDatabases
 				//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was
 				//passed to a method or constructor. Handle memory management manually.
 			}
-
-			// no input left
-			if (fasta.peek() == -1)
-			{
-				break;
-			}
+//                        if ( c == EOF ) {
+//                            break;
+//                        }
 		}
 
 		fasta.close();
-		//C# TO C++ CONVERTER TODO TASK: A 'delete sb' statement was not added since sb
-		//was passed to a method or constructor. Handle memory management manually.
-
 		if (targets.empty())
 		{
 			errors.push_back("Error: No proteins could be read from the database: " + proteinDbLocation);
