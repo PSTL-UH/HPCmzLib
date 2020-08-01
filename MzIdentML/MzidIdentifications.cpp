@@ -8,6 +8,7 @@
  */
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include "MzidIdentifications.h"
 #include "mzIdentML110.h"
 #include "mzIdentML111.h"
@@ -35,6 +36,10 @@ namespace MzIdentML
 #endif
             
             std::ifstream fs = std::ifstream(mzidFile);
+            if ( !fs.is_open()) {
+                std::cout << "Could not open file " << mzidFile << std::endl;
+                exit(-1);
+            }
             dd110 =  mzIdentML110::MzIdentML (fs, xml_schema::flags::dont_validate );
             fs.close();
 
@@ -45,6 +50,10 @@ namespace MzIdentML
             try
             {
                 std::ifstream fs = std::ifstream(mzidFile);
+                if ( !fs.is_open()) {
+                    std::cout << "Could not open file " << mzidFile << std::endl;
+                    exit(-1);
+                }
                 dd111 =  mzIdentML111::MzIdentML (fs, xml_schema::flags::dont_validate );
                 fs.close();
 
@@ -53,6 +62,10 @@ namespace MzIdentML
             catch (...)
             {
                 std::ifstream fs = std::ifstream(mzidFile);
+                if ( !fs.is_open()) {
+                    std::cout << "Could not open file " << mzidFile << std::endl;
+                    exit(-1);
+                }
                 dd120 =  mzIdentML120::MzIdentML (fs, xml_schema::flags::dont_validate );
                 fs.close();
 

@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <stdlib.h>
 
 using namespace Proteomics;
 
@@ -279,7 +280,10 @@ namespace UsefulProteomicsDatabases
 
 		StringBuilder *sb = nullptr;
 		std::ifstream fasta(proteinDbLocation);
-
+                if ( !fasta.is_open() ) {
+                    std::cout << "Could not open file " << proteinDbLocation << std::endl;
+                    exit(-1);
+                }
 		while (true)
 		{
 			std::string line;

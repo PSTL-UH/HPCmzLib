@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 using namespace MassSpectrometry;
 using namespace MzLibUtil;
@@ -45,7 +46,10 @@ namespace IO
             StreamReader sr = StreamReader(bs);
 #endif
             std::ifstream sr ( filePath );
-
+            if ( !sr.is_open() ) {
+                std::cout << "Could not open file " << filePath << std::endl;
+                exit(-1);
+            }
             std::string s;
 
             //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")

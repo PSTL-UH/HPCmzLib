@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include "../include/stringhelper.h"
 #include "../include/Sort.h"
 #include "../include/BitConverter.h"
@@ -103,6 +104,10 @@ std::unordered_map<std::string, DissociationType> Mzml::dissociationDictionary =
 
             try{
                 std::ifstream fs = std::ifstream(filePath);
+                if ( !fs.is_open() ) {
+                    std::cout << "could not open file " << filePath << std::endl;
+                    exit (-1);
+                }
                 _indexedmzMLConnection_object = ms::mzml::indexedmzML_ (fs, xml_schema::flags::dont_validate);
                 fs.close();
                 _mzMLConnection = &_indexedmzMLConnection_object.get()->mzML();
