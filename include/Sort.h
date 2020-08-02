@@ -66,5 +66,14 @@ public:
             std::swap(values[0], values[i]); 
             CreateHeap(keys, values, i, 0); 
         } 
+
+        //The C# version seems to ensure that for equal keys the values are presented in incrementing order.
+        for ( int i=0; i < size-2; i++ ) {
+            if ( keys[i] == keys[i+1] &&
+                 values[i] > values[i+1] ) {
+                std::swap(keys[i], keys[i+1]);
+                std::swap(values[i], values[i+1]);
+            }
+        }
     }
 };
