@@ -81,13 +81,27 @@ namespace Proteomics
             /// Creates a PeptideWithSetModifications object from a protein. Used when a Protein is digested.
             /// </summary>
         public:
-            PeptideWithSetModifications(Proteomics::Protein *protein, Proteomics::ProteolyticDigestion::DigestionParams *digestionParams, int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein, CleavageSpecificity cleavageSpecificity, const std::string &peptideDescription, int missedCleavages, std::unordered_map<int, Modification*> &allModsOneIsNterminus, int numFixedMods);
+            PeptideWithSetModifications(Proteomics::Protein *protein,
+                                        Proteomics::ProteolyticDigestion::DigestionParams *digestionParams,
+                                        int oneBasedStartResidueInProtein, int oneBasedEndResidueInProtein,
+                                        CleavageSpecificity cleavageSpecificity,
+                                        const std::string &peptideDescription, int missedCleavages,
+                                        std::unordered_map<int, Modification*> &allModsOneIsNterminus,
+                                        int numFixedMods);
 
             /// <summary>
             /// Creates a PeptideWithSetModifications object from a sequence string.
             /// Useful for reading in MetaMorpheus search engine output into mzLib objects.
             /// </summary>
-            PeptideWithSetModifications(const std::string &sequence, std::unordered_map<std::string, Modification*> &allKnownMods, int numFixedMods = 0, Proteomics::ProteolyticDigestion::DigestionParams *digestionParams = nullptr, Proteomics::Protein *p = nullptr, int oneBasedStartResidueInProtein = std::numeric_limits<int>::min(), int oneBasedEndResidueInProtein = std::numeric_limits<int>::min(), int missedCleavages = std::numeric_limits<int>::min(), CleavageSpecificity cleavageSpecificity = CleavageSpecificity::Full, const std::string &peptideDescription = "");
+            PeptideWithSetModifications(const std::string &sequence, std::unordered_map<std::string, Modification*> &allKnownMods,
+                                        int numFixedMods = 0,
+                                        Proteomics::ProteolyticDigestion::DigestionParams *digestionParams = nullptr,
+                                        Proteomics::Protein *p = nullptr,
+                                        int oneBasedStartResidueInProtein = std::numeric_limits<int>::min(),
+                                        int oneBasedEndResidueInProtein = std::numeric_limits<int>::min(),
+                                        int missedCleavages = std::numeric_limits<int>::min(),
+                                        CleavageSpecificity cleavageSpecificity = CleavageSpecificity::Full,
+                                        const std::string &peptideDescription = "");
 
             Proteomics::ProteolyticDigestion::DigestionParams *getDigestionParams() const;
 
@@ -130,6 +144,7 @@ namespace Proteomics
                         break;
                     }
                     v.push_back(std::make_tuple(ProductType::zDot, _baseSequence.length() - i));
+                    i++;
                 };
                 return v;
             }
