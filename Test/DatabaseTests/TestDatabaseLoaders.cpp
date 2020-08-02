@@ -100,10 +100,10 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". Test_MetaMorpheusStyleProteinDatabaseWriteAndREad" << std::endl;
 	Test::TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad();
 
+#endif
 	std::cout << ++i << ". DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent" << std::endl;
 	Test::TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent();
 
-#endif
 	std::cout << ++i << ". TestWritePtmWithNeutralLoss" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLoss();
 
@@ -596,52 +596,98 @@ namespace Test
 		delete mod;
 	}
 
+#endif
 	void TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
-		Loaders::LoadElements(testdir + "elements2.dat"));
+		Loaders::LoadElements(testdir + "/elements.dat");
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		auto sampleModList = PtmListLoader::ReadModsFromFile(testdir + "DatabaseTests", "z.txt"), errors).ToList();
-		Protein *protein = new Protein("MCSSSSSSSSSS", "accession", "organism", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification*>>
-				{
-				{2, sampleModList.OfType<Modification*>().ToList()}
-				},
-				nullptr, "name", "full_name", false, false, std::vector<DatabaseReference*>(), std::vector<SequenceVariation*>(), disulfideBonds: std::vector<DisulfideBond*>());
+		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/z.txt", errors);
+		std::unordered_map<int, std::vector<Modification*>> tempMapIntVectorMods;
+		tempMapIntVectorMods.insert(std::pair<int, std::vector<Modification*>>(2, sampleModList));
+		Protein *protein = new Protein("MCSSSSSSSSSS", 
+				"accession", 
+				"organism", 
+				std::vector<std::tuple<std::string, std::string>>(), 
+				tempMapIntVectorMods,
+				std::vector<ProteolysisProduct*>(),
+				"name", 
+				"full_name", 
+				false, 
+				false);
+#ifdef ORIG
 		Assert::AreEqual(1, protein->getOneBasedPossibleLocalizedModifications()[2].OfType<Modification*>()->Count());
+#endif
+		Assert::AreEqual(1, protein->getOneBasedPossibleLocalizedModifications()[2].size());
 
-		std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>> dictWithThisMod;
+		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> dictWithThisMod;
 
-		std::unordered_set<std::tuple<int, Modification*>> value;
+		UsefulProteomicsDatabases::ModDbTuple_set value;
 
-		auto modReadFromFile = dynamic_cast<Modification*>(sampleModList.front());
-		ModificationMotif motif;
-		ModificationMotif::TryGetMotif("C", motif);
-		Modification *newMod = new Modification("Palmitoylation of C", "", "Type", "MOD_RES", motif, "Anywhere.", modReadFromFile->getChemicalFormula(), modReadFromFile->getMonoisotopicMass(), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "E:\\GitClones\\mzLib\\Test\\bin\\x64\\Debug\\DatabaseTests\\z.txt");
+		auto modReadFromFile = sampleModList[0];
+		ModificationMotif *motif;
+		ModificationMotif::TryGetMotif("C", &motif);
+		Modification *newMod = new Modification("Palmitoylation of C", 
+				"", 
+				"Type", 
+				"MOD_RES", 
+				motif, 
+				"Anywhere.", 
+				modReadFromFile->getChemicalFormula(), 
+				modReadFromFile->getMonoisotopicMass(), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::vector<std::string>(), 
+				std::unordered_map<DissociationType, std::vector<double>>(), 
+				std::unordered_map<DissociationType, std::vector<double>>(), 
+				"E:\\GitClones\\mzLib\\Test\\bin\\x64\\Debug\\DatabaseTests\\z.txt");
 
 		Assert::IsTrue(newMod->Equals(sampleModList.front()));
 
 		Assert::AreEqual(newMod, sampleModList.front());
 		Assert::AreEqual(sampleModList.front(), newMod);
 
-		value.insert(std::tuple<int, Modification*>(2, newMod));
+		value.insert(std::pair<int, Modification*>(2, newMod));
 
 		dictWithThisMod.emplace("accession", value);
-		auto newModResEntries = ProteinDbWriter::WriteXmlDatabase(dictWithThisMod, std::vector<Protein*> {protein}, testdir + "test_modifications_with_proteins3.xml"));
+		std::vector<Protein*> tempProteinVector;
+		tempProteinVector.push_back(protein);
+		auto newModResEntries = ProteinDbWriter::WriteXmlDatabase(dictWithThisMod, tempProteinVector, testdir + "/test_modifications_with_proteins3.xml");
 		Assert::AreEqual(0, newModResEntries.size());
-		Dictionary<std::string, Modification*> um;
-		std::vector<Protein*> new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "test_modifications_with_proteins3.xml"), true, DecoyType::None, std::vector<Modification*>(), false, std::vector<std::string>(), um);
+		std::unordered_map<std::string, Modification*> um;
+		std::vector<Modification*> tempModificationVector;
+		std::vector<std::string> tempStringVector;
+		std::vector<Protein*> new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "/test_modifications_with_proteins3.xml", 
+				true, 
+				DecoyType::None, 
+				tempModificationVector, 
+				false, 
+				tempStringVector, 
+				um);
+
 		Assert::AreEqual(1, new_proteins.size());
 		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size());
+#ifdef ORIG
 		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().SelectMany([&] (std::any kv)
 					{
 					kv->Value;
 					})->Count());
+#endif
+		int valueCount = 0;
+		std::vector<std::vector<Modification*>> vals;
+		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications()) {
+			vals.push_back(kv.second);
+			valueCount++;
+		}
+
+		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size());
+		Assert::AreEqual(1, vals.size());
+		Assert::AreEqual(1, valueCount);
 
 		delete newMod;
 		delete protein;
 	}
 
-#endif
 	void TestDatabaseLoaders::TestWritePtmWithNeutralLoss()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
