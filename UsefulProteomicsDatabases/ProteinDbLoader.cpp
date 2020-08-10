@@ -104,6 +104,10 @@ namespace UsefulProteomicsDatabases
 		std::regex *substituteWhitespace = new std::regex(R"(\s+)");
 		ProteinXmlEntry *block = new ProteinXmlEntry();
 
+		xmlTextReaderPtr reader = xmlTextReaderPtr();
+		char proteinDbLocationCharArray[proteinDbLocation.size() + 1];
+		strcpy(proteinDbLocationCharArray, proteinDbLocation.c_str());
+		reader = xmlNewTextReaderFilename(proteinDbLocationCharArray);
 #ifdef ORIG	 
 		while (reader->Read())
 		{
@@ -122,10 +126,6 @@ namespace UsefulProteomicsDatabases
 		}
 #endif
 
-		xmlTextReaderPtr reader = xmlTextReaderPtr();
-		char proteinDbLocationCharArray[proteinDbLocation.size() + 1];
-		strcpy(proteinDbLocationCharArray, proteinDbLocation.c_str());
-		reader = xmlNewTextReaderFilename(proteinDbLocationCharArray);
 		int debugReader;
 		xmlChar *delXmlChar1;
 		while ((debugReader = xmlTextReaderRead(reader)) == 1) {
@@ -143,7 +143,9 @@ namespace UsefulProteomicsDatabases
 		xmlCleanupParser();
 
 		if (debugReader == -1)
-			std::cout << "Xml file failed.\n";
+			std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
+				<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
+				<< "This message may pop up twice.\n\n";
 
 		std::vector<Protein*> decoys = DecoyProteinGenerator::GenerateDecoys(targets, decoyType, maxThreads);
 		// SHANE: C++ doesn't have a way to inline concatenate objects. Need to do this manually.
@@ -159,6 +161,9 @@ namespace UsefulProteomicsDatabases
 
 		delete block;
 		delete substituteWhitespace;
+		for (auto i : prespecified)
+			delete i;
+
 		return proteinsToExpand;
 	}
 
@@ -176,8 +181,8 @@ namespace UsefulProteomicsDatabases
 
 			std::regex *startingWhitespace = new std::regex(R"(/^\s+/gm)");
 			StringBuilder *storedKnownModificationsBuilder = new StringBuilder();
-			last_database_location = proteinDbLocation;
 #ifdef ORIG
+			last_database_location = proteinDbLocation;
 			auto stream = FileStream(proteinDbLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
 			GZipStream tempVar(stream, CompressionMode::Decompress);
 			Stream *uniprotXmlFileStream = StringHelper::endsWith(proteinDbLocation, ".gz") ? static_cast<Stream*>(&tempVar): stream;
@@ -212,21 +217,19 @@ namespace UsefulProteomicsDatabases
 			while ((debugReader = xmlTextReaderRead(reader)) == 1) {
 				if (xmlTextReaderNodeType(reader) == libxml2::XmlNodeTypes::Element) {
 					std::string name((char*) (delXmlChar1 = xmlTextReaderName(reader)));
-					if (name.size() != 0) {
-						if (name == "modification") { 
-							char* Text = (char*) (delXmlChar2 = xmlTextReaderReadString(reader));
-							std::string modification = std::regex_replace(Text, *startingWhitespace, "");
-							storedKnownModificationsBuilder->appendLine(modification);
-							xmlFree(delXmlChar2);
-						}
-						else if (name == "entry") {
-							std::vector<std::tuple<Modification*, std::string>> errors;
-							protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? 
-								std::vector<Modification*>() : 
-								std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
-							break;
-						}
 					xmlFree(delXmlChar1);
+					if (name == "modification") { 
+						char* Text = (char*) (delXmlChar2 = xmlTextReaderReadString(reader));
+						std::string modification = std::regex_replace(Text, *startingWhitespace, "");
+						storedKnownModificationsBuilder->appendLine(modification);
+						xmlFree(delXmlChar2);
+					}
+					else if (name == "entry") {
+						std::vector<std::tuple<Modification*, std::string>> errors;
+						protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? 
+							std::vector<Modification*>() : 
+							std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
+						break;
 					}
 				}
 			}
@@ -234,13 +237,14 @@ namespace UsefulProteomicsDatabases
 			xmlCleanupParser();
 
 			if (debugReader == -1)
-				std::cout << "Xml file failed.\n";
+				std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
+					<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
+					<< "This message may pop up twice.\n\n";
 
 			delete startingWhitespace;
 			delete storedKnownModificationsBuilder;
 			return protein_xml_modlist_general;
 		}
-
 		std::cout << "Xml file failed. "<< std::endl;
 		std::vector<Modification*> tmp;
 		return tmp;
@@ -276,10 +280,10 @@ namespace UsefulProteomicsDatabases
 
 		StringBuilder *sb = nullptr;
 		std::ifstream fasta(proteinDbLocation);
-		if ( !fasta.is_open() ) {
-			std::cout << "Could not open file " << proteinDbLocation << std::endl;
-			exit(-1);
-		}
+                if ( !fasta.is_open() ) {
+                    std::cout << "Could not open file " << proteinDbLocation << std::endl;
+                    exit(-1);
+                }
 		while (true)
 		{
 			std::string line;
@@ -287,13 +291,13 @@ namespace UsefulProteomicsDatabases
 
 			if (line == "" && fasta.eof() )
 			{
-				break;
+                            break;
 			}
-			if ( line == "" ) {
-				continue;
-			}
-
-
+                        if ( line == "" ) {
+                            continue;
+                        }
+                                
+                        
 			if (StringHelper::startsWith(line, ">"))
 			{
 				accession = ApplyRegex(accessionRegex, line);
@@ -318,14 +322,14 @@ namespace UsefulProteomicsDatabases
 				sb->append(StringHelper::trim(line));
 			}
 
-			char c = fasta.peek();
+                        char c = fasta.peek();
 			if ((c == '>' || c == 0 || c == '\n' || c == EOF ) &&
-					accession != ""                                &&
-					sb != nullptr)
+                            accession != ""                                &&
+                            sb != nullptr)
 			{
 				//std::string sequence = substituteWhitespace->Replace(sb->toString(), "");
 				std::string sequence = std::regex_replace(sb->toString(), *substituteWhitespace, "");
-				delete sb;
+                                delete sb;
 				while (std::find(unique_accessions.begin(), unique_accessions.end(), accession) != unique_accessions.end())
 				{
 					accession += "_" + std::to_string(unique_identifier);
@@ -361,9 +365,9 @@ namespace UsefulProteomicsDatabases
 				//C# TO C++ CONVERTER TODO TASK: A 'delete protein' statement was not added since protein was
 				//passed to a method or constructor. Handle memory management manually.
 			}
-			//                        if ( c == EOF ) {
-			//                            break;
-			//                        }
+//                        if ( c == EOF ) {
+//                            break;
+//                        }
 		}
 
 		fasta.close();
