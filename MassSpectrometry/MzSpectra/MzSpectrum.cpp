@@ -257,14 +257,13 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                                                            double deconvolutionTolerancePpm,
                                                            double intensityRatioLimit)
     {
-        auto isolatedMassesAndCharges = std::vector<IsotopicEnvelope*>();
+        std::vector<IsotopicEnvelope*> isolatedMassesAndCharges; 
         if (getSize() == 0)  {
             //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
             //yield break;
             return isolatedMassesAndCharges;
         }
         
-
         for (auto candidateForMostIntensePeak : ExtractIndices(theRange->getMinimum(), theRange->getMaximum()))
         {
             IsotopicEnvelope *bestIsotopeEnvelopeForThisPeak = nullptr;
@@ -303,6 +302,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 for (int indexToLookAt=1; indexToLookAt<(int) allIntensities[massIndex].size(); indexToLookAt++) {
                     double theorMassThatTryingToFind = allMasses[massIndex][indexToLookAt] + differenceBetweenTheorAndActual;
                     auto closestPeakToTheorMass = GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMassThatTryingToFind, chargeState));
+                    
                     auto closestPeakmz = getXArray()[closestPeakToTheorMass.value()];
                     auto closestPeakIntensity = getYArray()[closestPeakToTheorMass.value()];
                     if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm

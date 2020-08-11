@@ -32,6 +32,24 @@ namespace Proteomics
             
             return s;
         }
+
+        static InitiatorMethionineBehavior InitiatorMethionineBehaviorFromString ( std::string s )
+        {
+            InitiatorMethionineBehavior i;
+            if ( s == "Undefined" ) {
+                i = InitiatorMethionineBehavior::Undefined;
+            }
+            else if ( s == "Retain" ) {
+                i = InitiatorMethionineBehavior::Retain;
+            }
+            else if ( s == "Cleave" ) {
+                i = InitiatorMethionineBehavior::Cleave;
+            }
+            else if ( s == "Variable" ) {
+                i = InitiatorMethionineBehavior::Variable;
+            }
+            return i;
+        }
     }
 
     

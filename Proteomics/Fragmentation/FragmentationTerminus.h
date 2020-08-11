@@ -32,5 +32,21 @@ namespace Proteomics
             
             return s;
         }
+        static FragmentationTerminus FragmentationTerminusFromString ( std::string s ) {
+            FragmentationTerminus t;
+            if ( s == "Both" ) {
+                t = FragmentationTerminus::Both;
+            }
+            else if ( s == "N" ) {
+                t = FragmentationTerminus::N;
+            }
+            else if ( s == "C" ) {
+                t = FragmentationTerminus::C;
+            }
+            else if ( s == "None" ) {
+                t = FragmentationTerminus::None;
+            }
+            return t;
+        }
     }
 }
