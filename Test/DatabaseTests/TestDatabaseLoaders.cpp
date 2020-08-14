@@ -96,11 +96,8 @@ int main ( int argc, char **argv )
 #ifdef LATER
 	std::cout << ++i << ". Test_MetaMorpheusStyleProteinDatabaseWriteAndREad" << std::endl;
 	Test::TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad();
-<<<<<<< HEAD
-=======
-
->>>>>>> 565573888a21de07eb2161d6dafa581a73234aff
 #endif
+
 	std::cout << ++i << ". DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent" << std::endl;
 	Test::TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent();
 
