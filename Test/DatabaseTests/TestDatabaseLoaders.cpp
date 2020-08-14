@@ -43,13 +43,12 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". TestUpdateUnimod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUnimod();
 
-#ifdef LATER
 	std::cout << ++i << ". TestUpdatePsiMod" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdatePsiMod();
 
 	std::cout << ++i << ". TestUpdateElements" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateElements();
-#endif
+	
 	std::cout << ++i << ". TestUpdateUniprot" << std::endl;
 	Test::TestDatabaseLoaders::TestUpdateUniprot();
 
@@ -85,18 +84,16 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". SampleModFileLoadingFail6" << std::endl;
 	Test::TestDatabaseLoaders::SampleModFileLoadingFail6();
 
-#ifdef LATER
 	std::cout << ++i << ". CompactFormReading" << std::endl;
 	Test::TestDatabaseLoaders::CompactFormReading();
 
 	std::cout << ++i << ". CompactFormReading2" << std::endl;
 	Test::TestDatabaseLoaders::CompactFormReading2();
-#endif
 
-#ifdef LATER
 	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
 	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
 
+#ifdef LATER
 	std::cout << ++i << ". Test_MetaMorpheusStyleProteinDatabaseWriteAndREad" << std::endl;
 	Test::TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad();
 #endif
@@ -461,21 +458,26 @@ namespace Test
 	void TestDatabaseLoaders::SampleModFileLoadingFail3()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
+#ifdef ORIG
 		Assert::That([&] ()
 				{
 				std::vector<std::tuple<Modification*, std::string>> errors;
 				PtmListLoader::ReadModsFromFile(testdir + "/sampleModFileFail2.txt", errors).ToList();
 				}, Throws::TypeOf<MzLibException*>().With::Property("Message").EqualTo("Input string for chemical formula was in an incorrect format: $%&$%"));
+#endif
+			
 	}
 
 	void TestDatabaseLoaders::SampleModFileLoadingFail4()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
+#ifdef ORIG
 		Assert::That([&] ()
 				{
 				std::vector<std::tuple<Modification*, std::string>> errors;
 				PtmListLoader::ReadModsFromFile(testdir + "/sampleModFileFail2.txt", errors).ToList();
 				}, Throws::TypeOf<MzLibException*>().With::Property("Message").EqualTo("0 or 238.229666 is not a valid monoisotopic mass"));
+#endif
 	}
 #endif
 	void TestDatabaseLoaders::SampleModFileLoadingFail5()
@@ -498,7 +500,7 @@ namespace Test
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		Assert::AreEqual(2, PtmListLoader::ReadModsFromFile(testdir +"sampleModFileDouble.txt", errors).size());
+		Assert::AreEqual(2, PtmListLoader::ReadModsFromFile(testdir + "/sampleModFileDouble.txt", errors).size());
 	}
 
 	void TestDatabaseLoaders::CompactFormReading2()
@@ -508,25 +510,52 @@ namespace Test
 		Assert::AreEqual(2, PtmListLoader::ReadModsFromFile(testdir + "/sampleModFileDouble2.txt", errors).size());
 	}
 
-#ifdef LATER
 	void TestDatabaseLoaders::Modification_read_write_into_proteinDb()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
-		Loaders::LoadElements(testdir + "elements2.dat"));
+		Loaders::LoadElements(testdir + "/elements.dat");
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		auto sampleModList = PtmListLoader::ReadModsFromFile(testdir + "z.txt"), errors).ToList();
+		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/z.txt", errors);
+#ifdef ORIG
 		Assert::AreEqual(1, sampleModList.OfType<Modification*>()->Count());
-		Protein *protein = new Protein("MCSSSSSSSSSS", "accession", "organism", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification*>>
-				{
-				{2, sampleModList.OfType<Modification*>().ToList()}
-				},
-				nullptr, "name", "full_name", false, false, std::vector<DatabaseReference*>(), std::vector<SequenceVariation*>(), disulfideBonds: std::vector<DisulfideBond*>());
+#endif
+		std::unordered_map<int, std::vector<Modification*>> tempMapIntVectorMods;
+		tempMapIntVectorMods.insert(std::pair<int, std::vector<Modification*>>(2, sampleModList));
+		Assert::AreEqual(1, sampleModList.size());
+		Protein *protein = new Protein("MCSSSSSSSSSS", 
+				"accession", 
+				"organism", 
+				std::vector<std::tuple<std::string, std::string>>(), 
+				tempMapIntVectorMods,
+				std::vector<ProteolysisProduct*>(), 
+				"name", 
+				"full_name");
+#ifdef ORIG
 		Assert::AreEqual(1, protein->getOneBasedPossibleLocalizedModifications()[2].OfType<Modification*>()->Count());
-		ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), {protein}, testdir + "test_modifications_with_proteins.xml"));
-		Dictionary<std::string, Modification*> um;
-		std::vector<Protein*> new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "test_modifications_with_proteins.xml"), true, DecoyType::None, std::vector<Modification*>(), false, std::vector<std::string>(), um);
+#endif
+		Assert::AreEqual(1, protein->getOneBasedPossibleLocalizedModifications().at(2).size());
+
+		std::vector<Protein*> tempProteinVector;
+		tempProteinVector.push_back(protein);
+		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
+		ProteinDbWriter::WriteXmlDatabase(tempWriteXMlDatabase, 
+				tempProteinVector, 
+				testdir + "/test_modifications_with_proteins.xml");
+
+		std::unordered_map<std::string, Modification*> um;
+		std::vector<Modification*> tempModificationVector;
+		std::vector<std::string> tempStringVector;
+		std::vector<Protein*> new_proteins = ProteinDbLoader::LoadProteinXML(testdir + "/test_modifications_with_proteins.xml", 
+				true, 
+				DecoyType::None, 
+				tempModificationVector, 
+				false, 
+				tempStringVector, 
+				um);
+
 		Assert::AreEqual(1, new_proteins.size());
 		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size());
+#ifdef ORIG
 		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().SelectMany([&] (std::any kv)
 					{
 					kv->Value;
@@ -537,36 +566,59 @@ namespace Test
 					}).OfType<Modification*>().First().ModificationType);
 		Assert::AreEqual("Palmitoylation on C", new_proteins[0]->getOneBasedPossibleLocalizedModifications()[2][0].getIdWithMotif());
 		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications()[2].OfType<Modification*>()->Count());
+#endif
+		std::vector<Modification*> countModificationsVector;
+		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications())
+			for (auto i : kv.second)
+				countModificationsVector.push_back(i);
+		
+		Assert::AreEqual(1, countModificationsVector.size());
+		Assert::AreEqual("Type", countModificationsVector[0]->getModificationType());
+		Assert::AreEqual("Palmitoylation on C", new_proteins[0]->getOneBasedPossibleLocalizedModifications().at(2)[0]->getIdWithMotif());
+		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().at(2).size());
 
 		// Check that Modifications were saved after last load
-		Assert::AreEqual(1, ProteinDbLoader::GetPtmListFromProteinXml(testdir + R"(test_modifications_with_proteins.xml)")).size());
+		Assert::AreEqual(1, ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/test_modifications_with_proteins.xml").size());
+#ifdef ORIG
 		Assert::True(ProteinDbLoader::GetPtmListFromProteinXml(testdir + R"(test_modifications_with_proteins.xml)"))[0] == new_proteins[0]->getOneBasedPossibleLocalizedModifications().SelectMany([&] (std::any kv)
 				{
 				kv->Value;
 				}).First());
+#endif
+		Assert::IsTrue(ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/test_modifications_with_proteins.xml")[0]->Equals(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]));
 
 		//But that we can still read modifications from other protein XMLs that exist
-		Assert::AreEqual(0, ProteinDbLoader::GetPtmListFromProteinXml(testdir + "xml.xml")).size());
+		Assert::AreEqual(0, ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/xml.xml").size());
 
 		// Check that Modifications were saved after last load
-		auto b = ProteinDbLoader::GetPtmListFromProteinXml(testdir + R"(test_modifications_with_proteins.xml)"));
+		auto b = ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/test_modifications_with_proteins.xml");
 		Assert::AreEqual(1, b.size());
 
-		auto c = ProteinDbLoader::GetPtmListFromProteinXml(testdir + R"(test_modifications_with_proteins.xml)"))[0];
+		auto c = ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/test_modifications_with_proteins.xml")[0];
+#ifdef ORIG
 		auto d = new_proteins[0]->getOneBasedPossibleLocalizedModifications().SelectMany([&] (std::any kv)
 				{
 				kv->Value;
 				}).First();
+#endif
+		countModificationsVector.clear();
 
-		Assert::IsTrue(c->Equals(d));
+		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications())
+			for (auto i : kv.second)
+				countModificationsVector.push_back(i);
+
+#ifdef ORIG
+		Assert::IsTrue(c == countModificationsVector);
+#endif
+		Assert::IsTrue(c[0].Equals(countModificationsVector[0]));
 
 		//But that we can still read modifications from other protein XMLs that exist
-		Assert::AreEqual(0, ProteinDbLoader::GetPtmListFromProteinXml(testdir + "xml.xml")).size());
+		Assert::AreEqual(0, ProteinDbLoader::GetPtmListFromProteinXml(testdir + "/xml.xml").size());
 
-		delete d;
 		delete protein;
 	}
 
+#ifdef LATER
 	void TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
