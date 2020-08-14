@@ -55,11 +55,9 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". FilesEqualHash" << std::endl;
 	Test::TestDatabaseLoaders::FilesEqualHash();
 
-#ifdef LATER
 	std::cout << ++i << ". FilesLoading" << std::endl;
 	Test::TestDatabaseLoaders::FilesLoading();
 
-#endif
 	std::cout << ++i << ". SampleLoadModWithLongMotif" << std::endl;
 	Test::TestDatabaseLoaders::SampleLoadModWithLongMotif();
 
@@ -89,14 +87,9 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". CompactFormReading2" << std::endl;
 	Test::TestDatabaseLoaders::CompactFormReading2();
-
-	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
-	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
-
-#ifdef LATER
+	
 	std::cout << ++i << ". Test_MetaMorpheusStyleProteinDatabaseWriteAndREad" << std::endl;
 	Test::TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad();
-#endif
 
 	std::cout << ++i << ". DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent" << std::endl;
 	Test::TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent();
@@ -110,6 +103,8 @@ int main ( int argc, char **argv )
 	std::cout << ++i << ". TestWritePtmWithNeutralLossAndDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons();
 
+	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
+	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
 	return 0;
 }
 
@@ -619,46 +614,81 @@ namespace Test
 		delete protein;
 	}
 
-#ifdef LATER
 	void TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
-		std::string proteinDbFilePath = testdir + "TestProteinSplitAcrossFiles.xml");
+		std::string proteinDbFilePath = testdir + "/TestProteinSplitAcrossFiles.xml";
 
-		ModificationMotif motif;
-		ModificationMotif::TryGetMotif("D", motif);
-		Modification *mod = new Modification("mod1", "", "mt", "", motif, "Anywhere.", nullptr, std::make_optional(10), std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+		ModificationMotif *motif;
+		ModificationMotif::TryGetMotif("D", &motif);
+		Modification *mod = new Modification("mod1", 
+				"", 
+				"mt", 
+				"", 
+				motif, 
+				"Anywhere.", 
+				nullptr, 
+				std::make_optional(10), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::unordered_map<std::string, std::vector<std::string>>(), 
+				std::vector<std::string>(), 
+				std::unordered_map<DissociationType, std::vector<double>>(), 
+				std::unordered_map<DissociationType, std::vector<double>>(), 
+				"");
 
-		std::unordered_map<int, std::vector<Modification*>> oneBasedModification =
-		{
-			{
-				3, {mod}
-			}
-		};
+		std::unordered_map<int, std::vector<Modification*>> oneBasedModification;
+		std::vector<Modification*> tempModificationVector;
+		tempModificationVector.push_back(mod);
+		oneBasedModification.insert(std::pair<int, std::vector<Modification*>>(3,tempModificationVector));
 
-		Protein *prot1 = new Protein("MEDEEK", "prot1", "", std::vector<std::tuple<std::string, std::string>>(), oneBasedModification, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
-		std::vector<Protein*> proteinList = {prot1};
-		ProteinDbWriter::WriteXmlDatabase(std::unordered_map<std::string, std::unordered_set<std::tuple<int, Modification*>>>(), proteinList, proteinDbFilePath);
+		Protein *prot1 = new Protein("MEDEEK", 
+				"prot1", 
+				"", 
+				std::vector<std::tuple<std::string, std::string>>(), 
+				oneBasedModification, 
+				std::vector<ProteolysisProduct*>(), 
+				"", 
+				"", 
+				false, 
+				false, 
+				std::vector<DatabaseReference*>(), 
+				std::vector<SequenceVariation*>(), 
+				std::vector<SequenceVariation*>(), 
+				"", 
+				std::vector<DisulfideBond*>(), 
+				std::vector<SpliceSite*>(), 
+				"");
 
+		std::vector<Protein*> proteinList;
+		proteinList.push_back(prot1);
+		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
+		ProteinDbWriter::WriteXmlDatabase(tempWriteXMlDatabase, proteinList, proteinDbFilePath);
+#ifdef ORIG
+		// SHANE: Potential oversite
 		auto lines = File::ReadAllLines(proteinDbFilePath);
-		std::unordered_map<string, Modification> um;
-		std::vector<Protein*> newProteinList = ProteinDbLoader::LoadProteinXML(proteinDbFilePath, true, DecoyType::Reverse, std::vector<Modification*>(), false, std::vector<std::string>(), um, -1);
+#endif
+		std::unordered_map<std::string, Modification*> um;
+		std::vector<Modification*> tempModificationVector2;
+		std::vector<std::string> tempStringVector;
+		std::vector<Protein*> newProteinList = ProteinDbLoader::LoadProteinXML(proteinDbFilePath, 
+				true, 
+				DecoyType::Reverse, 
+				tempModificationVector2, 
+				false,
+				tempStringVector,
+				um,
+				-1);
 
 		delete prot1;
 		delete mod;
 	}
 
-#endif
 	void TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		Loaders::LoadElements(testdir + "/elements.dat");
 		std::vector<std::tuple<Modification*, std::string>> errors;
-<<<<<<< HEAD
 		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/z.txt", errors);
-=======
-		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/z.txt", errors);
->>>>>>> 565573888a21de07eb2161d6dafa581a73234aff
 		std::unordered_map<int, std::vector<Modification*>> tempMapIntVectorMods;
 		tempMapIntVectorMods.insert(std::pair<int, std::vector<Modification*>>(2, sampleModList));
 		Protein *protein = new Protein("MCSSSSSSSSSS", 
@@ -729,25 +759,9 @@ namespace Test
 					kv->Value;
 					})->Count());
 #endif
-		int valueCount = 0;
 		std::vector<std::vector<Modification*>> vals;
 		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications()) {
 			vals.push_back(kv.second);
-			valueCount++;
-		}
-
-		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size());
-		Assert::AreEqual(1, vals.size());
-		Assert::AreEqual(1, valueCount);
-
-		// Something extraneuous Assert::AreEqual(1, valueCount);
-#endif
-
-		int valueCount = 0;
-		std::vector<std::vector<Modification*>> vals;
-		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications()) {
-			vals.push_back(kv.second);
-			valueCount++;
 		}
 
 		Assert::AreEqual(1, vals.size());

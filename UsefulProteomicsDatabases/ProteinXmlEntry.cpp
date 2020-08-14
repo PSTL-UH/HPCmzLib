@@ -814,35 +814,4 @@ namespace UsefulProteomicsDatabases
 		setReadingGene(false);
 		setReadingOrganism(false);
 	}
-
-	ProteinXmlEntry::~ProteinXmlEntry() {
-		// SHANE: Project standard seems to be shallow copies
-		// This could destory the protein as it is being made
-		// Need clarification before implementing
-		// destructor();
-	}
-
-	void ProteinXmlEntry::destructor() {	
-		for (auto i : AnnotatedMods)
-			delete i;
-
-		for (auto v : privateOneBasedModifications)
-			for (auto m : v.second)
-				delete m;
-
-		for (auto i : privateProteolysisProducts)
-			delete i;
-
-		for (auto i : privateSequenceVariations)
-			delete i;
-
-		for (auto i : privateDisulfideBonds)
-			delete i;
-
-		for (auto i : privateSpliceSites)
-			delete i;
-
-		for (auto i : privateDatabaseReferences)
-			delete i;
-	}
 }

@@ -159,9 +159,6 @@ namespace UsefulProteomicsDatabases
         /// </summary>
         void ParseFeatureEndElement(xmlTextReaderPtr *xml, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications);
 
-	   // Shane: The difference between Clear and the destructor is its use. 
-	   // Clear will reinitialize variables where as the destructor on destroys variables
-	   ~ProteinXmlEntry();
     private:
         static void ParseAnnotatedMods(std::unordered_map<int, std::vector<Modification*>> &destination, std::vector<std::string> &modTypesToExclude, std::unordered_map<std::string, Modification*> &unknownModifications, std::vector<std::tuple<int, std::string>*> &annotatedMods);
 
@@ -177,9 +174,5 @@ namespace UsefulProteomicsDatabases
         /// Clear this object's properties
         /// </summary>
         void Clear();
-
-	   // Shane: Helper method for both clear and destructor.
-	   // Too lazy to write code twice
-	   void destructor();
     };
 }
