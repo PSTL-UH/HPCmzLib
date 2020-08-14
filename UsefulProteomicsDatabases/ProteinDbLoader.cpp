@@ -143,9 +143,7 @@ namespace UsefulProteomicsDatabases
 		xmlCleanupParser();
 
 		if (debugReader == -1)
-			std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
-				<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
-				<< "This message may pop up twice.\n\n";
+			std::cout << "Xml file failed. "<< std::endl;
 
 		std::vector<Protein*> decoys = DecoyProteinGenerator::GenerateDecoys(targets, decoyType, maxThreads);
 		// SHANE: C++ doesn't have a way to inline concatenate objects. Need to do this manually.
@@ -181,8 +179,8 @@ namespace UsefulProteomicsDatabases
 
 			std::regex *startingWhitespace = new std::regex(R"(/^\s+/gm)");
 			StringBuilder *storedKnownModificationsBuilder = new StringBuilder();
-#ifdef ORIG
 			last_database_location = proteinDbLocation;
+#ifdef ORIG
 			auto stream = FileStream(proteinDbLocation, FileMode::Open, FileAccess::Read, FileShare::Read);
 			GZipStream tempVar(stream, CompressionMode::Decompress);
 			Stream *uniprotXmlFileStream = StringHelper::endsWith(proteinDbLocation, ".gz") ? static_cast<Stream*>(&tempVar): stream;
@@ -228,7 +226,7 @@ namespace UsefulProteomicsDatabases
 						std::vector<std::tuple<Modification*, std::string>> errors;
 						protein_xml_modlist_general = storedKnownModificationsBuilder->length() <= 0 ? 
 							std::vector<Modification*>() : 
-							std::vector<Modification*>(PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors));
+							PtmListLoader::ReadModsFromString(storedKnownModificationsBuilder->toString(), errors);
 						break;
 					}
 				}
@@ -237,9 +235,7 @@ namespace UsefulProteomicsDatabases
 			xmlCleanupParser();
 
 			if (debugReader == -1)
-				std::cout << "There MAY have been an issue with the xmlprotein entry that was just done.\n" 
-					<< "Please make sure that you have the correct file name, and that the file complies with the projects standards.\n"
-					<< "This message may pop up twice.\n\n";
+				std::cout << "Xml file failed. "<< std::endl;
 
 			delete startingWhitespace;
 			delete storedKnownModificationsBuilder;
