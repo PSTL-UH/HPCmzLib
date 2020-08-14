@@ -96,6 +96,10 @@ int main ( int argc, char **argv )
 #ifdef LATER
 	std::cout << ++i << ". Test_MetaMorpheusStyleProteinDatabaseWriteAndREad" << std::endl;
 	Test::TestDatabaseLoaders::Test_MetaMorpheusStyleProteinDatabaseWriteAndREad();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 565573888a21de07eb2161d6dafa581a73234aff
 #endif
 	std::cout << ++i << ". DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent" << std::endl;
 	Test::TestDatabaseLoaders::DoNotWriteSameModTwiceAndDoNotWriteInHeaderSinceDifferent();
@@ -653,7 +657,11 @@ namespace Test
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		Loaders::LoadElements(testdir + "/elements.dat");
 		std::vector<std::tuple<Modification*, std::string>> errors;
+<<<<<<< HEAD
 		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/z.txt", errors);
+=======
+		std::vector<Modification*> sampleModList = PtmListLoader::ReadModsFromFile(testdir + "/DatabaseTests" + "/z.txt", errors);
+>>>>>>> 565573888a21de07eb2161d6dafa581a73234aff
 		std::unordered_map<int, std::vector<Modification*>> tempMapIntVectorMods;
 		tempMapIntVectorMods.insert(std::pair<int, std::vector<Modification*>>(2, sampleModList));
 		Protein *protein = new Protein("MCSSSSSSSSSS", 
@@ -723,6 +731,17 @@ namespace Test
 					{
 					kv->Value;
 					})->Count());
+#endif
+		int valueCount = 0;
+		std::vector<std::vector<Modification*>> vals;
+		for (auto kv : new_proteins[0]->getOneBasedPossibleLocalizedModifications()) {
+			vals.push_back(kv.second);
+			valueCount++;
+		}
+
+		Assert::AreEqual(1, new_proteins[0]->getOneBasedPossibleLocalizedModifications().size());
+		Assert::AreEqual(1, vals.size());
+		Assert::AreEqual(1, valueCount);
 
 		// Something extraneuous Assert::AreEqual(1, valueCount);
 #endif
