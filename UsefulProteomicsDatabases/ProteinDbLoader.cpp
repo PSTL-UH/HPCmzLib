@@ -159,8 +159,6 @@ namespace UsefulProteomicsDatabases
 
 		delete block;
 		delete substituteWhitespace;
-		for (auto i : prespecified)
-			delete i;
 
 		return proteinsToExpand;
 	}

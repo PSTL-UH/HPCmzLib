@@ -146,6 +146,8 @@ namespace UsefulProteomicsDatabases
 			for (int i = 0; ((i < line.size() - 1) and !leave); i++) {
 				if (StringHelper::startsWith(line, "\t")) {
 					line = line.substr(2, line.size() - 1);
+				} else if (StringHelper::startsWith(line, " ")) {
+					line = line.substr(1, line.size() - 1);
 				} else {
 					leave = true;
 				}
