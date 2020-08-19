@@ -99,12 +99,13 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". TestWritePtmWithDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithDiagnosticIons();
-
+	
 	std::cout << ++i << ". TestWritePtmWithNeutralLossAndDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons();
 	
 	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
 	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
+
 	return 0;
 }
 
