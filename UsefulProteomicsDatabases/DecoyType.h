@@ -62,4 +62,26 @@ namespace UsefulProteomicsDatabases
 
         return s;
     }
+
+    static DecoyType DecoyTypeFromString( std::string &s ) {
+        DecoyType t;
+
+        if ( s == "None" ) {
+            t = DecoyType::None;           
+        }
+        else if (  s == "Reverse") {
+            t = DecoyType::Reverse;
+        }
+        else if (  s == "Slide") {
+            t = DecoyType::Slide;
+        }
+        else if (  s == "Shuffle") {
+            t = DecoyType::Shuffle;
+        }
+        else if (  s == "Random") {
+            t = DecoyType::Random;
+        }
+        return t;
+    }
+
 }
