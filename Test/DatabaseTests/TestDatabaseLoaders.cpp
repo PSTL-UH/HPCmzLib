@@ -54,10 +54,10 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". FilesEqualHash" << std::endl;
 	Test::TestDatabaseLoaders::FilesEqualHash();
-
+/*
 	std::cout << ++i << ". FilesLoading" << std::endl;
 	Test::TestDatabaseLoaders::FilesLoading();
-
+*/
 	std::cout << ++i << ". SampleLoadModWithLongMotif" << std::endl;
 	Test::TestDatabaseLoaders::SampleLoadModWithLongMotif();
 
@@ -102,7 +102,7 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". TestWritePtmWithNeutralLossAndDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons();
-
+	
 	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
 	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
 	return 0;
