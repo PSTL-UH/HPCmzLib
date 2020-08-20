@@ -518,7 +518,7 @@ namespace UsefulProteomicsDatabases
 				{
 					// an entry with two values is assumed to have a dissociation type and a neutral loss formula or mass
 
-					std::optional<DissociationType> dt = ModDissociationType(entryKeyValue[0]);
+					std::optional<DissociationType> dt = static_cast<DissociationType>(std::stoi(entryKeyValue[0]));
 					if (dt.has_value())
 					{
 						//try // see if dictionary already contains key AnyActivationType
@@ -550,18 +550,18 @@ namespace UsefulProteomicsDatabases
 					{
 						throw MzLibException("neutral loss or diagnostic ion entry dissociation type is not parsable");
 					}
-				}
-				else
-				{
-					throw MzLibException("your neutral loss or diagnostic ion is junk");
+					}
+					else
+					{
+						throw MzLibException("your neutral loss or diagnostic ion is junk");
+					}
 				}
 			}
-		}
-		catch (...)
-		{
-			dAndNDictionary = std::unordered_map<DissociationType, std::vector<double>>(); // must have run into some junk
-		}
+			catch (...)
+			{
+				dAndNDictionary = std::unordered_map<DissociationType, std::vector<double>>(); // must have run into some junk
+			}
 
-		return dAndNDictionary;
+			return dAndNDictionary;
 		}
 	}
