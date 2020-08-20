@@ -503,12 +503,10 @@ namespace UsefulProteomicsDatabases
 						mm = std::stod(entryKeyValue[0] );
 					}
 
-					std::vector<double> val;
 					// check the dictionary to see if AnyActivationType is already listed in the keys,
 					std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
 						dAndNDictionary.find(DissociationType::AnyActivationType); 
 					if ( dAndNDictionary_iterator != dAndNDictionary.end() ) {
-						val = dAndNDictionary_iterator->second;
 						dAndNDictionary[DissociationType::AnyActivationType].push_back(mm);
 					}
 					else
@@ -520,7 +518,7 @@ namespace UsefulProteomicsDatabases
 				{
 					// an entry with two values is assumed to have a dissociation type and a neutral loss formula or mass
 
-					std::optional<DissociationType> dt = ModDissociationType(entryKeyValue[0]);
+					std::optional<DissociationType> dt = static_cast<DissociationType>(std::stoi(entryKeyValue[0]));
 					if (dt.has_value())
 					{
 						//try // see if dictionary already contains key AnyActivationType
@@ -536,12 +534,11 @@ namespace UsefulProteomicsDatabases
 							mm = std::stod(entryKeyValue[1]);
 						}
 
-						std::vector<double> val;
 						// check the dictionary to see if AnyActivationType is already listed in the keys,
 						std::unordered_map<DissociationType, std::vector<double>>::const_iterator dAndNDictionary_iterator =
 							dAndNDictionary.find(static_cast<DissociationType>(dt.value())); 
-						if (  dAndNDictionary_iterator !=  dAndNDictionary.end() ) {
-							//val = dAndNDictionary_iterator->second;
+						if (dAndNDictionary_iterator !=  dAndNDictionary.end()) 
+						{
 							dAndNDictionary[static_cast<DissociationType>(dt.value())].push_back(mm);
 						}
 						else
