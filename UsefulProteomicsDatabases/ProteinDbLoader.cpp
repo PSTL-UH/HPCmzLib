@@ -61,6 +61,9 @@ namespace UsefulProteomicsDatabases
 			int maxHeterozygousVariants,
 			int minAlleleDepth)
 	{
+		if (StringHelper::endsWith(proteinDbLocation, "gz")) { 
+			std::cout << "\ngz support not yet supported\n";
+		}
 
 		// EDGAR: NOT dealing with XML databases right now.
 		//        only fasta supported
