@@ -15,7 +15,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: configure
       run: |
-         sudo apt-get install -y cereal libcereal-dev xsdcxx libxerces-c-dev
+         sudo dhclient eth1
+         sudo apt-get install -y --fix-missing cereal libcereal-dev xsdcxx libxerces-c-dev
          ./configure
     - name: make
       run: make -j4
