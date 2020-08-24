@@ -41,6 +41,9 @@ public:
     static double Variance(std::vector<double> samples)
     {
         int size = samples.size();
+        if (size == 0 ) {
+            return std::numeric_limits<double>::quiet_NaN();
+        }
         
         double variance = 0;
         double t = samples[0];
