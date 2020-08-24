@@ -22,87 +22,86 @@ int main ( int argc, char **argv )
 	const std::string &elr=elfile;
 	UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-	std::cout << ++i << "SetUpModifications" << std::endl;
+	std::cout << ++i << ". SetUpModifications" << std::endl;
 	Test::TestProteinReader::SetUpModifications();
 
-	std::cout << ++i << "MergeACoupleProteins" << std::endl;
+	std::cout << ++i << ". MergeACoupleProteins" << std::endl;
 	Test::TestProteinReader::MergeACoupleProteins();
 
-	std::cout << ++i << "XmlTest" << std::endl;
+	std::cout << ++i << ". XmlTest" << std::endl;
 	Test::TestProteinReader::XmlTest();
-
-	std::cout << ++i << "DisulfideXmlTest" << std::endl;
+#ifdef LATER
+	std::cout << ++i << ". DisulfideXmlTest" << std::endl;
 	Test::TestProteinReader::DisulfideXmlTest();
 
-	std::cout << ++i << "XmlTest_2entry" << std::endl;
+	std::cout << ++i << ". XmlTest_2entry" << std::endl;
 	Test::TestProteinReader::XmlTest_2entry();
 
-	std::cout << ++i << "XmlGzTest" << std::endl;
+	std::cout << ++i << ". XmlGzTest" << std::endl;
 	Test::TestProteinReader::XmlGzTest();
 
-	std::cout << ++i << "XmlFunkySequenceTest" << std::endl;
+	std::cout << ++i << ". XmlFunkySequenceTest"  << std::endl;
 	Test::TestProteinReader::XmlFunkySequenceTest();
 
-	std::cout << ++i << "XmlModifiedStartTest" << std::endl;
+	std::cout << ++i << ". XmlModifiedStartTest"  << std::endl;
 	Test::TestProteinReader::XmlModifiedStartTest();
 
-	std::cout << ++i << "FastaTest" << std::endl;
+	std::cout << ++i << ". FastaTest" << std::endl;
 	Test::TestProteinReader::FastaTest();
 
-	std::cout << ++i << "BadFastaTest" << std::endl;
+	std::cout << ++i << ". BadFastaTest"  << std::endl;
 	Test::TestProteinReader::BadFastaTest();
 
-	std::cout << ++i << "Load_fasta_handle_tooHigh_indices" << std::endl;
+	std::cout << ++i << ". Load_fasta_handle_tooHigh_indices"  << std::endl;
 	Test::TestProteinReader::Load_fasta_handle_tooHigh_indices();
 
-	std::cout << ++i << "Read_xml_mod_collision" << std::endl;
+	std::cout << ++i << ". Read_xml_mod_collision"  << std::endl;
 	Test::TestProteinReader::Read_xml_mod_collision();
 
-	std::cout << ++i << "Read_xml_exclude_mods" << std::endl;
-	std::string excludedMod = ""; bool isExcluded = false; 
+	std::cout << ++i << ". Read_xml_exclude_mods"  << std::endl;
+	std::string excludedMod = ". ". ; bool isExcluded = false; 
 	Test::TestProteinReader::Read_xml_exclude_mods(excludedMod, isExcluded);
 
-	std::cout << ++i << "CompareOxidationWithAndWithoutCf" << std::endl;
+	std::cout << ++i << ". CompareOxidationWithAndWithoutCf"  << std::endl;
 	Test::TestProteinReader::CompareOxidationWithAndWithoutCf();
 
-	std::cout << ++i << "TestReverseDecoyXML" << std::endl;
+	std::cout << ++i << ". TestReverseDecoyXML"  << std::endl;
 	Test::TestProteinReader::TestReverseDecoyXML();
 
-	std::cout << ++i << "TestSlideDecoyXML" << std::endl;
+	std::cout << ++i << ". TestSlideDecoyXML"  << std::endl;
 	Test::TestProteinReader::TestSlideDecoyXML();
 
-	std::cout << ++i << "TestReverseDecoyFasta" << std::endl;
+	std::cout << ++i << ". TestReverseDecoyFasta"  << std::endl;
 	Test::TestProteinReader::TestReverseDecoyFasta();
 
-	std::cout << ++i << "TestSlideDecoyFasta" << std::endl;
+	std::cout << ++i << ". TestSlideDecoyFasta"  << std::endl;
 	Test::TestProteinReader::TestSlideDecoyFasta();
 
 	std::cout << ++i << ". " << std::endl;
 
 
 	std::cout << ++i << ". " << std::endl;
-
+#endif
 
 }
 
 namespace Test
 {
+	TestProteinReader::UniProtPtms = std::vector<Modification*>();
 	void TestProteinReader::SetUpModifications()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		auto psiModDeserialized = Loaders::LoadPsiMod(testdir + "/PSI-MOD.obo2.xml");
 		std::unordered_map<std::string, int> formalChargesDictionary = Loaders::GetFormalChargesDictionary(psiModDeserialized);
-		std::vector<Modification*> UniProtPtms = Loaders::LoadUniprot(testdir + "/ptmlist2.txt", formalChargesDictionary).ToList();
-
-		for (auto i : UniProtPtms)
-			delete i;
+		UniProtPtms = Loaders::LoadUniprot(testdir + "/ptmlist2.txt", formalChargesDictionary);
 	}
 
 	void TestProteinReader::MergeACoupleProteins()
 	{
 		ModificationMotif *motif;
 		ModificationMotif::TryGetMotif("A", &motif);
-		std::vector<std::tuple<std::string, std::string>> geneNames = std::vector<std::tuple<std::string,std::string>>("gene", "name");
+		std::vector<std::tuple<std::string, std::string>> geneNames;
+		geneNames.push_back(std::tuple<std::string, std::string>("gene", "name"));
 		std::vector<DatabaseReference*> databaseReferences; 
 		std::vector<std::tuple<std::string, std::string>> tempVectorOfTupleStringStrings;
 		tempVectorOfTupleStringStrings.push_back(std::tuple<std::string, std::string>("type", "property"));
@@ -114,20 +113,23 @@ namespace Test
 					2, 
 					"A", 
 					"B", 
-					"var"));
+					"var",
+					std::unordered_map<int, std::vector<Modification*>>()));
 		std::vector<ProteolysisProduct*> proteolysisProducts;
 		proteolysisProducts.push_back(new ProteolysisProduct(std::make_optional(1), 
 					std::make_optional(2), 
 					"prod"));
-		std::unordered_map<int, Modification*> oneBasedModifications;
-		oneBasedModifications.insert(std::pair<int, Modification*>(1, new Modification("mod", 
-						"", 
-						"type",
-						"",
-						motif,
-						"Anywhere.",
-						nullptr,
-						std::make_optional(1))));
+		std::unordered_map<int, std::vector<Modification*>> oneBasedModifications;
+		std::vector<Modification*> tempModificationVector;
+		tempModificationVector.push_back(new Modification("mod",
+					"",
+					"type",
+					"",
+					motif,
+					"Anywhere.",
+					nullptr,
+					std::make_optional(1)));
+		oneBasedModifications.insert(std::pair<int, std::vector<Modification*>>(1, tempModificationVector));
 		Protein *p = new Protein("ASEQUENCE", 
 				"id",
 				"",
@@ -150,35 +152,35 @@ namespace Test
 						2, 
 						"A", 
 						"B", 
-						"var"));
+						"var",
+						std::unordered_map<int, std::vector<Modification*>>()));
 				std::vector<ProteolysisProduct*> proteolysisProducts2;
 				proteolysisProducts2.push_back(new ProteolysisProduct(std::make_optional(1),
 						std::make_optional(2),
 						"prod"));
 				std::unordered_map<int, std::vector<Modification*>> oneBasedModifications2;
-				std::vector<Modification*> tempModificationVector;
-				tempModificationVector.push_back(new Modification("mod", 
+				std::vector<Modification*> tempModificationVector2;
+				tempModificationVector2.push_back(new Modification("mod", 
 						"", 
 						"type", 
 						"", 
 						motif, 
 						"Anywhere.", 
 						nullptr, 
-						std::make_optional(10));
-				oneBasedModifications2.insert(std::pair<int, std::vector<Modification*>>(1, tempModificationVector)); 
+						std::make_optional(10)));
+				oneBasedModifications2.insert(std::pair<int, std::vector<Modification*>>(1, tempModificationVector2)); 
 				Protein *p2 = new Protein("ASEQUENCE", 
 						"id",
 						"",
 						geneNames,
 						oneBasedModifications2,
 						proteolysisProducts2,
-						false,
-						false,
 						"name",
 						"full_name", 
+						false,
+						false,
 						databaseReferences2,
-						sequenceVariations2
-						);
+						sequenceVariations2);
 
 				std::vector<Protein*> tempProteinVector;
 				tempProteinVector.push_back(p);
@@ -191,34 +193,35 @@ namespace Test
 				Assert::AreEqual(1, merged[0]->getProteolysisProducts().size());
 				Assert::AreNotEqual(p->getOneBasedPossibleLocalizedModifications().begin()->second[0], p2->getOneBasedPossibleLocalizedModifications().begin()->second[0]);
 				Assert::AreEqual(1, merged[0]->getOneBasedPossibleLocalizedModifications().size());
-				Assert::AreEqual(2, merged[0]->getOneBasedPossibleLocalizedModifications()::First()->second.size());
+				Assert::AreEqual(2, merged[0]->getOneBasedPossibleLocalizedModifications().begin()->second.size());
 
 				//C# TO C++ CONVERTER TODO TASK: A 'delete p2' statement was not added since p2 was passed to a method or constructor. Handle memory management manually.
 				//C# TO C++ CONVERTER TODO TASK: A 'delete p' statement was not added since p was passed to a method or constructor. Handle memory management manually.
 				delete p;
 				delete p2;
 	}
-
+	
 	void TestProteinReader::XmlTest()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
 		std::unordered_map<std::string, Modification*> un;
 		std::vector<std::string> tempStringVector;
-		auto ok = ProteinDbLoader::LoadProteinXML(testdir + "/xml.xml", 
+		std::vector<Modification*> UniProtPtms;
+		std::vector<Protein*> ok = ProteinDbLoader::LoadProteinXML(testdir + "/xml.xml", 
 				true, 
 				DecoyType::Reverse, 
 				UniProtPtms, 
 				false, 
 				tempStringVector, 
 				un);
-
+#ifdef LATER
 		Assert::AreEqual('M', ok[0][0]);
 		Assert::AreEqual('M', ok[1][0]);
+#endif
+		Assert::AreEqual("P62805|H4_HUMAN|Histone H4", ok[0]->getFullDescription());
+		Assert::AreEqual("DECOY_P62805|H4_HUMAN|Histone H4", ok[1]->getFullDescription());
 
-		Assert::AreEqual("P62805|H4_HUMAN|Histone H4", ok[0]->getFul.getDescription());
-		Assert::AreEqual("DECOY_P62805|H4_HUMAN|Histone H4", ok[1]->getFul.getDescription());
-
-#ifdef ORIG //Unresolved
+#ifdef LATER 
 		Assert::AreEqual("ENST00000244537", ok[0]->getDatabaseReferences().First([&] (std::any dbRef)
 					{
 					return dbRef->Type == "Ensembl";
@@ -233,9 +236,10 @@ namespace Test
 					}).Properties->First().Item2);
 #endif
 
+
 		Assert::AreEqual(42, ok[0]->getGeneNames().size());
 
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		Assert::AreEqual(14, ok[0]->getGeneNames().Where([&] (std::any t)
 					{
 					return t->Item1 == "primary";
@@ -253,14 +257,15 @@ namespace Test
 		Assert::AreEqual(0, ok[0]->getDisulfideBonds().size());
 		Assert::AreEqual(1, ok[0]->getSequenceVariations().size());
 		Assert::AreEqual(1, ok[1]->getSequenceVariations().size()); // decoys get the same sequence variations
-		Assert::AreEqual(64, ok[0]->getSequenceVariations()[0].ge.getOneBasedBeginPosition());
-		Assert::AreEqual(64, ok[0]->getSequenceVariations()[0].ge.getOneBasedEndPosition());
-		Assert::AreEqual(103 - 64 + 2, ok[1]->getSequenceVariations()[0].getOneBasedBeginPosition());
-		Assert::AreEqual(103 - 64 + 2, ok[1]->getSequenceVariations()[0].ge.getOneBasedEndPosition());
-		Assert::AreNotEqual(ok[0]->getSequenceVariations()[0].ge.getDescription(), ok[1]->getSequenceVariations()[0].ge.getDescription()); //decoys and target variations don't have the same desc.
+		Assert::AreEqual(64, ok[0]->getSequenceVariations()[0]->getOneBasedBeginPosition());
+		Assert::AreEqual(64, ok[0]->getSequenceVariations()[0]->getOneBasedEndPosition());
+		Assert::AreEqual(103 - 64 + 2, ok[1]->getSequenceVariations()[0]->getOneBasedBeginPosition());
+		Assert::AreEqual(103 - 64 + 2, ok[1]->getSequenceVariations()[0]->getOneBasedEndPosition());
+		Assert::AreNotEqual(ok[0]->getSequenceVariations()[0]->getDescription(), ok[1]->getSequenceVariations()[0]->getDescription()); //decoys and target variations don't have the same desc.
 		Assert::AreEqual("Homo sapiens", ok[1]->getOrganism());
 	}
 
+#ifdef LATER
 	void TestProteinReader::DisulfideXmlTest()
 	{
 		std::string testdir=std::experimental::filesystem::current_path().string();
@@ -294,7 +299,7 @@ namespace Test
 		std::unordered_map<std::string, Modification*> un;
 		auto ok = ProteinDbLoader::LoadProteinXML(testdir + "/xml2.xml", true, DecoyType::Reverse, UniProtPtms, false, std::vector<std::string>(), un);
 
-#ifdef ORIG //Unresolved
+#ifdef LATER 
 		// proteolysis products check
 		Assert::True(ok.All([&] (std::any p)
 					{
@@ -313,7 +318,7 @@ namespace Test
 #endif 
 
 		// base sequence check
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		Assert::False(ok.All([&] (std::any p)
 					{
 					p::BaseSequence->Contains(" ");
@@ -329,7 +334,7 @@ namespace Test
 #endif
 
 		// GoTerm checks
-#ifdef ORIG //Unresolved
+#ifdef LATER 
 		std::vector<Protein*> targets = ok.Where([&] (std::any p)
 				{
 				!p::IsDecoy;
@@ -358,7 +363,7 @@ namespace Test
 		Assert::AreEqual("P62805|H4_HUMAN|Histone H4", ok[0]->getFul.getDescription());
 		Assert::AreEqual("DECOY_P62805|H4_HUMAN|Histone H4", ok[1]->getFul.getDescription());
 
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		Assert::AreEqual("ENST00000244537", ok[0]->getDatabaseReferences().First([&] (std::any dbRef)
 					{
 					return dbRef->Type == "Ensembl";
@@ -374,7 +379,7 @@ namespace Test
 #endif
 		Assert::AreEqual(42, ok[0]->getGeneNames().size());
 
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		Assert::AreEqual(14, ok[0]->getGeneNames().Where([&] (std::any t)
 					{
 					return t->Item1 == "primary";
@@ -493,7 +498,7 @@ namespace Test
 				tempStringVector,
 				un);
 
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		Assert::True(ok[0]->getOneBasedPossibleLocalizedModifications().Any([&] (std::any kv)
 					{
 					return kv->Value.size > 1;
@@ -557,7 +562,7 @@ namespace Test
 				tempStringVector,
 				un);
 
-#ifdef ORIG //Unresolved
+#ifdef LATER
 		std::vector<std::string> modTypes;
 		for (auto entry : ok2[0]->getOneBasedPossibleLocalizedModifications())
 		{
@@ -675,4 +680,6 @@ CF   O1
 		Assert::AreEqual("MSGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG", prots[0]->getBaseSequence());
 		Assert::AreEqual("MVRRRNAQGIGKGAGRKLRRSGGVGRGSKLLYKEGRKVHKKFLEDVIRGATTPTIHRKAKRVGAKDIVGAIKEQTRGLLGVGLGNFIYDTVGYRELAYRVTMT", prots[1]->getBaseSequence());
 	}
+
+#endif
 }
