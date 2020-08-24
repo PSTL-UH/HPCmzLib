@@ -36,44 +36,46 @@ using namespace UsefulProteomicsDatabases;
 
 namespace Test
 {
-    class TestProteinReader final
-    {
-    public:
-        static void SetUpModifications();
+	class TestProteinReader final
+	{
+		private:
+		public:
+			static void SetUpModifications();
+			static std::vector<Modification*> UniProtPtms;
 
-        static void MergeACoupleProteins();
+			static void MergeACoupleProteins();
 
-        static void XmlTest();
+			static void XmlTest();
 
-        static void DisulfideXmlTest();
+			static void DisulfideXmlTest();
 
-        static void XmlTest_2entry();
+			static void XmlTest_2entry();
 
-        static void XmlGzTest();
+			static void XmlGzTest();
 
-        static void XmlFunkySequenceTest();
+			static void XmlFunkySequenceTest();
 
-        static void XmlModifiedStartTest();
+			static void XmlModifiedStartTest();
 
-        static void FastaTest();
+			static void FastaTest();
 
-        static void BadFastaTest();
+			static void BadFastaTest();
 
-        static void Load_fasta_handle_tooHigh_indices();
+			static void Load_fasta_handle_tooHigh_indices();
 
-        static void Read_xml_mod_collision();
+			static void Read_xml_mod_collision();
 
-        //[TestCase("exclude_me_not", true)]
-        static void Read_xml_exclude_mods(const std::string &excludeString, bool isExcluded);
+			//[TestCase("exclude_me_not", true)]
+			static void Read_xml_exclude_mods(const std::string &excludeString, bool isExcluded);
 
-        static void CompareOxidationWithAndWithoutCf();
+			static void CompareOxidationWithAndWithoutCf();
 
-        static void TestReverseDecoyXML();
+			static void TestReverseDecoyXML();
 
-        static void TestSlideDecoyXML();
+			static void TestSlideDecoyXML();
 
-        static void TestReverseDecoyFasta();
+			static void TestReverseDecoyFasta();
 
-        static void TestSlideDecoyFasta();
-    };
+			static void TestSlideDecoyFasta();
+	};
 }
