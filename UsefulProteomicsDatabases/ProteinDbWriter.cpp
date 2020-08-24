@@ -130,10 +130,12 @@ namespace UsefulProteomicsDatabases
 				return l->getIdWithMotif() < r->getIdWithMotif();
 				} );
 
-		for (int i = 0; i < allRelevantModificationsVec.size() - 1; i++) 
+                if ( allRelevantModificationsVec.size() > 0 ) {
+                    for (int i = 0; i < allRelevantModificationsVec.size() - 1; i++) 
 			if (allRelevantModificationsVec[i]->Equals(allRelevantModificationsVec[i + 1])) 
-				allRelevantModificationsVec.erase(allRelevantModificationsVec.begin() + i);
-
+                            allRelevantModificationsVec.erase(allRelevantModificationsVec.begin() + i);
+                }
+                
 		for ( Modification *mod : allRelevantModificationsVec )
 		{
 			writer.WriteStartElement("modification");

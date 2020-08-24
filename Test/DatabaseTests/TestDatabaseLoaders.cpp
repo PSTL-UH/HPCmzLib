@@ -99,12 +99,13 @@ int main ( int argc, char **argv )
 
 	std::cout << ++i << ". TestWritePtmWithDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithDiagnosticIons();
-
+	
 	std::cout << ++i << ". TestWritePtmWithNeutralLossAndDiagnosticIons" << std::endl;
 	Test::TestDatabaseLoaders::TestWritePtmWithNeutralLossAndDiagnosticIons();
 	
 	std::cout << ++i << ". Modification_read_write_into_proteinDb" << std::endl;
 	Test::TestDatabaseLoaders::Modification_read_write_into_proteinDb();
+
 	return 0;
 }
 
@@ -114,7 +115,9 @@ namespace Test
 	{
 		std::string testdir = std::experimental::filesystem::current_path().string();
 		std::vector<std::tuple<Modification*, std::string>> errors;
-		auto hah = dynamic_cast<Modification*>(PtmListLoader::ReadModsFromFile(testdir + "/cfInNL.txt", errors).front());
+		Modification* hah = dynamic_cast<Modification*>(PtmListLoader::ReadModsFromFile(testdir + "/cfInNL.txt", errors).front());
+
+#ifdef ORIG
 		int count = 0;
 		for (auto item : hah->getNeutralLosses())
 		{
@@ -125,6 +128,9 @@ namespace Test
 		}
 
 		Assert::AreEqual(2, count);
+#endif
+
+		Assert::AreEqual(2, hah->getNeutralLosses().begin()->second.size());
 	}
 
 	void TestDatabaseLoaders::LoadOriginalMismatchedModifications()
@@ -388,7 +394,7 @@ namespace Test
 
 		Assert::IsTrue(testMod->getValidModification());
 
-		Assert::IsTrue(testMod->getTarget()->ToString() == "msgRgk");
+		Assert::AreEqual(testMod->getTarget()->ToString(), "msgRgk");
 
 		std::unordered_map<std::string, Modification*> unknownModifications;
 		std::vector<std::string> modTypesToExclude;
@@ -413,8 +419,8 @@ namespace Test
 		}
 
 		Assert::IsTrue(startsWith);
-		Assert::IsTrue(protein[0]->getOneBasedPossibleLocalizedModifications().size() == 1);
-		Assert::IsTrue(protein[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0] == testMod);
+		Assert::AreEqual(protein[0]->getOneBasedPossibleLocalizedModifications().size(), 1);
+		Assert::AreEqual(protein[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0], testMod);
 
 		delete motif;
 
@@ -823,7 +829,7 @@ namespace Test
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::AreEqual(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
 
 		std::vector<Protein*> tempProteinVector;
 		tempProteinVector.push_back(protein);
@@ -844,7 +850,7 @@ namespace Test
 #ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
 // should be able to read mod from top of database...
 		std::vector<Modification*> tempModificationVector2;
 		tempStringVector.clear();
@@ -858,7 +864,7 @@ namespace Test
 #ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
 
 		delete protein;
 		delete m;
@@ -919,8 +925,8 @@ namespace Test
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
+		Assert::AreEqual(protein->getOneBasedPossibleLocalizedModifications().size(), 1);
+		Assert::AreEqual(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size(), 2);
 
 		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
 		std::vector<Protein*> tempProteinVector;
@@ -942,7 +948,7 @@ namespace Test
 #ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size(), 2);
 
 		// should be able to read mod from top of database...
 		std::vector<Modification*> tempModificationVector2;
@@ -957,7 +963,7 @@ namespace Test
 #ifdef ORIG
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size(), 2);
 
 		delete protein;
 		delete m;
@@ -1041,8 +1047,8 @@ namespace Test
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
 		Assert::That(protein->getOneBasedPossibleLocalizedModifications().First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().size() == 1);
-		Assert::IsTrue(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
+		Assert::AreEqual(protein->getOneBasedPossibleLocalizedModifications().size(), 1);
+		Assert::AreEqual(protein->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
 
 		std::unordered_map<std::string, UsefulProteomicsDatabases::ModDbTuple_set> tempWriteXMlDatabase;
 		std::vector<Protein*> tempVectorOfProteins;
@@ -1063,8 +1069,8 @@ namespace Test
 #endif
 
 
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size(), 2);
 		// should be able to read mod from top of database...
 
 		for (auto i : new_proteins)
@@ -1077,8 +1083,8 @@ namespace Test
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().NeutralLosses.First()->Value->Count == 2);
 		Assert::That(new_proteins.front().OneBasedPossibleLocalizedModifications::First()->Value->First().DiagnosticIons.First()->Value->Count == 2);
 #endif
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size() == 2);
-		Assert::IsTrue(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size() == 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getNeutralLosses().begin()->second.size(), 2);
+		Assert::AreEqual(new_proteins[0]->getOneBasedPossibleLocalizedModifications().begin()->second[0]->getDiagnosticIons().begin()->second.size(), 2);
 
 		for (auto i : new_proteins)
 			delete i;

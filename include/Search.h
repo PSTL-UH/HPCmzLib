@@ -5,20 +5,20 @@
 #define ACCURACY 1e-9
 
 template <typename T>
-int BinarySearch(std::vector<T>& array, T element)
+int BinarySearch(std::vector<T>& array, T element, bool verbose=false)
 {
     int left = 0, right = array.size() - 1;
 
     while (left <= right)
     {
 
-        if (array[left] > array[right])
-            std::cout << "Binary Search Warning, array is not sorted.  Left element is larger than right element" << std::endl;
+        if ((array[left] > array[right]) && verbose) 
+            std::cout << "Binary Search: array is not sorted, left element is larger than right element" << std::endl;
 
         int middle = left + (right - left) / 2;
 
-        if (array[middle] > array[right])
-            std::cout << "Binary Search Warning, array is not sorted.  Middle element is larger than right element" << std::endl;
+        if ( (array[middle] > array[right]) && verbose)
+            std::cout << "Binary Search: array is not sorted, middle element is larger than right element" << std::endl;
 
         // If element being searched for is the middle value, return its index
         if (std::abs(array[middle] - element) <= ACCURACY) 
