@@ -10,7 +10,6 @@ namespace Proteomics { class Protein; }
 #include "../Modifications/Modification.h"
 #include "DigestionParams.h"
 
-#include "cereal/cereal.hpp"
 
 namespace Proteomics { namespace ProteolyticDigestion { class PeptideWithSetModifications; } }
 
@@ -114,34 +113,6 @@ namespace Proteomics
 
             std::unordered_map<int, Modification*> GetFixedModsOneIsNterminus(int peptideLength, std::vector<Modification*> &allKnownFixedModifications);
         
-        public:
-            template <class Archive>
-            void save( Archive & ar ) const
-            {
-                ar( cereal::make_nvp("privateOneBasedStartResidueInProtein", privateOneBasedStartResidueInProtein) );
-                ar( cereal::make_nvp("privateOneBasedEndResidueInProtein", privateOneBasedEndResidueInProtein) );
-                ar( cereal::make_nvp("privateMissedCleavages", privateMissedCleavages) );
-                ar( cereal::make_nvp("privatePeptideDescription", privatePeptideDescription) );
-                ar( cereal::make_nvp("_baseSequence", _baseSequence) );
-
-                //Need Proteomics::Protein *_protein attribute as well?
-            }
-
-            template <class Archive>
-            static void load_and_construct( Archive & ar, cereal::construct<PeptideWithSetModifications> & construct )
-            {
-                //How to read Protein and CleavageSpecificity?
-                Proteomics::Protein *p = nullptr;
-                CleavageSpecificity cleavageSpecificityForFdrCategory = static_cast<CleavageSpecificity>(0);
-                int OneBasedStartResidueInProtein, OneBasedEndResidueInProtein, MissedCleavages;
-
-                ar( cereal::make_nvp("privateOneBasedStartResidueInProtein", OneBasedStartResidueInProtein) );
-                ar( cereal::make_nvp("privateOneBasedEndResidueInProtein", OneBasedEndResidueInProtein) );
-                ar( cereal::make_nvp("privateMissedCleavages", MissedCleavages) );
-
-                construct( p, OneBasedStartResidueInProtein, OneBasedEndResidueInProtein, MissedCleavages, cleavageSpecificityForFdrCategory); // calls MyType( x )
-            }
-
         };
     }
 }

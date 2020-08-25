@@ -29,6 +29,21 @@ namespace Proteomics
             privateFullSequence = value;
         }
 
+        std::string PeptideWithSetModifications::getDigestionParamString() const
+        {
+            return DigestionParamString;
+        }
+
+        std::string PeptideWithSetModifications::getProteinAccession() const
+        {
+            return ProteinAccession;
+        }
+
+        void PeptideWithSetModifications::setProteinAccession(std::string accession)
+        {
+            ProteinAccession = accession;
+        }
+
         const double PeptideWithSetModifications::WaterMonoisotopicMass = PeriodicTable::GetElement("H")->getPrincipalIsotope()->getAtomicMass() * 2 +
             PeriodicTable::GetElement("O")->getPrincipalIsotope()->getAtomicMass();
 
@@ -310,7 +325,6 @@ namespace Proteomics
                                         if (std::find(skippers.begin(), skippers.end(),
                                                       std::make_tuple(productType, terminalMasses[n]->FragmentNumber)) == skippers.end())
                                         {
-                                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                                             //yield return new Product(productType, terminalMasses[n], neutralLoss);
                                             Product * pp = new Product(productType, terminalMasses[n], neutralLoss);
                                             v.push_back(pp);
@@ -324,7 +338,6 @@ namespace Proteomics
                         if (std::find(skippers.begin(), skippers.end(),
                                       std::make_tuple(productType, terminalMasses[f]->FragmentNumber)) == skippers.end())
                         {
-                            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                             //yield return new Product(productType, terminalMasses[f], 0);
                             Product *pp = new Product(productType, terminalMasses[f], 0);
                             v.push_back( pp);
@@ -351,7 +364,6 @@ namespace Proteomics
                             if (neutralLoss != 0)
                             {
                                 auto  tempVar2 = new NeutralTerminusFragment (FragmentationTerminus::Both, getMonoisotopicMass(), 0, 0);
-                                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                                 //yield return new Product(ProductType::M, &tempVar2, neutralLoss);
                                 Product *pp = new Product(ProductType::M, tempVar2, neutralLoss);
                                 v.push_back( pp);
@@ -382,7 +394,6 @@ namespace Proteomics
 
                 for (auto diagnosticIon : diagnosticIons)
                 {
-                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                     //yield return diagnosticIon;
                     v.push_back(diagnosticIon);
                 }
@@ -499,12 +510,11 @@ namespace Proteomics
                 return q->getFullSequence() == this->getFullSequence();
             }
 
-            return q != nullptr                                                                   &&
-                q->getFullSequence() == this->getFullSequence()                                   &&
-                q->getOneBasedStartResidueInProtein() == this->getOneBasedStartResidueInProtein() &&
-                ( q->getProtein()->getAccession() == ""                                           &&
-                  (this->getProtein()->getAccession() == ""                               ||
-                   q->getProtein()->getAccession() == this->getProtein()->getAccession()))        &&
+            return q != nullptr                                                                          &&
+                q->getFullSequence() == this->getFullSequence()                                          &&
+                q->getOneBasedStartResidueInProtein() == this->getOneBasedStartResidueInProtein()        &&
+                (( q->getProtein()->getAccession() == ""  && this->getProtein()->getAccession() == "" )  ||
+                ( q->getProtein()->getAccession() == this->getProtein()->getAccession() ))               &&
                 q->getDigestionParams()->getProtease() == this->getDigestionParams()->getProtease();
         }
 
@@ -516,15 +526,14 @@ namespace Proteomics
             return StringHelper::GetHashCode(getFullSequence()) + getDigestionParams()->getProtease()->GetHashCode();
         }
 
-        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string,
-                                                                      Modification*> &idToMod,
-                                                                      std::unordered_map<std::string,
-                                                                      Proteomics::Protein*> &accessionToProtein)
+        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*> &idToMod,
+                                                                      std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein)
         {
-            std::string baseSequence;
-            GetModsAfterDeserialization(idToMod, baseSequence);
+            GetModsAfterDeserialization(idToMod, _baseSequence);
             GetProteinAfterDeserialization(accessionToProtein);
-            GetDigestionParamsAfterDeserialization();
+            // In C++ version the DigestionParams are already correctly determined before constructing the new
+            // PeptideWithSetModifications object, so need to call it here again.
+            //GetDigestionParamsAfterDeserialization(); 
         }
 
         void PeptideWithSetModifications::GetDigestionParamsAfterDeserialization()
@@ -568,6 +577,12 @@ namespace Proteomics
                         std::string modId = "";
                         bracketCount--;
 
+                        if ( idToMod.size() == 0 ) {
+                            // not meant to identify mods, just called form the constructor
+                            // without a valid Mods table. Just use to construct the base sequence.
+                            break;
+                        }
+                        
                         if (bracketCount == 0)
                         {
                             try
@@ -587,7 +602,7 @@ namespace Proteomics
 
                             Modification *mod;
                             std::unordered_map<std::string, Modification*>::const_iterator idToMod_iterator = idToMod.find(modId);
-                            if (idToMod_iterator == idToMod.end())
+                            if (idToMod_iterator == idToMod.end() )
                             {
                                 //mod = idToMod_iterator->second;
                                 delete currentModification;
@@ -643,10 +658,11 @@ namespace Proteomics
             std::unordered_map<std::string, Proteomics::Protein*>::const_iterator idToProtein_iterator = idToProtein.find(ProteinAccession);
             if (ProteinAccession != "" && idToProtein_iterator == idToProtein.end())
             {
-                protein = idToProtein_iterator->second;
-                throw MzLibUtil::MzLibException("Could not find protein accession after deserialization! " + ProteinAccession);
+                 throw MzLibUtil::MzLibException("Could not find protein accession after deserialization! " + ProteinAccession);
             }
-
+            else if (ProteinAccession != "" && idToProtein_iterator != idToProtein.end() ){
+                protein = idToProtein_iterator->second;
+            }
             setProtein(protein);
         }
 
