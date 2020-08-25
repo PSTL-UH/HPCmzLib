@@ -158,8 +158,8 @@ namespace Proteomics
                 std::to_string(getMaxModificationIsoforms()) + "," +
                 std::to_string(getMaxModsForPeptide()) + "," +
                 getProtease()->getName() + "," +
-                std::to_string(static_cast<int>(getSearchModeType())) + "," +
-                std::to_string(static_cast<int>(getFragmentationTerminus()));
+                CleavageSpecificityExtension::GetCleavageSpecificityAsString(getSearchModeType()) + "," +
+                FragmentationTerminusToString(getFragmentationTerminus() );
         }
 
         DigestionParams *DigestionParams::FromString(const std::string &str)
@@ -178,8 +178,8 @@ namespace Proteomics
                                        std::stoi(split[4]),
                                        static_cast<Proteomics::ProteolyticDigestion::InitiatorMethionineBehavior>(std::stoi(split[1])),
                                        std::stoi(split[5]),
-                                       static_cast<CleavageSpecificity>(std::stoi(split[7])),
-                                       static_cast<FragmentationTerminus>(std::stoi(split[8])));
+                                       CleavageSpecificityExtension::ParseString(split[7]),
+                                       FragmentationTerminusFromString(split[8]) );
         }
 
         void DigestionParams::RecordSpecificProtease()

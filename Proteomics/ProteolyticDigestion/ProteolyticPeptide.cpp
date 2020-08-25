@@ -238,7 +238,6 @@ namespace Proteomics
 
                     }
                 }
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return new PeptideWithSetModifications(getProtein(), digestionParams, getOneBasedStartResidueInProtein(),
                 //    getOneBasedEndResidueInProtein(), getCleavageSpecificityForFdrCategory(), getPeptideDescription(),
                 //    getMissedCleavages(), kvp, numFixedMods);
@@ -252,12 +251,10 @@ namespace Proteomics
                                                                                  kvp,
                                                                                  numFixedMods);
                 v.push_back(p);
-                //std::cout << p->getBaseSequence() << " numFixedMods " << numFixedMods << " kvp size " << kvp.size() <<   std::endl;
                 
                 variable_modification_isoforms++;
                 if (variable_modification_isoforms == maximumVariableModificationIsoforms)
                 {
-                    //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                     // yield break;
                     break;
                 }

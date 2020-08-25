@@ -8,6 +8,7 @@
 #include <limits>
 #include <algorithm>
 #include <iterator>
+#include <filesystem>
 #include "Assert.h"
 
 int main ( int argc, char **argv )
@@ -91,7 +92,8 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestCompactPeptideSerialization" << std::endl;    
     Test::TestModifications::TestCompactPeptideSerialization();
-
+#endif
+   
     std::cout << ++i << ". TestSerializationPeptideFromString" << std::endl;    
     Test::TestModifications::TestSerializationPeptideFromString();
 
@@ -100,10 +102,11 @@ int main ( int argc, char **argv )
 
     std::cout << ++i << ". TestSerializationPeptideFromProteinWithMod" << std::endl;    
     Test::TestModifications::TestSerializationPeptideFromProteinWithMod();
-
+    
     std::cout << ++i << ". TestFragmentNterminalModifiedPeptide" << std::endl;    
     Test::TestModifications::TestFragmentNterminalModifiedPeptide();
 
+#ifdef LATER
     std::cout << ++i << ". TestFragmentCTerminalModifiedPeptide" << std::endl;    
     Test::TestModifications::TestFragmentCTerminalModifiedPeptide();
     
@@ -840,94 +843,103 @@ namespace Test {
         delete digestionParams;
         delete mod;
     }
-
+    
   void TestModifications::TestCompactPeptideSerialization()
     {
         // purpose of this test is to serialize/deserialize a CompactPeptide and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is unmodified
         std::string sequence = "PEPTIDE";
-        PeptideWithSetModifications *p = new PeptideWithSetModifications(sequence, std::unordered_map<std::string, Modification*>(), 0, nullptr, nullptr, 0, 7, 0);
+        std::unordered_map<std::string, Modification*> umsM;
+        PeptideWithSetModifications *p = new PeptideWithSetModifications(sequence, umsM,
+                                                                         0, nullptr, nullptr, 0, 7, 0);
         CompactPeptide *cp = new CompactPeptide(p, FragmentationTerminus::Both);
         CompactPeptide *deserializedCp = nullptr;
 
-        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestCompactPeptideSerialization");
+        std::string dir = "TestCompactPeptideSerialization";
         FileSystem::createDirectory(dir);
-        std::string path = FileSystem::combine(dir, "myCompactPeptideIndex.ind");
+        std::string path = dir + "/myCompactPeptideIndex.ind";
 
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = typeof(CompactPeptide);
-        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //auto messageTypes = typeof(CompactPeptide);
+        //auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //ser->Serialize(file, cp);
+        PeptideWithSetModifications::Serialize(path, p );
 
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
-        {
-            auto file = System::IO::File::Create(path);
-            ser->Serialize(file, cp);
-        }
-
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
-        {
-            auto file = System::IO::File::OpenRead(path);
-            deserializedCp = static_cast<CompactPeptide*>(ser->Deserialize(file));
-        }
+        //auto file = System::IO::File::OpenRead(path);
+        //deserializedCp = static_cast<CompactPeptide*>(ser->Deserialize(file));
+        PeptideWithSetModification::Deserialize (path, deserializeedCp);
 
         Assert::That(cp->Equals(deserializedCp));
 
+        std::filesystem::remove_all(dir);
         delete ser;
         delete cp;
         delete p;
     }
+#endif
 
     void TestModifications::TestSerializationPeptideFromString()
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is unmodified and generated from reading in a string
         std::string sequence = "PEPTIDE";
-        PeptideWithSetModifications *peptide = new PeptideWithSetModifications(sequence, std::unordered_map<std::string, Modification*>(), 0, nullptr, nullptr, 1, 7, 0);
+        std::unordered_map<std::string, Modification*> umsM;
+        PeptideWithSetModifications *peptide = new PeptideWithSetModifications(sequence, umsM, 0,
+                                                                               nullptr, nullptr, 1, 7, 0);
         PeptideWithSetModifications *deserializedPeptide = nullptr;
 
-        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromString");
+        std::string dir = "TestSerializationPeptideFromString";
         FileSystem::createDirectory(dir);
-        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+        std::string path = dir + "/myPeptideIndex.ind";
 
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = typeof(PeptideWithSetModifications);
-        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
-
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
-        {
-            auto file = System::IO::File::Create(path);
-            ser->Serialize(file, peptide);
-        }
-
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
-        {
-            auto file = System::IO::File::OpenRead(path);
-            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
-        }
-
-        deserializedPeptide->SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*>(), std::unordered_map<std::string, Protein*>());
+        //auto messageTypes = typeof(PeptideWithSetModifications);
+        //auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //auto file = System::IO::File::Create(path);
+        //ser->Serialize(file, peptide);
+        PeptideWithSetModifications::Serialize(path, peptide );
+        
+        //auto file = System::IO::File::OpenRead(path);
+        //deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        PeptideWithSetModifications::Deserialize(path, deserializedPeptide );
+        
+        std::unordered_map<std::string, Modification*> umsM1;
+        std::unordered_map<std::string, Protein*> umsP;
+        deserializedPeptide->SetNonSerializedPeptideInfo( umsM1, umsP);
 
         // not asserting any protein properties - since the peptide was created from a sequence string it didn't have a protein to begin with
 
-        Assert::That(peptide->Equals(deserializedPeptide));
-        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
-        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
+        Assert::IsTrue(peptide->Equals(deserializedPeptide));
+        Assert::AreEqual(deserializedPeptide->getMonoisotopicMass(), peptide->getMonoisotopicMass());
+        Assert::AreEqual(deserializedPeptide->getSequenceWithChemicalFormulas(), peptide->getSequenceWithChemicalFormulas());
 
+#ifdef ORIG
         std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
         {
             v::NeutralMass;
         }).ToList();
+#endif
+        auto dPF = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> deserializedPeptideFragments;
+        for ( auto v: dPF ) {
+            deserializedPeptideFragments.push_back(v->NeutralMass);
+        }
+        
+#ifdef ORIG
         std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
         {
             v::NeutralMass;
         }).ToList();
         Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
+#endif
+        auto pF = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> peptideFragments;
+        for ( auto v: pF ) {
+            peptideFragments.push_back(v->NeutralMass);
+        }
+        Assert::SequenceEqual(deserializedPeptideFragments, peptideFragments);
 
-        delete ser;
+        //delete ser;
+        std::filesystem::remove_all(dir);
         delete peptide;
     }
 
@@ -935,80 +947,84 @@ namespace Test {
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is unmodified and generated from digesting a protein
-        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(), std::unordered_map<int, std::vector<Modification>>(), std::vector<ProteolysisProduct>(), "MyProtein", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
-
-        DigestionParams tempVar();
-        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).front();
+        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(),
+                                       std::unordered_map<int, std::vector<Modification*>>(), std::vector<ProteolysisProduct*>(),
+                                       "MyProtein", "", false, false, std::vector<DatabaseReference*>(),
+                                       std::vector<SequenceVariation*>(), std::vector<SequenceVariation*>(), "",
+                                       std::vector<DisulfideBond*>(), std::vector<SpliceSite*>(), "");
+        
+        auto tempVar = new DigestionParams("trypsin");
+        std::vector<Modification*> vm1, vm2;
+        PeptideWithSetModifications *peptide = protein->Digest(tempVar, vm1, vm2)[0];
         PeptideWithSetModifications *deserializedPeptide = nullptr;
-
-        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromProtein");
+        
+        std::string dir = "TestSerializationPeptideFromProtein";
         FileSystem::createDirectory(dir);
-        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+        std::string path = dir + "/myPeptideIndex.ind";
+        
+        //auto messageTypes = typeof(PeptideWithSetModifications);
+        //auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //ser->Serialize(file, peptide);
+        PeptideWithSetModifications::Serialize (path, peptide );
 
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = typeof(PeptideWithSetModifications);
-        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        PeptideWithSetModifications::Deserialize (path, deserializedPeptide );
 
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
-        {
-            auto file = System::IO::File::Create(path);
-            ser->Serialize(file, peptide);
+        std::unordered_map<std::string, Protein*> umsP = 
+            {
+                {protein->getAccession(), protein}
+            };
+        std::unordered_map<std::string, Modification*> umsM;
+        deserializedPeptide->SetNonSerializedPeptideInfo( umsM, umsP );
+        
+        Assert::IsTrue(peptide->getDigestionParams()->Equals(deserializedPeptide->getDigestionParams()));
+        Assert::IsTrue(peptide->Equals(deserializedPeptide));
+        Assert::AreEqual(deserializedPeptide->getProtein()->getName(), peptide->getProtein()->getName());
+        Assert::AreEqual(deserializedPeptide->getMonoisotopicMass(),  peptide->getMonoisotopicMass());
+        Assert::AreEqual(deserializedPeptide->getSequenceWithChemicalFormulas(), peptide->getSequenceWithChemicalFormulas());
+
+        auto dPF = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> deserializedPeptideFragments;
+        for ( auto v: dPF ) {
+            deserializedPeptideFragments.push_back(v->NeutralMass);
         }
 
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
-        {
-            auto file = System::IO::File::OpenRead(path);
-            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        auto pF = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> peptideFragments;
+        for ( auto v: pF ) {
+            peptideFragments.push_back(v->NeutralMass);
         }
+        Assert::SequenceEqual(deserializedPeptideFragments, peptideFragments);
 
-        deserializedPeptide->SetNonSerializedPeptideInfo(std::unordered_map<std::string, Modification*>(), std::unordered_map<std::string, Protein*>
-        {
-            {protein->getAccession(), protein}
-        });
-
-        Assert::That(peptide->getDigestionParams()->Equals(deserializedPeptide->getDigestionParams()));
-        Assert::That(peptide->Equals(deserializedPeptide));
-        Assert::That(deserializedPeptide->getProtein()->getName() == peptide->getProtein()->getName());
-        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
-        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
-
-        std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
-                                                                                                                                                    {
-            v::NeutralMass;
-        }).ToList();
-        std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
-        {
-            v::NeutralMass;
-        }).ToList();
-
-        Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
-
-        delete ser;
+        std::filesystem::remove_all(dir);
         delete protein;
     }
+
 
     void TestModifications::TestSerializationPeptideFromProteinWithMod()
     {
         // purpose of this test is to serialize/deserialize a PeptideWithSetModifications and make sure the deserialized peptide
         // has the same properties as before it was serialized. This peptide is modified with a phosphorylation
 
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("T", motif);
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("T", &motif);
 
+        std::vector<double> vd1 = {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass() };
+        std::vector<double> vd2 = { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() };
         std::unordered_map<DissociationType, std::vector<double>> myNeutralLosses =
         {
             {
-                DissociationType::HCD, {ChemicalFormula::ParseFormula("H3 O4 P1")->getMonoisotopicMass()}
+                DissociationType::HCD, vd1
             },
             {
-                //C# TO C++ CONVERTER TODO TASK: The following line could not be converted:
-                DissociationType::ETD, std::vector<double>() { ChemicalFormula::ParseFormula("H3 N1")->getMonoisotopicMass() }
+                DissociationType::ETD, vd2
             }
         };
 
-        Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), myNeutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
+        Modification *mod = new Modification("phospho", "", "testModType", "", motif, "Anywhere.", ChemicalFormula::ParseFormula("H1 O3 P1"),
+                                             std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(),
+                                             std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(),
+                                             myNeutralLosses, std::unordered_map<DissociationType, std::vector<double>>(), "");
 
         std::unordered_map<int, std::vector<Modification*>> mods =
         {
@@ -1017,75 +1033,83 @@ namespace Test {
             }
         };
 
-        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "MyProtein", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
+        Protein *protein = new Protein("PEPTIDE", "Accession1", "", std::vector<std::tuple<std::string, std::string>>(), mods,
+                                       std::vector<ProteolysisProduct*>(), "MyProtein", "", false, false, std::vector<DatabaseReference*>(),
+                                       std::vector<SequenceVariation*>(), std::vector<SequenceVariation*>(), "", std::vector<DisulfideBond*>(),
+                                       std::vector<SpliceSite*>(), "");
 
-        DigestionParams tempVar();
-        PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).Where([&] (std::any v)
-        {
-        delete protein;
-        delete mod;
-            return v::AllModsOneIsNterminus->Count == 1;
-        }).First();
+        auto tempVar = new DigestionParams("trypsin");
+        std::vector<Modification*> vm1, vm2;
+        auto peps = protein->Digest(tempVar, vm1, vm2);
+        PeptideWithSetModifications *peptide;
+        for (auto v: peps ) {
+            if ( v->getAllModsOneIsNterminus().size() == 1 ) {
+                peptide = v;
+                break;
+            }
+        }                
+        
         PeptideWithSetModifications *deserializedPeptide = nullptr;
 
-        std::string dir = FileSystem::combine(TestContext::CurrentContext->TestDirectory, "TestSerializationPeptideFromProteinWithMod");
+        std::string dir = "TestSerializationPeptideFromProteinWithMod";
         FileSystem::createDirectory(dir);
-        std::string path = FileSystem::combine(dir, "myPeptideIndex.ind");
+        std::string path = dir + "/myPeptideIndex.ind";
  
-        //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to the C# 'typeof' operator:
-        auto messageTypes = typeof(PeptideWithSetModifications);
-        auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
-
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.Create(path))
-        {
-            auto file = System::IO::File::Create(path);
-            ser->Serialize(file, peptide);
-        }
-
-        //C# TO C++ CONVERTER NOTE: The following 'using' block is replaced by its C++ equivalent:
-        //ORIGINAL LINE: using (var file = System.IO.File.OpenRead(path))
-        {
-            auto file = System::IO::File::OpenRead(path);
-            deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
-        }
+        //auto messageTypes = typeof(PeptideWithSetModifications);
+        //auto ser = new NetSerializer::Serializer(std::vector<std::type_info> {messageTypes});
+        //auto file = System::IO::File::Create(path);
+        //ser->Serialize(file, peptide);
+        PeptideWithSetModifications::Serialize(path, peptide );
+        
+        //auto file = System::IO::File::OpenRead(path);
+        //deserializedPeptide = static_cast<PeptideWithSetModifications*>(ser->Deserialize(file));
+        PeptideWithSetModifications::Deserialize(path, deserializedPeptide );
 
         std::unordered_map<std::string, Modification*> stringToMod =
-        {
-            {mods.Values->First().First().IdWithMotif, mods.Values->First().First()}
-        };
+            {
+                //{ mods.Values-First().First().IdWithMotif, mods.Values->First().First() }
+                {mod->getIdWithMotif(), mod }
+            };
+        std::unordered_map<std::string, Protein*> umsP = 
+            {
+                {protein->getAccession(), protein}
+            };
+        deserializedPeptide->SetNonSerializedPeptideInfo(stringToMod, umsP );
 
-        deserializedPeptide->SetNonSerializedPeptideInfo(stringToMod, std::unordered_map<std::string, Protein*>
-        {
-            {protein->getAccession(), protein}
-        });
+        Assert::IsTrue(peptide->Equals(deserializedPeptide));
+        Assert::AreEqual(deserializedPeptide->getProtein()->getName(), peptide->getProtein()->getName());
+        Assert::AreEqual(deserializedPeptide->getMonoisotopicMass(), peptide->getMonoisotopicMass());
+        Assert::AreEqual(deserializedPeptide->getSequenceWithChemicalFormulas(), peptide->getSequenceWithChemicalFormulas());
 
-        Assert::That(peptide->Equals(deserializedPeptide));
-        Assert::That(deserializedPeptide->getProtein()->getName() == peptide->getProtein()->getName());
-        Assert::That(deserializedPeptide->getMonoisotopicMass() == peptide->getMonoisotopicMass());
-        Assert::That(deserializedPeptide->getSequenceWithChemicalFormulas() == peptide->getSequenceWithChemicalFormulas());
+        auto dPF = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> deserializedPeptideFragments;
+        for ( auto v: dPF ) {
+            deserializedPeptideFragments.push_back(v->NeutralMass);
+        }
 
-        std::vector<double> deserializedPeptideFragments = deserializedPeptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
-        {
-            v::NeutralMass;
-        }).ToList();
-        std::vector<double> peptideFragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).Select([&] (std::any v)
-        {
-            v::NeutralMass;
-        }).ToList();
+        auto pF = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+        std::vector<double> peptideFragments;
+        for ( auto v: pF ) {
+            peptideFragments.push_back(v->NeutralMass);
+        }
+        Assert::SequenceEqual(deserializedPeptideFragments, peptideFragments);
 
-        Assert::That(deserializedPeptideFragments.SequenceEqual(peptideFragments));
-
-        delete ser;
+        std::filesystem::remove_all(dir);
+        
         delete protein;
         delete mod;
     }
-
+    
     void TestModifications::TestFragmentNterminalModifiedPeptide()
     {
-        ModificationMotif motif;
-        ModificationMotif::TryGetMotif("P", motif);
-        Modification *nTermMod = new Modification("acetylation", "", "testModType", "", motif, "N-terminal.", ChemicalFormula::ParseFormula("C2H2O1"), std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(), std::unordered_map<std::string, std::vector<std::string>>(), std::vector<std::string>(), std::unordered_map<DissociationType, std::vector<double>>(), std::unordered_map<DissociationType, std::vector<double>>(), "");
+        ModificationMotif *motif;
+        ModificationMotif::TryGetMotif("P", &motif);
+        Modification *nTermMod = new Modification("acetylation", "", "testModType", "", motif, "N-terminal.", ChemicalFormula::ParseFormula("C2H2O1"),
+                                                  std::nullopt, std::unordered_map<std::string, std::vector<std::string>>(),
+                                                  std::unordered_map<std::string, std::vector<std::string>>(),
+                                                  std::vector<std::string>(),
+                                                  std::unordered_map<DissociationType, std::vector<double>>(),
+                                                  std::unordered_map<DissociationType, std::vector<double>>(), "");
 
         std::unordered_map<int, std::vector<Modification*>> mods =
         {
@@ -1094,27 +1118,47 @@ namespace Test {
             }
         };
 
-        Protein *protein = new Protein("PEPTIDE", "", "", std::vector<std::tuple<std::string, std::string>>(), mods, std::vector<ProteolysisProduct>(), "", "", false, false, std::vector<DatabaseReference>(), std::vector<SequenceVariation>(), std::vector<SequenceVariation>(), "", std::vector<DisulfideBond>(), std::vector<SpliceSite>(), "");
-        DigestionParams tempVar();
+        Protein *protein = new Protein("PEPTIDE", "", "", std::vector<std::tuple<std::string, std::string>>(), mods,
+                                       std::vector<ProteolysisProduct*>(), "", "", false, false, std::vector<DatabaseReference*>(),
+                                       std::vector<SequenceVariation*>(), std::vector<SequenceVariation*>(), "",
+                                       std::vector<DisulfideBond*>(), std::vector<SpliceSite*>(), "");
+        DigestionParams tempVar("trypsin");
+
+#ifdef ORIG
         PeptideWithSetModifications *peptide = protein->Digest(&tempVar, std::vector<Modification*>(), std::vector<Modification*>()).Where([&] (std::any p)
         {
-        delete protein;
-        delete nTermMod;
             return p::AllModsOneIsNterminus->Count == 1;
         }).First();
-        Assert::That(peptide->getFullSequence() == "[testModType:acetylation on P]PEPTIDE");
+#endif
+        std::vector<Modification*> vm1, vm2;
+        auto tempvec = protein->Digest(&tempVar, vm1, vm2);
+        PeptideWithSetModifications *peptide;
+        for ( auto p : tempvec ) {
+            if ( p->getAllModsOneIsNterminus().size() == 1 ) {
+                peptide = p;
+            }
+        }            
+        Assert::IsTrue(peptide->getFullSequence() == "[testModType:acetylation on P]PEPTIDE");
 
-        auto fragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both).ToList();
+        auto fragments = peptide->Fragment(DissociationType::HCD, FragmentationTerminus::Both);
+#ifdef ORIG
         auto roundedFragments = fragments.Select([&] (std::any f)
         {
             (int)f.NeutralMass;
         }).ToList();
-        Assert::That(roundedFragments.SequenceEqual(std::vector<int> {139, 268, 365, 466, 579, 694, 147, 262, 375, 476, 573, 702}));
+#endif
+        std::vector<int> roundedFragments ;
+        for ( auto f : fragments ) {
+            roundedFragments.push_back ((int)f->NeutralMass );
+        }
+        Assert::SequenceEqual(roundedFragments, std::vector<int> {139, 268, 365, 466, 579, 694, 147, 262, 375, 476, 573, 702});
 
         delete protein;
         delete nTermMod;
     }
-   void TestModifications::TestFragmentCTerminalModifiedPeptide()
+    
+#ifdef LATER
+    void TestModifications::TestFragmentCTerminalModifiedPeptide()
     {
         ModificationMotif motif;
         ModificationMotif::TryGetMotif("E", motif);
