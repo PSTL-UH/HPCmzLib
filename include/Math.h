@@ -97,13 +97,6 @@ public:
         return *d;
     }
 
-    static double GammaLowerRegularized(double globalMeanCount, double score )
-    {
-        double ret = 0.0;
-        std::cout << " Math::GammaLowerRegularized: function is not correctly implemented. Please revisit if nevessary" << std::endl;
-        return ret;
-    }
-
     static double Mean ( std::vector<double> samples )
     {
         if (samples.empty())
