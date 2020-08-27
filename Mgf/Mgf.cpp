@@ -53,10 +53,10 @@ namespace IO
             std::string s;
 
             //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
-            while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
-            {
+            //while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
+            //{
                 //do nothing with the first few scans
-            }
+            //}
             bool readingPeaks = false;
             std::vector<double> mzs;
             std::vector<double> intensities;
@@ -69,6 +69,15 @@ namespace IO
             //while ((s = sr.ReadLine()) != "")
             while (getline(sr, s))
             {
+                if ( s == "" ||  s[0] == '#' || s == "\r") {
+                    continue;
+                }                
+                if (s[s.size() - 1] == '\r') {
+                    s.erase(s.size() - 1);
+                }
+                if ( s == "BEGIN IONS") {
+                    continue;
+                }
                 if (s == "END IONS")
                 {
                     if (!std::get<1>(checkForDuplicateScans.insert(scanNumber))) //returns false if the scan already exists
@@ -99,10 +108,10 @@ namespace IO
                     
                     //skip the next two lines which are "" and "BEGIN IONS"
                     //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
-                    while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
-                    {
+                    //while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
+                    //{
                         //do nothing
-                    }
+                    //}
                     
                     //C# TO C++ CONVERTER TODO TASK: A 'delete spectrum' statement was not added since spectrum was
                     //passed to a method or constructor. Handle memory management manually.
