@@ -111,7 +111,6 @@ namespace Proteomics
 
                     if (r != peptide->getLength() - 1)
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         //This is a one based index. The index of the fragment from the first amino acid is 1.
                         //yield return new NeutralTerminusFragment(FragmentationTerminus::N, mass, r + 1, r + 1);
                         NeutralTerminusFragment* ntf = new NeutralTerminusFragment(FragmentationTerminus::N, mass,
@@ -160,7 +159,6 @@ namespace Proteomics
 
                     if (r != -1)
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         //yield return new NeutralTerminusFragment(FragmentationTerminus::C, mass,
                         //                                         peptide->getLength() - r, r + 1);
                         NeutralTerminusFragment* ntf = new NeutralTerminusFragment(FragmentationTerminus::C, mass,
