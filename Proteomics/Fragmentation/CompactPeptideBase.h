@@ -13,17 +13,11 @@ using namespace Chemistry;
 #include "../AminoAcidPolymer/AminoAcidPolymer.h"
 using namespace Proteomics::AminoAcidPolymer;
 
-//#include "../ProteolyticDigestion/ProteolyticPeptide.h"
-//using namespace Proteomics::ProteolyticDigestion;
 
 namespace Proteomics
 {
     namespace Fragmentation
     {
-        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-        //ORIGINAL LINE: [Serializable] public abstract class CompactPeptideBase :
-        //               IEquatable<CompactPeptideBase>
-        //class CompactPeptideBase : public Equatable<CompactPeptideBase*>
 
         class CompactPeptideBase 
         {

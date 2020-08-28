@@ -497,8 +497,10 @@ namespace Proteomics
             }));
 #endif
             std::string sb = getFullSequence();
-            for (auto m : getAllModsOneIsNterminus() ) {
-                sb += "\t" + std::to_string(static_cast<int>(std::get<0>(m))) + std::get<1>(m)->ToString();
+            if ( getAllModsOneIsNterminus().size() > 0 ) {
+                for (auto m : getAllModsOneIsNterminus() ) {
+                    sb += "[" + std::to_string(static_cast<int>(std::get<0>(m))) + ", " + std::get<1>(m)->ToString() + "]\t";
+                }
             }
             return sb;
         }
