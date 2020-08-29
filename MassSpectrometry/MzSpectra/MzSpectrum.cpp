@@ -159,7 +159,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return std::nullopt;
         }
-        return std::make_optional(getXArray()[0]);
+        return std::make_optional(privateXArray[0]);
     }
 
     std::optional<double> MzSpectrum::getLastX() const
@@ -168,7 +168,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return std::nullopt;
         }
-        return std::make_optional(getXArray()[getSize() - 1]);
+        return std::make_optional(privateXArray[getSize() - 1]);
     }
 
     int MzSpectrum::getSize() const
@@ -197,7 +197,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             return std::nullopt;
         }
         int index = getIndexOfPeakWithHighesetY().value();
-        return std::make_optional(getYArray()[index]);
+        return std::make_optional(privateYArray[index]);
     }
 
     std::optional<double> MzSpectrum::getXofPeakWithHighestY() 
@@ -207,7 +207,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             return std::nullopt;
         }
         int index = getIndexOfPeakWithHighesetY().value();
-        return std::make_optional(getXArray()[index]);
+        return std::make_optional(privateXArray[index]);
     }
 
     double MzSpectrum::getSumOfAllY() 
@@ -215,7 +215,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         if (!sumOfAllY.has_value() )
         {
             double sum = 0.0;
-            for ( auto y : getYArray() ) {
+            for ( auto y : privateYArray ) {
                 sum +=  y;
             }
             sumOfAllY = std::make_optional ( sum );
@@ -238,12 +238,12 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     std::vector<unsigned char> MzSpectrum::Get64BitYarray()
     {
-        return Get64Bitarray(getYArray());
+        return Get64Bitarray(privateYArray);
     }
 
     std::vector<unsigned char> MzSpectrum::Get64BitXarray()
     {
-        return Get64Bitarray(getXArray());
+        return Get64Bitarray(privateXArray);
     }
 
     std::string MzSpectrum::ToString()
@@ -266,8 +266,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             IsotopicEnvelope *bestIsotopeEnvelopeForThisPeak = nullptr;
             
-            auto candidateForMostIntensePeakMz = getXArray()[candidateForMostIntensePeak];
-            auto candidateForMostIntensePeakIntensity = getYArray()[candidateForMostIntensePeak];
+            auto candidateForMostIntensePeakMz = privateXArray[candidateForMostIntensePeak];
+            auto candidateForMostIntensePeakIntensity = privateYArray[candidateForMostIntensePeak];
 
             for (int chargeState = minAssumedChargeState; chargeState <= maxAssumedChargeState; chargeState++)
             {
@@ -299,9 +299,9 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 for (int indexToLookAt=1; indexToLookAt<(int) allIntensities[massIndex].size(); indexToLookAt++) {
                     double theorMassThatTryingToFind = allMasses[massIndex][indexToLookAt] + differenceBetweenTheorAndActual;
                     auto closestPeakToTheorMass = GetClosestPeakIndex(Chemistry::ClassExtensions::ToMz(theorMassThatTryingToFind, chargeState));
-                    auto closestPeakmz = getXArray()[closestPeakToTheorMass.value()];
+                    auto closestPeakmz = privateXArray[closestPeakToTheorMass.value()];
                     
-                    auto closestPeakIntensity = getYArray()[closestPeakToTheorMass.value()];
+                    auto closestPeakIntensity = privateYArray[closestPeakToTheorMass.value()];
                     if (std::abs(Chemistry::ClassExtensions::ToMass(closestPeakmz, chargeState) - theorMassThatTryingToFind) / theorMassThatTryingToFind * 1e6 <= deconvolutionTolerancePpm
                         && Peak2satisfiesRatio(allIntensities[massIndex][0], allIntensities[massIndex][indexToLookAt], candidateForMostIntensePeakIntensity, closestPeakIntensity, intensityRatioLimit)
                         && (std::find(listOfPeaks.begin(), listOfPeaks.end(), std::make_tuple(closestPeakmz, closestPeakIntensity)) == listOfPeaks.end()))
@@ -415,7 +415,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             ind = ~ind;
         }
-        while (ind < getSize() && getXArray()[ind] <= maxX)
+        while (ind < getSize() && privateXArray[ind] <= maxX)
         {
             v.push_back(ind);
             ind++;
@@ -448,7 +448,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             return std::make_optional(index);
         }
 
-        if (x - getXArray()[index - 1] > getXArray()[index] - x)
+        if (x - privateXArray[index - 1] > privateXArray[index] - x)
         {
             return std::make_optional(index);
         }
@@ -459,7 +459,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
     {
         for (int i = 0; i < getSize(); i++)
         {
-            getXArray()[i] = convertor(GetPeak(i));
+            privateXArray[i] = convertor(GetPeak(i));
         }
         peakList = std::vector<MzPeak*>(getSize());
     }
@@ -467,8 +467,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
     std::vector<std::vector<double>> MzSpectrum::CopyTo2DArray()
     {
         std::vector<std::vector<double>> data = RectangularVectors::ReturnRectangularDoubleVector(2, getSize());
-        std::copy(data[0].begin(), data[0].begin()+this->getSize(), this->getXArray().begin());
-        std::copy(data[1].begin(), data[1].begin()+this->getSize(), this->getYArray().begin());
+        std::copy(data[0].begin(), data[0].begin()+this->getSize(), this->privateXArray.begin());
+        std::copy(data[1].begin(), data[1].begin()+this->getSize(), this->privateYArray.begin());
         return data;
     }
 
@@ -478,7 +478,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return std::nullopt;
         }
-        return std::make_optional(getXArray()[GetClosestPeakIndex(x).value()]);
+        return std::make_optional(privateXArray[GetClosestPeakIndex(x).value()]);
     }
 
     int MzSpectrum::NumPeaksWithinRange(double minX, double maxX)
@@ -513,13 +513,12 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         auto quantile = 1.0 - static_cast<double>(topNPeaks) / getSize();
         quantile = std::max((double) 0.0, quantile);
         quantile = std::min((double) 1.0 , quantile);
-        double cutoffYvalue = Math::Quantile(getYArray(), quantile);
+        double cutoffYvalue = Math::Quantile(privateYArray, quantile);
 
         for (int i = 0; i < getSize(); i++)
         {
-            if (getYArray()[i] >= cutoffYvalue)
+            if (privateYArray[i] >= cutoffYvalue)
             {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return GetPeak(i);
                 v.push_back(GetPeak(i));
             }
@@ -541,9 +540,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             ind = ~ind;
         }
-        while (ind < getSize() && getXArray()[ind] <= maxX)
+        while (ind < getSize() && privateXArray[ind] <= maxX)
         {
-            //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
             //yield return GetPeak(ind);
             v.push_back(GetPeak(ind));
             ind++;
@@ -556,9 +554,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         std::vector<MzPeak*> v;        
         for (int i = 0; i < getSize(); i++)
         {
-            if (getYArray()[i] >= minY && getYArray()[i] <= maxY)
+            if (privateYArray[i] >= minY && privateYArray[i] <= maxY)
             {
-                //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                 //yield return GetPeak(i);
                 v.push_back(GetPeak(i));
             }
@@ -684,6 +681,6 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     MzPeak *MzSpectrum::GeneratePeak(int index)
     {
-        return new MzPeak(getXArray()[index], getYArray()[index]);
+        return new MzPeak(privateXArray[index], privateYArray[index]);
     }
 }
