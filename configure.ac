@@ -20,8 +20,8 @@ if test "$enable_debug" = yes ; then
    CFLAGS="-g -O0"
 elif test "$enable_debug" = no ; then   
    AC_MSG_RESULT([no]) 
-   CXXFLAGS="-O2"
-   CFLAGS="-O2"
+   CXXFLAGS="-O3"
+   CFLAGS="-O3"
 else
    AC_MSG_RESULT([not set (implicit yes)]) 
    CXXFLAGS="-g -O0"
