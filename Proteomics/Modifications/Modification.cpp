@@ -164,14 +164,14 @@ namespace Proteomics
 
     bool Modification::getValidModification() const
     {
-        auto found = getModificationType().find(':');
-        return this->getIdWithMotif() != ""                 &&
-            (this->getChemicalFormula() != nullptr      ||
+        auto found = privateModificationType.find(':');
+        return this->privateIdWithMotif != ""                 &&
+            (this->privateChemicalFormula != nullptr      ||
              this->getMonoisotopicMass().has_value()     ) &&
-            this->getTarget() != nullptr                    &&
-            this->getLocationRestriction() != "Unassigned." &&
-            this->getModificationType() != ""               &&
-            this->getFeatureType() != "CROSSLINK"           &&
+            this->privateTarget != nullptr                    &&
+            this->privateLocationRestriction != "Unassigned." &&
+            this->privateModificationType != ""               &&
+            this->privateFeatureType != "CROSSLINK"           &&
             found == std::string::npos;
         
     }
@@ -195,52 +195,52 @@ namespace Proteomics
         {
             if (_originalId.find(" on ") != std::string::npos)
             {
-                this->setIdWithMotif(_originalId);
+                privateIdWithMotif = _originalId;
 #ifdef ORIG
                 this->setOriginalId(_originalId.Split({" on "}, StringSplitOptions::None)[0]);
 #endif
                 auto pos = _originalId.find(" on "); 
-                this->setOriginalId(_originalId.substr(0, pos));
+                privateOriginalId = _originalId.substr(0, pos);
             }
             else if (_originalId.find(" of ") != std::string::npos)
             {
-                this->setIdWithMotif(StringHelper::replace(_originalId, " of ", " on "));
+                privateIdWithMotif = StringHelper::replace(_originalId, " of ", " on ");
 #ifdef ORIG
                 this->setOriginalId(_originalId.Split({" of ", " on "}, StringSplitOptions::None)[0]);
 #endif
                 auto pos1 = _originalId.find(" on ");                    
                 auto pos2 = _originalId.find(" of ");
                 auto pos = pos1 < pos2 ? pos1 : pos2;
-                this->setOriginalId(_originalId.substr(0, pos));
+                privateOriginalId = _originalId.substr(0, pos);
             }
             else if (_target != nullptr)
             {
-                this->setIdWithMotif(_originalId + " on " + _target->ToString());
-                this->setOriginalId(_originalId);
+                privateIdWithMotif = _originalId + " on " + _target->ToString();
+                privateOriginalId = _originalId ;
             }
             else
             {
-                this->setOriginalId(_originalId);
+                privateOriginalId = _originalId;
             }
         }
 
-        this->setAccession(_accession);
-        this->setModificationType(_modificationType);
-        this->setFeatureType(_featureType);
-        this->setTarget(_target);
-        this->setLocationRestriction(ModLocationOnPeptideOrProtein(_locationRestriction));
-        this->setChemicalFormula(_chemicalFormula);
-        this->setMonoisotopicMass(_monoisotopicMass);
-        this->setDatabaseReference(_databaseReference);
-        this->setTaxonomicRange(_taxonomicRange);
-        this->setKeywords(_keywords);
-        this->setNeutralLosses(_neutralLosses);
-        this->setDiagnosticIons(_diagnosticIons);
-        this->setFileOrigin(_fileOrigin);
+        privateAccession = _accession;
+        privateModificationType = _modificationType;
+        privateFeatureType = _featureType;
+        privateTarget = _target;
+        privateLocationRestriction = ModLocationOnPeptideOrProtein(_locationRestriction);
+        privateChemicalFormula = _chemicalFormula;
+        monoisotopicMass = _monoisotopicMass ;
+        privateDatabaseReference = _databaseReference;
+        privateTaxonomicRange = _taxonomicRange;
+        privateKeywords = _keywords;
+        privateNeutralLosses = _neutralLosses;
+        privateDiagnosticIons = _diagnosticIons;
+        privateFileOrigin = _fileOrigin;
 
-        if (!this->getMonoisotopicMass().has_value() && this->getChemicalFormula() != nullptr)
+        if (!getMonoisotopicMass().has_value() && privateChemicalFormula != nullptr)
         {
-            this->setMonoisotopicMass(std::make_optional(this->getChemicalFormula()->getMonoisotopicMass()));
+            monoisotopicMass = std::make_optional(privateChemicalFormula->getMonoisotopicMass());
         }
     }
 
@@ -270,9 +270,9 @@ namespace Proteomics
 
     bool Modification::Equals(Modification *m)
     {
-        return getIdWithMotif() == m->getIdWithMotif()             &&
-            getOriginalId() == m->getOriginalId()                  &&
-            getModificationType() == m->getModificationType()      &&
+        return privateIdWithMotif == m->getIdWithMotif()             &&
+            privateOriginalId == m->getOriginalId()                  &&
+            privateModificationType == m->getModificationType()      &&
             ( (getMonoisotopicMass() == m->getMonoisotopicMass()) ||
               (getMonoisotopicMass().has_value()                 &&
               m->getMonoisotopicMass().has_value()              &&
@@ -281,10 +281,10 @@ namespace Proteomics
 
     int Modification::GetHashCode()
     {
-        std::string tempVar = getIdWithMotif();
-        std::string tempVar2 = getOriginalId();
+        std::string tempVar = privateIdWithMotif;
+        std::string tempVar2 = privateOriginalId;
         std::string id = (tempVar != "") ? tempVar : (tempVar2 != "") ? tempVar2 : "";
-        std::string tempVar3 = getModificationType();
+        std::string tempVar3 = privateModificationType;
         std::string mt = (tempVar3 != "") ? tempVar3 : "";
         return StringHelper::GetHashCode(id) ^ StringHelper::GetHashCode(mt);
     }
@@ -292,177 +292,160 @@ namespace Proteomics
     std::string Modification::ToString()
     {
         StringBuilder *sb = new StringBuilder();
-        if (this->getIdWithMotif() != "")
+        if (privateIdWithMotif != "")
         {
-            sb->appendLine("ID   " + this->getIdWithMotif());
+            sb->appendLine("ID   " + privateIdWithMotif);
         }
-        if (this->getAccession() != "")
+        if (privateAccession != "")
         {
-            sb->appendLine("AC   " + this->getAccession());
+            sb->appendLine("AC   " + privateAccession);
         }
-        if (this->getModificationType() != "")
+        if (privateModificationType != "")
         {
-            sb->appendLine("MT   " + this->getModificationType());
+            sb->appendLine("MT   " + privateModificationType);
         }
-        if (this->getFeatureType() != "")
+        if (privateFeatureType != "")
         {
-            sb->appendLine("FT   " + this->getFeatureType());
+            sb->appendLine("FT   " + privateFeatureType);
         }
-        if (this->getTarget() != nullptr)
+        if (privateTarget != nullptr)
         {
-            sb->appendLine("TG   " + this->getTarget()->ToString());
+            sb->appendLine("TG   " + privateTarget->ToString());
         } // at this stage, each mod has only one target though many may have the same Id
-        if (this->getLocationRestriction() != "")
+        if (privateLocationRestriction != "")
         {
-            sb->appendLine("PP   " + this->getLocationRestriction());
+            sb->appendLine("PP   " + privateLocationRestriction);
         }
-        if (this->getChemicalFormula() != nullptr)
+        if (privateChemicalFormula != nullptr)
         {
-            sb->appendLine("CF   " + this->getChemicalFormula()->getFormula());
+            sb->appendLine("CF   " + privateChemicalFormula->getFormula());
         }
-        if (this->getMonoisotopicMass().has_value())
+        if (getMonoisotopicMass().has_value())
         {
-            sb->appendLine("MM   " + std::to_string(this->getMonoisotopicMass().value()));
+            sb->appendLine("MM   " + std::to_string(getMonoisotopicMass().value()));
         }
-        if (!this->getDatabaseReference().empty())
+        if (!privateDatabaseReference.empty())
         {
-            if (this->getDatabaseReference().size() != 0)
-            {
 #ifdef ORIG
-                std::vector<std::string> myKeys(this->getDatabaseReference().Keys);
+            std::vector<std::string> myKeys(getDatabaseReference().Keys);
 #endif
-                std::vector<std::string> myKeys;
-                for ( auto gD: this->getDatabaseReference() ) {
-                    myKeys.push_back(std::get<0>(gD));
-                }
-
-                std::sort(myKeys.begin(), myKeys.end());
-                for (auto myKey : myKeys)
+            std::vector<std::string> myKeys;
+            for ( auto gD: privateDatabaseReference ) {
+                myKeys.push_back(std::get<0>(gD));
+            }
+            
+            std::sort(myKeys.begin(), myKeys.end());
+            for (auto myKey : myKeys)
+            {
+                std::vector<std::string> myValues(privateDatabaseReference[myKey]);
+                std::sort(myValues.begin(), myValues.end());
+                for (auto myValue : myValues)
                 {
-                    std::vector<std::string> myValues(this->getDatabaseReference()[myKey]);
-                    std::sort(myValues.begin(), myValues.end());
-                    for (auto myValue : myValues)
-                    {
-                        sb->appendLine("DR   " + myKey + "; " + myValue);
-                    }
+                    sb->appendLine("DR   " + myKey + "; " + myValue);
                 }
             }
         }
-        if (!this->getTaxonomicRange().empty())
+        if (!privateTaxonomicRange.empty())
         {
-            if (this->getTaxonomicRange().size() != 0)
-            {
 #ifdef ORIG
-                std::vector<std::string> myKeys(this->getTaxonomicRange().Keys);
+            std::vector<std::string> myKeys(getTaxonomicRange().Keys);
 #endif
-                std::vector<std::string> myKeys;
-                for ( auto gT: this->getTaxonomicRange() ) {
-                    myKeys.push_back(std::get<0>(gT));
-                }
-
-                std::sort(myKeys.begin(), myKeys.end());
-                for (auto myKey : myKeys)
+            std::vector<std::string> myKeys;
+            for ( auto gT: privateTaxonomicRange ) {
+                myKeys.push_back(std::get<0>(gT));
+            }
+            
+            std::sort(myKeys.begin(), myKeys.end());
+            for (auto myKey : myKeys)
+            {
+                std::vector<std::string> myValues(privateTaxonomicRange[myKey]);
+                std::sort(myValues.begin(), myValues.end());
+                for (auto myValue : myValues)
                 {
-                    std::vector<std::string> myValues(this->getTaxonomicRange()[myKey]);
-                    std::sort(myValues.begin(), myValues.end());
-                    for (auto myValue : myValues)
-                    {
-                        sb->appendLine("TR   " + myKey + "; " + myValue);
-                    }
+                    sb->appendLine("TR   " + myKey + "; " + myValue);
                 }
             }
         }
-        if (!this->getNeutralLosses().empty())
+        if (!privateNeutralLosses.empty())
         {
-            if (this->getNeutralLosses().size() != 0)
-            {
 #ifdef ORIG
-                std::vector<DissociationType> allDissociationTypes = this->getNeutralLosses().Keys->ToList();
+            std::vector<DissociationType> allDissociationTypes = getNeutralLosses().Keys->ToList();
 #endif
-                std::vector<DissociationType> allDissociationTypes;
-                for ( auto nL : this->getNeutralLosses() ) {
-                    allDissociationTypes.push_back( std::get<0>(nL));
-                }
-                std::sort(allDissociationTypes.begin(), allDissociationTypes.end());
-
-                for (auto dissociationType : allDissociationTypes)
+            std::vector<DissociationType> allDissociationTypes;
+            for ( auto nL : privateNeutralLosses ) {
+                allDissociationTypes.push_back( std::get<0>(nL));
+            }
+            std::sort(allDissociationTypes.begin(), allDissociationTypes.end());
+            
+            for (auto dissociationType : allDissociationTypes)
+            {
+                StringBuilder *myLine = new StringBuilder();
+                myLine->append("NL   ");
+                
+                std::vector<double> myValues(privateNeutralLosses[dissociationType]);
+                std::sort(myValues.begin(), myValues.end());
+                for (int i = 0; i < (int)myValues.size(); i++)
                 {
-                    StringBuilder *myLine = new StringBuilder();
-                    myLine->append("NL   ");
-
-                    std::vector<double> myValues(this->getNeutralLosses()[dissociationType]);
-                    std::sort(myValues.begin(), myValues.end());
-                    for (int i = 0; i < (int)myValues.size(); i++)
+                    std::optional<double> d =std::make_optional( myValues[i]);
+                    myLine->append(std::to_string(static_cast<int>(dissociationType)) + ":" + std::to_string(Chemistry::ClassExtensions::RoundedDouble(d).value()));
+                    if (i < (int) myValues.size() - 1)
                     {
-                        std::optional<double> d =std::make_optional( myValues[i]);
-                        std::optional<double> &rd = d;
-                        myLine->append(std::to_string(static_cast<int>(dissociationType)) + ":" + std::to_string(Chemistry::ClassExtensions::RoundedDouble(rd).value()));
-                        if (i < (int) myValues.size() - 1)
-                        {
-                            myLine->append(" or ");
-                        }
+                        myLine->append(" or ");
                     }
-
-                    sb->appendLine(myLine->toString());
-
-                    delete myLine;
                 }
+                
+                sb->appendLine(myLine->toString());
+                
+                delete myLine;
             }
         }
-        if (!this->getDiagnosticIons().empty())
+        if (!privateDiagnosticIons.empty())
         {
-            if (this->getDiagnosticIons().size() != 0)
-            {
 #ifdef ORIG
-                std::vector<DissociationType> allDissociationTypes = this->getDiagnosticIons().Keys->ToList();
+            std::vector<DissociationType> allDissociationTypes = getDiagnosticIons().Keys->ToList();
 #endif
-                std::vector<DissociationType> allDissociationTypes;
-                for ( auto nD: this->getDiagnosticIons() ) {
-                    allDissociationTypes.push_back(std::get<0>(nD));
-                }
-                std::sort(allDissociationTypes.begin(), allDissociationTypes.end());
-
-                for (auto dissociationType : allDissociationTypes)
+            std::vector<DissociationType> allDissociationTypes;
+            for ( auto nD: privateDiagnosticIons ) {
+                allDissociationTypes.push_back(std::get<0>(nD));
+            }
+            std::sort(allDissociationTypes.begin(), allDissociationTypes.end());
+            
+            for (auto dissociationType : allDissociationTypes)
+            {
+                StringBuilder *myLine = new StringBuilder();
+                myLine->append("DI   ");
+                
+                std::vector<double> myValues(privateDiagnosticIons[dissociationType]);
+                std::sort(myValues.begin(), myValues.end());
+                for (int i = 0; i < (int)myValues.size(); i++)
                 {
-                    StringBuilder *myLine = new StringBuilder();
-                    myLine->append("DI   ");
-
-                    std::vector<double> myValues(this->getDiagnosticIons()[dissociationType]);
-                    std::sort(myValues.begin(), myValues.end());
-                    for (int i = 0; i < (int)myValues.size(); i++)
+                    std::optional<double> d =std::make_optional( myValues[i]);
+                    myLine->append(std::to_string(static_cast<int>(dissociationType)) + ":" + std::to_string(Chemistry::ClassExtensions::RoundedDouble(d).value()));
+                    if (i < (int)myValues.size() - 1)
                     {
-                        std::optional<double> d =std::make_optional( myValues[i]);
-                        std::optional<double> &rd = d;
-                        myLine->append(std::to_string(static_cast<int>(dissociationType)) + ":" + std::to_string(Chemistry::ClassExtensions::RoundedDouble(rd).value()));
-                        if (i < (int)myValues.size() - 1)
-                        {
-                            myLine->append(" or ");
-                        }
+                        myLine->append(" or ");
                     }
-
-                    sb->appendLine(myLine->toString());
-
-                    delete myLine;
                 }
+                
+                sb->appendLine(myLine->toString());
+                
+                delete myLine;
             }
         }
 
-        if (!this->getKeywords().empty())
+        if (!privateKeywords.empty())
         {
-            if (this->getKeywords().size() != 0)
-            {
 #ifdef ORIG
 //                sb->appendLine("KW   " + std::string::Join(" or ", this->getKeywords().ToList()->OrderBy([&] (std::any b)
 //                {
 //                    return b;
 //                })));
 #endif
-                StringBuilder *myLine = new StringBuilder();
-                myLine->append("KW   ");
-                std::string del = " or ";
-                myLine->append(StringHelper::join(this->getKeywords(), del));
-                sb->appendLine(myLine->toString() );
-            }
+            StringBuilder *myLine = new StringBuilder();
+            myLine->append("KW   ");
+            std::string del = " or ";
+            myLine->append(StringHelper::join(getKeywords(), del));
+            sb->appendLine(myLine->toString() );
         }
 
         std::string s = sb->toString();
@@ -475,34 +458,34 @@ namespace Proteomics
         StringBuilder *sb = new StringBuilder();
 
         //C# TO C++ CONVERTER TODO TASK: There is no C++ equivalent to 'ToString':
-        sb->append(this->ToString());
+        sb->append(ToString());
 
-        if (this->getIdWithMotif() == "")
+        if (getIdWithMotif() == "")
         {
-            sb->appendLine("#Required field ID missing or malformed. Current value = " + this->getIdWithMotif());
+            sb->appendLine("#Required field ID missing or malformed. Current value = " + getIdWithMotif());
         }
 
-        if (this->getModificationType() == "")
+        if (getModificationType() == "")
         {
-            sb->appendLine("#Required field MT missing or malformed. Current value = " + this->getModificationType());
+            sb->appendLine("#Required field MT missing or malformed. Current value = " + getModificationType());
         }
 
-        if (this->getLocationRestriction() == "")
+        if (getLocationRestriction() == "")
         {
-            sb->appendLine("#Required field PP missing or malformed. Current value = " + this->getLocationRestriction() + ".");
+            sb->appendLine("#Required field PP missing or malformed. Current value = " + getLocationRestriction() + ".");
         }
 
-        if (this->getChemicalFormula() == nullptr && !this->getMonoisotopicMass())
+        if (getChemicalFormula() == nullptr && !getMonoisotopicMass())
         {
             sb->appendLine("#Required fields CF and MM are both missing or malformed. One of those two fields must be provided.");
         }
 
-        if (this->getModificationType() != "" && this->getModificationType().find(':') != std::string::npos)
+        if (getModificationType() != "" && getModificationType().find(':') != std::string::npos)
         {
             sb->appendLine("#Modification type cannot contain ':'!");
         }
 
-        sb->append("#This modification can be found in file " + this->getFileOrigin());
+        sb->append("#This modification can be found in file " + getFileOrigin());
 
         std::string s = sb->toString();
         delete sb;
