@@ -223,17 +223,20 @@ namespace MassSpectrometry
 
     std::vector<unsigned char> MsDataScan::Get64BitNoiseDataMass()
     {
-        return MzSpectrum::Get64Bitarray(GetNoiseDataMass(getNoiseData()));
+        auto m = GetNoiseDataMass(getNoiseData());
+        return MzSpectrum::Get64Bitarray(m);
     }
 
     std::vector<unsigned char> MsDataScan::Get64BitNoiseDataNoise()
     {
-        return MzSpectrum::Get64Bitarray(GetNoiseDataNoise(getNoiseData()));
+        auto m = GetNoiseDataNoise(getNoiseData());
+        return MzSpectrum::Get64Bitarray(m);
     }
 
     std::vector<unsigned char> MsDataScan::Get64BitNoiseDataBaseline()
     {
-        return MzSpectrum::Get64Bitarray(GetNoiseDataBaseline(getNoiseData()));
+        auto m = GetNoiseDataBaseline(getNoiseData());
+        return MzSpectrum::Get64Bitarray(m);
     }
 
     std::vector<IsotopicEnvelope*> MsDataScan::GetIsolatedMassesAndCharges(MzSpectrum *precursorSpectrum,

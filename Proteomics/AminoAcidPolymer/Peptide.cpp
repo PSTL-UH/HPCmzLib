@@ -15,20 +15,20 @@ namespace Proteomics {
         }
         
         Peptide::Peptide(AminoAcidPolymer *aminoAcidPolymer, bool includeModifications) : AminoAcidPolymer(aminoAcidPolymer, includeModifications) {
-            setParent(aminoAcidPolymer);
-            setStartResidue(0);
-            setEndResidue(getLength() - 1);
+            privateParent = aminoAcidPolymer;
+            privateStartResidue = 0;
+            privateEndResidue = getLength() - 1;
         }
 
         Peptide::Peptide(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length) : Peptide(aminoAcidPolymer, firstResidue, length, true) {
         }
 
         Peptide::Peptide(AminoAcidPolymer *aminoAcidPolymer, int firstResidue, int length, bool includeModifications) : AminoAcidPolymer(aminoAcidPolymer, firstResidue, length, includeModifications) {
-            setParent(aminoAcidPolymer);
-            setStartResidue(firstResidue);
-            setEndResidue(firstResidue + length - 1);
-            setPreviousResidue(aminoAcidPolymer->GetResidue(getStartResidue() - 1));
-            setNextResidue(aminoAcidPolymer->GetResidue(getEndResidue() + 1));
+            privateParent = aminoAcidPolymer;
+            privateStartResidue = firstResidue;
+            privateEndResidue = firstResidue + length - 1;
+            privatePreviousResidue = aminoAcidPolymer->GetResidue(getStartResidue() - 1);
+            privateNextResidue  = aminoAcidPolymer->GetResidue(getEndResidue() + 1);
         }
         
         int Peptide::getStartResidue() const {

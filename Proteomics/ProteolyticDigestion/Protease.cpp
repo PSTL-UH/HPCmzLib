@@ -10,7 +10,8 @@ namespace Proteomics
     namespace ProteolyticDigestion
     {
 
-        Protease::Protease(const std::string &name, Proteomics::ProteolyticDigestion::CleavageSpecificity cleavageSpecificity, const std::string &psiMSAccessionNumber, const std::string &psiMSName, std::vector<DigestionMotif*> &motifList)
+        Protease::Protease(const std::string &name, Proteomics::ProteolyticDigestion::CleavageSpecificity cleavageSpecificity,
+                           const std::string &psiMSAccessionNumber, const std::string &psiMSName, std::vector<DigestionMotif*> &motifList)
         {
             privateName = name;
             privateCleavageSpecificity = cleavageSpecificity;
@@ -77,7 +78,7 @@ namespace Proteomics
                 cleavableMatches++;
             }
 
-            if (cleavableMatches == 0 || getCleavageSpecificity() == CleavageSpecificity::SingleN || getCleavageSpecificity() == CleavageSpecificity::SingleC)
+            if (cleavableMatches == 0 || privateCleavageSpecificity == CleavageSpecificity::SingleN || privateCleavageSpecificity == CleavageSpecificity::SingleC)
             {
                 return CleavageSpecificity::None;
             }
@@ -102,7 +103,7 @@ namespace Proteomics
             int i=0;
             
             // proteolytic cleavage in one spot (N)
-            if (getCleavageSpecificity() == CleavageSpecificity::SingleN)
+            if (privateCleavageSpecificity == CleavageSpecificity::SingleN)
             {
                 bool maxTooBig = protein->getLength() + maxPeptidesLength < 0;
                 //when maxPeptidesLength is too large, it becomes negative and causes issues
@@ -111,8 +112,8 @@ namespace Proteomics
                 int startIndex = initiatorMethionineBehavior == InitiatorMethionineBehavior::Cleave ? 2 : 1;
                 for (int proteinStart = startIndex; proteinStart <= protein->getLength(); proteinStart++)
                 {
-                    if (OkayMinLength(std::make_optional(protein->getLength() - proteinStart + 1),
-                                      std::make_optional(minPeptidesLength)))
+                    if (OkayMinLength(protein->getLength() - proteinStart + 1,
+                                      minPeptidesLength ))
                     {
                         //need Math.Max if max length is int.MaxLength, since +proteinStart will make it negative
                         //if the max length is too big to be an int (ie infinity), just do the protein length.
@@ -130,7 +131,7 @@ namespace Proteomics
             }
 
             // proteolytic cleavage in one spot (C)
-            else if (getCleavageSpecificity() == CleavageSpecificity::SingleC)
+            else if (privateCleavageSpecificity == CleavageSpecificity::SingleC)
             {
                 //where does the protein start
                 int startIndex = initiatorMethionineBehavior == InitiatorMethionineBehavior::Cleave ? 2 : 1;
@@ -139,8 +140,8 @@ namespace Proteomics
                 for (int proteinEnd = 1; proteinEnd <= protein->getLength(); proteinEnd++)
                 {
                     //length of peptide will be at least the start index
-                    if (OkayMinLength(std::make_optional(proteinEnd - lengthDifference),
-                                      std::make_optional(minPeptidesLength))) //is the maximum possible length longer than the minimum?
+                    if (OkayMinLength(proteinEnd - lengthDifference,
+                                      minPeptidesLength)) //is the maximum possible length longer than the minimum?
                     {
                         //use the start index as the max of the N-terminus or the c-terminus minus the max (+1
                         //because inclusive, otherwise peptides will be one AA too long)
@@ -153,14 +154,14 @@ namespace Proteomics
             }
 
             //top-down
-            else if (getCleavageSpecificity() == CleavageSpecificity::None)
+            else if (privateCleavageSpecificity == CleavageSpecificity::None)
             {
                 // retain methionine
                 if ((initiatorMethionineBehavior != InitiatorMethionineBehavior::Cleave ||
                      protein->getBaseSequence()[0] != 'M')                              &&
-                    OkayLength(std::make_optional(protein->getLength()),
-                               std::make_optional(minPeptidesLength),
-                               std::make_optional(maxPeptidesLength)))
+                    OkayLength(protein->getLength(),
+                               minPeptidesLength,
+                               maxPeptidesLength))
                 {
                     auto  tempVar3 = new ProteolyticPeptide(protein, 1, protein->getLength(), 0,
                                                             CleavageSpecificity::Full, "full");
@@ -170,9 +171,9 @@ namespace Proteomics
                 // cleave methionine
                 if ((initiatorMethionineBehavior != InitiatorMethionineBehavior::Retain &&
                      protein->getBaseSequence()[0] == 'M')                              &&
-                    OkayLength(std::make_optional(protein->getLength() - 1),
-                               std::make_optional(minPeptidesLength),
-                               std::make_optional(maxPeptidesLength)))
+                    OkayLength(protein->getLength() - 1,
+                               minPeptidesLength,
+                               maxPeptidesLength))
                 {
                     auto tempVar4 = new ProteolyticPeptide(protein, 2, protein->getLength(), 0,
                                                            CleavageSpecificity::Full, "full:M cleaved");
@@ -198,7 +199,7 @@ namespace Proteomics
                          proteolysisProduct->getOneBasedBeginPosition().has_value()  &&
                          OkayLength(proteolysisProduct->getOneBasedEndPosition().value() -
                                     proteolysisProduct->getOneBasedBeginPosition().value() + 1,
-                                    std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength) )) {
+                                    minPeptidesLength, maxPeptidesLength )) {
                         ProteolyticPeptide *p = new ProteolyticPeptide(protein,
                                                                        proteolysisProduct->getOneBasedBeginPosition().value(),
                                                                        proteolysisProduct->getOneBasedEndPosition().value(), 0,
@@ -223,7 +224,7 @@ namespace Proteomics
             }
 
             // Cleavage rules for semi-specific search
-            else if (getCleavageSpecificity() == CleavageSpecificity::Semi)
+            else if (privateCleavageSpecificity == CleavageSpecificity::Semi)
             {
 #ifdef ORIG
                 peptides.AddRange(SemiProteolyticDigestion(protein, initiatorMethionineBehavior,
@@ -297,7 +298,7 @@ namespace Proteomics
             return oneBasedCleaveAfter == 0 && initiatorMethionineBehavior != InitiatorMethionineBehavior::Retain && nTerminus == 'M';
         }
 
-        bool Protease::OkayLength(std::optional<int> peptideLength, std::optional<int> minPeptidesLength, std::optional<int> maxPeptidesLength)
+        bool Protease::OkayLength(int peptideLength, int minPeptidesLength, int maxPeptidesLength)
         {
             return OkayMinLength(peptideLength, minPeptidesLength) && OkayMaxLength(peptideLength, maxPeptidesLength);
         }
@@ -312,11 +313,10 @@ namespace Proteomics
                 for (int i = 0; i < (int)oneBasedIndicesToCleaveAfter.size() - missedCleavages - 1; i++)
                 {
                     if (Retain(i, initiatorMethionineBehavior, protein->getBaseSequence()[0]) &&
-                        OkayLength(std::make_optional(oneBasedIndicesToCleaveAfter[i + missedCleavages + 1] - oneBasedIndicesToCleaveAfter[i]),
-                                   std::make_optional(minPeptidesLength),
-                                   std::make_optional(maxPeptidesLength)))
+                        OkayLength(oneBasedIndicesToCleaveAfter[i + missedCleavages + 1] - oneBasedIndicesToCleaveAfter[i],
+                                   minPeptidesLength,
+                                   maxPeptidesLength))
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         //yield return new ProteolyticPeptide(protein, oneBasedIndicesToCleaveAfter[i] + 1,
                         //     oneBasedIndicesToCleaveAfter[i + missedCleavages + 1], missedCleavages,
                         //     getCleavageSpecificity()::Full, "full");
@@ -326,10 +326,9 @@ namespace Proteomics
                         v.push_back(p);
                     }
                     if (Cleave(i, initiatorMethionineBehavior, protein->getBaseSequence()[0]) &&
-                        OkayLength(std::make_optional(oneBasedIndicesToCleaveAfter[i + missedCleavages + 1] - 1),
-                                   std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)))
+                        OkayLength(oneBasedIndicesToCleaveAfter[i + missedCleavages + 1] - 1,
+                                   minPeptidesLength, maxPeptidesLength))
                     {
-                        //C# TO C++ CONVERTER TODO TASK: C++ does not have an equivalent to the C# 'yield' keyword:
                         //yield return new ProteolyticPeptide(protein, 2, oneBasedIndicesToCleaveAfter[i + missedCleavages + 1],
                         //     missedCleavages, getCleavageSpecificity()::Full, "full:M cleaved");
                         ProteolyticPeptide *p = new ProteolyticPeptide(protein, 2,
@@ -345,19 +344,18 @@ namespace Proteomics
                     if (proteolysisProduct->getOneBasedBeginPosition() != 1 || proteolysisProduct->getOneBasedEndPosition() != protein->getLength())
                     {
                         int i = 0;
-                        //C# TO C++ CONVERTER TODO TASK: Comparisons involving nullable type instances will need to be
                         //   rewritten since comparison rules are different between C++ optional and System.Nullable:
                         while (oneBasedIndicesToCleaveAfter[i] < proteolysisProduct->getOneBasedBeginPosition().value())
                         {
                             i++;
                         }
 
-                        //C# TO C++ CONVERTER TODO TASK: Comparisons involving nullable type instances will need to be
                         // rewritten since comparison rules are different between C++ optional and System.Nullable:
                         bool startPeptide = ((i + missedCleavages) < (int)oneBasedIndicesToCleaveAfter.size()) &&
                             (oneBasedIndicesToCleaveAfter[i + missedCleavages] <= proteolysisProduct->getOneBasedEndPosition().value()) &&
                             proteolysisProduct->getOneBasedBeginPosition().has_value() &&
-                            OkayLength(std::make_optional(oneBasedIndicesToCleaveAfter[i + missedCleavages] - proteolysisProduct->getOneBasedBeginPosition().value() + 1), std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength));
+                            OkayLength(oneBasedIndicesToCleaveAfter[i + missedCleavages] - proteolysisProduct->getOneBasedBeginPosition().value() + 1,
+                                       minPeptidesLength, maxPeptidesLength);
                         if (startPeptide)
                         {
                             ProteolyticPeptide *p = new ProteolyticPeptide(protein,
@@ -376,8 +374,8 @@ namespace Proteomics
                         bool end = ((i - missedCleavages - 1) >= 0 )&&
                             ((oneBasedIndicesToCleaveAfter[i - missedCleavages - 1] + 1) >= proteolysisProduct->getOneBasedBeginPosition().value()) &&
                             proteolysisProduct->getOneBasedEndPosition().has_value() &&
-                            OkayLength(std::make_optional(proteolysisProduct->getOneBasedEndPosition().value() - oneBasedIndicesToCleaveAfter[i - missedCleavages - 1] + 1 - 1),
-                                       std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength));
+                            OkayLength(proteolysisProduct->getOneBasedEndPosition().value() - oneBasedIndicesToCleaveAfter[i - missedCleavages - 1] + 1 - 1,
+                                       minPeptidesLength, maxPeptidesLength);
                         if (end)
                         {
                             ProteolyticPeptide *p = new ProteolyticPeptide(protein,
@@ -459,7 +457,7 @@ namespace Proteomics
                 }
                 for (int j = cTerminusProtein; j > nTerminusProtein; j--) //We are hitting the c-terminus here
                 {
-                    if (OkayLength(std::make_optional(j - nTerminusProtein), std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)))
+                    if (OkayLength(j - nTerminusProtein, minPeptidesLength, maxPeptidesLength))
                     {
                         if ( std::find(localOneBasedIndicesToCleaveAfter.begin(), localOneBasedIndicesToCleaveAfter.end(), j) !=
                              localOneBasedIndicesToCleaveAfter.end() ) {
@@ -492,8 +490,7 @@ namespace Proteomics
                 int start = nTerminusProtein + 1; //plus one to not doublecount the n terminus (in addition to the M term skip)
                 for (int j = start; j < cTerminusProtein; j++)
                 {
-                    if (OkayLength(std::make_optional(cTerminusProtein - j), std::make_optional(minPeptidesLength),
-                                   std::make_optional(maxPeptidesLength))                                            &&
+                    if (OkayLength(cTerminusProtein - j, minPeptidesLength, maxPeptidesLength)                         &&
                         std::find(localOneBasedIndicesToCleaveAfter.begin(), localOneBasedIndicesToCleaveAfter.end(), j) ==
                         localOneBasedIndicesToCleaveAfter.end())
                     {
@@ -524,7 +521,7 @@ namespace Proteomics
                     for (int j = proteolysisProduct->getOneBasedBeginPosition().value(); j < oneBasedIndicesToCleaveAfter[i]; j++)
                     {
                         if (OkayLength(j - proteolysisProduct->getOneBasedBeginPosition().value() + 1,
-                                       std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)))
+                                       minPeptidesLength, maxPeptidesLength))
                         {
                             auto  tempVar3 = new ProteolyticPeptide(protein,
                                                                     proteolysisProduct->getOneBasedBeginPosition().value(), j,
@@ -554,7 +551,7 @@ namespace Proteomics
                     for (int j = oneBasedIndicesToCleaveAfter[i] + 1; j < proteolysisProduct->getOneBasedEndPosition().value(); j++)
                     {
                         if (OkayLength(proteolysisProduct->getOneBasedEndPosition().value() - j + 1,
-                                       std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength)))
+                                       minPeptidesLength, maxPeptidesLength ))
                         {
                             auto tempVar4 = new ProteolyticPeptide (protein, j, proteolysisProduct->getOneBasedEndPosition().value(),
                                                                     proteolysisProduct->getOneBasedEndPosition().value() - j,
@@ -576,9 +573,9 @@ namespace Proteomics
             //prevents duplicate sequences containing N-terminal methionine
             bool preventMethionineFromBeingDuplicated = nTerminusProtein == 1 && cleave && retain; 
             std::vector<ProteolyticPeptide*> intervals;
-            if (!preventMethionineFromBeingDuplicated && OkayLength(std::make_optional(cTerminusProtein - nTerminusProtein),
-                                                                    std::make_optional(minPeptidesLength),
-                                                                    std::make_optional(maxPeptidesLength))) 
+            if (!preventMethionineFromBeingDuplicated && OkayLength(cTerminusProtein - nTerminusProtein,
+                                                                    minPeptidesLength,
+                                                                    maxPeptidesLength)) 
             {
                 //adds the full length maximum cleavages, no semi
                 auto tempVar = new ProteolyticPeptide (protein, nTerminusProtein + 1, cTerminusProtein,
@@ -608,8 +605,7 @@ namespace Proteomics
 #endif
                 std::vector<int> indexesOfAcceptableLength;
                 for ( auto j : internalIndices ) {
-                    if ( OkayLength(cTerminusProtein - j, std::make_optional(minPeptidesLength),
-                                    std::make_optional(maxPeptidesLength))) {
+                    if ( OkayLength(cTerminusProtein - j, minPeptidesLength, maxPeptidesLength )) {
                         indexesOfAcceptableLength.push_back(j);
                     }
                 }
@@ -655,7 +651,7 @@ namespace Proteomics
             std::vector<ProteolyticPeptide*> fixedNTermIntervals;
             std::vector<int> temparr;
             for ( auto j:  internalIndices ) {
-                if (OkayLength(j - nTerminusProtein, std::make_optional(minPeptidesLength), std::make_optional(maxPeptidesLength))) {
+                if (OkayLength(j - nTerminusProtein, minPeptidesLength, maxPeptidesLength) ) {
                     temparr.push_back(j);
                 }
             }
@@ -688,20 +684,14 @@ namespace Proteomics
             return intervals;
         }
 
-        bool Protease::OkayMinLength(std::optional<int> peptideLength, std::optional<int> minPeptidesLength)
+        bool Protease::OkayMinLength(int peptideLength, int minPeptidesLength)
         {
-#ifdef ORIG
-            return !minPeptidesLength || peptideLength >= minPeptidesLength;
-#endif
-            return !minPeptidesLength.has_value() || peptideLength.value() >= minPeptidesLength.value();
+            return peptideLength >= minPeptidesLength;
         }
 
-        bool Protease::OkayMaxLength(std::optional<int> peptideLength, std::optional<int> maxPeptidesLength)
+        bool Protease::OkayMaxLength(int peptideLength, int maxPeptidesLength)
         {
-#ifdef ORIG
-            return !maxPeptidesLength || peptideLength <= maxPeptidesLength;
-#endif
-            return !maxPeptidesLength.has_value()  || peptideLength.value() <= maxPeptidesLength.value();
+            return peptideLength <= maxPeptidesLength;
         }
     }
 }
