@@ -52,7 +52,8 @@ namespace MassSpectrometry
     private:
         std::vector<double> privateXArray;
         std::vector<double> privateYArray;
-
+        int privateXArraysize=0;
+        
         //static constexpr int numAveraginesToGenerate = 1500;
         static std::vector<std::vector<double>> allMasses;
         static std::vector<std::vector<double>> allIntensities;
@@ -102,7 +103,7 @@ namespace MassSpectrometry
 
         double getSumOfAllY();
 
-        static std::vector<unsigned char> Get64Bitarray(std::vector<double> array);
+        static std::vector<unsigned char> Get64Bitarray(std::vector<double> &array);
 
         std::vector<unsigned char> Get64BitYarray();
 
