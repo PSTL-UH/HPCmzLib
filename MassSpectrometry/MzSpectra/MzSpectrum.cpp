@@ -494,7 +494,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
             startingIndex = ~startingIndex;
         }
 
-        if (startingIndex >= getSize())
+        if (startingIndex >= privateXArraysize)
         {
             return 0;
         }
