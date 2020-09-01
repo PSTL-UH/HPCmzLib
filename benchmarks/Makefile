@@ -6,9 +6,9 @@
 #
 # $HEADER$
 #
-include Makefile.defs
+include ../Makefile.defs
 
-CEXECS = Benchmark	   	     
+CEXECS = Benchmark Mgf-Benchmark
 
 .SUFFIXES: .cxx .h  
 
@@ -25,6 +25,8 @@ cxxtests: $(CEXECS)
 Benchmark: Benchmark.o 
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
+Mgf-Benchmark: Mgf-Benchmark.o 
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 ###################################################################################################
 
