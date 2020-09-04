@@ -623,10 +623,6 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 cereal_dir
-libxml2_dir
-mzlib_dir
-XSDCXX_CPPFLAGS
-XSDCXX
 LTLIBXERCES_C
 LIBXERCES_C
 HAVE_LIBXERCES_C
@@ -641,6 +637,9 @@ build
 ac_ct_CC
 CFLAGS
 CC
+xsdcxx_dir
+libxml2_dir
+mzlib_dir
 LIBOBJS
 EGREP
 GREP
@@ -696,13 +695,12 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_debug
+with_mzlib_dir
+with_libxml2_dir
+with_xsdcxx_dir
 with_gnu_ld
 enable_rpath
 with_libxerces_c_prefix
-with_xsdcxx
-with_xsdcxx_inc
-with_mzlib_dir
-with_libxml2_dir
 with_cereal_dir
 '
       ac_precious_vars='build_alias
@@ -1337,15 +1335,12 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-mzlib-dir=dir            Main mzLib directory (default=$PWD)
+  --with-libxml2-dir=dir          libxml2 directory (default=/usr/include/libxml2/)
+  --with-xsdcxx-dir=dir          xsdcxx directory (default=/usr/include)
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-libxerces-c-prefix=DIR  search for libxerces-c in DIR/include and DIR/lib
   --without-libxerces-c-prefix     don't search for libxerces-c in includedir and libdir
-  --with-xsdcxx=[ARG]     use CodeSynthesis XSD from given prefix (ARG=path);
-                          check PATH (ARG=yes); disable (ARG=no)
-  --with-xsdcxx-inc=[DIR] path to CodeSynthesis XSD headers (ARG=path); use
-                          standard prefix (ARG=); disable (ARG=no)
-  --with-mzlib-dir=dir            Main mzLib directory (default=$PWD)
-  --with-libxml2-dir=dir          libxml2 directory (default=/usr/include/libxml2/)
   --with-cereal-dir=dir          cereal directory (default=/usr/include/cereal/)
 
 Some influential environment variables:
@@ -4579,8 +4574,8 @@ $as_echo "yes" >&6; }
 elif test "$enable_debug" = no ; then
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-   CXXFLAGS="-O2"
-   CFLAGS="-O2"
+   CXXFLAGS="-O3"
+   CFLAGS="-O3"
 else
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not set (implicit yes)" >&5
 $as_echo "not set (implicit yes)" >&6; }
@@ -5370,6 +5365,90 @@ _ACEOF
 
 fi
 done
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mzLib main directory" >&5
+$as_echo_n "checking for mzLib main directory... " >&6; }
+
+# Check whether --with-mzlib_dir was given.
+if test "${with_mzlib_dir+set}" = set; then :
+  withval=$with_mzlib_dir; mzlib_dir="${withval}"
+else
+  mzlib_dir=""
+fi
+
+         if test "x$mzlib_dir" = "x" ; then
+                mzlib_dir=$PWD
+         fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${mzlib_dir}" >&5
+$as_echo "${mzlib_dir}" >&6; }
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
+$as_echo_n "checking for libxml2... " >&6; }
+
+# Check whether --with-libxml2_dir was given.
+if test "${with_libxml2_dir+set}" = set; then :
+  withval=$with_libxml2_dir; libxml2_dir="${withval}"
+else
+  libxml2_dir=""
+fi
+
+         if test "x$libxml2_dir" = "x" ; then
+                libxml2_dir=/usr/include/libxml2
+         fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${libxml2_dir}" >&5
+$as_echo "${libxml2_dir}" >&6; }
+
+     save_CXXFLAGS="$CXXFLAGS"
+     save_CPPFLAGS="$CPPFLAGS"
+     CXXFLAGS="$save_CXXFLAGS -I$libxml2_dir"
+     CPPFLAGS="$save_CPPFLAGS -I$libxml2_dir"
+     ac_fn_cxx_check_header_mongrel "$LINENO" "libxml/xmlreader.h" "ac_cv_header_libxml_xmlreader_h" "$ac_includes_default"
+if test "x$ac_cv_header_libxml_xmlreader_h" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find libxml/xmlreader.h" "$LINENO" 5
+fi
+
+
+     CXXFLAGS="$save_CXXFLAGS"
+     CPPFLAGS="$save_CPPFLAGS"
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xsdcxx" >&5
+$as_echo_n "checking for xsdcxx... " >&6; }
+
+# Check whether --with-xsdcxx_dir was given.
+if test "${with_xsdcxx_dir+set}" = set; then :
+  withval=$with_xsdcxx_dir; xsdcxx_dir="${withval}"
+else
+  xsdcxx_dir=""
+fi
+
+         if test "x$xsdcxx_dir" = "x" ; then
+                xsdcxx_dir=/usr/include
+         fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${xsdcxx_dir}" >&5
+$as_echo "${xsdcxx_dir}" >&6; }
+
+     save_CXXFLAGS="$CXXFLAGS"
+     save_CPPFLAGS="$CPPFLAGS"
+     CXXFLAGS="$save_CXXFLAGS -I$xsdcxx_dir"
+     CPPFLAGS="$save_CPPFLAGS -I$xsdcxx_dir"
+     ac_fn_cxx_check_header_mongrel "$LINENO" "xsd/cxx/config.hxx" "ac_cv_header_xsd_cxx_config_hxx" "$ac_includes_default"
+if test "x$ac_cv_header_xsd_cxx_config_hxx" = xyes; then :
+
+else
+  as_fn_error $? "Couldn't find xsd/cxx/config.hxx" "$LINENO" 5
+fi
+
+
+
+     CXXFLAGS="$save_CXXFLAGS"
+     CPPFLAGS="$save_CPPFLAGS"
 
 
 
@@ -6680,201 +6759,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-
-# Check whether --with-xsdcxx was given.
-if test "${with_xsdcxx+set}" = set; then :
-  withval=$with_xsdcxx;
-else
-  with_xsdcxx=yes
-fi
-
-
-    if test "x$with_xsdcxx" != xno; then :
-  if test "$with_xsdcxx" = "yes"; then with_xsdcxx=xsdcxx; fi
-        # Extract the first word of "$with_xsdcxx", so it can be a program name with args.
-set dummy $with_xsdcxx; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_XSDCXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$XSDCXX"; then
-  ac_cv_prog_XSDCXX="$XSDCXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_XSDCXX="$with_xsdcxx"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-XSDCXX=$ac_cv_prog_XSDCXX
-if test -n "$XSDCXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XSDCXX" >&5
-$as_echo "$XSDCXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-        if test "x$XSDCXX" = x; then
-            # Extract the first word of "xsdcxx", so it can be a program name with args.
-set dummy xsdcxx; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_XSDCXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$XSDCXX"; then
-  ac_cv_prog_XSDCXX="$XSDCXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_XSDCXX="xsdcxx"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-XSDCXX=$ac_cv_prog_XSDCXX
-if test -n "$XSDCXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XSDCXX" >&5
-$as_echo "$XSDCXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-            if test "x$XSDCXX" = x; then
-                # Extract the first word of "xsd", so it can be a program name with args.
-set dummy xsd; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_XSDCXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$XSDCXX"; then
-  ac_cv_prog_XSDCXX="$XSDCXX" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_XSDCXX="xsd"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-XSDCXX=$ac_cv_prog_XSDCXX
-if test -n "$XSDCXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XSDCXX" >&5
-$as_echo "$XSDCXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-            fi
-        fi
-fi
-
-
-# Check whether --with-xsdcxx-inc was given.
-if test "${with_xsdcxx_inc+set}" = set; then :
-  withval=$with_xsdcxx_inc; xsdcxx_include_dir="$withval"
-else
-  xsdcxx_include_dir=
-
-fi
-
-
-    XSDCXX_CPPFLAGS=""
-    if test "x$xsdcxx_include_dir" != "xno" -a "x$xsdcxx_include_dir" != "x"; then
-            XSDCXX_CPPFLAGS=-I$xsdcxx_include_dir
-
-    fi
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mzLib main directory" >&5
-$as_echo_n "checking for mzLib main directory... " >&6; }
-
-# Check whether --with-mzlib_dir was given.
-if test "${with_mzlib_dir+set}" = set; then :
-  withval=$with_mzlib_dir; mzlib_dir="${withval}"
-else
-  mzlib_dir=""
-fi
-
-         if test "x$mzlib_dir" = "x" ; then
-                mzlib_dir=$PWD
-         fi
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${mzlib_dir}" >&5
-$as_echo "${mzlib_dir}" >&6; }
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
-$as_echo_n "checking for libxml2... " >&6; }
-
-# Check whether --with-libxml2_dir was given.
-if test "${with_libxml2_dir+set}" = set; then :
-  withval=$with_libxml2_dir; libxml2_dir="${withval}"
-else
-  libxml2_dir=""
-fi
-
-         if test "x$libxml2_dir" = "x" ; then
-                libxml2_dir=/usr/include/libxml2
-         fi
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${libxml2_dir}" >&5
-$as_echo "${libxml2_dir}" >&6; }
-
-     save_CXXFLAGS="$CXXFLAGS"
-     save_CPPFLAGS="$CPPFLAGS"
-     CXXFLAGS="$save_CXXFLAGS -I$libxml2_dir"
-     CPPFLAGS="$save_CPPFLAGS -I$libxml2_dir"
-     ac_fn_cxx_check_header_mongrel "$LINENO" "libxml/xmlreader.h" "ac_cv_header_libxml_xmlreader_h" "$ac_includes_default"
-if test "x$ac_cv_header_libxml_xmlreader_h" = xyes; then :
-
-else
-  as_fn_error $? "Couldn't find libxml/xmlreader.h" "$LINENO" 5
-fi
-
-
-     CXXFLAGS="$save_CXXFLAGS"
-     CPPFLAGS="$save_CPPFLAGS"
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cereal" >&5
 $as_echo_n "checking for cereal... " >&6; }
 
@@ -6906,6 +6790,7 @@ fi
 
      CXXFLAGS="$save_CXXFLAGS"
      CPPFLAGS="$save_CPPFLAGS"
+
 
 
 
