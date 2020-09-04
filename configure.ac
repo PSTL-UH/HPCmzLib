@@ -55,8 +55,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([fesetround floor pow sqrt])
 
-AX_XERCESC
-AX_XSDCXX
 
 
 dnl ==================================================
@@ -94,6 +92,31 @@ AC_ARG_WITH(libxml2_dir,
 dnl ==================================================
 
 dnl ==================================================
+AC_MSG_CHECKING(for xsdcxx)
+AC_ARG_WITH(xsdcxx_dir,
+ [  --with-xsdcxx-dir=dir          xsdcxx directory (default=/usr/include)],
+     xsdcxx_dir="${withval}", xsdcxx_dir="")
+         if test "x$xsdcxx_dir" = "x" ; then
+                xsdcxx_dir=/usr/include
+         fi
+     AC_MSG_RESULT(${xsdcxx_dir})
+
+     save_CXXFLAGS="$CXXFLAGS"
+     save_CPPFLAGS="$CPPFLAGS"
+     CXXFLAGS="$save_CXXFLAGS -I$xsdcxx_dir" 
+     CPPFLAGS="$save_CPPFLAGS -I$xsdcxx_dir" 
+     AC_CHECK_HEADER([xsd/cxx/config.hxx],
+     [],  
+     [AC_MSG_ERROR(Couldn't find xsd/cxx/config.hxx)])
+
+     CXXFLAGS="$save_CXXFLAGS"
+     CPPFLAGS="$save_CPPFLAGS"
+     AC_SUBST(xsdcxx_dir)
+dnl ==================================================
+
+AX_XERCESC
+
+dnl ==================================================
 AC_MSG_CHECKING(for cereal)
 AC_ARG_WITH(cereal_dir,
  [  --with-cereal-dir=dir          cereal directory (default=/usr/include/cereal/)],
@@ -115,6 +138,7 @@ AC_ARG_WITH(cereal_dir,
      CPPFLAGS="$save_CPPFLAGS"
      AC_SUBST(cereal_dir)
 dnl ==================================================
+
 
 
 #AC_CONFIG_FILES([Makefile.defs])
