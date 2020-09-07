@@ -2,13 +2,12 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([Mzlib-C++], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([HPCMzlib], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_MACRO_DIR(m4)
+m4_include([config/compiler_checks.m4])
 
 # Checks for programs.
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX_17(ext, mandatory)
-AX_CXXFLAGS_WARN_ALL
 AC_PROG_MAKE_SET
 
 AC_MSG_CHECKING([if want developer-level debugging flags])
@@ -30,9 +29,20 @@ fi
 
 
 AC_LANG_PUSH([C++])
-AX_CHECK_COMPILE_FLAG([-Wno-delete-non-virtual-dtor], [CXXFLAGS="$CXXFLAGS -Wno-delete-non-virtual-dtor"],,[$ERROR_ON_UNKNOWN_OPTIONS])
+GET_CXX_COMPILER_VENDOR(compiler_vendor)
+if test "$compiler_vendor" = "gnu" ; then
+  CXXFLAGS="$CXXFLAGS -Wno-delete-non-virtual-dtor -std=gnu++17"
+  CPPFLAGS="$CXXFLAGS"
+elif test "$compiler_vendor" = "intel" ; then
+  CXXFLAGS="$CXXFLAGS -std=c++17"
+  CPPFLAGS="$CXXFLAGS"
+fi
 
-# Checks for libraries.
+PROG_CXX_CXX17_HELPER([],[have_cxx17_support])
+if test "x$have_cxx17_support" = xno ; then
+   AC_MSG_WARN([HPCMzLib requires a C++ 2017 (or newer) compiler.])
+   AC_MSG_ERROR([Aborting.])
+fi
 
 # Checks for header files.
 AC_CHECK_HEADER([zlib.h],
