@@ -16,8 +16,10 @@ jobs:
     - name: configure
       run: |
          sudo apt-get update
-         sudo apt-get install -y --fix-missing cereal libcereal-dev xsdcxx libxerces-c-dev
-         ./configure
+         sudo apt-get install -y --fix-missing g++-9 cereal libcereal-dev xsdcxx libxerces-c-dev
+         g++ --version
+         g++-9 --version
+         ./configure CXX=g++-9
     - name: make
       run: make -j4
     - name: make check
