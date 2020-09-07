@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include <string>
-#include "cereal/cereal.hpp"
+#include <fstream>
+#include <iostream>
+#include "stringhelper.h"
 
 namespace FlashLFQ
 {
@@ -21,27 +23,62 @@ namespace FlashLFQ
 
         std::string ToString();
 
-        template <class Archive>
-        void save( Archive & ar ) const
+        static void Serialize(std::string &filename, std::vector<std::vector<IndexedMassSpectralPeak *>> iVec )
         {
-            ar( cereal::make_nvp("Mz", Mz) );
-            ar( cereal::make_nvp("Intensity", Intensity) );
-            ar( cereal::make_nvp("ZeroBasedMs1ScanIndex", ZeroBasedMs1ScanIndex) );
-            ar( cereal::make_nvp("RetentionTime", RetentionTime) );
+            std::ofstream output (filename);
+            if ( output.is_open() ) {
+                output << iVec.size() << std::endl;
+                for ( int i =0; i< iVec.size(); i++ ) {
+                    if ( iVec[i].size() > 0 ) {
+                        output << i << "\t" << iVec[i].size() << std::endl;                
+                        for ( auto ind : iVec[i] ) {
+                            output << ind->Mz << "\t" <<
+                                ind->Intensity << "\t" <<
+                                ind->ZeroBasedMs1ScanIndex <<  "\t" <<
+                                ind->RetentionTime << "\t" <<std::endl;                
+                        }
+                    }
+                }
+                output.close();
+            }
+            else {
+                std::cout <<"IndexedMassSpectralPeak::Serialize : Could not create file " << filename << std::endl;
+            }
         }
 
-        template <class Archive>
-        static void load_and_construct( Archive & ar, cereal::construct<IndexedMassSpectralPeak> & construct )
+        static void Deserialize (std::string &filename, std::vector<std::vector<IndexedMassSpectralPeak*>> &iVec )
         {
-            int ZeroBasedMs1ScanIndex;
-            double Mz, RetentionTime, Intensity;
+            std::ifstream input (filename);
+            if ( input.is_open() ) {
+                std::string line;
+                getline ( input, line );
+                int vecSize = std::stoi ( line );
+                iVec.resize(vecSize);
+                
+                while (getline ( input, line) ) {
+                    std::vector<std::string> splitsX = StringHelper::split(line, '\t');
+                    int index = std::stoi(splitsX[0]);
+                    int indvecSize = std::stoi ( splitsX[1] );
 
-            ar( cereal::make_nvp("Mz", Mz) );
-            ar( cereal::make_nvp("Intensity", Intensity) );
-            ar( cereal::make_nvp("ZeroBasedMs1ScanIndex", ZeroBasedMs1ScanIndex) );
-            ar( cereal::make_nvp("RetentionTime", RetentionTime) );
-
-            construct( Mz, Intensity, ZeroBasedMs1ScanIndex, RetentionTime ); // calls MyType( x )
+                    for (int j = 0; j < indvecSize; j++ ) {
+                        getline ( input, line);
+                        std::vector<std::string> splits = StringHelper::split(line, '\t');
+                        
+                        double mz = std::stod(splits[0]);
+                        double intensity = std::stod(splits[1]);
+                        int zeroBasedMs1ScanIndex = std::stoi(splits[2]);
+                        double retentionTime = std::stod(splits[3]);
+                        
+                        auto newpeak = new IndexedMassSpectralPeak(mz, intensity, zeroBasedMs1ScanIndex,
+                                                                   retentionTime);
+                        iVec[index].push_back(newpeak);
+                    }
+                }
+                input.close();
+            }
+            else {
+                std::cout << "IndexedMassSpectralPeak::Deserialize : Could not open file " << filename << std::endl;
+            }
         }
     };
 }

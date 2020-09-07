@@ -126,31 +126,6 @@ dnl ==================================================
 
 AX_XERCESC
 
-dnl ==================================================
-AC_MSG_CHECKING(for cereal)
-AC_ARG_WITH(cereal_dir,
- [  --with-cereal-dir=dir          cereal directory (default=/usr/include/cereal/)],
-     cereal_dir="${withval}", cereal_dir="")
-         if test "x$cereal_dir" = "x" ; then
-                cereal_dir=/usr/include/cereal
-         fi
-     AC_MSG_RESULT(${cereal_dir})
-
-     save_CXXFLAGS="$CXXFLAGS"
-     save_CPPFLAGS="$CPPFLAGS"
-     CXXFLAGS="$save_CXXFLAGS -I$cereal_dir" 
-     CPPFLAGS="$save_CPPFLAGS -I$cereal_dir" 
-     AC_CHECK_HEADER([cereal/cereal.hpp],
-     [],  
-     [AC_MSG_ERROR(Couldn't find cereal.hpp)])
-
-     CXXFLAGS="$save_CXXFLAGS"
-     CPPFLAGS="$save_CPPFLAGS"
-     AC_SUBST(cereal_dir)
-dnl ==================================================
-
-
-
 #AC_CONFIG_FILES([Makefile.defs])
 AC_SUBST(CXX)
 AC_SUBST(CC)

@@ -8,17 +8,12 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../MzML/Mzml.h"
 
-//For XML serialization / deserialization
-#include "cereal/types/memory.hpp"
-#include "cereal/archives/xml.hpp"
-#include <cereal/types/vector.hpp>
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <typeinfo>
 #include <algorithm>
-#include <experimental/filesystem>
+#include <filesystem>
 
 using namespace IO::MzML;
 
@@ -35,7 +30,8 @@ namespace FlashLFQ
     }
 
     bool PeakIndexingEngine::IndexMassSpectralPeaks(SpectraFileInfo *fileInfo, bool silent,
-                                                    std::unordered_map<SpectraFileInfo*, std::vector<Ms1ScanInfo*>> &_ms1Scans)
+                                                    std::unordered_map<SpectraFileInfo*,
+                                                    std::vector<Ms1ScanInfo*>> &_ms1Scans)
     {
         if (!silent)
         {
@@ -45,8 +41,6 @@ namespace FlashLFQ
         std::vector<MsDataScan*> msDataScans;
 
         // read spectra file
-        //C# TO C++ CONVERTER TODO TASK: There is no direct C++ equivalent to this .NET String method:
-        //auto ext = Path::GetExtension(fileInfo->FullFilePathWithExtension).ToUpperInvariant();
         std::string fn = fileInfo->FullFilePathWithExtension;
         auto ext = fn.substr(fn.find_last_of(".") + 1);
         std::transform (ext.begin(), ext.end(), ext.begin(), ::toupper);
@@ -54,30 +48,12 @@ namespace FlashLFQ
         {
             try
             {
-#ifdef ORIG
-                msDataScans = Mzml::LoadAllStaticData(fileInfo->FullFilePathWithExtension)->GetAllScansList().OrderBy([&] (std::any p)
-                {
-                    p::OneBasedScanNumber;
-                })->ToArray();
-#endif
                 // arguments:  const std::string &filePath, FilteringParams *filterParams, int maxThreads
                 msDataScans = Mzml::LoadAllStaticData(fileInfo->FullFilePathWithExtension)->GetAllScansList();
                 std::sort(msDataScans.begin(), msDataScans.end(), [&] (MsDataScan *l, MsDataScan *r)  {
                         return l->getOneBasedScanNumber() < r->getOneBasedScanNumber();
                     });
             }
-#ifdef ORIG
-            catch (const FileNotFoundException &e1)
-            {
-                if (!silent)
-                {
-                    std::cout << "\nCan't find .mzML file" << fileInfo->FullFilePathWithExtension << "\n"
-                              << std::endl;
-                }
-
-                return false;
-            }
-#endif
             catch (const std::runtime_error &e)
             {
                 if (!silent)
@@ -227,147 +203,34 @@ namespace FlashLFQ
                 //_indexedPeaks[i] = std::vector<IndexedMassSpectralPeak*>();
             }
         }
-
-        //GC::Collect();
     }
 
     void PeakIndexingEngine::SerializeIndex(SpectraFileInfo *file)
     {
-#ifdef ORIG
-        std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
-        std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
-
-        auto indexFile = File::Create(indexPath);
-        _serializer->Serialize(indexFile, _indexedPeaks);
-#endif
-
-        // get directory name from SpectraFileInfo FullFilePathWithExtension.  Need to cast
-        // string to std::experimental::filesystem::path
-        // in order to get path without filename.
-        std::experimental::filesystem::path directory = std::experimental::filesystem::path(file->FullFilePathWithExtension);
-        
-        // combine directory string with new file name.  need to add "/" to separate directory
-        // from filename and add ".ind" extension
         std::string indexPath = file->FilenameWithoutExtension + ".ind";
         //file is created when calling ofstream with indexPath.
 
-        //----------------------------------------------------------------
-        //SERIALIZE DATA TO FILE
-
-        //open ofstream of file
-        std::ofstream os(indexPath);
-        cereal::XMLOutputArchive archive( os );
-
-        //Cereal only works with smart pointers, so all raw pointers in
-        //std::vector<std::vector<IndexedMassSpectralPeak*>> _indexedPeaks
-        //must be converted to unique pointers with std::make_unique.  This requires traversing the
-        //vector and performing the
-        //transformation for each entry.
-        std::vector<std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>>> unique_vector;
-
-        for (int i=0; i < (int)_indexedPeaks.size(); i++){
-            std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>> unique_vec_row;
-
-            for (int j=0;j<(int)_indexedPeaks[i].size();j++){
-
-                //create unique pointer from raw pointer
-                auto p = std::make_unique<FlashLFQ::IndexedMassSpectralPeak>(*_indexedPeaks[i][j]);
-                
-                //push unique pointer into vector of unique pointers
-                unique_vec_row.push_back(std::move(p));
-            }
-            
-            //push vector of unique pointers into vector of vectors of unique pointers
-            unique_vector.push_back(std::move(unique_vec_row));
-        }
-
-        //finally serialize the vector of vectors of unique pointers to an XML file
-        //this will write the info contained in _indexedpeaks to the XML file 
-        //specified in the indexPath variable.
-        archive(unique_vector);
-        //----------------------------------------------------------------
-
-        //calling os.close() prevents cereal from writing data to file?
-        //os.close();
+        //Serialize data to file
+        IndexedMassSpectralPeak::Serialize(indexPath, _indexedPeaks );
     }
 
     void PeakIndexingEngine::DeserializeIndex(SpectraFileInfo *file)
     {
-#ifdef ORIG
-        std::string dir = FileSystem::getDirectoryName(file->FullFilePathWithExtension);
-        std::string indexPath = FileSystem::combine(dir, file->FilenameWithoutExtension + ".ind");
-
-        auto indexFile = File::OpenRead(indexPath);
-        _indexedPeaks = static_cast<std::vector<std::vector<IndexedMassSpectralPeak*>>>(_serializer->Deserialize(indexFile));
-    
-        File::Delete(indexPath);
-#endif
-
-        //get directory name from SpectraFileInfo FullFilePathWithExtension.  Need to cast string to std::experimental::filesystem::path
-        //in order to get path without filename.
-        std::experimental::filesystem::path directory = std::experimental::filesystem::path(file->FullFilePathWithExtension);
-
-        // combine directory string with new file name.  need to add "/" to separate directory from filename and add ".ind" extension
-        //std::string indexPath = directory.string() + "/" + file->FilenameWithoutExtension + ".ind";
         std::string indexPath = file->FilenameWithoutExtension + ".ind";
+        IndexedMassSpectralPeak::Deserialize(indexPath, _indexedPeaks);
 
-        //file is opened for reading when calling ifstream with indexPath.
-        // auto indexFile = File::OpenRead(indexPath);
-
-        //------------------------------------------------------
-        //DESERIALIZE FILE INDEXFILE TO OBJECT
-
-        //open ifstream for indexPath
-        std::ifstream is(indexPath);
-        if ( !is.is_open() ) {
-            std::cout << "Could not open " << indexPath << std::endl;
-        }
-        
-        cereal::XMLInputArchive archive_read(is);
-
-        //Cereal only has functionality for smart pointers.  Must deserialize data from file to vector
-        //of vecotrs of unique pointers
-        std::vector<std::vector<std::unique_ptr<FlashLFQ::IndexedMassSpectralPeak>>> unique_vec;
-
-        //deserialize xml file to unique_vec structure
-        archive_read(unique_vec);
-
-        //now must convert unique pointers to raw pointers.  This requires traversing the structure
-        std::vector<std::vector<FlashLFQ::IndexedMassSpectralPeak*>> raw_vec;
-
-        for (int i=0; i < (int)unique_vec.size(); i++){
-            std::vector<FlashLFQ::IndexedMassSpectralPeak*> raw_vec_row;
-            
-            for (int j=0;j< (int)unique_vec[i].size();j++){
-                //this sets everything but ZeroBasedMs1ScanIndex.  Im not sure why.
-                // auto p = unique_vec[i][j].get();
-                
-                //because ZeroBasedMs1ScanIndex was not set with the line above, we create a
-                //new FlashLFQ::IndexedMassSpectralPeak object with
-                //the information stored in the unique_vec entry.  This DOES set all values
-                //including ZeroBasedMs1ScanIndex.
-                FlashLFQ::IndexedMassSpectralPeak* p = new FlashLFQ::IndexedMassSpectralPeak(unique_vec[i][j]->Mz, unique_vec[i][j]->Intensity, unique_vec[i][j]->ZeroBasedMs1ScanIndex, unique_vec[i][j]->RetentionTime);
-                raw_vec_row.push_back(p);
-            }
-
-            raw_vec.push_back(raw_vec_row);
-        }
-
-        //set _indexedpeaks to equal the vector of vectors of raw pointers.
-        _indexedPeaks = raw_vec;
-        // return raw_vec;
-        //------------------------------------------------------
-        is.close();
         //Remove file at indexPath
-        // File::Delete(indexPath);
         remove(indexPath.c_str());
     }
 
-    IndexedMassSpectralPeak *PeakIndexingEngine::GetIndexedPeak(double theorMass, int zeroBasedScanIndex, Tolerance *tolerance, int chargeState)
+    IndexedMassSpectralPeak *PeakIndexingEngine::GetIndexedPeak(double theorMass, int zeroBasedScanIndex,
+                                                                Tolerance *tolerance, int chargeState)
     {
         IndexedMassSpectralPeak *bestPeak = nullptr;
-        int ceilingMz = static_cast<int>(std::ceil(Chemistry::ClassExtensions::ToMz(tolerance->GetMaximumValue(theorMass), chargeState) * BinsPerDalton));
-        int floorMz = static_cast<int>(std::floor(Chemistry::ClassExtensions::ToMz(tolerance->GetMinimumValue(theorMass), chargeState) * BinsPerDalton));
+        int ceilingMz = static_cast<int>(std::ceil(Chemistry::ClassExtensions::ToMz(tolerance->GetMaximumValue(theorMass),
+                                                                                    chargeState) * BinsPerDalton));
+        int floorMz = static_cast<int>(std::floor(Chemistry::ClassExtensions::ToMz(tolerance->GetMinimumValue(theorMass),
+                                                                                   chargeState) * BinsPerDalton));
 
         for (int j = floorMz; j <= ceilingMz; j++)
         {
@@ -387,7 +250,10 @@ namespace FlashLFQ
 
                     double expMass = Chemistry::ClassExtensions::ToMass(peak->Mz, chargeState);
 
-                    if (tolerance->Within(expMass, theorMass) && peak->ZeroBasedMs1ScanIndex == zeroBasedScanIndex && (bestPeak == nullptr || std::abs(expMass - theorMass) < std::abs(Chemistry::ClassExtensions::ToMass(bestPeak->Mz, chargeState) - theorMass)))
+                    if (tolerance->Within(expMass, theorMass) && peak->ZeroBasedMs1ScanIndex == zeroBasedScanIndex &&
+                        (bestPeak == nullptr ||
+                         std::abs(expMass - theorMass) < std::abs(Chemistry::ClassExtensions::ToMass(bestPeak->Mz,
+                                                                                                     chargeState) - theorMass)))
                     {
                         bestPeak = peak;
                     }
@@ -398,7 +264,8 @@ namespace FlashLFQ
         return bestPeak;
     }
 
-    int PeakIndexingEngine::BinarySearchForIndexedPeak(std::vector<IndexedMassSpectralPeak*> &indexedPeaks, int zeroBasedScanIndex)
+    int PeakIndexingEngine::BinarySearchForIndexedPeak(std::vector<IndexedMassSpectralPeak*> &indexedPeaks,
+                                                       int zeroBasedScanIndex)
     {
         int m = 0;
         int l = 0;

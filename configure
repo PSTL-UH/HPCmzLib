@@ -622,7 +622,6 @@ ac_includes_default="\
 #endif"
 
 ac_subst_vars='LTLIBOBJS
-cereal_dir
 LTLIBXERCES_C
 LIBXERCES_C
 HAVE_LIBXERCES_C
@@ -700,7 +699,6 @@ with_xsdcxx_dir
 with_gnu_ld
 enable_rpath
 with_libxerces_c_prefix
-with_cereal_dir
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1340,7 +1338,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-libxerces-c-prefix=DIR  search for libxerces-c in DIR/include and DIR/lib
   --without-libxerces-c-prefix     don't search for libxerces-c in includedir and libdir
-  --with-cereal-dir=dir          cereal directory (default=/usr/include/cereal/)
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -5135,41 +5132,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for cereal" >&5
-$as_echo_n "checking for cereal... " >&6; }
-
-# Check whether --with-cereal_dir was given.
-if test "${with_cereal_dir+set}" = set; then :
-  withval=$with_cereal_dir; cereal_dir="${withval}"
-else
-  cereal_dir=""
-fi
-
-         if test "x$cereal_dir" = "x" ; then
-                cereal_dir=/usr/include/cereal
-         fi
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${cereal_dir}" >&5
-$as_echo "${cereal_dir}" >&6; }
-
-     save_CXXFLAGS="$CXXFLAGS"
-     save_CPPFLAGS="$CPPFLAGS"
-     CXXFLAGS="$save_CXXFLAGS -I$cereal_dir"
-     CPPFLAGS="$save_CPPFLAGS -I$cereal_dir"
-     ac_fn_cxx_check_header_mongrel "$LINENO" "cereal/cereal.hpp" "ac_cv_header_cereal_cereal_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_cereal_cereal_hpp" = xyes; then :
-
-else
-  as_fn_error $? "Couldn't find cereal.hpp" "$LINENO" 5
-fi
-
-
-
-     CXXFLAGS="$save_CXXFLAGS"
-     CPPFLAGS="$save_CPPFLAGS"
 
 
 
