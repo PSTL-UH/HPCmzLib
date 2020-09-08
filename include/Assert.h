@@ -1,6 +1,5 @@
 #include <iostream>
 #include <optional>
-//Added include statements
 #include <vector>
 
 class Assert {
@@ -43,7 +42,7 @@ public:
 //            std::cout << "is equal" << std::endl;
         }
         else {
-            std::cout << "  Assert.h: " << a << " is NOT equal " << b << "within " << tol << std::endl;
+            std::cout << "  Assert.h: " << a << " is NOT equal " << b << " within " << tol << std::endl;
 //            std::abort();
         }
     }

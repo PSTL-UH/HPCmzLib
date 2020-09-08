@@ -57,38 +57,9 @@ public:
         return variance / (size - 1);
     }
 
-    static double Quantile ( std::vector<double> vec, double quantile ) {
-        
-        //return NaN if array is empty
-        if (vec.empty()) {
-            return std::numeric_limits<double>::quiet_NaN();
-        }
-
-        //If array contains only one value, return that value
-        if (1 == vec.size()) {
-            return vec[0];
-        }
-
-        //Otherwise compute quantile value as follows:
-        //n = sample size = array size
-        auto n = vec.size();
-
-        //quantile = quantile selector
-        //m = (quantile + 1)/3
-        double m = (quantile + 1) / 3;
-
-        //j = floor((n * quantile) + m)
-        int j = (int)floor((n * quantile) + m);
-
-        //gamma = (n * quantile) + m - j
-        double gamma = (n * quantile) + m - j;
-
-        //quantile = (1 - gamma)*x_j + gamma*x_(j+1)
-        //Here x_j is the "jth order statistic" and x_(j+1) is the "(j+1)th order statistic"
-        //Because the array begins with index 0, these values correspond to array[j-1] and 
-        //array[j] respectively. 
-        double value = (((1 - gamma) * vec[j - 1]) + (gamma * vec[j]));
-        return value;
+    static double Quantile ( std::vector<double> vec, double quantile )
+    {        
+        return Measures::Quantile(vec, quantile);
     }
 
     static  std::vector<double> BoxCarSmooth ( std::vector<double> vec, int points) {
