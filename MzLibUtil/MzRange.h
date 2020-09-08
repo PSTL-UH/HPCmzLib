@@ -36,7 +36,6 @@ namespace MzLibUtil {
     public:
         MzRange(double minMZ, double maxMZ);
 
-        std::string ToString(const std::string &format) override;
-
+        std::string ToString();
     };
 }

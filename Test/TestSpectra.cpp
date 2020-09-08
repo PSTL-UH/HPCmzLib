@@ -1,4 +1,5 @@
-﻿#include "TestSpectra.h"
+﻿#include <iomanip>
+#include "TestSpectra.h"
 #include "../MassSpectrometry/MzSpectra/MzSpectrum.h"
 #include "../MzLibUtil/MzRange.h"
 #include "../MzLibUtil/PpmTolerance.h"
@@ -96,6 +97,7 @@ int main ( int argc, char **argv )
     Test::TestSpectra::CorrectOrder();
 
 #ifdef LATER
+    //Not being evaluated for now
     std::cout << ++i << ". TestFunctionToX" << std::endl;        
     Test::TestSpectra::TestFunctionToX();
 #endif
@@ -209,7 +211,7 @@ namespace Test
         Assert::IsTrue( ((_mzSpectrumA->getRange()->getMinimum() - range->getMinimum()) <= 1e-9));
         Assert::IsTrue( ((_mzSpectrumA->getRange()->getMaximum() - range->getMaximum()) <= 1e-9));
 
-        //delete range;
+        delete range;
     }
 
     void TestSpectra::SpectrumFilterCount()
@@ -231,7 +233,7 @@ namespace Test
         MzSpectrum *spectrum = new MzSpectrum(x, y, false);
         Assert::AreEqual(7, (int)spectrum->FilterByNumberOfMostIntense(200).size());
 
-        //delete spectrum;
+        delete spectrum;
     }
 
     void TestSpectra::GetBasePeak()
@@ -258,8 +260,9 @@ namespace Test
     {
         std::vector<double> dv1 = {5, 6, 7};
         std::vector<double> dv2 = {1, 2, 3};
-        _mzSpectrumA = new MzSpectrum(dv1, dv2, false);
-        Assert::IsTrue(_mzSpectrumA->FilterByNumberOfMostIntense(2).front()->getMz() < _mzSpectrumA->FilterByNumberOfMostIntense(2)[1]->getMz());
+        MzSpectrum * _mzSpec = new MzSpectrum(dv1, dv2, false);
+        Assert::IsTrue(_mzSpec->FilterByNumberOfMostIntense(2).front()->getMz() < _mzSpec->FilterByNumberOfMostIntense(2)[1]->getMz());
+        delete _mzSpec;
     }
 
 #ifdef LATER
@@ -278,10 +281,8 @@ namespace Test
     
     void TestSpectra::TestGetClosestPeakXValue()
     {
-        Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.73849));
-        Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447));
-        // Assert::IsTrue( std::abs(447.73849 - _mzSpectrumA->GetClosestPeakXvalue(447.73849).value() ) < 1e-09 );
-        // Assert::IsTrue( std::abs(447.73849 - _mzSpectrumA->GetClosestPeakXvalue(447).value() ) < 1e-09 );
+        Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447.73849).value());
+        Assert::AreEqual(447.73849, _mzSpectrumA->GetClosestPeakXvalue(447).value());
 
         std::vector<double> dv1(0);
         std::vector<double> dv2(0);

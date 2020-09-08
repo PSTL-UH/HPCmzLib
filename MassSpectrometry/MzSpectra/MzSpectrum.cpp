@@ -252,7 +252,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
 
     std::string MzSpectrum::ToString()
     {
-        return StringHelper::formatSimple("{0} (Peaks {1})", getRange(), getSize());
+        return StringHelper::formatSimple("{0} (Peaks {1})", getRange()->ToString(), getSize());
     }
 
     std::vector<IsotopicEnvelope*> MzSpectrum::Deconvolute(MzRange *theRange,
@@ -515,11 +515,10 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
     std::vector<MzPeak*> MzSpectrum::FilterByNumberOfMostIntense(int topNPeaks)
     {
         std::vector<MzPeak*> v;
-        auto quantile = 1.0 - static_cast<double>(topNPeaks) / privateXArraysize ;
+        double quantile = 1.0 - static_cast<double>(topNPeaks) / privateXArraysize ;
         quantile = std::max((double) 0.0, quantile);
         quantile = std::min((double) 1.0 , quantile);
         double cutoffYvalue = Math::Quantile(privateYArray, quantile);
-
         for (int i = 0; i < privateXArraysize; i++)
         {
             if (privateYArray[i] >= cutoffYvalue)
