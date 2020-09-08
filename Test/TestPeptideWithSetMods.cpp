@@ -21,22 +21,22 @@ int main () {
 	Chemistry::PeriodicTable::Load (elr);
 	//	UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestDifferentProteaseEquals\n";
+	std::cout << ++i << ". TestDifferentProteaseEquals\n";
 	Test::TestPeptideWithSetMods::TestDifferentProteaseEquals();
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing" << std::endl;
+	std::cout << ++i << ". TestCTermAndLastSideChainModParsing" << std::endl;
 	Test::TestPeptideWithSetMods::TestCTermAndLastSideChainModParsing();
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestSemiFewCleavages\n";
+	std::cout << ++i << ". TestSemiFewCleavages\n";
 	Test::TestPeptideWithSetMods::TestSemiFewCleavages();
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestHardToParseModifiedSequence" << std::endl;
+	std::cout << ++i << ". TestHardToParseModifiedSequence" << std::endl;
 	Test::TestPeptideWithSetMods::TestHardToParseModifiedSequence();
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestSingleProteases\n";
+	std::cout << ++i << ". TestSingleProteases\n";
 	Test::TestPeptideWithSetMods::TestSemiFewCleavages();
 
-	std::cout << ++i << ". TestPeptideWithSetMods::TestNonAndSemiSpecificDigests\n";
+	std::cout << ++i << ". TestNonAndSemiSpecificDigests\n";
 	Test::TestPeptideWithSetMods::TestNonAndSemiSpecificDigests();
 
 	return 0;
