@@ -9,4 +9,8 @@ To speed up the compilation, you can choose a parallel make, e.g. using
 
 make -j 8
 
+The software has been tested with gcc 8.2, gcc 10.2, and intel icpc 19.0.5, on multiple Linux systems (Redhat 7.6, OpenSuSe 15.2, Arch Linux)
+Note: since this is still work in development, the library is by default compiled with debug symbols and without optimization. For any form of performance evaluation,
+the user has to disable the setting by using the --disable-debug option during the configure step. Configuration values and options might change in the future.
+
 For running tests, change into the Test directory and run the runtest.sh script. This script will also create softlinks to the required input files.
