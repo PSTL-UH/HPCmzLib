@@ -81,8 +81,8 @@ dnl ==================================================
 
 dnl ==================================================
 AC_MSG_CHECKING(for mzLib lib directory)
-AC_ARG_WITH(mzlib_lib_dir,
- [  --with-mzlib-lib_dir=dir            mzLib lib directory (default=mzlib_dir/lib)],
+AC_ARG_WITH(mzlib_lib-dir,
+ [  --with-mzlib-lib-dir=dir            mzLib lib directory (default=mzlib_dir/lib)],
      mzlib_lib_dir="${withval}", mzlib_lib_dir="")
          if test "x$mzlib_lib_dir" = "x" ; then
                 mzlib_lib_dir="$mzlib_dir"/lib
