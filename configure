@@ -5141,7 +5141,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-ac_config_files="$ac_config_files Makefile.defs"
+ac_config_files="$ac_config_files "$mzlib_dir"/Makefile.defs"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5848,7 +5848,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "Makefile.defs") CONFIG_FILES="$CONFIG_FILES Makefile.defs" ;;
+    ""$mzlib_dir"/Makefile.defs") CONFIG_FILES="$CONFIG_FILES "$mzlib_dir"/Makefile.defs" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
