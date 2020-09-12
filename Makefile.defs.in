@@ -11,7 +11,7 @@
 
 MZLIB_DIR      = @mzlib_dir@
 MZLIB_INC_DIR  = $(MZLIB_DIR)/include 
-MZLIB_LIB_DIR  = $(MZLIB_DIR)/lib
+MZLIB_LIB_DIR  = @mzlib_lib_dir@
 MZLIB_LIB      = libmzlib.a
 FLASHLFQ_LIB   = libflashlfq.a
 

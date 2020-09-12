@@ -638,6 +638,7 @@ CFLAGS
 CC
 xsdcxx_dir
 libxml2_dir
+mzlib_lib_dir
 mzlib_dir
 LIBOBJS
 EGREP
@@ -694,6 +695,7 @@ ac_user_opts='
 enable_option_checking
 enable_debug
 with_mzlib_dir
+with_mzlib_lib_dir
 with_libxml2_dir
 with_xsdcxx_dir
 with_gnu_ld
@@ -1333,6 +1335,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-mzlib-dir=dir            Main mzLib directory (default=$PWD)
+  --with-mzlib-lib_dir=dir            mzLib lib directory (default=mzlib_dir/lib)
   --with-libxml2-dir=dir          libxml2 directory (default=/usr/include/libxml2/)
   --with-xsdcxx-dir=dir          xsdcxx directory (default=/usr/include)
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
@@ -3761,6 +3764,24 @@ fi
          fi
      { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${mzlib_dir}" >&5
 $as_echo "${mzlib_dir}" >&6; }
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mzLib lib directory" >&5
+$as_echo_n "checking for mzLib lib directory... " >&6; }
+
+# Check whether --with-mzlib_lib_dir was given.
+if test "${with_mzlib_lib_dir+set}" = set; then :
+  withval=$with_mzlib_lib_dir; mzlib_lib_dir="${withval}"
+else
+  mzlib_lib_dir=""
+fi
+
+         if test "x$mzlib_lib_dir" = "x" ; then
+                mzlib_lib_dir="$mzlib_dir"/lib
+         fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${mzlib_lib_dir}" >&5
+$as_echo "${mzlib_lib_dir}" >&6; }
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
