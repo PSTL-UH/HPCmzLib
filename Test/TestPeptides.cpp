@@ -10,7 +10,7 @@
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
 #include <limits>
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 
 Peptide *_mockPeptideEveryAminoAcid;

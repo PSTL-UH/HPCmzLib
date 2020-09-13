@@ -10,7 +10,7 @@
 using namespace Chemistry;
 using namespace MzLibUtil;
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 int main ( int argc, char **argv )
 {

@@ -19,7 +19,7 @@
 #include "Search.h"
 
 #include "Sort.h"
-#include "Math.h"
+#include "MzLibMath.h"
 #include "RectangularVectors.h"
 
 namespace MassSpectrometry

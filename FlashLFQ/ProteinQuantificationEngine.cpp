@@ -5,7 +5,7 @@
 #include "SpectraFileInfo.h"
 
 #include <cmath>
-#include "Math.h"
+#include "MzLibMath.h"
 
 #include "SingularValueDecomposition/Matrix.h"
 #include "SingularValueDecomposition/Elementwise.h"

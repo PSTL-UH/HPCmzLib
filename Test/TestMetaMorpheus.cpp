@@ -6,7 +6,7 @@
 #include "../MassSpectrometry/Enums/DissociationType.h"
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <limits>
 
 using namespace Proteomics;

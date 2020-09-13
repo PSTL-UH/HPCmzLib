@@ -20,7 +20,7 @@
 #include "../Chemistry/ClassExtensions.h"
 #include "../Chemistry/Constants.h"
 
-#include "Math.h"
+#include "MzLibMath.h"
 #include "Group.h"
 #include "Search.h"
 

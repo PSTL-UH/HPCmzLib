@@ -11,7 +11,7 @@
 #include "../Chemistry/Constants.h"
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <bits/stdc++.h>
 
 using namespace Proteomics;

@@ -14,7 +14,7 @@
 #include "../../UsefulProteomicsDatabases/FastaHeaderFieldRegex.h"
 #include "../../UsefulProteomicsDatabases/PtmListLoader.h"
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <experimental/filesystem>
 
 using namespace MassSpectrometry;

@@ -13,7 +13,7 @@
 #include "DeconvolutionFeatureWithMassesAndScans.h"
 #include "DeconvolutionFeature.h"
 #include "MzSpectra/IsotopicEnvelope.h"
-#include "Math.h"
+#include "MzLibMath.h"
 
 namespace MassSpectrometry {
 

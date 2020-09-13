@@ -7,7 +7,7 @@ using namespace MzLibUtil;
 using namespace Proteomics;
 using namespace UsefulProteomicsDatabases;
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>

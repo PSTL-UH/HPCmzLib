@@ -4,7 +4,7 @@
 #include "CompactPeptideBase.h"
 #include "NeutralTerminusFragment.h"
 #include "../Modifications/Modification.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 using namespace Chemistry;
 using namespace Proteomics::AminoAcidPolymer;

@@ -14,7 +14,7 @@
 
 using namespace IO::MzML;
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include "Quantiles.h"
 
 #include <iostream>
