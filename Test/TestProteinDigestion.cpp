@@ -4,7 +4,7 @@
 #include "../Chemistry/Chemistry.h"
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 #include <limits>
 #include <cmath>

@@ -7,7 +7,7 @@
 #include "../MzLibUtil/DoubleRange.h"
 
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 #include "../Chemistry/Chemistry.h"
 using namespace Chemistry;

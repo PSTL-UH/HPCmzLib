@@ -2,7 +2,7 @@
 #include "../Proteomics/Proteomics.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 using namespace Proteomics;
 

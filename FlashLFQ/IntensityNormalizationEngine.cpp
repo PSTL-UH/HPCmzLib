@@ -5,7 +5,7 @@
 #include "RectangularVectors.h"
 
 #include "Group.h"
-#include "Math.h"
+#include "MzLibMath.h"
 
 namespace FlashLFQ
 {

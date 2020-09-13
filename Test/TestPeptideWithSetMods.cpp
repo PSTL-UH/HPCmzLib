@@ -3,10 +3,10 @@
 #include "../Proteomics/Modifications/Modification.h"
 #include "../Proteomics/Modifications/ModificationMotif.h"
 #include <bits/stdc++.h>
-#include "../include/Assert.h"
+#include "MzLibAssert.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 #include "../Proteomics/Proteomics.h"
-#include "../include/Sort.h"
+#include "Sort.h"
 #include "../FlashLFQ/Identification.h"
 
 using namespace Proteomics;

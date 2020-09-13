@@ -37,7 +37,7 @@
 #include "RectangularVectors.h"
 #include "MzLibUtil.h"
 using namespace MzLibUtil;
-#include "Math.h"
+#include "MzLibMath.h"
 
 namespace Spectra {
     /// <summary>

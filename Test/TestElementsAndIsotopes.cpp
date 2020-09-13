@@ -4,7 +4,7 @@
 #include "../Chemistry/PeriodicTable.h"
 #include "../UsefulProteomicsDatabases/PeriodicTableLoader.h"
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 int main ( int argc, char **argv )
 {

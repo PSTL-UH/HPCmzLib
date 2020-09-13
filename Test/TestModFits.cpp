@@ -5,7 +5,7 @@
 #include "../Proteomics/Modifications/Modification.h"
 #include "../Proteomics/Modifications/ModificationLocalization.h"
 
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>

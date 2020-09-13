@@ -4,7 +4,7 @@
 //#include "../MzLibUtil/MzLibException.h"
 
 #include <limits>
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 using namespace MzLibUtil;
 using namespace Proteomics;

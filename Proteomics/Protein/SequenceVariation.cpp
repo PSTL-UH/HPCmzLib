@@ -1,6 +1,6 @@
 ﻿#include "SequenceVariation.h"
 #include "stringhelper.h"
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 namespace Proteomics {
 

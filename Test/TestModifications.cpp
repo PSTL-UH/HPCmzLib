@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <filesystem>
-#include "Assert.h"
+#include "MzLibAssert.h"
 
 int main ( int argc, char **argv )
 {
