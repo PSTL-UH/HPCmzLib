@@ -26,6 +26,9 @@ int main () {
 	std::cout << ++i << ". SerializePeptideWithSetModifications\n";
 	Test::TestSerialization::SerializePeptideWithSetModifications();
 
+	std::cout << ++i << ". SerializeMatchedFragmentIon\n";
+	Test::TestSerialization::SerializeMatchedFragmentIon();
+        
 	return 0;
 }
 
@@ -124,4 +127,27 @@ namespace Test
         delete nParams;
         delete fullyDigestParams;        
     }
+
+    void TestSerialization::SerializeMatchedFragmentIon()
+    {
+        auto  tempVar = new NeutralTerminusFragment (FragmentationTerminus::N, 1, 1, 1);
+        Product *P = new Product(ProductType::b, tempVar, 0);
+        MatchedFragmentIon *m = new MatchedFragmentIon(P, 1, 1, 1);
+        char buf[512];
+        size_t buf_len = 512;
+        int ret = MatchedFragmentIon::Pack(buf, &buf_len, m);
+        if ( ret == -1 ) {
+            std::cout<< "Buffer too small, increase to " << buf_len << " bytes \n";
+        }
+
+        MatchedFragmentIon *n;
+        MatchedFragmentIon::Unpack(buf, buf_len, &n);
+
+        Assert::IsTrue(m->Equals(n));
+
+        delete m;
+        delete P;
+
+    }
+    
 }

@@ -19,6 +19,6 @@ namespace Test
     public:
         static void SerializePeptideWithSetModifications();
 
-        static void SerializeMatchedIonFragments();
+        static void SerializeMatchedFragmentIon();
     };
 }

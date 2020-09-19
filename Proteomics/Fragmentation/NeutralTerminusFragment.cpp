@@ -26,7 +26,9 @@ namespace Proteomics
 
         std::string NeutralTerminusFragment::ToString()
         {
-            return "Term: " + std::to_string(static_cast<int>(Terminus)) + "; Mass: " + std::to_string(NeutralMass) + "; FragNum:" + std::to_string(FragmentNumber) + "; AA: " + std::to_string(AminoAcidPosition);
+            return "Term: " +  Fragmentation::FragmentationTerminusToString(Terminus) + "; Mass: " +
+                std::to_string(NeutralMass) + "; FragNum:" + std::to_string(FragmentNumber) + "; AA: " +
+                std::to_string(AminoAcidPosition);
         }
     }
 }
