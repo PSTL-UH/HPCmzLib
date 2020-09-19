@@ -15,7 +15,8 @@
 
 #include "stringhelper.h"
 #include "stringbuilder.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "ProteolyticPeptide.h"
 #include "CleavageSpecificity.h"
@@ -40,13 +41,13 @@ using namespace Proteomics::Fragmentation;
 
 #include "../Fragmentation/Product.h"
 
+#define PepWithSetModsDefaultSize 512
+
 
 namespace Proteomics
 {
     namespace ProteolyticDigestion
     {
-        //C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-        //ORIGINAL LINE: [Serializable] public class PeptideWithSetModifications : ProteolyticPeptide
         class PeptideWithSetModifications : public ProteolyticPeptide
         {
         private:
@@ -185,99 +186,14 @@ namespace Proteomics
             void UpdateCleavageSpecificity();
 
         public:
-            static void Serialize (std::string &filename, PeptideWithSetModifications *pep )
-            {
-                std::vector<PeptideWithSetModifications *> pVec;
-                pVec.push_back (pep);
-                Serialize (filename, pVec );
-            }
 
-            static void Serialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
-            {
-                std::ofstream output (filename);
-                if ( output.is_open() ) {
-                    output << pVec.size() << std::endl;
-                    for ( auto pep : pVec ) {
-                        output << pep->getOneBasedStartResidueInProtein() << "\t" <<
-                            pep->getOneBasedEndResidueInProtein() << "\t" << 
-                            pep->getMissedCleavages() << "\t" <<
-                            pep->getPeptideDescription() << "\t"  <<
-                            pep->NumFixedMods << "\t" <<
-                            CleavageSpecificityExtension::GetCleavageSpecificityAsString( pep->getCleavageSpecificityForFdrCategory())
-                               << std::endl;
-                    
-                        output << pep->getFullSequence() << std::endl;
-                        output << pep->getDigestionParamString() << std::endl;
-                        output << pep->getProteinAccession() << std::endl;
-                    }
-                    output.close();
-                }
-                else {
-                    std::cout <<"PeptideWithSetModifications::Serialize : Could not create file " << filename << std::endl;
-                }
-            }
+            static int Pack (char *buf, size_t *size, PeptideWithSetModifications *pep );
+            static void Serialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec );
+            static void Serialize (std::string &filename, PeptideWithSetModifications* &pVec );
 
-            static void Deserialize (std::string &filename, PeptideWithSetModifications* &pep )
-            {
-                std::vector<PeptideWithSetModifications *> pVec;
-                Deserialize(filename, pVec );
-                if ( pVec.size() > 0 ) {
-                    pep = pVec[0];
-                }
-            }
-            
-            static void Deserialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
-            {
-                std::ifstream input (filename);
-                if ( input.is_open() ) {
-                    std::string line;
-                    getline ( input, line );
-                    int vecSize = std::stoi ( line );
-
-                    for ( int i = 0; i < vecSize; i++ ) {
-                        getline ( input, line);
-                        std::vector<std::string> splits = StringHelper::split(line, '\t');
-
-                        int onebasedstart, onebasedend, missedcleavages, numfixedMods;
-                        onebasedstart   = std::stoi(splits[0]);
-                        onebasedend     = std::stoi(splits[1]);
-                        missedcleavages = std::stoi(splits[2]);
-                        std::string description = splits[3];
-                        numfixedMods = std::stoi(splits[4]);                        
-                        CleavageSpecificity cvs = CleavageSpecificityExtension::ParseString(splits[5]);
-                        
-                        std::string fullsequence;
-                        getline ( input, fullsequence);
-                        std::string digestparamstring;
-                        getline ( input, digestparamstring);
-                        DigestionParams *dp = nullptr;
-                        if ( digestparamstring != "" ) {
-                            dp = DigestionParams::FromString(digestparamstring);
-                        }
-                        std::string accessionstring;
-                        getline ( input, accessionstring);
-                        
-                        std::unordered_map<std::string, Modification*> umsM;
-                        auto newpep = new PeptideWithSetModifications(fullsequence, 
-                                                                      umsM,                
-                                                                      numfixedMods,
-                                                                      dp,                  
-                                                                      nullptr,             // Protein *will be set in GetProteinAfterDeserialization 
-                                                                      onebasedstart,
-                                                                      onebasedend,
-                                                                      missedcleavages,
-                                                                      cvs,
-                                                                      description );
-                        if ( accessionstring != "" ) {
-                            newpep->setProteinAccession ( accessionstring );
-                        }
-                        pVec.push_back (newpep );
-                    }
-                }
-                else {
-                    std::cout << "PeptideWithSetModifications::Deserialize : Could not open file " << filename << std::endl;
-                }
-            }
+            static void Unpack (char *buf, size_t *buf_len, PeptideWithSetModifications** pep );
+            static void Deserialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec );
+            static void Deserialize (std::string &filename, PeptideWithSetModifications* &pVec );
 
         };
     }

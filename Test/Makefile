@@ -22,6 +22,7 @@ CEXECS = TestChemicalFormula	   	     \
 	TestPtmListLoader                    \
 	TestModFits                          \
 	TestChromatogram                     \
+	TestSerialization                    \
 	TestMgf                              \
 	TestMzML
 
@@ -88,6 +89,9 @@ TestPtmListLoader: TestPtmListLoader.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 TestPeptideWithSetMods: TestPeptideWithSetMods.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+TestSerialization: TestSerialization.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 TestModFits: TestModFits.o

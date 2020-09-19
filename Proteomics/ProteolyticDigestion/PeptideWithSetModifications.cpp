@@ -10,6 +10,8 @@
 #include <algorithm>
 #include "stringhelper.h"
 
+#include <string.h>
+
 using namespace Chemistry;
 using namespace MassSpectrometry;
 using namespace Proteomics::AminoAcidPolymer;
@@ -723,5 +725,195 @@ namespace Proteomics
                 setPeptideDescription(std::to_string(static_cast<int>(getCleavageSpecificityForFdrCategory())) );
             }
         }
+
+
+        // buf has to be preallocated, and size indicates the input size of the buffer.
+        // both values might change however if the buffer is too small, in which case we
+        // return error -1 and size will point to the required size;
+        // The code does not realloc the buffer itself, since it might
+        // be part of a larger buffer used to Serialize a vector of pep's
+        int PeptideWithSetModifications::Pack (char *buf, size_t *size, PeptideWithSetModifications *pep )
+        {
+            std::stringstream output;
+            
+            output << pep->getOneBasedStartResidueInProtein() << "\t" <<
+                pep->getOneBasedEndResidueInProtein() << "\t" << 
+                pep->getMissedCleavages() << "\t" <<
+                pep->getPeptideDescription() << "\t"  <<
+                pep->NumFixedMods << "\t" <<
+                CleavageSpecificityExtension::GetCleavageSpecificityAsString( pep->getCleavageSpecificityForFdrCategory())
+                   << std::endl;
+            
+            output << pep->getFullSequence() << std::endl;
+            output << pep->getDigestionParamString() << std::endl;
+            std::string accession = pep->getProteinAccession();
+            if ( accession != "" )  {
+                output << accession << std::endl;                                       
+            }
+            else  {
+                output << "-" << std::endl;
+            }
+            
+            std::string sstring = output.str();
+            size_t slen = sstring.length();
+            if ( slen > *size )  {
+                *size = slen;
+                return -1;
+            }
+            else {
+                *size = slen;
+                memcpy (buf, sstring.c_str(), slen );
+            }
+            return slen;
+        }
+
+        void PeptideWithSetModifications::Serialize (std::string &filename, PeptideWithSetModifications* &pep )
+        {
+            std::vector<PeptideWithSetModifications *> pVec;
+            pVec.push_back (pep);
+            PeptideWithSetModifications::Serialize (filename, pVec );
+        }
+        
+        void PeptideWithSetModifications::Serialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
+        {
+            char blank = ' ';
+            FILE *fp = fopen (filename.c_str(), "w" );
+            if ( fp != NULL  ) {
+                fprintf (fp, "%ld\n",  pVec.size());
+                
+                char *buf;
+                size_t orig_size = PepWithSetModsDefaultSize;
+                size_t size;
+                buf = (char*) malloc ( PepWithSetModsDefaultSize );
+                if ( NULL == buf ) {
+                    std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
+                    return;
+                }
+                for ( auto pep : pVec ) {
+                    size = orig_size;
+                    memset( buf, blank, orig_size);
+                    int ret = PeptideWithSetModifications::Pack( buf, &size, pep );
+                    if ( ret == -1 ) {
+                        // buffer was not large enough
+                        free ( buf ) ;
+                        buf = (char*) calloc (1,  size );
+                        orig_size = size;
+                        if ( NULL == buf ) {
+                            std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
+                            return;
+                        }
+                        ret = PeptideWithSetModifications::Pack( buf, &size, pep );
+                        if ( ret == -1 ) {
+                            // unknown error. we already realloced the buffer to the requested size;
+                            std::cout << "PeptideWithSetModifications::Serialize : Unkown error when Packing peptide\n";
+                            return;
+                        }
+                    }
+                    fwrite (buf, size, 1, fp );
+                }
+                fclose(fp);
+                free (buf);
+            }
+            else {
+                std::cout <<"PeptideWithSetModifications::Serialize : Could not create file " << filename << std::endl;
+            }
+        }
+
+        void PeptideWithSetModifications::Unpack (char *buf, size_t *buf_len, PeptideWithSetModifications** pep )
+        {
+            std::stringstream input;
+            input << buf;
+            
+            // Processing line 1
+            std::string line;
+            getline ( input, line);
+            std::vector<std::string> splits = StringHelper::split(line, '\t');
+            
+            int onebasedstart, onebasedend, missedcleavages, numfixedMods;
+            onebasedstart   = std::stoi(splits[0]);
+            onebasedend     = std::stoi(splits[1]);
+            missedcleavages = std::stoi(splits[2]);
+            std::string description = splits[3];
+            numfixedMods = std::stoi(splits[4]);                        
+            CleavageSpecificity cvs = CleavageSpecificityExtension::ParseString(splits[5]);
+            
+            // Processing line 2                
+            std::string fullsequence;
+            getline ( input, fullsequence);
+            
+            // Processing line 3
+            std::string digestparamstring;
+            getline ( input, digestparamstring);
+            DigestionParams *dp = nullptr;
+            if ( digestparamstring != "" ) {
+                dp = DigestionParams::FromString(digestparamstring);
+            }
+            
+            // Processing line 4
+            std::string accessionstring;
+            getline ( input, accessionstring);
+            
+            std::unordered_map<std::string, Modification*> umsM;
+            auto newpep = new PeptideWithSetModifications(fullsequence, 
+                                                          umsM,                
+                                                          numfixedMods,
+                                                          dp,                  
+                                                          nullptr,  // Protein set in GetProteinAfterDeserialization 
+                                                          onebasedstart,
+                                                          onebasedend,
+                                                          missedcleavages,
+                                                          cvs,
+                                                          description );
+            if ( accessionstring != "-" ) {
+                newpep->setProteinAccession ( accessionstring );
+            }
+            
+            *pep = newpep;
+            return ;
+        }
+
+        void PeptideWithSetModifications::Deserialize (std::string &filename, PeptideWithSetModifications* &pep )
+        {
+            std::vector<PeptideWithSetModifications *> pVec;
+            PeptideWithSetModifications::Deserialize(filename, pVec );
+            if ( pVec.size() > 0 ) {
+                pep = pVec[0];
+            }
+        }
+        
+        void PeptideWithSetModifications::Deserialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
+        {
+            FILE *fp = fopen (filename.c_str(), "r");
+            if ( fp != NULL ) {
+                size_t buf_len=4096;
+                char *buf = (char*) malloc ( buf_len);
+                fgets(buf, buf_len, fp );
+                int vecSize = atoi ( buf );
+                
+                for ( int i = 0; i < vecSize; i++ ) {
+                    PeptideWithSetModifications *newpep;
+                    size_t buf_pos=0; 
+                    // Read 4 lines, and combine them to a char buffer
+                    fgets (buf, buf_len, fp);
+                    buf_pos += strlen (buf);
+                    
+                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
+                    buf_pos += strlen (buf+buf_pos);
+                    
+                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
+                    buf_pos += strlen (buf+buf_pos);
+                    
+                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
+                    buf_pos += strlen (buf+buf_pos);
+                    
+                    PeptideWithSetModifications::Unpack (buf, &buf_pos, &newpep);
+                    pVec.push_back (newpep );
+                }
+                fclose(fp);
+            }
+            else {
+                std::cout << "PeptideWithSetModifications::Deserialize : Could not open file " << filename << std::endl;
+            }
+        }       
     }
 }
