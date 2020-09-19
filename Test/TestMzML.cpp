@@ -20,7 +20,7 @@
 #include "../Chemistry/IsotopicDistribution.h"
 
 #include <experimental/filesystem>
-#include "Assert.h"
+#include "MzLibAssert.h"
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>

@@ -9,16 +9,16 @@
 int main ( int argc, char **argv )
 {
     
-    std::cout << "PeriodicTableLoader" << std::endl;    
+    std::cout << "0. PeriodicTableLoader" << std::endl;    
     const std::string elfile="elements.dat";
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
     
-    std::cout << "AddIsotopeWithExistingMassNumber" << std::endl;    
+    std::cout << "1. AddIsotopeWithExistingMassNumber" << std::endl;    
     Test::ElementsAndIsotopesTest::AddIsotopeWithExistingMassNumber();
     
     
-    std::cout << "AddExistingElementsTest" << std::endl;    
+    std::cout << "2. AddExistingElementsTest" << std::endl;    
     Test::ElementsAndIsotopesTest::AddingExistingElementsTest();
     
     return 0;
