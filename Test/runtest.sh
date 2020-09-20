@@ -79,10 +79,16 @@ echo "  TestProteinDigestion"
 make -s TestProteinDigestion
 ./TestProteinDigestion
 
+
 echo " "
 echo "  TestMgf"
 make -s TestMgf
 ./TestMgf
+
+echo " "
+echo "  TestSerialization"
+make -s TestSerialization
+./TestSerialization
 
 cd DatabaseTests ; ./runtest.sh ; cd ..
 cd TestFlashLFQ ; ./runtest.sh ; cd ..

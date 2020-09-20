@@ -4,8 +4,6 @@
 #include <any>
 #include "stringbuilder.h"
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { namespace Fragmentation { class Product; } }
 #include "Product.h"
 
 using namespace Chemistry;
@@ -23,7 +21,8 @@ namespace Proteomics
             const int Charge;
 
             /// <summary>
-            /// Constructs a new MatchedFragmentIon given information about a theoretical and an experimental fragment mass spectral peak
+            /// Constructs a new MatchedFragmentIon given information about a theoretical and an experimental
+            /// fragment mass spectral peak
             /// </summary>
             virtual ~MatchedFragmentIon()
             {
@@ -46,6 +45,10 @@ namespace Proteomics
             bool Equals(MatchedFragmentIon* obj);
 
             int GetHashCode();
+
+            /// Required for Communication Operations in HPCMetaMorpheus
+            static int Pack ( char *buf, size_t *buf_size, MatchedFragmentIon *MaF);
+            static void Unpack ( char *buf, size_t buf_size, MatchedFragmentIon **newMaF );
         };
     }
 }

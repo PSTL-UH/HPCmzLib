@@ -80,5 +80,44 @@ namespace Proteomics
 
             return s;
         }
+
+        static ProductType ProductTypeFromString(std::string s)
+        {
+            ProductType t;
+
+            if ( s == "a" )
+                t = ProductType::a;
+            else if ( s == "aStar" )
+                t = ProductType::aStar;
+            else if ( s == "aDegree" )
+                t = ProductType::aDegree;
+            else if ( s == "b" )
+                t = ProductType::b;
+            else if ( s == "bStar" )
+                t = ProductType::bStar;
+            else if ( s == "bDegree" )
+                t = ProductType::bDegree;
+            else if ( s == "c" )
+                t = ProductType::c;
+            else if ( s == "x" )
+                t = ProductType::x;
+            else if ( s == "y" )
+                t = ProductType::y;
+            else if ( s == "yStar" )
+                t = ProductType::yStar;
+            else if ( s == "yDegree" )
+                t = ProductType::yDegree;
+            else if ( s == "zPlusOne" )
+                t = ProductType::zPlusOne;
+            else if ( s == "zDot" )
+                t = ProductType::zDot;
+            else if ( s == "M" )
+                t = ProductType::M;
+            else if ( s == "D" )
+                t = ProductType::D;
+
+            return t;
+        }
+
     }
 }
