@@ -119,3 +119,4 @@ clean:
 	rm -f TestPeptides TestAminoAcids TestModifications TestFragments TestMetaMorpheus
 	rm -f TestProteinDigestion TestProteinProperties TestSpectra TestMzML TestMgf
 	rm -f TestPeptideWithSetMods TestPtmListLoader TestModFits TestChromatogram
+	rm -f TestSerialization
