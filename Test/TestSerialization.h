@@ -17,8 +17,17 @@ namespace Test
     class TestSerialization final
     {
     public:
-        static void SerializePeptideWithSetModifications();
+        static void SerializePeptideWithSetModifications1();
+        
+        static void SerializePeptideWithSetModifications2();
 
+#ifdef USE_MPI
+        static void SerializePeptideWithSetModifications_MPI();
+#endif
+        
         static void SerializeMatchedFragmentIon();
+#ifdef USE_MPI
+        static void SerializeMatchedFragmentIon_MPI();
+#endif
     };
 }

@@ -732,7 +732,26 @@ namespace Proteomics
         // return error -1 and size will point to the required size;
         // The code does not realloc the buffer itself, since it might
         // be part of a larger buffer used to Serialize a vector of pep's
-        int PeptideWithSetModifications::Pack (char *buf, size_t *size, PeptideWithSetModifications *pep )
+        int PeptideWithSetModifications::Pack (char *buf, size_t &buf_len,
+                                               const std::vector<PeptideWithSetModifications *> &pepVec )            
+        {
+            size_t pos = 0;
+            int ret;
+
+            for ( auto pep: pepVec ) {
+                size_t len = buf_len - pos;
+                ret = PeptideWithSetModifications::Pack(buf+pos, len, pep);
+                if ( ret == -1 ) {
+                    buf_len = pos + len;
+                    return ret;
+                }
+                pos += len;
+            }
+            buf_len = pos;
+            return pos;
+        }
+
+        int PeptideWithSetModifications::Pack (char *buf, size_t &size, PeptideWithSetModifications *pep )
         {
             std::stringstream output;
             
@@ -756,12 +775,12 @@ namespace Proteomics
             
             std::string sstring = output.str();
             size_t slen = sstring.length();
-            if ( slen > *size )  {
-                *size = slen;
+            if ( slen > size )  {
+                size = slen;
                 return -1;
             }
             else {
-                *size = slen;
+                size = slen;
                 memcpy (buf, sstring.c_str(), slen );
             }
             return slen;
@@ -774,7 +793,8 @@ namespace Proteomics
             PeptideWithSetModifications::Serialize (filename, pVec );
         }
         
-        void PeptideWithSetModifications::Serialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
+        void PeptideWithSetModifications::Serialize (std::string &filename,
+                                                     std::vector<PeptideWithSetModifications *> &pVec )
         {
             char blank = ' ';
             FILE *fp = fopen (filename.c_str(), "w" );
@@ -792,7 +812,7 @@ namespace Proteomics
                 for ( auto pep : pVec ) {
                     size = orig_size;
                     memset( buf, blank, orig_size);
-                    int ret = PeptideWithSetModifications::Pack( buf, &size, pep );
+                    int ret = PeptideWithSetModifications::Pack( buf, size, pep );
                     if ( ret == -1 ) {
                         // buffer was not large enough
                         free ( buf ) ;
@@ -802,7 +822,7 @@ namespace Proteomics
                             std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
                             return;
                         }
-                        ret = PeptideWithSetModifications::Pack( buf, &size, pep );
+                        ret = PeptideWithSetModifications::Pack( buf, size, pep );
                         if ( ret == -1 ) {
                             // unknown error. we already realloced the buffer to the requested size;
                             std::cout << "PeptideWithSetModifications::Serialize : Unkown error when Packing peptide\n";
@@ -819,14 +839,51 @@ namespace Proteomics
             }
         }
 
-        void PeptideWithSetModifications::Unpack (char *buf, size_t *buf_len, PeptideWithSetModifications** pep )
+        void PeptideWithSetModifications::Unpack (char *buf, size_t buf_len, size_t &len,
+                                                  std::vector<PeptideWithSetModifications*> &pepVec,
+                                                  int count )
         {
-            std::stringstream input;
-            input << buf;
+            std::string input_buf (buf);
+            std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
+
+            size_t total_len=0;
+            int counter=0;
+            for (auto  i=0; i < lines.size(); i+=4 ) {                
+                size_t tmp;
+                PeptideWithSetModifications *pep;
+                PeptideWithSetModifications::Unpack(lines, i, tmp, &pep);
+                total_len += tmp;
+                pepVec.push_back(pep);
+                counter ++;
+                if ( counter == count ) break;
+            }
+            len = total_len;
+        }
+
+        
+        void PeptideWithSetModifications::Unpack (char *buf, size_t buf_len, size_t &len,
+                                                  PeptideWithSetModifications** pep )
+        {
+            std::string input(buf);
+            std::vector<std::string> lines = StringHelper::split(input, '\n');
+            if ( lines.size() < 4 ) {
+                std::cout << "PeptideWithSetModifications::Unpack : input does not contains enough information to " <<
+                    "reconstruct the PeptideWithSetModifications. " << std::endl;
+                return;
+            }
+            PeptideWithSetModifications::Unpack ( lines, 0, len, pep );
+        }
+
+        void PeptideWithSetModifications::Unpack (std::vector<std::string> &input, int index, size_t &len,
+                                                  PeptideWithSetModifications** pep )
+        {
+            size_t total_len=4;
             
             // Processing line 1
             std::string line;
-            getline ( input, line);
+            line = input[index];
+            total_len += line.length();
+            
             std::vector<std::string> splits = StringHelper::split(line, '\t');
             
             int onebasedstart, onebasedend, missedcleavages, numfixedMods;
@@ -838,20 +895,31 @@ namespace Proteomics
             CleavageSpecificity cvs = CleavageSpecificityExtension::ParseString(splits[5]);
             
             // Processing line 2                
-            std::string fullsequence;
-            getline ( input, fullsequence);
+            std::string fullsequence = input[index+1];
+            total_len += fullsequence.length();
             
             // Processing line 3
-            std::string digestparamstring;
-            getline ( input, digestparamstring);
+            std::string digestparamstring = input[index+2];
+            total_len += digestparamstring.length();
+
             DigestionParams *dp = nullptr;
             if ( digestparamstring != "" ) {
                 dp = DigestionParams::FromString(digestparamstring);
             }
             
             // Processing line 4
-            std::string accessionstring;
-            getline ( input, accessionstring);
+            std::string accessionstring = input[index+3];
+
+            // Last elements might or might not contains a \n depending
+            // on whether its coming directly from the app or from
+            // the vector version of the Unpack operation. Typically,
+            // the last element in the vector passed to this function can be
+            // off otherwise.
+            size_t foundpos = input[index+3].find("\n");
+            if ( foundpos != std::string::npos )
+                total_len += foundpos;
+            else
+                total_len += accessionstring.length();
             
             std::unordered_map<std::string, Modification*> umsM;
             auto newpep = new PeptideWithSetModifications(fullsequence, 
@@ -869,6 +937,8 @@ namespace Proteomics
             }
             
             *pep = newpep;
+            len = total_len;
+
             return ;
         }
 
@@ -905,8 +975,9 @@ namespace Proteomics
                     
                     fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
                     buf_pos += strlen (buf+buf_pos);
-                    
-                    PeptideWithSetModifications::Unpack (buf, &buf_pos, &newpep);
+
+                    size_t tmp;
+                    PeptideWithSetModifications::Unpack (buf, buf_pos, tmp, &newpep);
                     pVec.push_back (newpep );
                 }
                 fclose(fp);

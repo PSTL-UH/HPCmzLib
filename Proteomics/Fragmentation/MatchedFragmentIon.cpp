@@ -77,7 +77,26 @@ namespace Proteomics
             return StringHelper::GetHashCode(std::to_string(Mz));
         }
 
-        int MatchedFragmentIon::Pack(char *buf, size_t *buf_len, MatchedFragmentIon *MaF)
+        int MatchedFragmentIon::Pack(char *buf, size_t &buf_len,
+                                     const std::vector<MatchedFragmentIon *> &MaFVec)
+        {
+            size_t pos = 0;
+            int ret;
+            
+            for ( auto MaF: MaFVec ) {
+                size_t len = buf_len - pos;
+                ret = MatchedFragmentIon::Pack(buf+pos, len, MaF);
+                if ( ret == -1 ) {
+                    buf_len = pos + len;
+                    return ret;
+                }
+                pos += len;
+            }
+            buf_len = pos;
+            return pos;
+        }
+        
+        int MatchedFragmentIon::Pack(char *buf, size_t &buf_len, MatchedFragmentIon *MaF)
         {
             std::stringstream output;
 
@@ -95,21 +114,47 @@ namespace Proteomics
                             
             std::string sstring = output.str();
             size_t slen = sstring.length();
-            if ( slen > *buf_len )  {
-                *buf_len = slen;
+            if ( slen > buf_len )  {
+                buf_len = slen;
                 return -1;
             }
             else {
-                *buf_len = slen;
+                buf_len = slen;
                 memcpy (buf, sstring.c_str(), slen );
             }
             return (int)slen;            
         }
 
-        void MatchedFragmentIon::Unpack(char *buf, size_t buf_len, MatchedFragmentIon **newMaF)
+
+        void MatchedFragmentIon::Unpack(char *buf, size_t buf_len, size_t &len,
+                                        std::vector<MatchedFragmentIon *> &newMaFVec,
+                                        int count )
+        {
+            std::string input_buf (buf);
+            std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
+            size_t total_len=0;
+            int counter=0;
+            for ( auto line : lines ) {
+                size_t tmp;
+                MatchedFragmentIon *newMaF;
+                MatchedFragmentIon::Unpack(line, tmp, &newMaF);
+                total_len += tmp;
+                newMaFVec.push_back(newMaF);
+                counter ++;
+                if ( counter == count ) break;
+            }
+            len = total_len;
+        }
+        
+        void MatchedFragmentIon::Unpack(char *buf, size_t buf_len, size_t &len, MatchedFragmentIon **newMaF)
         {
             std::string input (buf);
-
+            MatchedFragmentIon::Unpack(input, len, newMaF);
+        }
+        
+        void MatchedFragmentIon::Unpack(std::string input, size_t &len, MatchedFragmentIon **newMaF)
+        {
+            size_t total_len = 9;
             std::vector<std::string> splits = StringHelper::split(input, '\t');
             double mz, intensity;
             int charge;
@@ -133,6 +178,20 @@ namespace Proteomics
             
             MatchedFragmentIon *newM = new MatchedFragmentIon (product, mz, intensity, charge);
             *newMaF = newM;
+            for ( int i = 0; i < 8; i++ ) {
+                total_len += splits[i].length();
+            }
+            // Last elements might or might not contains a \n depending
+            // on whether its coming directly from the app or from
+            // the vector version of the Unpack operation. Typically,
+            // the last element in the vector passed to this function can be
+            // off otherwise.
+            size_t foundpos = splits[8].find("\n");
+            if ( foundpos !=std::string::npos )
+                total_len  += foundpos;
+            else
+                total_len += splits[8].length();
+            len = total_len;
         }
 
     }
