@@ -8,20 +8,20 @@ on:
 
 jobs:
   build:
-
+    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && !contains( github.event.head_commit.message, 'Merge pull request')) }}
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: configure
-      run: |
-         sudo apt-get update
-         sudo apt-get install -y --fix-missing g++-9 xsdcxx libxerces-c-dev
-         g++ --version
-         g++-9 --version
-         ./configure CXX=g++-9
-    - name: make
-      run: make -j4
-    - name: make check
-      run: make check
+       - uses: actions/checkout@v2
+       - name: configure
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y --fix-missing g++-9 xsdcxx libxerces-c-dev
+            g++ --version
+            g++-9 --version
+            ./configure CXX=g++-9
+       - name: make
+          run: make -j4
+       - name: make check
+          run: make check
 
