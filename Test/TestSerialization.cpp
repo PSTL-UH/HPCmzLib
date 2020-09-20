@@ -15,6 +15,7 @@ using namespace Proteomics::Fragmentation;
 using namespace Proteomics::ProteolyticDigestion;
 
 #ifdef USE_MPI
+#include <unistd.h>
 #include "mpi.h"
 #endif
 
@@ -47,6 +48,8 @@ int main ( int argc, char **argv) {
             }
             MPI_Abort ( MPI_COMM_WORLD, 1);
         }
+
+        if ( argc > 1 ) sleep ( 20);
 #endif
 
         print(i, ". PeriodicTableLoader");
@@ -62,8 +65,8 @@ int main ( int argc, char **argv) {
 	Test::TestSerialization::SerializePeptideWithSetModifications2();
 
 #ifdef USE_MPI
-	//print(++i, ". SerializePeptideWithSetModifications_MPI");
-	//Test::TestSerialization::SerializePeptideWithSetModifications_MPI();
+	print(++i, ". SerializePeptideWithSetModifications_MPI");
+	Test::TestSerialization::SerializePeptideWithSetModifications_MPI();
 #endif
         
 	print(++i, ". SerializeMatchedFragmentIon");
@@ -181,6 +184,96 @@ namespace Test
         delete fullyDigestParams;                
     }    
 
+#ifdef USE_MPI
+    void TestSerialization::SerializePeptideWithSetModifications_MPI()
+    {
+        int rank;
+        MPI_Comm_rank ( MPI_COMM_WORLD, &rank );
+
+        std::vector<std::vector<Modification*>> initTempsForModificationPtr;
+        unsigned short counterFor_initTempsForModificationPtr = 0;
+        
+        Protein *fiveCleavages = new Protein("MAAKCCKDDKEEKFFKGG", "fiveCleavages"); //protein with 5 K's
+        std::unordered_map<std::string, Modification*> umsM1;
+        std::unordered_map<std::string, Protein*> umsP;        
+        umsP[fiveCleavages->getAccession()] = fiveCleavages;
+
+        std::vector<std::tuple<std::string, FragmentationTerminus>> trypticSequencesInducingClevage =
+            {std::tuple<std::string, FragmentationTerminus>("K",FragmentationTerminus::C)};
+        std::vector<std::tuple<std::string, FragmentationTerminus>> trypticSequencesPreventingClevage;
+        
+        //make two identical proteases, but one is fully specific and one is semi specific
+        auto motifList = DigestionMotif::ParseDigestionMotifsFromString("K|");
+        Protease *trypsinForTestNonAndSemiSpecificDigests = new Protease("trypsinForTestNonAndSemiSpecificDigests",
+                                                                         CleavageSpecificity::Full, "asdf", "asdf", motifList);
+        Protease *semiTrypsinForTestNonAndSemiSpecificDigests = new Protease("semitrypsinForTestNonAndSemiSpecificDigests",
+                                                                             CleavageSpecificity::Semi, "asdf", "asdf", motifList);
+        
+        //add these made up proteases to the dictionary
+        ProteaseDictionary::insert(trypsinForTestNonAndSemiSpecificDigests->getName(),
+                                   trypsinForTestNonAndSemiSpecificDigests);
+        ProteaseDictionary::insert(semiTrypsinForTestNonAndSemiSpecificDigests->getName(),
+                                   semiTrypsinForTestNonAndSemiSpecificDigests);
+        
+        //Digest with the full
+        DigestionParams *fullyDigestParams = new DigestionParams(trypsinForTestNonAndSemiSpecificDigests->getName(), 3, 2);
+        initTempsForModificationPtr.push_back(std::vector<Modification*>());
+        initTempsForModificationPtr.push_back(std::vector<Modification*>());
+        std::vector<PeptideWithSetModifications*> fiveCleavageProductsTrypsin = fiveCleavages->Digest(
+            fullyDigestParams,
+            initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 0],
+            initTempsForModificationPtr[counterFor_initTempsForModificationPtr + 1]);
+
+        size_t buf_len = 256 * fiveCleavageProductsTrypsin.size();
+        char *buf = (char *) malloc ( buf_len);
+
+        int ret = PeptideWithSetModifications::Pack (buf, buf_len, fiveCleavageProductsTrypsin);
+        if ( rank == 0 ) {
+            MPI_Send ( buf, buf_len, MPI_BYTE, 1, 10, MPI_COMM_WORLD);
+        }
+        else if ( rank == 1 ) {
+            MPI_Status status;
+            buf_len = 256 * fiveCleavageProductsTrypsin.size();
+            char *recv_buf = (char *) malloc ( buf_len);
+            
+            MPI_Recv (recv_buf, buf_len, MPI_BYTE, 0, 10, MPI_COMM_WORLD, &status );
+            int actual_len;
+            MPI_Get_elements ( &status, MPI_BYTE, &actual_len);
+            
+            std::vector<PeptideWithSetModifications *> npep2;
+            size_t pos;
+            PeptideWithSetModifications::Unpack (recv_buf, actual_len, pos, npep2, 2 );
+
+            std::vector<PeptideWithSetModifications *> npep3;
+            size_t pos2;
+            PeptideWithSetModifications::Unpack (recv_buf+pos, actual_len-pos, pos2, npep3);
+            
+            npep2.insert(npep2.end(), npep3.begin(), npep3.end() );
+            Assert::AreEqual (fiveCleavageProductsTrypsin.size(), npep2.size() );
+            for ( auto n : npep2 ) {
+                n->SetNonSerializedPeptideInfo( umsM1, umsP);
+            }
+            
+            for ( auto i = 0; i < npep2.size(); i++ ) {
+                Assert::IsTrue(fiveCleavageProductsTrypsin[i]->getFullSequence() == npep2[i]->getFullSequence());
+                Assert::IsTrue(fiveCleavageProductsTrypsin[i]->Equals(npep2[i]));
+            }
+
+            for ( auto pep : npep2 ){
+                delete pep;
+            }                
+        }
+
+        for ( auto pep: fiveCleavageProductsTrypsin ) {
+            delete pep;
+        }
+        
+        delete fiveCleavages;
+        delete fullyDigestParams;                
+        MPI_Barrier ( MPI_COMM_WORLD);
+    }    
+#endif    
+    
     void TestSerialization::SerializeMatchedFragmentIon()
     {
         auto  tempVar = new NeutralTerminusFragment (FragmentationTerminus::N, 1, 1, 1);
@@ -265,6 +358,7 @@ namespace Test
             delete m;
         }
         delete P;
+        MPI_Barrier ( MPI_COMM_WORLD);
     }
 #endif    
 }

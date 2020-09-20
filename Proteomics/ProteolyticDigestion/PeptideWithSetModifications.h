@@ -187,11 +187,64 @@ namespace Proteomics
 
         public:
 
-            static int Pack (char *buf, size_t *size, PeptideWithSetModifications *pep );
+            /// <summary>
+            /// Pack a PeptideWithSetModifications into a character buffer.
+            /// Required for Communication Operations in HPCMetaMorpheus
+            ///
+            /// Arguments:
+            /// buf :     INOUT buffer used for packing
+            /// buf_size: IN size of the allocated buffer provided by the upper layer
+            ///           OUT size of required buffer if not large enough (return value -1)
+            ///               or number of bytes used for packgin (return value > 0)
+            /// pep(Vec): IN (vector of) PetideWithSetModifications to pack
+            ///
+            /// Return value:
+            ///   -1 : input buffer was not large enough. buf_size will contain the required number
+            ///        of bytes in this case
+            ///   >0 : packing successful, number of bytes used up.
+            /// </summary>
+            static int Pack (char *buf, size_t &size, PeptideWithSetModifications *pep );
+            static int Pack (char *buf, size_t &size,
+                             const std::vector<PeptideWithSetModifications *> &pVec );
+
+            /// <summary>
+            /// similar functionality to Pack, but write the result to file
+            /// instead of returning a char buffer (for communication)
+            /// </summary>
             static void Serialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec );
             static void Serialize (std::string &filename, PeptideWithSetModifications* &pVec );
+            
+            /// <summary>
+            /// Functionality used to reconstruct a PeptideWithSetModifications based on a
+            /// packed buffer.
+            ///
+            /// Arguments
+            /// ---------
+            /// buf:         IN input character buffer
+            /// buf_len:     IN size of input buffer
+            /// len:         OUT number of bytes used for unpacking 'count' elements
+            /// newpep(Vec): OUT (vector of) new MatchedFragmentIon(s) .
+            /// count:       IN how many elements to unpack.
+            ///              default : -1 (until end of buffer is reached)
+            /// </summary>
+            static void Unpack (char *buf, size_t buf_len, size_t &len, PeptideWithSetModifications** newpep );
+            static void Unpack (char *buf, size_t buf_len, size_t &len,
+                                std::vector<PeptideWithSetModifications *> &newpVec,
+                                int count = -1);
 
-            static void Unpack (char *buf, size_t *buf_len, PeptideWithSetModifications** pep );
+            /// <sumary>
+            /// this method is meant to be used internally by the previous two methods,
+            /// avoiding another (expensive) memcpy of the strings by passing
+            /// in a starting index from where to use the stringvec
+            /// </summary>
+            static void Unpack (std::vector<std::string> &strVec, int index, size_t &len, PeptideWithSetModifications** newpep );
+
+            /// <summary>
+            /// Functionality used to reconstruct a PeptideWithSetModifications based on a
+            /// packed buffer in a file.
+            /// Arguments same as above, just no need to control number of elements read or determine
+            /// end of a buffer.
+            /// </summary>
             static void Deserialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec );
             static void Deserialize (std::string &filename, PeptideWithSetModifications* &pVec );
 
