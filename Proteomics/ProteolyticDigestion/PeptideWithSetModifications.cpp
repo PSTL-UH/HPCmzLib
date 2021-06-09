@@ -63,11 +63,14 @@ namespace Proteomics
                                oneBasedEndResidueInProtein, missedCleavages,
                                cleavageSpecificity, peptideDescription),
             NumFixedMods(numFixedMods),
-            DigestionParamString(digestionParams->ToString()),
             ProteinAccession(protein->getAccession())
         {
             _allModsOneIsNterminus = allModsOneIsNterminus;
-            _digestionParams = digestionParams;
+            if (digestionParams != nullptr)
+            {
+                DigestionParamString = digestionParams->ToString();
+                _digestionParams =  DigestionParams::FromString(DigestionParamString);
+            }
             DetermineFullSequence();
             UpdateCleavageSpecificity();
         }
@@ -93,7 +96,6 @@ namespace Proteomics
 
             setFullSequence(sequence);
             GetModsAfterDeserialization(allKnownMods, _baseSequence);
-            _digestionParams = digestionParams;
 
             if (p != nullptr)
             {
@@ -102,6 +104,7 @@ namespace Proteomics
             if (digestionParams != nullptr)
             {
                 DigestionParamString = digestionParams->ToString();
+                _digestionParams =  DigestionParams::FromString(DigestionParamString);
             }
         }
 

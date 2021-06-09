@@ -15,7 +15,7 @@ namespace Proteomics
         class MatchedFragmentIon
         {
         public:
-            Product *const NeutralTheoreticalProduct;
+            Product * NeutralTheoreticalProduct=nullptr;
             const double Mz;
             const double Intensity;
             const int Charge;
@@ -26,7 +26,8 @@ namespace Proteomics
             /// </summary>
             virtual ~MatchedFragmentIon()
             {
-                // delete NeutralTheoreticalProduct;
+                if ( NeutralTheoreticalProduct != nullptr ) 
+                    delete NeutralTheoreticalProduct;
             }
 
             MatchedFragmentIon(Product *neutralTheoreticalProduct, double experMz, double experIntensity, int charge);

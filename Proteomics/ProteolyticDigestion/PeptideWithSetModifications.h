@@ -56,7 +56,8 @@ namespace Proteomics
             public:
                 virtual ~PeptideWithSetModifications()
                 {
-                    //delete _digestionParams;
+                    if ( _digestionParams != nullptr ) 
+                        delete _digestionParams;
                 }
 
                 std::string getFullSequence() const;
@@ -75,7 +76,7 @@ namespace Proteomics
             std::optional<bool> _hasChemicalFormulas;
             std::string _sequenceWithChemicalFormulas;
             std::optional<double> _monoisotopicMass;
-            Proteomics::ProteolyticDigestion::DigestionParams *_digestionParams;
+            Proteomics::ProteolyticDigestion::DigestionParams *_digestionParams=nullptr;
             static const double WaterMonoisotopicMass;
             std::string DigestionParamString; // used to get digestion param object after deserialization
             std::string ProteinAccession; // used to get protein object after deserialization
