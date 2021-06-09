@@ -11,8 +11,9 @@ namespace Proteomics
 
         MatchedFragmentIon::MatchedFragmentIon(Product *neutralTheoreticalProduct, double experMz,
                                                double experIntensity, int charge) :
-            NeutralTheoreticalProduct(neutralTheoreticalProduct), Mz(experMz), Intensity(experIntensity), Charge(charge)
+            Mz(experMz), Intensity(experIntensity), Charge(charge)
         {
+            NeutralTheoreticalProduct = new Product (neutralTheoreticalProduct->productType, neutralTheoreticalProduct->TerminusFragment, neutralTheoreticalProduct->NeutralLoss);
         }
 
         double MatchedFragmentIon::getMassErrorDa() const

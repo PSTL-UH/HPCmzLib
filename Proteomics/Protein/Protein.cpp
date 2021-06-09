@@ -280,7 +280,6 @@ namespace Proteomics
         ProteinDigestion *digestion = new ProteinDigestion(digestionParams, allKnownFixedModifications,
                                                            variableModifications);
 
-        //delete digestion;
         return digestionParams->getSearchModeType() == CleavageSpecificity::Semi ? digestion->SpeedySemiSpecificDigestion(this) : digestion->Digestion(this);
     }
 

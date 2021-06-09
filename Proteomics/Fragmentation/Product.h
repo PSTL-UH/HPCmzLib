@@ -16,7 +16,7 @@ namespace Proteomics
         public:
             const double NeutralMass;
             const ProductType productType;
-            NeutralTerminusFragment *const TerminusFragment;
+            NeutralTerminusFragment *TerminusFragment=nullptr;
             const double NeutralLoss;
 
             /// <summary>
@@ -29,7 +29,8 @@ namespace Proteomics
             /// </summary>
             virtual ~Product()
             {
-                delete TerminusFragment;
+                if ( TerminusFragment != nullptr ) 
+                    delete TerminusFragment;
             }
 
             Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss);

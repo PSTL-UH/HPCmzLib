@@ -9,8 +9,10 @@ namespace Proteomics
     namespace Fragmentation
     {
 
-        Product::Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss) : NeutralMass(DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(terminusFragment->NeutralMass, productType) - neutralLoss), productType(productType), TerminusFragment(terminusFragment), NeutralLoss(neutralLoss)
+        Product::Product(ProductType productType, NeutralTerminusFragment *terminusFragment, double neutralLoss) : NeutralMass(DissociationTypeCollection::ProductTypeSpecificFragmentNeutralMass(terminusFragment->NeutralMass, productType) - neutralLoss), productType(productType),  NeutralLoss(neutralLoss)
         {
+            TerminusFragment = new NeutralTerminusFragment (terminusFragment->Terminus, terminusFragment->NeutralMass,
+                                                            terminusFragment->FragmentNumber, terminusFragment->AminoAcidPosition );
         }
 
         std::string Product::getAnnotation() const
