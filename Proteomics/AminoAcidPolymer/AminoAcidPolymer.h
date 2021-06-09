@@ -82,8 +82,12 @@ namespace Proteomics
             
         public:
             virtual ~AminoAcidPolymer() {
-                // delete _cTerminus;
-                //delete _nTerminus;
+                if ( _cTerminus != nullptr ) {
+                    delete _cTerminus;
+                }
+                if ( _nTerminus != nullptr ) {
+                    delete _nTerminus;
+                }
             }
             
         protected:

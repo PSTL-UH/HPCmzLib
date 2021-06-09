@@ -37,8 +37,20 @@ namespace Proteomics {
         setMonoisotopicMass(0);
         setLength(sequence.length());
         residues = std::vector<Residue*>(getLength());
-        setNTerminus(nTerm);
-        setCTerminus(cTerm);
+        if ( dynamic_cast<ChemicalFormulaTerminus*>(nTerm) != nullptr ) {
+            auto tmp = nTerm->getThisChemicalFormula()->getFormula();
+            setNTerminus(new ChemicalFormulaTerminus((ChemicalFormula::ParseFormula(tmp))));
+        }
+        else {
+            std::cout << "AminoAcidPolymer constructor: type of nTerm not handled correctl.\n";
+        }
+        if ( dynamic_cast<ChemicalFormulaTerminus*>(cTerm) != nullptr ) {
+            auto tmp = cTerm->getThisChemicalFormula()->getFormula();
+            setCTerminus(new ChemicalFormulaTerminus((ChemicalFormula::ParseFormula(tmp))));
+        }
+        else {
+            std::cout << "AminoAcidPolymer constructor: type of nTerm not handled correctl.\n";
+        }            
         ParseSequence(sequence);
     }
 
@@ -52,8 +64,22 @@ namespace Proteomics {
         bool isNterm = firstResidue == 0;
         bool isCterm = length + firstResidue == aminoAcidPolymer->getLength();
 
-        _nTerminus = isNterm ? aminoAcidPolymer->getNTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H"));
-        _cTerminus = isCterm ? aminoAcidPolymer->getCTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH"));
+        // _nTerminus = isNterm ? aminoAcidPolymer->getNTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H"));
+        if ( isNterm ) {
+            auto tmp = aminoAcidPolymer->getNTerminus()->getThisChemicalFormula()->getFormula();
+            _nTerminus = new ChemicalFormulaTerminus((ChemicalFormula::ParseFormula(tmp)));
+        }
+        else {
+            _nTerminus = new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("H"));
+        }
+        // _cTerminus = isCterm ? aminoAcidPolymer->getCTerminus() : new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH"));
+        if ( isCterm ) {
+            auto tmp = aminoAcidPolymer->getCTerminus()->getThisChemicalFormula()->getFormula();
+            _cTerminus = new ChemicalFormulaTerminus((ChemicalFormula::ParseFormula(tmp)));
+        }
+        else {
+            _cTerminus = new ChemicalFormulaTerminus(ChemicalFormula::ParseFormula("OH"));
+        }
 
         double monoMass = _nTerminus->getMonoisotopicMass() + _cTerminus->getMonoisotopicMass();
 

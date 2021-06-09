@@ -48,7 +48,7 @@ int main( int argc, char *argv[] )
     auto t4 = std::chrono::high_resolution_clock::now();
     std::cout << "Time taken to read toml:  " << std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count() << "\n" << std::endl;
 
-
+    
     //read mzml file
     std::cout << "Reading file " << argv[3] << std::endl;
     auto t5 = std::chrono::high_resolution_clock::now();
@@ -58,13 +58,14 @@ int main( int argc, char *argv[] )
 
 
     //write mzml file
+#ifdef LATER
     std::cout << "Writing file " << argv[4] << std::endl;
     auto t7 = std::chrono::high_resolution_clock::now();
     MzmlMethods::CreateAndWriteMyMzmlWithCalibratedSpectra(msData, argv[4], false);
     auto t8 = std::chrono::high_resolution_clock::now();
     std::cout << "Time taken to write mzml:  " << std::chrono::duration_cast<std::chrono::microseconds>( t8 - t7 ).count() << std::endl;
 
-
+#endif
     return 0;
 }
 

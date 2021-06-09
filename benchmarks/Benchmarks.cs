@@ -78,7 +78,7 @@ namespace MetaMorpheusCommandLine
             //read mzml file
             Console.WriteLine("reading mzml file {0}", args[2]);
             stopwatch = Stopwatch.StartNew();
-            var msData = Mzml.LoadAllStaticData(args[2]);
+            var msData = Mzml.LoadAllStaticData(args[2], null, 1);
             stopwatch.Stop();
             Console.WriteLine("Time elapsed for mzML read: {0}\n", stopwatch.ElapsedMilliseconds);
 
