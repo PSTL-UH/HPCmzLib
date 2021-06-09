@@ -3,10 +3,7 @@
 #include <string>
 #include <vector>
 
-//C# TO C++ CONVERTER NOTE: Forward class declarations:
-//namespace Proteomics { class AminoAcidPolymer; }
 #include "AminoAcidPolymer.h"
-//namespace Proteomics { class Residue; }
 #include "Residue.h"
 
 // Copyright 2012, 2013, 2014 Derek J. Bailey

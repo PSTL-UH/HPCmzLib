@@ -73,7 +73,9 @@ namespace MassSpectrometry
     public:
         virtual ~MsDataScan()
         {
-            // delete isolationRange;
+            if ( isolationRange != nullptr ) {
+                delete isolationRange;
+            }
         }
 
         MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder,
