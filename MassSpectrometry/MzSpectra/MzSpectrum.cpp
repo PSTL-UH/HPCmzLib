@@ -94,11 +94,7 @@ namespace MassSpectrometry
                 IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormulaReg, fineRes, minRes);
                 auto masses = ye->getMasses();
                 auto intensities = ye->getIntensities();
-#ifdef ORIG
-                Array::Sort(intensities, masses);
-                Array::Reverse(intensities);
-                Array::Reverse(masses);
-#endif
+
                 Sort::SortPairs ( intensities, masses, intensities.size() );
                 std::reverse (intensities.begin(), intensities.end());
                 std::reverse (masses.begin(), masses.end() );
@@ -324,12 +320,7 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 // Optimized for proteoforms!!
                 auto extrapolatedMonoisotopicMass = testMostIntenseMass - diffToMonoisotopic[massIndex];
                 double lM = std::numeric_limits<double>::max();
-#ifdef ORIG
-                auto lowestMass = listOfPeaks.Min([&] (std::any b)
-                {
-                    b::Item1;
-                }).ToMass(chargeState); // But may actually observe this small peak
-#endif
+
                 std::for_each(listOfPeaks.begin(), listOfPeaks.end(), [&] (std::tuple<double, double> b) {
                         double b1 = std::get<0>(b);
                          if ( b1< lM ) {
@@ -347,74 +338,54 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
                 if (listOfPeaks.size() >= 2 && ScoreIsotopeEnvelope(test) >
                     ScoreIsotopeEnvelope(bestIsotopeEnvelopeForThisPeak))
                 {
+                    if ( bestIsotopeEnvelopeForThisPeak != nullptr ) {
+                        delete bestIsotopeEnvelopeForThisPeak;
+                    }
                     bestIsotopeEnvelopeForThisPeak = test;
                 }
                 else {
                     delete test;
                 }
-                //C# TO C++ CONVERTER TODO TASK: A 'delete test' statement was not added since
-                //test was passed to a method or constructor. Handle memory management manually.
             }
 
             if (bestIsotopeEnvelopeForThisPeak != nullptr && bestIsotopeEnvelopeForThisPeak->peaks.size() >= 2)
             {
                 isolatedMassesAndCharges.push_back(bestIsotopeEnvelopeForThisPeak);
             }
+            else {
+                if ( bestIsotopeEnvelopeForThisPeak != nullptr ) {
+                    delete bestIsotopeEnvelopeForThisPeak;
+                }
+            }
         }
-#ifdef ORIG
+
         std::unordered_set<double> seen;
-        for (auto ok : isolatedMassesAndCharges.OrderByDescending([&] (std::any b)
-        {
-            ScoreIsotopeEnvelope(b);
-        }))
-        {
-            if (seen.Overlaps(ok::peaks->Select([&] (std::any b)
-            {
-                b::mz;
-            })))
-            {
+        std::vector<IsotopicEnvelope*> y;
+        std::sort(isolatedMassesAndCharges.begin(), isolatedMassesAndCharges.end(), [&] ( IsotopicEnvelope *lhs, IsotopicEnvelope *rhs) {
+                return (ScoreIsotopeEnvelope(lhs) > ScoreIsotopeEnvelope(rhs));
+            });
+        for (IsotopicEnvelope* ok : isolatedMassesAndCharges ) {
+            bool found = false;
+            for ( auto p : ok->peaks ) {
+                if (seen.find(std::get<0>(p)) != seen.end()) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( found ) {
                 continue;
             }
-            for (auto ah : ok::peaks->Select([&] (std::any b)
-            {
-                b::mz;
-            }))
-            {
-                seen.insert(ah);
+            for ( auto p: ok->peaks ) {
+                seen.insert(std::get<0>(p));
             }
-            yield return ok;
-            
-#endif
-            std::unordered_set<double> seen;
-            std::vector<IsotopicEnvelope*> y;
-            std::sort(isolatedMassesAndCharges.begin(), isolatedMassesAndCharges.end(), [&] ( IsotopicEnvelope *lhs, IsotopicEnvelope *rhs) {
-                    return (ScoreIsotopeEnvelope(lhs) > ScoreIsotopeEnvelope(rhs));
-            });
-            for (IsotopicEnvelope* ok : isolatedMassesAndCharges ) {
-                bool found = false;
-                for ( auto p : ok->peaks ) {
-                    if (seen.find(std::get<0>(p)) != seen.end()) {
-                        found = true;
-                        break;
-                    }
-                }
-                if ( found ) {
-                    continue;
-                }
-                for ( auto p: ok->peaks ) {
-                    seen.insert(std::get<0>(p));
-                }
-                y.push_back(ok);
-            }
-            return y;
+            y.push_back(ok);
         }
+        return y;
+    }
 
     std::vector<int> MzSpectrum::ExtractIndices(double minX, double maxX)
     {
         std::vector<int> v;
-# ifdef ORIG
-        int ind = Array::BinarySearch(getXArray(), minX);
-#endif
         int ind = BinarySearch(privateXArray, minX);
         if (ind < 0)
         {
@@ -434,9 +405,6 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         {
             return std::nullopt;
         }
-#ifdef ORIG
-        int index = Array::BinarySearch(getXArray(), x);
-#endif
         int index = BinarySearch(privateXArray, x);
         if (index >= 0)
         {
@@ -632,15 +600,6 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         }
         
         //denominator of dot product
-#ifdef ORIG
-        double denominator = std::sqrt(vector1.Sum([&] (std::any x)
-        {
-            return x * x;
-        })) * std::sqrt(vector2.Sum([&] (std::any x)
-        {
-            return x * x;
-        }));
-#endif
         double d1 = 0.0;
         for ( auto x : vector1 ) {
             d1 += x*x;
@@ -663,7 +622,8 @@ MzSpectrum::StaticConstructor MzSpectrum::staticConstructor;
         return b->totalIntensity / std::pow(b->stDev, 0.13) * std::pow(b->peaks.size(), 0.4) / std::pow(b->charge, 0.06);
     }
 
-    bool MzSpectrum::Peak2satisfiesRatio(double peak1theorIntensity, double peak2theorIntensity, double peak1intensity, double peak2intensity, double intensityRatio)
+    bool MzSpectrum::Peak2satisfiesRatio(double peak1theorIntensity, double peak2theorIntensity, double peak1intensity,
+                                         double peak2intensity, double intensityRatio)
     {
         auto comparedShouldBe = peak1intensity / peak1theorIntensity * peak2theorIntensity;
 
