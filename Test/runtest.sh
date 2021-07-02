@@ -68,7 +68,6 @@ echo "  TestModFits"
 make -s TestModFits
 ./TestModFits
 
-
 echo " "
 echo "  TestProteinProperties"
 make -s TestProteinProperties
@@ -78,6 +77,11 @@ echo " "
 echo "  TestProteinDigestion"
 make -s TestProteinDigestion
 ./TestProteinDigestion
+
+echo " "
+echo "  TestIsolation"
+make -s TestIsolation
+./TestIsolation
 
 
 echo " "
@@ -91,4 +95,5 @@ make -s TestSerialization
 ./TestSerialization
 
 cd DatabaseTests ; ./runtest.sh ; cd ..
-cd TestFlashLFQ ; ./runtest.sh ; cd ..
+# no point in running TestFlashLFQ right now
+#cd TestFlashLFQ ; ./runtest.sh ; cd ..

@@ -81,7 +81,6 @@ namespace MassSpectrometry
         for (int i = 0; i < numAveraginesToGenerate; i++)
         {
             double averagineMultiplier = (i + 1) / 2.0;
-            //Console.Write("numAveragines = " + numAveragines);
             ChemicalFormula *chemicalFormula = new ChemicalFormula();
             chemicalFormula->Add(PeriodicTable::GetElement("C"), FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
             chemicalFormula->Add(PeriodicTable::GetElement("H"), FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
@@ -89,21 +88,18 @@ namespace MassSpectrometry
             chemicalFormula->Add(PeriodicTable::GetElement("N"), FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
             chemicalFormula->Add(PeriodicTable::GetElement("S"), FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
         
-            {
-                auto chemicalFormulaReg = chemicalFormula;
-                IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormulaReg, fineRes, minRes);
-                auto masses = ye->getMasses();
-                auto intensities = ye->getIntensities();
-
-                Sort::SortPairs ( intensities, masses, intensities.size() );
-                std::reverse (intensities.begin(), intensities.end());
-                std::reverse (masses.begin(), masses.end() );
-
-                mostIntenseMasses[i] = masses[0];
-                diffToMonoisotopic[i] = masses[0] - chemicalFormulaReg->getMonoisotopicMass();
-                allMasses[i] = masses;
-                allIntensities[i] = intensities;
-            }
+            IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormula, fineRes, minRes);
+            auto masses = ye->getMasses();
+            auto intensities = ye->getIntensities();
+            
+            Sort::SortPairs ( intensities, masses, intensities.size() );
+            std::reverse (intensities.begin(), intensities.end());
+            std::reverse (masses.begin(), masses.end() );
+            
+            mostIntenseMasses[i] = masses[0];
+            diffToMonoisotopic[i] = masses[0] - chemicalFormula->getMonoisotopicMass();
+            allMasses[i] = masses;
+            allIntensities[i] = intensities;
 
             delete chemicalFormula;
         }
