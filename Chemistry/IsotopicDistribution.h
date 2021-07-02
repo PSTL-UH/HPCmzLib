@@ -106,7 +106,7 @@ namespace Chemistry {
     private:
         static std::tuple<double, double> GetNewFineAndMergeResolutions(double fineResolution);
 
-        static std::vector<Polynomial> MergeFinePolynomial(std::vector<Polynomial> &tPolynomial, double _mwResolution,
+        static void MergeFinePolynomial(std::vector<Polynomial> &tPolynomial, double _mwResolution,
                                                            double _mergeFineResolution);
 
         static std::vector<Polynomial> MultiplyFinePolynomial(std::vector<std::vector<Composition*>> &elementalComposition,

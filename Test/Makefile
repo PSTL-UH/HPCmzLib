@@ -23,13 +23,13 @@ CEXECS = TestChemicalFormula	   	     \
 	TestModFits                          \
 	TestChromatogram                     \
 	TestSerialization                    \
+	TestIsolation                        \
 	TestMgf                              \
 	TestMzML
 
 #	FakeMsDataFile                       \
 #	FixtureSetUp                         \
 #	SpectrumProcessingAndFiltering       \
-#	TestIsolation                        \
 #	TestMassMzCalculations               \
 #	TestMsDataFile                       \
 #	TestPeptideWithSetMods               \
@@ -94,6 +94,9 @@ TestPeptideWithSetMods: TestPeptideWithSetMods.o
 TestSerialization: TestSerialization.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
+TestIsolation: TestIsolation.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
 TestModFits: TestModFits.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
@@ -119,4 +122,4 @@ clean:
 	rm -f TestPeptides TestAminoAcids TestModifications TestFragments TestMetaMorpheus
 	rm -f TestProteinDigestion TestProteinProperties TestSpectra TestMzML TestMgf
 	rm -f TestPeptideWithSetMods TestPtmListLoader TestModFits TestChromatogram
-	rm -f TestSerialization
+	rm -f TestSerialization TestIsolation

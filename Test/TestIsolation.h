@@ -22,44 +22,27 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Tests. If not, see <http://www.gnu.org/licenses/>.
 
+#include "../Chemistry/Chemistry.h"
 using namespace Chemistry;
+
+#include "../MassSpectrometry/MassSpectrometry.h"
 using namespace MassSpectrometry;
+
+#include "../MzLibUtil/MzLibUtil.h"
 using namespace MzLibUtil;
-using namespace NUnit::Framework;
+
+#include "../Proteomics/AminoAcidPolymer/AminoAcidPolymer.h"
 using namespace Proteomics::AminoAcidPolymer;
-namespace Stopwatch = System::Diagnostics::Stopwatch;
 
 namespace Test
 {
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TestFixture] public sealed class TestIsolation
     class TestIsolation final
     {
-    private:
-        static Stopwatch *privateStopwatch;
-
-        static Stopwatch *getStopwatch();
-        static void setStopwatch(Stopwatch *value);
-
     public:
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [OneTimeSetUp] public void Setup()
-        void Setup();
+        static void TestDistribution();
+        
+        static void TestCoIsolation();
 
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [SetUp] public static void Setuppp()
-        static void Setuppp();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [TearDown] public static void TearDown()
-        static void TearDown();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestCoIsolation()
-        void TestCoIsolation();
-
-//C# TO C++ CONVERTER NOTE: The following .NET attribute has no direct equivalent in C++:
-//ORIGINAL LINE: [Test] public void TestCoIsolationDifferentCharges()
-        void TestCoIsolationDifferentCharges();
+        static void TestCoIsolationDifferentCharges();
     };
 }

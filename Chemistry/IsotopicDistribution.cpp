@@ -10,15 +10,17 @@
 #include "IsotopicDistribution.h"
 #include "ChemicalFormula.h"
 #include "Isotope.h"
-#include <any>
+#include <algorithm>
 #include <iostream>
+#include <list>
 
 namespace Chemistry {
 
     std::vector<double> IsotopicDistribution::factorLnArray;
     int IsotopicDistribution::_factorLnTop;
     
-    IsotopicDistribution::IsotopicDistribution(int count) : masses(std::vector<double>(count, 0.0)), intensities(std::vector<double>(count, 0.0)) {
+    IsotopicDistribution::IsotopicDistribution(int count) : masses(std::vector<double>(count, 0.0)),
+        intensities(std::vector<double>(count, 0.0)) {
     }
 
     std::vector<double> IsotopicDistribution::getMasses() const {
@@ -50,8 +52,16 @@ namespace Chemistry {
         std::vector<std::vector<Composition*>> elementalComposition;
 
         // Get all the unique elements that might have isotopes
-        for (auto elementAndCount : formula->getElements()) {
-            int count = elementAndCount.second;
+        std::list<std::tuple<Element*, int>> allElements;
+        // reversing the order of how eleemnts are processed, since there seems to be a difference
+        // on how C++ and C# report the elements from a HashSet and an unordered_map, and the order seems to matter!
+        for (auto e : formula->getElements()) {
+            allElements.push_front(std::make_tuple(e.first, e.second));
+        }
+
+        for (auto  elementAndCount : allElements )  {
+            //int count = elementAndCount.second;
+            int count = std::get<1>(elementAndCount);
             auto  isotopeComposition = new std::vector<Composition*>();
 
             // for (Isotope *isotope : std::sort(elementAndCount.first->getIsotopes().begin(),
@@ -60,7 +70,7 @@ namespace Chemistry {
             // EG WARNING: Isotopes are sorted in the C++ version based on their order in the input
             // file, which is most of the time also based on the Atomic Mass, but there is no
             // guarantee for that.
-            for (Isotope *isotope : elementAndCount.first->getIsotopes() )  {
+            for (Isotope *isotope : std::get<0>(elementAndCount)->getIsotopes() )  {
                 Composition *c = new Composition();
                 c->Atoms = count;
                 c->MolecularWeight = isotope->getAtomicMass();
@@ -83,8 +93,10 @@ namespace Chemistry {
                 composition->Power = std::floor(composition->MolecularWeight / molecularWeightResolution + 0.5);
             }
         }
-        IsotopicDistribution *dist = CalculateFineGrain(elementalComposition, molecularWeightResolution, _mergeFineResolution,
-                                                        fineResolution, minProbability);
+
+        IsotopicDistribution *dist = CalculateFineGrain(elementalComposition, molecularWeightResolution,
+                                                        _mergeFineResolution, fineResolution,
+                                                        minProbability);
 
         double additionalMass = 0;
         for (auto isotopeAndCount : formula->getIsotopes()) {
@@ -102,12 +114,10 @@ namespace Chemistry {
         return std::tuple<double, double>(fineResolution / 2.0, fineResolution);
     }
 
-    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MergeFinePolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial,
-                                                                                            double _mwResolution,
-                                                                                            double _mergeFineResolution) {
+    void IsotopicDistribution::MergeFinePolynomial(std::vector<IsotopicDistribution::Polynomial> &tPolynomial,
+                                                   double _mwResolution,
+                                                   double _mergeFineResolution) {
         // Sort by mass (i.e. power)
-        // C# TO C++ CONVERTER TODO TASK: The 'Compare' parameter of std::sort produces a boolean value, while
-        // the .NET Comparison parameter produces a tri-state result:
         // ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
         std::sort(tPolynomial.begin(), tPolynomial.end(), [ ] (auto &a, auto &b) {
                 return a.Power > b.Power;
@@ -137,11 +147,11 @@ namespace Chemistry {
                     if (value <= threshold) {
                         tempPolynomial.Power = tempPolynomial.Power + tPolynomial[j].Power * tPolynomial[j].Probablity;
                         tempPolynomial.Probablity = tempPolynomial.Probablity + tPolynomial[j].Probablity;
-                        Polynomial tempVar = Polynomial();
+                        Polynomial tempVar;
                         tempVar.Power = tempPolynomial.Power / tempPolynomial.Probablity;
                         tempVar.Probablity = tempPolynomial.Probablity;
                         tPolynomial[i] = tempVar;
-                        Polynomial tempVar2 = Polynomial();
+                        Polynomial tempVar2;
                         tempVar2.Probablity = NAN;
                         tempVar2.Power = NAN;
                         tPolynomial[j] = tempVar2;
@@ -151,30 +161,34 @@ namespace Chemistry {
                     }
                 }
 
-                Polynomial tempVar3 = Polynomial();
+                Polynomial tempVar3;
                 tempVar3.Power = tempPolynomial.Power / tempPolynomial.Probablity;
                 tempVar3.Probablity = tempPolynomial.Probablity;
-                tPolynomial[i] = tempVar3;
+                tPolynomial.at(i) = tempVar3;
             }
         }
 
         // return only non-zero terms
-#ifdef ORIG
-        return tPolynomial.Where([&] (std::any poly) {
-            !std::isnan(poly::Power);
-        }).ToList();
-#endif
-
-        std::vector<IsotopicDistribution::Polynomial>::iterator t;
-        for ( t=tPolynomial.begin(); t<tPolynomial.end(); t++ ) {
-            if ( std::isnan ( t->Power )) {
-                tPolynomial.erase ( t) ;
+        //for ( int t= (int)tPolynomial.size()-1; t>=0; t-- ) {
+        //    if ( std::isnan ( tPolynomial[t].Power )) {
+        //        tPolynomial.erase (tPolynomial.begin() + t) ;
+        //    }
+        //}
+        // This version is faster in C++ than the version above.
+        std::vector<IsotopicDistribution::Polynomial> temp = tPolynomial;
+        tPolynomial.clear();
+        for ( auto t : temp ) {
+            if ( !std::isnan(t.Power) ) {
+                tPolynomial.push_back(t);
             }
         }
-        return tPolynomial;
+        
+        return;
     }
 
-    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MultiplyFinePolynomial(std::vector<std::vector<IsotopicDistribution::Composition*>> &elementalComposition, double _fineResolution, double _mwResolution, double _fineMinProb) {
+    std::vector<IsotopicDistribution::Polynomial> IsotopicDistribution::MultiplyFinePolynomial(std::vector<std::vector<IsotopicDistribution::Composition*>> &elementalComposition,
+                                                                                               double _fineResolution, double _mwResolution,
+                                                                                               double _fineMinProb) {
         constexpr int nc = 10;
         constexpr int ncAddValue = 1;
         constexpr int nAtoms = 200;
@@ -211,7 +225,7 @@ namespace Chemistry {
                 double prob = FactorLn(atoms) - FactorLn(n1) + n1 * composition[0]->LogProbability;
                 prob = std::exp(prob);
 
-                Polynomial tempVar = Polynomial();
+                Polynomial tempVar;
                 tempVar.Power = n1 * composition[0]->Power;
                 tempVar.Probablity = prob;
                 fPolynomial[k].push_back(tempVar);
@@ -236,7 +250,8 @@ namespace Chemistry {
                     maxs[i] = means[i] + stds[i];
                 }
 
-                MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, 0, fPolynomial[k], composition, atoms, _fineMinProb, means[means.size() - 1] + stds[stds.size() - 1]);
+                MultipleFinePolynomialRecursiveHelper(mins, maxs, indices, 0, fPolynomial[k], composition, atoms,
+                                                      _fineMinProb, means[means.size() - 1] + stds[stds.size() - 1]);
             }
         }
 
@@ -248,7 +263,8 @@ namespace Chemistry {
 
         std::vector<Polynomial> fgidPolynomial;
         for (k = 1; k < n; k++) {
-            MultiplyFineFinalPolynomial(tPolynomial, fPolynomial[k], fgidPolynomial, _fineResolution, _mwResolution, _fineMinProb);
+            MultiplyFineFinalPolynomial(tPolynomial, fPolynomial[k], fgidPolynomial, _fineResolution,
+                                        _mwResolution, _fineMinProb);
         }
 
         return tPolynomial;
@@ -275,7 +291,7 @@ namespace Chemistry {
         if (maxIndex >= fgidPolynomial.size()) {
             j = maxIndex - fgidPolynomial.size();
             for (i = 0; i <= j; i++) {
-                Polynomial tempVar = Polynomial();
+                Polynomial tempVar;
                 tempVar.Probablity = NAN;
                 tempVar.Power = NAN;
                 fgidPolynomial.push_back(tempVar);
@@ -292,21 +308,21 @@ namespace Chemistry {
                 double power = tPolynomial[t].Power + fPolynomial[f].Power;
                 auto indext = static_cast<int>(std::abs(power - minMass) / deltaMass + 0.5);
 
-                Polynomial tempPolynomial = fgidPolynomial[indext];
+                Polynomial tempPolynomial = fgidPolynomial.at(indext);
 
                 auto poww = tempPolynomial.Power;
                 auto probb = tempPolynomial.Probablity;
                 if (std::isnan(poww) || std::isnan(prob)) {
-                    Polynomial tempVar2 = Polynomial();
+                    Polynomial tempVar2;
                     tempVar2.Power = power * prob;
                     tempVar2.Probablity = prob;
-                    fgidPolynomial[indext] = tempVar2;
+                    fgidPolynomial.at(indext) = tempVar2;
                 }
                 else {
-                    Polynomial tempVar3 = Polynomial();
+                    Polynomial tempVar3;
                     tempVar3.Power = poww + power * prob;
                     tempVar3.Probablity = probb + prob;
-                    fgidPolynomial[indext] = tempVar3;
+                    fgidPolynomial.at(indext) = tempVar3;
                 }
             }
         }
@@ -316,29 +332,28 @@ namespace Chemistry {
         for (i = 0; i < fgidPolynomial.size(); i++) {
             if (!std::isnan(fgidPolynomial[i].Probablity)) {
                 if (j < index) {
-                    Polynomial tempVar4 = Polynomial();
+                    Polynomial tempVar4;
                     tempVar4.Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
                     tempVar4.Probablity = fgidPolynomial[i].Probablity;
-                    tPolynomial[j] = tempVar4;
+                    tPolynomial.at(j) = tempVar4;
                     j++;
                 }
                 else {
-                    Polynomial tempVar5 = Polynomial();
+                    Polynomial tempVar5;
                     tempVar5.Power = fgidPolynomial[i].Power / fgidPolynomial[i].Probablity;
                     tempVar5.Probablity = fgidPolynomial[i].Probablity;
                     tPolynomial.push_back(tempVar5);
                 }
             }
 
-            Polynomial tempVar6 = Polynomial();
+            Polynomial tempVar6;
             tempVar6.Probablity = NAN;
             tempVar6.Power = NAN;
-            fgidPolynomial[i] = tempVar6;
+            fgidPolynomial.at(i) = tempVar6;
         }
 
         if (j < index) {
             // tPolynomial.RemoveRange(j, tPolynomial.size() - j);
-            // Edgar: the -j does not make sense and leads to a segfault in the C++ version
             tPolynomial.erase(tPolynomial.begin()+j, tPolynomial.end());
         }
     }
@@ -379,7 +394,7 @@ namespace Chemistry {
 
                 prob = std::exp(prob);
                 if (prob >= minProb) {
-                    Polynomial tPolynomial = Polynomial();
+                    Polynomial tPolynomial;
                     tPolynomial.Probablity = prob;
                     tPolynomial.Power = power;
                     fPolynomial.push_back(tPolynomial);
@@ -403,9 +418,14 @@ namespace Chemistry {
         return factorLnArray[n];
     }
 
-    IsotopicDistribution *IsotopicDistribution::CalculateFineGrain(std::vector<std::vector<Composition*>> &elementalComposition, double _mwResolution, double _mergeFineResolution, double _fineResolution, double _fineMinProb) {
-        std::vector<Polynomial> fPolynomial = MultiplyFinePolynomial(elementalComposition, _fineResolution, _mwResolution, _fineMinProb);
-        fPolynomial = MergeFinePolynomial(fPolynomial, _mwResolution, _mergeFineResolution);
+    IsotopicDistribution *IsotopicDistribution::CalculateFineGrain(std::vector<std::vector<Composition*>> &elementalComposition,
+                                                                   double _mwResolution, double _mergeFineResolution,
+                                                                   double _fineResolution, double _fineMinProb)
+    {
+        std::vector<Polynomial> fPolynomial = MultiplyFinePolynomial(elementalComposition, _fineResolution,
+                                                                     _mwResolution, _fineMinProb);
+        //fPolynomial = MergeFinePolynomial(fPolynomial, _mwResolution, _mergeFineResolution);
+        MergeFinePolynomial(fPolynomial, _mwResolution, _mergeFineResolution);
 
         // Convert polynomial to spectrum
         int count = fPolynomial.size();
