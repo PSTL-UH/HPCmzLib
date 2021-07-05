@@ -39,7 +39,9 @@ namespace Test
     class TestIsolation final
     {
     public:
-        static void TestDistribution();
+        static void TestDistribution402();
+        static void TestDistribution1499();
+        static void TestDistribution3();
         
         static void TestCoIsolation();
 

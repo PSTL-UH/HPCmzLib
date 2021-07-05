@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
+#include <iomanip>
 
 namespace Chemistry {
 
@@ -120,11 +121,11 @@ namespace Chemistry {
         // Sort by mass (i.e. power)
         // ORIGINAL LINE: tPolynomial.Sort((a, b) => a.Power.CompareTo(b.Power));
         std::sort(tPolynomial.begin(), tPolynomial.end(), [ ] (auto &a, auto &b) {
-                return a.Power > b.Power;
+                return a.Power < b.Power;
         });
 
         int count = tPolynomial.size();
-
+        
         for (int k = 1; k <= 9; k++) {
             for (int i = 0; i < count; i++) {
                 double power = tPolynomial[i].Power;
