@@ -12,6 +12,7 @@
 #include "Sort.h"
 #include "MzLibAssert.h"
 
+#include <iomanip>
 
 int main ( int argc, char **argv )
 {
@@ -22,9 +23,15 @@ int main ( int argc, char **argv )
     const std::string &elr=elfile;
     UsefulProteomicsDatabases::PeriodicTableLoader::Load (elr);
 
-    std::cout << ++i << ". TestDistribtion" << std::endl;    
-    Test::TestIsolation::TestDistribution();
+    std::cout << ++i << ". TestDistribution402" << std::endl;    
+    Test::TestIsolation::TestDistribution402();
 
+    std::cout << ++i << ". TestDistribution1499" << std::endl;    
+    Test::TestIsolation::TestDistribution1499();
+
+    std::cout << ++i << ". TestDistribution3" << std::endl;    
+    Test::TestIsolation::TestDistribution3();
+    
 #ifdef LATER    
     std::cout << ++i << ". TestCoIsolation" << std::endl;    
     Test::TestIsolation::TestCoIsolation();
@@ -40,7 +47,7 @@ int main ( int argc, char **argv )
 namespace Test
 {
 
-    void TestIsolation::TestDistribution()
+    void TestIsolation::TestDistribution402()
     {
         // Testcase abstracted from MzSpectrum static constructor, which produced wrong results
         // in the C++ code for a number of Averagenies. Using 402 as the testcase here.
@@ -111,6 +118,69 @@ namespace Test
 
     }
 
+    void TestIsolation::TestDistribution1499()
+    {
+        // Testcase abstracted from MzSpectrum static constructor, which produced wrong results
+        // in the C++ code for a number of Averagenies. Using 402 as the testcase here.
+        double averageC = 4.9384;
+        double averageH = 7.7583;
+        double averageO = 1.4773;
+        double averageN = 1.3577;
+        double averageS = 0.0417;
+        double fineRes = 0.125;
+        double minRes = 1e-8;
+        
+        double averagineMultiplier = (1499 + 1) / 2.0;
+        ChemicalFormula *chemicalFormula = new ChemicalFormula();
+        chemicalFormula->Add(PeriodicTable::GetElement("C"), FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("H"), FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("O"), FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("N"), FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("S"), FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
+
+        IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormula, fineRes, minRes);
+        auto masses = ye->getMasses();
+        auto intensities = ye->getIntensities();
+
+        Assert::AreEqual(86, (int)masses.size());
+        Assert::AreEqual(86, (int)intensities.size());        
+    }
+
+    void TestIsolation::TestDistribution3()
+    {
+        // Testcase abstracted from MzSpectrum static constructor, which produced wrong results
+        // in the C++ code for a number of Averagenies. Using 3 as the testcase here in which
+        // Monoisotopicmass seems to be off in the C++ version
+        double averageC = 4.9384;
+        double averageH = 7.7583;
+        double averageO = 1.4773;
+        double averageN = 1.3577;
+        double averageS = 0.0417;
+        double fineRes = 0.125;
+        double minRes = 1e-8;
+        
+        double averagineMultiplier = (3 + 1) / 2.0;
+        ChemicalFormula *chemicalFormula = new ChemicalFormula();
+        chemicalFormula->Add(PeriodicTable::GetElement("C"), FloatingPointToInteger::ToInt32(averageC * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("H"), FloatingPointToInteger::ToInt32(averageH * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("O"), FloatingPointToInteger::ToInt32(averageO * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("N"), FloatingPointToInteger::ToInt32(averageN * averagineMultiplier));
+        chemicalFormula->Add(PeriodicTable::GetElement("S"), FloatingPointToInteger::ToInt32(averageS * averagineMultiplier));
+
+        IsotopicDistribution *ye = IsotopicDistribution::GetDistribution(chemicalFormula, fineRes, minRes);
+        auto masses = ye->getMasses();
+        auto intensities = ye->getIntensities();
+        auto monoMass = chemicalFormula->getMonoisotopicMass();
+        double expectedmonoMass = 226.11916638768003;
+        
+        Assert::AreEqual(7, (int)masses.size());
+        Assert::AreEqual(7, (int)intensities.size());        
+        Assert::AreEqual(monoMass, expectedmonoMass, 1e-14);
+        std::cout << "monoMass: " << std::setprecision(17) << monoMass << std::endl;
+        std::cout << "expectedmonoMass: " << std::setprecision(17) << expectedmonoMass << std::endl;
+    }
+    
+    
 #ifdef LATER
     void TestIsolation::TestCoIsolation()
     {
