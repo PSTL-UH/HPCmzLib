@@ -546,7 +546,7 @@ namespace Proteomics
             //GetDigestionParamsAfterDeserialization(); 
         }
 
-        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::vector<Proteomics::Protein*> &proteinList)
+        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(const std::vector<Proteomics::Protein*> &proteinList)
         {
             std::string accession = getProteinAccession();
             Proteomics::Protein *prot=nullptr;
