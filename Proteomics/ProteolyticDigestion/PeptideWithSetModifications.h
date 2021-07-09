@@ -175,6 +175,11 @@ namespace Proteomics
                                              std::unordered_map<std::string, Proteomics::Protein*> &accessionToProtein);
 
 
+            /// <summary>
+            /// Alternative version of the function above, used by MetaMorpheus CrosslinkSpectral match deserialization
+            /// </summary>
+            void SetNonSerializedPeptideInfo ( std::vector<Proteomics::Protein *> &proteinList );
+            
         private:
             void GetDigestionParamsAfterDeserialization();
 
