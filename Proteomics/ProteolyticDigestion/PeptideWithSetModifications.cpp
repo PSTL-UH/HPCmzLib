@@ -546,6 +546,24 @@ namespace Proteomics
             //GetDigestionParamsAfterDeserialization(); 
         }
 
+        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(std::vector<Proteomics::Protein*> &proteinList)
+        {
+            std::string accession = getProteinAccession();
+            Proteomics::Protein *prot=nullptr;
+            for ( auto p : proteinList ) {
+                if ( p->getAccession() == accession ) {
+                    prot = p;
+                    break;
+                }
+            }            
+            setProtein(prot);
+
+            //only used to reconstruct _baseSequence 
+            std::unordered_map<std::string, Modification*> idToMod;       
+            GetModsAfterDeserialization(idToMod, _baseSequence);
+        }
+        
+        
         void PeptideWithSetModifications::GetDigestionParamsAfterDeserialization()
         {
             if (DigestionParamString != "")
