@@ -2,6 +2,7 @@
 #include "Product.h"
 #include "../../Chemistry/ClassExtensions.h"
 #include "stringhelper.h"
+#include <iomanip>
 
 using namespace Chemistry;
 namespace Proteomics
@@ -101,16 +102,16 @@ namespace Proteomics
         {
             std::stringstream output;
 
-            output << MaF->Mz << "\t" << MaF->Intensity <<  "\t" << MaF->Charge << "\t";
+            output << std::setprecision(12) << MaF->Mz << "\t" << MaF->Intensity <<  "\t" << MaF->Charge << "\t";
 
             auto product = MaF->NeutralTheoreticalProduct;
             auto pType = product->productType;
-            output << product->NeutralLoss << "\t" <<
+            output << std::setprecision(12) << product->NeutralLoss << "\t" <<
                 Fragmentation::ProductTypeToString(pType) << "\t";
 
             auto tfragment = product->TerminusFragment;
             output <<  Fragmentation::FragmentationTerminusToString(tfragment->Terminus) << "\t" <<
-                tfragment->NeutralMass << "\t" << tfragment->FragmentNumber << "\t" <<
+                std::setprecision(12) << tfragment->NeutralMass << "\t" << tfragment->FragmentNumber << "\t" <<
                 tfragment->AminoAcidPosition << std::endl;
                             
             std::string sstring = output.str();
