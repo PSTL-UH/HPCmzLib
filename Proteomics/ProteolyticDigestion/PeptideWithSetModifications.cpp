@@ -606,6 +606,9 @@ namespace Proteomics
                         bracketCount--;
 
                         if ( idToMod.size() == 0 ) {
+                            if ( bracketCount == 0 ) {
+                                currentlyReadingMod = false;
+                            }
                             // not meant to identify mods, just called form the constructor
                             // without a valid Mods table. Just use to construct the base sequence.
                             break;
