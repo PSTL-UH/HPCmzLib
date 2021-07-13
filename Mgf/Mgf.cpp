@@ -40,11 +40,6 @@ namespace IO
             std::vector<MsDataScan*> scans;
             std::unordered_set<int> checkForDuplicateScans;
 
-#ifdef ORIG
-            FileStream fs = FileStream(filePath, FileMode::Open, FileAccess::Read, FileShare::Read);                
-            BufferedStream bs = BufferedStream(fs);
-            StreamReader sr = StreamReader(bs);
-#endif
             std::ifstream sr ( filePath );
             if ( !sr.is_open() ) {
                 std::cout << "Could not open file " << filePath << std::endl;
@@ -52,11 +47,6 @@ namespace IO
             }
             std::string s;
 
-            //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
-            //while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
-            //{
-                //do nothing with the first few scans
-            //}
             bool readingPeaks = false;
             std::vector<double> mzs;
             std::vector<double> intensities;
@@ -66,7 +56,6 @@ namespace IO
             int oldScanNumber = 0;
             double rtInMinutes = 0;
             
-            //while ((s = sr.ReadLine()) != "")
             while (getline(sr, s))
             {
                 if ( s == "" ||  s[0] == '#' || s == "\r") {
@@ -105,16 +94,6 @@ namespace IO
                     intensities.clear();
                     oldScanNumber = scanNumber;
                     charge = 2; //default when unknown
-                    
-                    //skip the next two lines which are "" and "BEGIN IONS"
-                    //while ((s = sr.ReadLine()) != "" && s != "BEGIN IONS")
-                    //while (getline(sr, s) && s != "" && s != "BEGIN IONS") 
-                    //{
-                        //do nothing
-                    //}
-                    
-                    //C# TO C++ CONVERTER TODO TASK: A 'delete spectrum' statement was not added since spectrum was
-                    //passed to a method or constructor. Handle memory management manually.
                 }
                 else
                 {
@@ -177,19 +156,11 @@ namespace IO
             }                                    
                         
             MassSpectrometry::SourceFile *sourceFile = new SourceFile("no nativeID format", "mgf format", "", "", "");
-
-#ifdef ORIG
-            return = new Mgf(scans.OrderBy([&] (std::any x)  {
-                        x::OneBasedScanNumber;
-            })->ToArray(), sourceFile);
-#endif
             std::sort (scans.begin(), scans.end(), [&] (auto *l, auto *r) {
                     return l->getOneBasedScanNumber() < r->getOneBasedScanNumber();
                 });
             auto thismgf = new Mgf(scans, sourceFile );
             return  thismgf;
-            //C# TO C++ CONVERTER TODO TASK: A 'delete sourceFile' statement was not added since sourceFile
-            //was passed to a method or constructor. Handle memory management manually.
         }
 
         MsDataScan *Mgf::GetOneBasedScan(int scanNumber)
