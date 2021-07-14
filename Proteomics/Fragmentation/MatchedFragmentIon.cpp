@@ -1,7 +1,8 @@
 ﻿#include "MatchedFragmentIon.h"
 #include "Product.h"
 #include "../../Chemistry/ClassExtensions.h"
-#include "stringhelper.h"
+//#include "stringhelper.h"
+#include "BinaryPack.h"
 #include <iomanip>
 
 using namespace Chemistry;
@@ -100,31 +101,49 @@ namespace Proteomics
         
         int MatchedFragmentIon::Pack(char *buf, size_t &buf_len, MatchedFragmentIon *MaF)
         {
-            std::stringstream output;
+            int tmplen = 256;
+            char tmpbuf[256];
+            size_t retlen;
 
-            output << std::setprecision(12) << MaF->Mz << "\t" << MaF->Intensity <<  "\t" << MaF->Charge << "\t";
-
+            // Initial position is sizeof(int), since we will copy the overall length at the beginning.
+            size_t pos=sizeof(int);
+            
+            retlen = BinaryPack::PackDouble(tmpbuf+pos, MaF->Mz);
+            pos += retlen;
+            retlen = BinaryPack::PackDouble(tmpbuf+pos, MaF->Intensity);
+            pos += retlen;
+            retlen = BinaryPack::PackInt(tmpbuf+pos, MaF->Charge);
+            pos += retlen;
+            
             auto product = MaF->NeutralTheoreticalProduct;
             auto pType = product->productType;
-            output << std::setprecision(12) << product->NeutralLoss << "\t" <<
-                Fragmentation::ProductTypeToString(pType) << "\t";
+            retlen = BinaryPack::PackDouble(tmpbuf+pos, product->NeutralLoss);
+            pos += retlen;
+            retlen = BinaryPack::PackString(tmpbuf+pos, Fragmentation::ProductTypeToString(pType));
+            pos += retlen;
 
             auto tfragment = product->TerminusFragment;
-            output <<  Fragmentation::FragmentationTerminusToString(tfragment->Terminus) << "\t" <<
-                std::setprecision(12) << tfragment->NeutralMass << "\t" << tfragment->FragmentNumber << "\t" <<
-                tfragment->AminoAcidPosition << std::endl;
-                            
-            std::string sstring = output.str();
-            size_t slen = sstring.length();
-            if ( slen > buf_len )  {
-                buf_len = slen;
+            retlen = BinaryPack::PackString(tmpbuf+pos, Fragmentation::FragmentationTerminusToString(tfragment->Terminus));
+            pos += retlen;
+            retlen = BinaryPack::PackDouble(tmpbuf+pos, tfragment->NeutralMass);
+            pos += retlen;
+            retlen = BinaryPack::PackInt(tmpbuf+pos, tfragment->FragmentNumber);
+            pos += retlen;
+            retlen = BinaryPack::PackInt(tmpbuf+pos, tfragment->AminoAcidPosition);
+            pos += retlen;
+
+            // Last step: save the total size of the line at the beginning. We reserved the memory for that.
+            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            
+            if ( pos > buf_len )  {
+                buf_len = pos;
                 return -1;
             }
             else {
-                buf_len = slen;
-                memcpy (buf, sstring.c_str(), slen );
+                buf_len = pos;
+                memcpy (buf, tmpbuf, pos );
             }
-            return (int)slen;            
+            return (int)pos;            
         }
 
 
@@ -132,8 +151,10 @@ namespace Proteomics
                                         std::vector<MatchedFragmentIon *> &newMaFVec,
                                         int count )
         {
-            std::string input_buf (buf);
-            std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
+            //std::string input_buf (buf);
+            //std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
+            std::vector<char *>lines = BinaryPack::SplitLines(buf, buf_len);
+            
             size_t total_len=0;
             int counter=0;
             for ( auto line : lines ) {
@@ -150,51 +171,58 @@ namespace Proteomics
         
         void MatchedFragmentIon::Unpack(char *buf, size_t buf_len, size_t &len, MatchedFragmentIon **newMaF)
         {
-            std::string input (buf);
-            MatchedFragmentIon::Unpack(input, len, newMaF);
+            MatchedFragmentIon::Unpack(buf, len, newMaF);
         }
         
-        void MatchedFragmentIon::Unpack(std::string input, size_t &len, MatchedFragmentIon **newMaF)
+        void MatchedFragmentIon::Unpack(char* input, size_t &len, MatchedFragmentIon **newMaF)
         {
-            size_t total_len = 9;
-            std::vector<std::string> splits = StringHelper::split(input, '\t');
+            size_t retlen, pos=0;
+
+            int total_len;
+            retlen = BinaryPack::UnpackInt(input, total_len);
+            pos += retlen;
+            
             double mz, intensity;
+            retlen = BinaryPack::UnpackDouble(input+pos, mz);
+            pos += retlen;
+            retlen = BinaryPack::UnpackDouble(input+pos, intensity);
+            pos += retlen;
+            
             int charge;
-            mz        = std::stod(splits[0]);
-            intensity = std::stod(splits[1]);
-            charge    = std::stoi (splits[2]);
+            retlen = BinaryPack::UnpackInt(input+pos, charge);
+            pos += retlen;
 
             double neutralLoss;
-            neutralLoss = std::stod(splits[3]);
-            auto pType = Fragmentation::ProductTypeFromString (splits[4]);
+            retlen = BinaryPack::UnpackDouble(input+pos, neutralLoss);
+            pos += retlen;
+
+            std::string pTypeString;
+            retlen = BinaryPack::UnpackString(input+pos, pTypeString);
+            pos += retlen;           
+            auto pType = Fragmentation::ProductTypeFromString (pTypeString);
+
+            std::string fTerminusString;
+            retlen = BinaryPack::UnpackString(input+pos, fTerminusString);
+            pos += retlen;           
+            auto fTerminus = Fragmentation::FragmentationTerminusFromString(fTerminusString);
 
             double nMass;
+            retlen = BinaryPack::UnpackDouble(input+pos, nMass);
+            pos += retlen;
+
             int fNumber, AAPos;
-            auto fTerminus = Fragmentation::FragmentationTerminusFromString(splits[5]);
-            nMass = std::stod(splits[6]);
-            fNumber = std::stoi(splits[7]);
-            AAPos = std::stoi (splits[8]);
+            retlen = BinaryPack::UnpackInt(input+pos, fNumber);
+            pos += retlen;
+            retlen = BinaryPack::UnpackInt(input+pos, AAPos);
+            pos += retlen;
 
             auto terminusFragment = new NeutralTerminusFragment (fTerminus, nMass, fNumber, AAPos);
             auto product = new Product (pType, terminusFragment, neutralLoss );
             
             MatchedFragmentIon *newM = new MatchedFragmentIon (product, mz, intensity, charge);
-            *newMaF = newM;
-            for ( int i = 0; i < 8; i++ ) {
-                total_len += splits[i].length();
-            }
-            // Last elements might or might not contains a \n depending
-            // on whether its coming directly from the app or from
-            // the vector version of the Unpack operation. Typically,
-            // the last element in the vector passed to this function can be
-            // off otherwise.
-            size_t foundpos = splits[8].find("\n");
-            if ( foundpos !=std::string::npos )
-                total_len  += foundpos;
-            else
-                total_len += splits[8].length();
-            len = total_len;
-        }
 
+            *newMaF = newM;
+            len = pos;
+        }
     }
 }

@@ -84,7 +84,7 @@ namespace Proteomics
                                  int count = -1 );
             static void Unpack ( char *buf, size_t buf_size, size_t &len,
                                  MatchedFragmentIon **newMaF );
-            static void Unpack ( std::string line, size_t &len,
+            static void Unpack ( char* line, size_t &len,
                                  MatchedFragmentIon **newMaF );
 
 
