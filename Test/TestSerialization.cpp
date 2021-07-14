@@ -285,8 +285,8 @@ namespace Test
         mVec[2] = new MatchedFragmentIon(P, 3, 1, 1);
         
 
-        char buf[128];
-        size_t buf_len = 128;
+        char buf[256];
+        size_t buf_len = 256;
         int ret = MatchedFragmentIon::Pack(buf, buf_len, mVec);
         if ( ret == -1 ) {
             std::cout<< "Buffer too small, increase to " << buf_len << " bytes \n";
@@ -324,8 +324,8 @@ namespace Test
         mVec[1] = new MatchedFragmentIon(P, 2, 1, 1);
         mVec[2] = new MatchedFragmentIon(P, 3, 1, 1);
         
-        char buf[128];
-        size_t buf_len = 128;
+        char buf[256];
+        size_t buf_len = 256;
         int ret = MatchedFragmentIon::Pack(buf, buf_len, mVec);
         if ( ret == -1 ) {
             std::cout<< "Buffer too small, increase to " << buf_len << " bytes \n";
@@ -337,7 +337,7 @@ namespace Test
         }
         else if ( rank == 1 ) {
             MPI_Status status;
-            MPI_Recv ( recv_buf, 128, MPI_BYTE, 0, 10, MPI_COMM_WORLD, &status );
+            MPI_Recv ( recv_buf, 256, MPI_BYTE, 0, 10, MPI_COMM_WORLD, &status );
             int actual_length;
             MPI_Get_elements ( &status, MPI_BYTE, &actual_length );
 

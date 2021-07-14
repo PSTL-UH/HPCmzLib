@@ -8,9 +8,13 @@
 #include "../Fragmentation/DissociationTypeCollection.h"
 #include "../Fragmentation/CompactPeptide.h"
 #include <algorithm>
-#include "stringhelper.h"
+#include <filesystem>
 
+#include "BinaryPack.h"
+#include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 using namespace Chemistry;
 using namespace MassSpectrometry;
@@ -777,37 +781,92 @@ namespace Proteomics
 
         int PeptideWithSetModifications::Pack (char *buf, size_t &size, PeptideWithSetModifications *pep )
         {
-            std::stringstream output;
+            int retlen;
+            char tmpbuf[256];
+
+            // leave space for the length of the line
+            size_t pos=sizeof(int);
             
-            output << pep->getOneBasedStartResidueInProtein() << "\t" <<
-                pep->getOneBasedEndResidueInProtein() << "\t" << 
-                pep->getMissedCleavages() << "\t" <<
-                pep->getPeptideDescription() << "\t"  <<
-                pep->NumFixedMods << "\t" <<
-                CleavageSpecificityExtension::GetCleavageSpecificityAsString( pep->getCleavageSpecificityForFdrCategory())
-                   << std::endl;
+            size_t bufpos = 0; // Since we store multiple lines, we need to keep track of the buf position as well.
             
-            output << pep->getFullSequence() << std::endl;
-            output << pep->getDigestionParamString() << std::endl;
-            std::string accession = pep->getProteinAccession();
-            if ( accession != "" )  {
-                output << accession << std::endl;                                       
-            }
-            else  {
-                output << "-" << std::endl;
-            }
-            
-            std::string sstring = output.str();
-            size_t slen = sstring.length();
-            if ( slen > size )  {
-                size = slen;
+            retlen = BinaryPack::PackInt( tmpbuf+pos, pep->getOneBasedStartResidueInProtein() );
+            pos += retlen;
+            retlen = BinaryPack::PackInt( tmpbuf+pos, pep->getOneBasedEndResidueInProtein() );
+            pos += retlen;
+            retlen = BinaryPack::PackInt( tmpbuf+pos, pep->getMissedCleavages() );
+            pos += retlen;
+            retlen = BinaryPack::PackString( tmpbuf+pos, pep->getPeptideDescription() );
+            pos += retlen;
+            retlen = BinaryPack::PackInt( tmpbuf+pos, pep->NumFixedMods );
+            pos += retlen;
+            retlen = BinaryPack::PackString( tmpbuf+pos, CleavageSpecificityExtension::GetCleavageSpecificityAsString( pep->getCleavageSpecificityForFdrCategory()));
+            pos += retlen;
+
+            //now save the length of this line at the beginning of the file.
+            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            if ( (pos + bufpos) > size ) {
+                size = pos+bufpos;
                 return -1;
             }
-            else {
-                size = slen;
-                memcpy (buf, sstring.c_str(), slen );
+            
+            memcpy (buf+bufpos, tmpbuf, pos);
+            bufpos += pos;
+
+            // line 2: FullSequence
+            pos = sizeof(int);
+            memset (tmpbuf, 0, 256);
+
+            retlen = BinaryPack::PackString(tmpbuf+pos,pep->getFullSequence() );
+            pos += retlen;
+
+            //now save the length of this line at the beginning of the file.
+            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            if ( (pos + bufpos) > size ) {
+                size = pos+bufpos;
+                return -1;
             }
-            return slen;
+            memcpy (buf+bufpos, tmpbuf, pos);
+            bufpos += pos;
+            
+            // line 3: DigestionParams
+            pos = sizeof(int);
+            memset (tmpbuf, 0, 256);
+
+            retlen = BinaryPack::PackString(tmpbuf+pos,pep->getDigestionParamString() );
+            pos += retlen;
+            
+            //now save the length of this line at the beginning of the file.
+            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            if ( (pos + bufpos) > size ) {
+                size = pos+bufpos;
+                return -1;
+            }
+
+            memcpy (buf+bufpos, tmpbuf, pos);
+            bufpos += pos;
+
+            // line4: ProteinAccession
+            pos = sizeof(int);
+            memset (tmpbuf, 0, 256);
+
+            std::string accession = pep->getProteinAccession();
+            if ( accession == "" )  {
+                accession = "-";
+            }
+            retlen = BinaryPack::PackString(tmpbuf+pos, accession );
+            pos += retlen;
+
+            //now save the length of this line at the beginning of the file.
+            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            if ( (pos + bufpos) > size ) {
+                size = pos+bufpos;
+                return -1;
+            }
+            memcpy (buf+bufpos, tmpbuf, pos);
+            bufpos += pos;
+            size = bufpos;
+            
+            return bufpos;
         }
 
         void PeptideWithSetModifications::Serialize (std::string &filename, PeptideWithSetModifications* &pep )
@@ -820,23 +879,21 @@ namespace Proteomics
         void PeptideWithSetModifications::Serialize (std::string &filename,
                                                      std::vector<PeptideWithSetModifications *> &pVec )
         {
-            char blank = ' ';
-            FILE *fp = fopen (filename.c_str(), "w" );
-            if ( fp != NULL  ) {
-                fprintf (fp, "%ld\n",  pVec.size());
-                
-                char *buf;
+
+            int fp = open (filename.c_str(),  O_CREAT|O_TRUNC|O_WRONLY, S_IRWXU);
+            if ( fp > 0 ) {
                 size_t orig_size = PepWithSetModsDefaultSize;
                 size_t size;
-                buf = (char*) malloc ( PepWithSetModsDefaultSize );
+                char *buf = (char*) calloc ( 1, PepWithSetModsDefaultSize );
                 if ( NULL == buf ) {
                     std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
                     return;
                 }
-                for ( auto pep : pVec ) {
-                    size = orig_size;
-                    memset( buf, blank, orig_size);
-                    int ret = PeptideWithSetModifications::Pack( buf, size, pep );
+                
+                size = orig_size;
+                int ret = -1;
+                while ( ret < 0 ) { 
+                    ret = PeptideWithSetModifications::Pack( buf, size, pVec );
                     if ( ret == -1 ) {
                         // buffer was not large enough
                         free ( buf ) ;
@@ -846,16 +903,11 @@ namespace Proteomics
                             std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
                             return;
                         }
-                        ret = PeptideWithSetModifications::Pack( buf, size, pep );
-                        if ( ret == -1 ) {
-                            // unknown error. we already realloced the buffer to the requested size;
-                            std::cout << "PeptideWithSetModifications::Serialize : Unkown error when Packing peptide\n";
-                            return;
-                        }
                     }
-                    fwrite (buf, size, 1, fp );
                 }
-                fclose(fp);
+                
+                write (fp, buf, size );
+                close(fp);
                 free (buf);
             }
             else {
@@ -867,9 +919,8 @@ namespace Proteomics
                                                   std::vector<PeptideWithSetModifications*> &pepVec,
                                                   int count )
         {
-            std::string input_buf (buf);
-            std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
-
+            std::vector<char *> lines = BinaryPack::SplitLines(buf, buf_len);
+            
             size_t total_len=0;
             int counter=0;
             for (auto  i=0; i < lines.size(); i+=4 ) {                
@@ -888,8 +939,7 @@ namespace Proteomics
         void PeptideWithSetModifications::Unpack (char *buf, size_t buf_len, size_t &len,
                                                   PeptideWithSetModifications** pep )
         {
-            std::string input(buf);
-            std::vector<std::string> lines = StringHelper::split(input, '\n');
+            std::vector<char *> lines = BinaryPack::SplitLines(buf, buf_len);
             if ( lines.size() < 4 ) {
                 std::cout << "PeptideWithSetModifications::Unpack : input does not contains enough information to " <<
                     "reconstruct the PeptideWithSetModifications. " << std::endl;
@@ -898,33 +948,63 @@ namespace Proteomics
             PeptideWithSetModifications::Unpack ( lines, 0, len, pep );
         }
 
-        void PeptideWithSetModifications::Unpack (std::vector<std::string> &input, int index, size_t &len,
+        void PeptideWithSetModifications::Unpack (std::vector<char*> &input, int index, size_t &len,
                                                   PeptideWithSetModifications** pep )
         {
-            size_t total_len=4;
+            size_t total_len=0;
+            int retlen;
             
             // Processing line 1
-            std::string line;
-            line = input[index];
-            total_len += line.length();
-            
-            std::vector<std::string> splits = StringHelper::split(line, '\t');
+            size_t pos = 0;
+            int line_len=0;
+            char *buf = input[index];
+
+            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            pos += retlen;
+            total_len += line_len;
             
             int onebasedstart, onebasedend, missedcleavages, numfixedMods;
-            onebasedstart   = std::stoi(splits[0]);
-            onebasedend     = std::stoi(splits[1]);
-            missedcleavages = std::stoi(splits[2]);
-            std::string description = splits[3];
-            numfixedMods = std::stoi(splits[4]);                        
-            CleavageSpecificity cvs = CleavageSpecificityExtension::ParseString(splits[5]);
+            retlen = BinaryPack::UnpackInt(buf+pos, onebasedstart );
+            pos += retlen;
+            retlen = BinaryPack::UnpackInt(buf+pos, onebasedend );
+            pos += retlen;
+            retlen = BinaryPack::UnpackInt(buf+pos, missedcleavages );
+            pos += retlen;
             
-            // Processing line 2                
-            std::string fullsequence = input[index+1];
-            total_len += fullsequence.length();
+            std::string description;
+            retlen = BinaryPack::UnpackString(buf+pos, description );
+            pos += retlen;
+            retlen = BinaryPack::UnpackInt(buf+pos, numfixedMods );
+            pos += retlen;
+
+            std::string cleavagestring;
+            retlen = BinaryPack::UnpackString(buf+pos, cleavagestring );
+            pos += retlen;
+            
+            CleavageSpecificity cvs = CleavageSpecificityExtension::ParseString(cleavagestring);
+            
+            // Processing line 2
+            pos = 0;
+            buf = input[index+1];
+
+            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            pos += retlen;
+            total_len += line_len;
+
+            std::string fullsequence;
+            retlen = BinaryPack::UnpackString(buf+pos, fullsequence );
+            pos += retlen;       
             
             // Processing line 3
-            std::string digestparamstring = input[index+2];
-            total_len += digestparamstring.length();
+            pos = 0;
+            buf = input[index+2];
+            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            pos += retlen;
+            total_len += line_len;
+
+            std::string digestparamstring;
+            retlen = BinaryPack::UnpackString(buf+pos, digestparamstring );
+            pos += retlen;       
 
             DigestionParams *dp = nullptr;
             if ( digestparamstring != "" ) {
@@ -932,19 +1012,16 @@ namespace Proteomics
             }
             
             // Processing line 4
-            std::string accessionstring = input[index+3];
+            pos = 0;
+            buf = input[index+3];
+            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            pos += retlen;
+            total_len += line_len;
 
-            // Last elements might or might not contains a \n depending
-            // on whether its coming directly from the app or from
-            // the vector version of the Unpack operation. Typically,
-            // the last element in the vector passed to this function can be
-            // off otherwise.
-            size_t foundpos = input[index+3].find("\n");
-            if ( foundpos != std::string::npos )
-                total_len += foundpos;
-            else
-                total_len += accessionstring.length();
-            
+            std::string accessionstring;
+            retlen = BinaryPack::UnpackString(buf+pos, accessionstring );
+            pos += retlen;       
+
             std::unordered_map<std::string, Modification*> umsM;
             auto newpep = new PeptideWithSetModifications(fullsequence, 
                                                           umsM,                
@@ -977,34 +1054,22 @@ namespace Proteomics
         
         void PeptideWithSetModifications::Deserialize (std::string &filename, std::vector<PeptideWithSetModifications *> &pVec )
         {
-            FILE *fp = fopen (filename.c_str(), "r");
-            if ( fp != NULL ) {
-                size_t buf_len=4096;
-                char *buf = (char*) malloc ( buf_len);
-                fgets(buf, buf_len, fp );
-                int vecSize = atoi ( buf );
-                
-                for ( int i = 0; i < vecSize; i++ ) {
-                    PeptideWithSetModifications *newpep;
-                    size_t buf_pos=0; 
-                    // Read 4 lines, and combine them to a char buffer
-                    fgets (buf, buf_len, fp);
-                    buf_pos += strlen (buf);
-                    
-                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
-                    buf_pos += strlen (buf+buf_pos);
-                    
-                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
-                    buf_pos += strlen (buf+buf_pos);
-                    
-                    fgets (buf+buf_pos, buf_len-buf_pos, fp);                        
-                    buf_pos += strlen (buf+buf_pos);
-
-                    size_t tmp;
-                    PeptideWithSetModifications::Unpack (buf, buf_pos, tmp, &newpep);
-                    pVec.push_back (newpep );
+            std::filesystem::path p = filename;
+            size_t buf_len = std::filesystem::file_size(p);
+            
+            int fp = open ( filename.c_str(), O_RDONLY );
+            if ( fp > 0 ) {
+                char *buf = (char*) malloc ( buf_len+1);
+                if (buf == NULL ) {
+                    std::cout << "PeptideWithSetModifications::Deserialize : Could not allocate buffer of size " << buf_len << std::endl;
+                    return;
                 }
-                fclose(fp);
+                size_t tmp_len=0;
+                read (fp, buf, buf_len);
+                PeptideWithSetModifications::Unpack(buf, buf_len, tmp_len, pVec);
+
+                free (buf);
+                close(fp);
             }
             else {
                 std::cout << "PeptideWithSetModifications::Deserialize : Could not open file " << filename << std::endl;

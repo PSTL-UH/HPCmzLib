@@ -243,7 +243,7 @@ namespace Proteomics
             /// avoiding another (expensive) memcpy of the strings by passing
             /// in a starting index from where to use the stringvec
             /// </summary>
-            static void Unpack (std::vector<std::string> &strVec, int index, size_t &len, PeptideWithSetModifications** newpep );
+            static void Unpack (std::vector<char *> &strVec, int index, size_t &len, PeptideWithSetModifications** newpep );
 
             /// <summary>
             /// Functionality used to reconstruct a PeptideWithSetModifications based on a
