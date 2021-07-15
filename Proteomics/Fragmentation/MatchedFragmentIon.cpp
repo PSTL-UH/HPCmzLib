@@ -93,6 +93,7 @@ namespace Proteomics
                     buf_len = pos + len;
                     return ret;
                 }
+                
                 pos += len;
             }
             buf_len = pos;
@@ -101,12 +102,11 @@ namespace Proteomics
         
         int MatchedFragmentIon::Pack(char *buf, size_t &buf_len, MatchedFragmentIon *MaF)
         {
-            int tmplen = 256;
             char tmpbuf[256];
-            size_t retlen;
+            size_t retlen=0;
 
             // Initial position is sizeof(int), since we will copy the overall length at the beginning.
-            size_t pos=sizeof(int);
+            size_t pos=BinaryPack::LineStartOffset;
             
             retlen = BinaryPack::PackDouble(tmpbuf+pos, MaF->Mz);
             pos += retlen;
@@ -133,8 +133,8 @@ namespace Proteomics
             pos += retlen;
 
             // Last step: save the total size of the line at the beginning. We reserved the memory for that.
-            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
-            
+            BinaryPack::SetLineLength(tmpbuf, (int)pos);
+
             if ( pos > buf_len )  {
                 buf_len = pos;
                 return -1;
@@ -143,6 +143,7 @@ namespace Proteomics
                 buf_len = pos;
                 memcpy (buf, tmpbuf, pos );
             }
+            
             return (int)pos;            
         }
 
@@ -151,8 +152,6 @@ namespace Proteomics
                                         std::vector<MatchedFragmentIon *> &newMaFVec,
                                         int count )
         {
-            //std::string input_buf (buf);
-            //std::vector<std::string> lines = StringHelper::split(input_buf, '\n');
             std::vector<char *>lines = BinaryPack::SplitLines(buf, buf_len);
             
             size_t total_len=0;
@@ -179,7 +178,7 @@ namespace Proteomics
             size_t retlen, pos=0;
 
             int total_len;
-            retlen = BinaryPack::UnpackInt(input, total_len);
+            retlen = BinaryPack::GetLineLength(input+pos, total_len);
             pos += retlen;
             
             double mz, intensity;

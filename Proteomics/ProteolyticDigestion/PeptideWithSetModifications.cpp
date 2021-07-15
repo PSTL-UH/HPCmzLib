@@ -785,9 +785,10 @@ namespace Proteomics
             char tmpbuf[256];
 
             // leave space for the length of the line
-            size_t pos=sizeof(int);
+            size_t pos = BinaryPack::LineStartOffset;
             
-            size_t bufpos = 0; // Since we store multiple lines, we need to keep track of the buf position as well.
+            // Since we store multiple lines, we need to keep track of the buf position as well.
+            size_t bufpos = 0; 
             
             retlen = BinaryPack::PackInt( tmpbuf+pos, pep->getOneBasedStartResidueInProtein() );
             pos += retlen;
@@ -803,7 +804,7 @@ namespace Proteomics
             pos += retlen;
 
             //now save the length of this line at the beginning of the file.
-            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            BinaryPack::SetLineLength(tmpbuf, (int)pos);
             if ( (pos + bufpos) > size ) {
                 size = pos+bufpos;
                 return -1;
@@ -813,14 +814,14 @@ namespace Proteomics
             bufpos += pos;
 
             // line 2: FullSequence
-            pos = sizeof(int);
+            pos = BinaryPack::LineStartOffset;
             memset (tmpbuf, 0, 256);
 
             retlen = BinaryPack::PackString(tmpbuf+pos,pep->getFullSequence() );
             pos += retlen;
 
             //now save the length of this line at the beginning of the file.
-            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            BinaryPack::SetLineLength(tmpbuf, (int)pos);
             if ( (pos + bufpos) > size ) {
                 size = pos+bufpos;
                 return -1;
@@ -829,14 +830,14 @@ namespace Proteomics
             bufpos += pos;
             
             // line 3: DigestionParams
-            pos = sizeof(int);
+            pos = BinaryPack::LineStartOffset;
             memset (tmpbuf, 0, 256);
 
             retlen = BinaryPack::PackString(tmpbuf+pos,pep->getDigestionParamString() );
             pos += retlen;
             
             //now save the length of this line at the beginning of the file.
-            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            BinaryPack::SetLineLength(tmpbuf, (int)pos);
             if ( (pos + bufpos) > size ) {
                 size = pos+bufpos;
                 return -1;
@@ -846,7 +847,7 @@ namespace Proteomics
             bufpos += pos;
 
             // line4: ProteinAccession
-            pos = sizeof(int);
+            pos = BinaryPack::LineStartOffset;
             memset (tmpbuf, 0, 256);
 
             std::string accession = pep->getProteinAccession();
@@ -857,7 +858,7 @@ namespace Proteomics
             pos += retlen;
 
             //now save the length of this line at the beginning of the file.
-            retlen = BinaryPack::PackInt(tmpbuf, (int)pos);
+            BinaryPack::SetLineLength(tmpbuf, (int)pos);
             if ( (pos + bufpos) > size ) {
                 size = pos+bufpos;
                 return -1;
@@ -959,7 +960,7 @@ namespace Proteomics
             int line_len=0;
             char *buf = input[index];
 
-            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            retlen = BinaryPack::GetLineLength(buf+pos, line_len );
             pos += retlen;
             total_len += line_len;
             
@@ -987,7 +988,7 @@ namespace Proteomics
             pos = 0;
             buf = input[index+1];
 
-            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            retlen = BinaryPack::GetLineLength(buf+pos, line_len );
             pos += retlen;
             total_len += line_len;
 
@@ -998,7 +999,7 @@ namespace Proteomics
             // Processing line 3
             pos = 0;
             buf = input[index+2];
-            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            retlen = BinaryPack::GetLineLength(buf+pos, line_len );
             pos += retlen;
             total_len += line_len;
 
@@ -1014,7 +1015,7 @@ namespace Proteomics
             // Processing line 4
             pos = 0;
             buf = input[index+3];
-            retlen = BinaryPack::UnpackInt(buf+pos, line_len );
+            retlen = BinaryPack::GetLineLength(buf+pos, line_len );
             pos += retlen;
             total_len += line_len;
 
