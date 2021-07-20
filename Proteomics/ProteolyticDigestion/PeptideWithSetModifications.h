@@ -178,7 +178,8 @@ namespace Proteomics
             /// <summary>
             /// Alternative version of the function above, used by MetaMorpheus CrosslinkSpectral match deserialization
             /// </summary>
-            void SetNonSerializedPeptideInfo ( const std::vector<Proteomics::Protein *> &proteinList );
+            void SetNonSerializedPeptideInfo (const std::vector<Modification*> &modList,       
+                                              const std::vector<Proteomics::Protein *> &proteinList );
             
         private:
             void GetDigestionParamsAfterDeserialization();
