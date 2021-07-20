@@ -550,7 +550,8 @@ namespace Proteomics
             //GetDigestionParamsAfterDeserialization(); 
         }
 
-        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(const std::vector<Proteomics::Protein*> &proteinList)
+        void PeptideWithSetModifications::SetNonSerializedPeptideInfo(const std::vector<Modification *> &modList, 
+                                                                      const std::vector<Proteomics::Protein*> &proteinList)
         {
             std::string accession = getProteinAccession();
             Proteomics::Protein *prot=nullptr;
@@ -562,8 +563,10 @@ namespace Proteomics
             }            
             setProtein(prot);
 
-            //only used to reconstruct _baseSequence 
-            std::unordered_map<std::string, Modification*> idToMod;       
+            std::unordered_map<std::string, Modification*> idToMod;
+            for ( auto mod : modList ) {
+                idToMod.emplace( mod->getIdWithMotif(), mod);
+            }
             GetModsAfterDeserialization(idToMod, _baseSequence);
         }
         
