@@ -405,7 +405,7 @@ namespace MassSpectrometry
     {
         return Scans[scanNumber - 1];
     }
-    
+    /*    
     std::vector<MsDataScan*> MsDataFile::GetMsScansInIndexRange(int FirstSpectrumNumber, int LastSpectrumNumber)
     {
         std::vector<MsDataScan*> v;
@@ -415,8 +415,18 @@ namespace MassSpectrometry
             v.push_back(GetOneBasedScan(oneBasedSpectrumNumber));
         }
         return v;
+    }*/
+
+    //TODO:definiton
+    std::vector<MsDataScan*> MsDataFile::GetMsScansSubset(int FirstIndex, int LastIndex){
+	    std::vector<MsDataScan*>vec;
+	    for (int index = FirstIndex; index < LastIndex; ++index) {
+	        MsDataScan* scan = Scans[index - 1];
+		vec.push_back(scan);
+	    }
+	    return vec;
     }
-    
+
     std::vector<MsDataScan*> MsDataFile::GetMsScansInTimeRange(double firstRT, double lastRT)
     {
         std::vector<MsDataScan*> v;
