@@ -89,6 +89,9 @@ namespace MassSpectrometry
 
         std::vector<MsDataScan*> GetMsScansInIndexRange(int FirstSpectrumNumber, int LastSpectrumNumber);
 
+	//TODO:new function declaration
+	std::vector<MsDataScan*> GetMsScansSubset(int FirstIndex, int LastIndex);
+
         std::vector<MsDataScan*> GetMsScansInTimeRange(double firstRT, double lastRT);
 
         virtual int GetClosestOneBasedSpectrumNumber(double retentionTime);
