@@ -492,53 +492,7 @@ namespace MassSpectrometry
 #ifdef ORIG        
         ParallelOptions *tempVar = new ParallelOptions();
         tempVar->MaxDegreeOfParallelism = maxThreads;
-        
-        Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
-        minScan = std::make_optional(minScan.has_value() ? minScan.value() : 1);
-        maxScan = std::make_optional(maxScan.has_value() ? maxScan.value() : getNumSpectra());
-        
-        auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-#ifdef ORIG        
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        
-        Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
-        maxScan = std::make_optional(maxScan.has_value() ? maxScan.value() : getNumSpectra());
-        
-        auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-#ifdef ORIG        
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        
-        Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
-        minScan = std::make_optional(minScan.has_value() ? minScan.value() : 1);
-        maxScan = std::make_optional(maxScan.has_value() ? maxScan.value() : getNumSpectra());
-        
-        auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-#ifdef ORIG        
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        
-        Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
-        
-        minScan = std::make_optional(minScan.has_value() ? minScan.value() : 1);
-        maxScan = std::make_optional(maxScan.has_value() ? maxScan.value() : getNumSpectra());
-        
-        auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-#ifdef ORIG        
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        
-        Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
-        
-        minScan = std::make_optional(minScan.has_value() ? minScan.value() : 1);
-        maxScan = std::make_optional(maxScan.has_value() ? maxScan.value() : getNumSpectra());
-        
-        auto allAggregateGroups = std::vector<std::vector<IsotopicEnvelope*>>(maxScan.value() - minScan.value() + 1);
-#ifdef ORIG        
-        ParallelOptions *tempVar = new ParallelOptions();
-        tempVar->MaxDegreeOfParallelism = maxThreads;
-        
+         
         Parallel::ForEach(Partitioner::Create(minScan.value(), maxScan.value() + 1), tempVar, [&] (std::any fff){
                 for (int scanIndex = fff::Item1; scanIndex < fff::Item2; scanIndex++) {
                 }});
@@ -548,36 +502,100 @@ namespace MassSpectrometry
             if (scanFilterFunc(theScan))   {
                 MzRange tempVar2(0, std::numeric_limits<double>::infinity());
                 allAggregateGroups[scanIndex - minScan.value()] = theScan->getMassSpectrum()->Deconvolute(&tempVar2,
-                    });
-        
+				                                                                          minAssumedChargeState,
+													  maxAssumedChargeState,
+													  deconvolutionTolerancePpm,
+													  intensityRatioLimit);//.ToList();
+                    }
+	}
+
+	std::vector<DeconvolutionFeatureWithMassesAndScans*> currentListOfGroups;
+	 for (int scanIndex = minScan.value(); scanIndex <= maxScan.value(); scanIndex++)  {
+		 if (allAggregateGroups[scanIndex - minScan.value()].empty()) {
+			  continue;
+		 }
+		 for (auto isotopicEnvelope : allAggregateGroups[scanIndex - minScan.value()])  {
+			 DeconvolutionFeatureWithMassesAndScans *matchingGroup = nullptr;
+			 auto mass = isotopicEnvelope->monoisotopicMass;
+			 for (auto possibleGroup : currentListOfGroups) {
+			      auto possibleGroupMass = possibleGroup->getMass();
+			      if (std::abs(mass - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm               ||
+			          std::abs(mass + 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+				  std::abs(mass + 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+				  std::abs(mass + 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+				  std::abs(mass - 1.002868314 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+				  std::abs(mass - 2.005408917 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm ||
+				  std::abs(mass - 3.007841294 - possibleGroupMass) / possibleGroupMass * 1e6 <= aggregationTolerancePpm)  {
+				  matchingGroup = possibleGroup;
+				  matchingGroup->AddEnvelope(isotopicEnvelope, scanIndex, GetOneBasedScan(scanIndex)->getRetentionTime());
+				  break;
+			      }
+			 }
+			 if (matchingGroup == nullptr)  {
+		             auto newGroupScans = new DeconvolutionFeatureWithMassesAndScans();
+			     newGroupScans->AddEnvelope(isotopicEnvelope, scanIndex, GetOneBasedScan(scanIndex)->getRetentionTime());
+			     currentListOfGroups.push_back(newGroupScans);
+
+			     //C# TO C++ CONVERTER TODO TASK: A 'delete newGroupScans' statement was not added
+			     //since newGroupScans was passed to a method or constructor. Handle memory
+			     //management manually
+			 }
+		 }
+#ifdef ORIG
+		for (auto ok : currentListOfGroups.Where([&] (std::any b) {
+		     return b::MaxScanIndex < scanIndex;
+	          }))
+                currentListOfGroups.RemoveAll([&] (std::any b) {
+		    return b::MaxScanIndex < scanIndex;
+                  });
 #endif
-            std::vector<MassSpectrometry::DeconvolutionFeatureWithMassesAndScans*>::const_iterator ok;
-            for ( ok = currentListOfGroups.begin(); ok != currentListOfGroups.end(); ++ok )  {     
-                auto okk = *ok;
-                if (okk->getMaxScanIndex() < scanIndex ) {
-                    v.push_back (okk);
-                    currentListOfGroups.erase (ok);
-                }   
-            }
-            for (auto ok : currentListOfGroups) {
-                v.push_back(ok);
-            }
-        }
-        //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since
-        //tempVar was passed to a method or constructor. Handle memory management manually.
-        return v;
+		 std::vector<MassSpectrometry::DeconvolutionFeatureWithMassesAndScans*>::const_iterator ok;
+		  for ( ok = currentListOfGroups.begin(); ok != currentListOfGroups.end(); ++ok )  { 
+			  auto okk = *ok;
+			  if (okk->getMaxScanIndex() < scanIndex ) {
+			       v.push_back (okk);
+			       currentListOfGroups.erase (ok);
+			  }
+		  }
+		  for (auto ok : currentListOfGroups) {
+			  v.push_back(ok);
+		  }
+	 }
+	   //C# TO C++ CONVERTER TODO TASK: A 'delete tempVar' statement was not added since
+	   //tempVar was passed to a method or constructor. Handle memory management manually.
+	   return v;
     }
 
 #ifdef NOT_USED
     int MsDataFile::ReverseComparer::Compare (double x, double y){
-        int val=0;
-        if ( y > x ) {
-            val = -1;
-        }
-        else if ( y < x ) {
-            val = 1;
-        }
-        return val;   
+	    int val=0;
+	    if ( y > x ) {
+		  val = -1;
+	    }
+	    else if ( y < x ) {
+		  val = 1;
+	    }
+	    return val;
     }
 #endif
 }
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
