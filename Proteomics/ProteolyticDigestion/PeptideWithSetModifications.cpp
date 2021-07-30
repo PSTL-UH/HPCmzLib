@@ -895,22 +895,24 @@ namespace Proteomics
                 }
                 
                 size = orig_size;
-                int ret = -1;
-                while ( ret < 0 ) { 
-                    ret = PeptideWithSetModifications::Pack( buf, size, pVec );
-                    if ( ret == -1 ) {
-                        // buffer was not large enough
-                        free ( buf ) ;
-                        buf = (char*) calloc (1,  size );
-                        orig_size = size;
-                        if ( NULL == buf ) {
-                            std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
-                            return;
+                for ( auto pep: pVec ) {
+                    int ret = -1;
+                    while ( ret < 0 ) { 
+                        ret = PeptideWithSetModifications::Pack( buf, size, pep );
+                        if ( ret == -1 ) {
+                            // buffer was not large enough
+                            free ( buf ) ;
+                            buf = (char*) calloc (1,  size );
+                            orig_size = size;
+                            if ( NULL == buf ) {
+                                std::cout << "PeptideWithSetModifications::Serialize : Could not allocate memory\n";
+                                return;
+                            }
                         }
                     }
+                    write (fp, buf, size );
                 }
                 
-                write (fp, buf, size );
                 close(fp);
                 free (buf);
             }
