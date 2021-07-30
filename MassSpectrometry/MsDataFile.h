@@ -55,6 +55,14 @@ namespace MassSpectrometry
         std::vector<MsDataScan*> Scans;
 
     public:
+        virtual ~MsDataFile(){
+	    for(auto iter = 0; iter < Scans.size(); ++iter){
+	       if(Scans[iter] != nullptr){
+		  delete Scans[iter];
+	       }
+	    }
+	} 
+
         MsDataFile(int numSpectra, MassSpectrometry::SourceFile *sourceFile);
 
         MsDataFile(std::vector<MsDataScan*> scans, MassSpectrometry::SourceFile *sourceFile);
@@ -89,7 +97,6 @@ namespace MassSpectrometry
 
         std::vector<MsDataScan*> GetMsScansInIndexRange(int FirstSpectrumNumber, int LastSpectrumNumber);
 
-	//TODO:new function declaration
 	std::vector<MsDataScan*> GetMsScansSubset(int FirstIndex, int LastIndex);
 
         std::vector<MsDataScan*> GetMsScansInTimeRange(double firstRT, double lastRT);
