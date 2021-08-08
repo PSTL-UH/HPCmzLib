@@ -83,6 +83,14 @@ namespace MassSpectrometry
 
 
     public:
+        virtual ~MzSpectrum(){
+            for(auto iter = 0; iter < peakList.size(); ++iter){
+	        if(peakList[iter] != nullptr){
+		   delete peakList[iter];
+		}
+	    }
+	}
+
         MzSpectrum(std::vector<std::vector<double>> &mzintensities);
 
         MzSpectrum(std::vector<double> &mz, std::vector<double> &intensities, bool shouldCopy);
