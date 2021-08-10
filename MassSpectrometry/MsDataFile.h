@@ -55,6 +55,13 @@ namespace MassSpectrometry
         std::vector<MsDataScan*> Scans;
 
     public:
+        virtual ~MsDataFile(){
+	   for(auto iter = 0; iter < Scans.size(); ++iter){
+	       if(Scans[iter] != nullptr)
+		  delete Scans[iter];
+	   }
+	}
+
         MsDataFile(int numSpectra, MassSpectrometry::SourceFile *sourceFile);
 
         MsDataFile(std::vector<MsDataScan*> scans, MassSpectrometry::SourceFile *sourceFile);

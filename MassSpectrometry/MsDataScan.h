@@ -76,6 +76,12 @@ namespace MassSpectrometry
             if ( isolationRange != nullptr ) {
                 delete isolationRange;
             }
+	    if( privateMassSpectrum != nullptr){
+		delete privateMassSpectrum;
+	    }
+	    if( privateScanWindowRange != nullptr){
+		delete privateScanWindowRange;
+	    }
         }
 
         MsDataScan(MzSpectrum *massSpectrum, int oneBasedScanNumber, int msnOrder,
